@@ -1,0 +1,63 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12" size-md="3">
+            <ion-item>
+              <ion-input type="search" [(ngModel)]="filtro.testo" (keyup.enter)="load()" [label]="'documents.pages.list.search' | transloco" labelPlacement="floating"></ion-input>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="3">
+            <ion-item>
+              <ion-select [(ngModel)]="filtro.idDoc_Cartella" (ionChange)="load()" [label]="'documents.fields.folder' | transloco" labelPlacement="floating">
+                <ion-select-option [value]="null">{{ 'documents.pages.list.all' | transloco }}</ion-select-option>
+                @for (x of cartelle; track x.id) { <ion-select-option [value]="x.id">{{ x.percorso }}</ion-select-option> }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="2">
+            <ion-item>
+              <ion-select [(ngModel)]="filtro.idDoc_Par_Tipo" (ionChange)="load()" [label]="'documents.fields.type' | transloco" labelPlacement="floating">
+                <ion-select-option [value]="null">{{ 'documents.pages.list.all' | transloco }}</ion-select-option>
+                @for (x of tipi; track x.id) { <ion-select-option [value]="x.id">{{ x.descrizione }}</ion-select-option> }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          @if (permessi.vedePersonale) {
+            <ion-col size="12" size-md="2">
+              <ion-item>
+                <ion-select [(ngModel)]="filtro.idDip_Anagrafica" (ionChange)="load()" [label]="'documents.fields.employee' | transloco" labelPlacement="floating">
+                  <ion-select-option [value]="null">{{ 'documents.pages.list.all' | transloco }}</ion-select-option>
+                  @for (x of dipendenti; track x.id) { <ion-select-option [value]="x.id">{{ x.nominativo }}</ion-select-option> }
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          }
+          <ion-col size="12" size-md="2">
+            <ion-item>
+              <ion-input type="number" [(ngModel)]="filtro.anno" (keyup.enter)="load()" (ionBlur)="load()" [label]="'documents.fields.year' | transloco" labelPlacement="floating"></ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      @if (filtro.cestino) { <ion-note color="warning">{{ 'documents.pages.list.trashNote' | transloco }}</ion-note> }
+      @if (troncato) { <ion-note color="warning">{{ 'documents.pages.list.truncated' | transloco }}</ion-note> }
+      <nvx-list
+        [items]="documenti"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="documents-outline"
+        [searchText]="searchText"
+        [sort]="sort">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

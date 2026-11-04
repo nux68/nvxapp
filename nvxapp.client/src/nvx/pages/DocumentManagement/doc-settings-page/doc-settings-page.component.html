@@ -1,0 +1,31 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'documents.pages.settings.info' | transloco }}</ion-label>
+      </ion-item>
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-input type="number" formControlName="giorniCestino" [label]="'documents.fields.trashDays' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.settings.trashNote' | transloco }}</ion-note>
+        <ion-item>
+          <ion-input type="number" formControlName="versioniDaConservare" [label]="'documents.fields.versionsToKeep' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.settings.versionsNote' | transloco }}</ion-note>
+        <ion-item>
+          <ion-toggle formControlName="notificheEmail" justify="start">{{ 'documents.fields.emailNotifications' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.settings.emailNote' | transloco }}</ion-note>
+      </form>
+      <br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

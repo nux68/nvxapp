@@ -1,0 +1,41 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'documents.pages.employeeEdit.info' | transloco }}</ion-label>
+      </ion-item>
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-input type="text" formControlName="cognome" [label]="'documents.fields.lastName' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" formControlName="nome" [label]="'documents.fields.firstName' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" formControlName="codiceFiscale" [label]="'documents.fields.taxCode' | transloco" labelPlacement="floating" maxlength="16"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" formControlName="matricola" [label]="'documents.fields.employeeNumber' | transloco" labelPlacement="floating" maxlength="20"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="email" formControlName="email" [label]="'documents.fields.email' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.employeeEdit.emailNote' | transloco }}</ion-note>
+        <ion-item>
+          <ion-input type="date" formControlName="dataCessazione" [label]="'documents.fields.endDate' | transloco" labelPlacement="stacked"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="attivo" justify="start">{{ 'documents.fields.active' | transloco }}</ion-toggle>
+        </ion-item>
+      </form>
+      <br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

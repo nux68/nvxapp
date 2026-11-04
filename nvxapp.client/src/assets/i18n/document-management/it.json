@@ -1,0 +1,178 @@
+{
+  "documents": {
+    "menu": {
+      "section": "Documenti",
+      "archive": "Archivio",
+      "employees": "Dipendenti",
+      "types": "Tipologie",
+      "folders": "Cartelle",
+      "permissions": "Abilitazioni",
+      "settings": "Impostazioni",
+      "log": "Registro accessi",
+      "storage": "Spazio",
+      "mine": "I miei documenti"
+    },
+    "buttons": {
+      "download": "Scarica",
+      "acknowledge": "Presa visione",
+      "newVersion": "Nuova versione",
+      "trash": "Cestino",
+      "restore": "Ripristina"
+    },
+    "status": {
+      "0": "Bozza",
+      "1": "Pubblicato",
+      "2": "Archiviato"
+    },
+    "category": {
+      "0": "Personale",
+      "1": "Azienda",
+      "2": "Cliente"
+    },
+    "action": {
+      "0": "Caricamento",
+      "1": "Nuova versione",
+      "2": "Modifica",
+      "3": "Visualizzazione",
+      "4": "Download",
+      "5": "Presa visione",
+      "6": "Cestino",
+      "7": "Ripristino",
+      "8": "Eliminazione"
+    },
+    "fields": {
+      "title": "Titolo",
+      "type": "Tipologia",
+      "reference": "Riferimento",
+      "period": "Competenza",
+      "expiry": "Scadenza",
+      "size": "Dimensione",
+      "folder": "Cartella",
+      "employee": "Dipendente",
+      "year": "Anno",
+      "month": "Mese",
+      "customer": "Cliente",
+      "description": "Descrizione",
+      "date": "Data",
+      "status": "Stato",
+      "versionNote": "Note della versione",
+      "acknowledgement": "Presa visione",
+      "code": "Codice",
+      "category": "Categoria",
+      "retention": "Anni di conservazione",
+      "documents": "Documenti",
+      "hasPeriod": "Ha competenza (mese/anno)",
+      "hasExpiry": "Ha una scadenza",
+      "requiresAcknowledgement": "Richiede la presa visione",
+      "order": "Ordine",
+      "active": "Attivo",
+      "visibleToUsers": "Visibile ai dipendenti",
+      "parentFolder": "Cartella superiore",
+      "taxCode": "Codice fiscale",
+      "employeeNumber": "Matricola",
+      "hasAccount": "Account",
+      "lastName": "Cognome",
+      "firstName": "Nome",
+      "email": "Email personale",
+      "endDate": "Data di cessazione",
+      "trashDays": "Giorni nel cestino",
+      "versionsToKeep": "Versioni da conservare",
+      "emailNotifications": "Avvisi email ai dipendenti",
+      "seesPersonnel": "Vede",
+      "uploadsPersonnel": "Carica",
+      "user": "Utente",
+      "action": "Azione",
+      "detail": "Dettaglio"
+    },
+    "pages": {
+      "list": {
+        "title": "Archivio documenti",
+        "upload": "Carica documento",
+        "trash": "Cestino",
+        "archive": "Torna all'archivio",
+        "emptyTrash": "Svuota il cestino",
+        "confirmEmptyTrash": "Eliminare definitivamente tutti i documenti del cestino?",
+        "confirmDelete": "Eliminare definitivamente il documento e i suoi file?",
+        "search": "Cerca nel testo",
+        "all": "Tutti",
+        "showDisabled": "Mostra anche i disattivati",
+        "trashNote": "Cestino: i documenti si eliminano definitivamente dopo i giorni indicati nelle impostazioni, o subito con \"Elimina\".",
+        "truncated": "Mostrati i primi 500 documenti: affina i filtri."
+      },
+      "edit": {
+        "title": "Documento",
+        "new": "Nuovo documento",
+        "info": "Dati del documento",
+        "chooseFile": "Scegli il file",
+        "fileRequired": "Scegli il file da caricare.",
+        "typeRequired": "Scegli la tipologia.",
+        "titleRequired": "Indica il titolo.",
+        "statusNote": "In bozza il documento non è visibile al dipendente.",
+        "versions": "Versioni",
+        "recipients": "Destinatari",
+        "opened": "Aperto",
+        "downloaded": "Scaricato",
+        "acknowledged": "Presa visione",
+        "confirmTrash": "Spostare il documento nel cestino?",
+        "retentionExpired": "Il documento ha superato gli anni di conservazione della tipologia: valuta se eliminarlo."
+      },
+      "mine": {
+        "title": "I miei documenti",
+        "toAcknowledge": "Da confermare",
+        "confirmAcknowledge": "Confermi di aver letto \"{{title}}\"?"
+      },
+      "typeList": {
+        "title": "Tipologie di documento",
+        "new": "Nuova tipologia",
+        "confirmDelete": "Eliminare la tipologia? Se è usata da documenti verrà solo disattivata."
+      },
+      "typeEdit": {
+        "title": "Tipologia di documento",
+        "info": "Tipologia",
+        "categoryNote": "Personale: visibile al dipendente e a chi è abilitato ai documenti del personale. Azienda e Cliente: agli amministratori.",
+        "retentionNote": "Oltre questo periodo i documenti vengono solo segnalati, mai eliminati in automatico. Vuoto = senza limite."
+      },
+      "folderList": {
+        "title": "Cartelle",
+        "new": "Nuova cartella",
+        "confirmDelete": "Eliminare la cartella?"
+      },
+      "folderEdit": {
+        "title": "Cartella",
+        "info": "Cartella",
+        "visibleNote": "I documenti aziendali della cartella sono visibili, in sola lettura, anche ai dipendenti."
+      },
+      "employeeList": {
+        "title": "Dipendenti",
+        "new": "Nuovo dipendente"
+      },
+      "employeeEdit": {
+        "title": "Dipendente",
+        "info": "Dati del dipendente",
+        "emailNote": "Usata per gli avvisi quando il dipendente non ha un account."
+      },
+      "permissions": {
+        "title": "Abilitazioni ai documenti del personale",
+        "note": "Gli amministratori vedono e caricano i documenti del personale (cedolini compresi) solo se abilitati qui. Chi carica vede anche."
+      },
+      "settings": {
+        "title": "Impostazioni del documentale",
+        "info": "Impostazioni",
+        "trashNote": "I documenti nel cestino da più giorni si eliminano di notte. 0 = mai.",
+        "versionsNote": "Conserva solo le ultime N versioni (0 = tutte). I documenti con presa visione richiesta le conservano sempre.",
+        "emailNote": "Avvisa il dipendente quando riceve un nuovo documento (se l'invio email è configurato)."
+      },
+      "log": {
+        "title": "Registro degli accessi"
+      },
+      "storage": {
+        "title": "Spazio documenti",
+        "used": "Usati {{used}} MB su {{quota}} MB ({{percent}}%)",
+        "files": "{{files}} file · dimensione massima del file {{maxFile}} MB · avviso al {{warning}}%",
+        "over": "Spazio esaurito",
+        "warning": "Quasi pieno",
+        "note": "Oltre il 100% non si caricano documenti. Per un pacchetto più grande rivolgersi al centro."
+      }
+    }
+  }
+}

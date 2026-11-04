@@ -1,0 +1,24 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-note class="nvx-nota-disabled">{{ 'documents.pages.permissions.note' | transloco }}</ion-note>
+      <ion-list>
+        @for (x of items ?? []; track x.idAspNetUsers) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ x.userName }}</h3>
+              <p>{{ x.ruoli }}</p>
+            </ion-label>
+            <ion-toggle slot="end" [checked]="x.vedePersonale" (ionChange)="set(x, 'vedePersonale', $event.detail.checked)">{{ 'documents.fields.seesPersonnel' | transloco }}</ion-toggle>
+            <ion-toggle slot="end" [checked]="x.caricaPersonale" (ionChange)="set(x, 'caricaPersonale', $event.detail.checked)">{{ 'documents.fields.uploadsPersonnel' | transloco }}</ion-toggle>
+          </ion-item>
+        }
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

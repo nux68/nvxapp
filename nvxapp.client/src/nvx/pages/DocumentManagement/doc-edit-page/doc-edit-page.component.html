@@ -1,0 +1,157 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ (Nuovo ? 'documents.pages.edit.new' : 'documents.pages.edit.info') | transloco }}</ion-label>
+      </ion-item>
+
+      @if (Nuovo) {
+        <input #fileInput type="file" (change)="onFile($event)" hidden />
+        <ion-button size="small" fill="outline" shape="round" color="primary" (click)="fileInput.click()">
+          <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+          {{ (file ? file.name : 'documents.pages.edit.chooseFile') | transloco }}
+        </ion-button>
+        @if (file) { <ion-note class="nvx-nota-disabled">{{ size(file.size) }}</ion-note> }
+      }
+
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-select formControlName="idDoc_Par_Tipo" [label]="'documents.fields.type' | transloco" labelPlacement="floating">
+            @for (t of tipi; track t.id) {
+              @if (t.active || t.id === _editModel?.idDoc_Par_Tipo) {
+                @if (t.categoria !== Categoria.Personale || permessi.caricaPersonale || SolaLettura) {
+                  <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+                }
+              }
+            }
+          </ion-select>
+        </ion-item>
+        @if (_editForm.get('idDoc_Par_Tipo')?.invalid && _editForm.get('idDoc_Par_Tipo')?.touched) {
+          <ion-note color="danger">{{ 'documents.pages.edit.typeRequired' | transloco }}</ion-note>
+        }
+
+        @if (Tipo?.categoria === Categoria.Personale) {
+          <ion-item>
+            <ion-select formControlName="idDip_Anagrafica" [label]="'documents.fields.employee' | transloco" labelPlacement="floating">
+              @for (d of dipendenti; track d.id) { <ion-select-option [value]="d.id">{{ d.nominativo }}{{ d.codiceFiscale ? ' – ' + d.codiceFiscale : '' }}</ion-select-option> }
+            </ion-select>
+          </ion-item>
+        }
+        @if (Tipo?.categoria === Categoria.Cliente) {
+          <ion-item>
+            <ion-select formControlName="idAz_Cliente" [label]="'documents.fields.customer' | transloco" labelPlacement="floating">
+              @for (c of clienti; track c.id) { <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option> }
+            </ion-select>
+          </ion-item>
+        }
+
+        <ion-item>
+          <ion-select formControlName="idDoc_Cartella" [label]="'documents.fields.folder' | transloco" labelPlacement="floating">
+            <ion-select-option [value]="null">–</ion-select-option>
+            @for (x of cartelle; track x.id) { <ion-select-option [value]="x.id">{{ x.percorso }}</ion-select-option> }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="text" formControlName="titolo" [label]="'documents.fields.title' | transloco" labelPlacement="floating" maxlength="200"></ion-input>
+        </ion-item>
+        @if (_editForm.get('titolo')?.invalid && _editForm.get('titolo')?.touched) {
+          <ion-note color="danger">{{ 'documents.pages.edit.titleRequired' | transloco }}</ion-note>
+        }
+        <ion-item>
+          <ion-textarea formControlName="descrizione" [label]="'documents.fields.description' | transloco" labelPlacement="floating" [autoGrow]="true"></ion-textarea>
+        </ion-item>
+        <ion-item>
+          <ion-input type="date" formControlName="dataDocumento" [label]="'documents.fields.date' | transloco" labelPlacement="stacked"></ion-input>
+        </ion-item>
+        @if (Tipo?.haCompetenza) {
+          <ion-item>
+            <ion-input type="number" formControlName="mese" [label]="'documents.fields.month' | transloco" labelPlacement="floating"></ion-input>
+            <ion-input type="number" formControlName="anno" [label]="'documents.fields.year' | transloco" labelPlacement="floating"></ion-input>
+          </ion-item>
+        }
+        @if (Tipo?.haScadenza) {
+          <ion-item>
+            <ion-input type="date" formControlName="dataScadenza" [label]="'documents.fields.expiry' | transloco" labelPlacement="stacked"></ion-input>
+          </ion-item>
+        }
+        <ion-item>
+          <ion-select formControlName="stato" [label]="'documents.fields.status' | transloco" labelPlacement="floating">
+            <ion-select-option [value]="0">{{ 'documents.status.0' | transloco }}</ion-select-option>
+            <ion-select-option [value]="1">{{ 'documents.status.1' | transloco }}</ion-select-option>
+            <ion-select-option [value]="2">{{ 'documents.status.2' | transloco }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.edit.statusNote' | transloco }}</ion-note>
+        @if (Nuovo) {
+          <ion-item>
+            <ion-input type="text" formControlName="noteVersione" [label]="'documents.fields.versionNote' | transloco" labelPlacement="floating" maxlength="500"></ion-input>
+          </ion-item>
+        }
+      </form>
+
+      @if (dettaglio) {
+        <br />
+        <ion-button size="small" shape="round" color="primary" (click)="download()">
+          <ion-icon slot="start" name="download-outline"></ion-icon>{{ 'documents.buttons.download' | transloco }}
+        </ion-button>
+        @if (PresaVisioneDaFare) {
+          <ion-button size="small" shape="round" color="success" (click)="presaVisione()">
+            <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>{{ 'documents.buttons.acknowledge' | transloco }}
+          </ion-button>
+        }
+        @if (dettaglio.modificabile) {
+          <input #versionInput type="file" (change)="onNewVersion($event)" hidden />
+          <ion-button size="small" fill="outline" shape="round" (click)="versionInput.click()">
+            <ion-icon slot="start" name="git-branch-outline"></ion-icon>{{ 'documents.buttons.newVersion' | transloco }}
+          </ion-button>
+          <ion-button size="small" fill="outline" shape="round" color="danger" (click)="cestino()">
+            <ion-icon slot="start" name="trash-outline"></ion-icon>{{ 'documents.buttons.trash' | transloco }}
+          </ion-button>
+        }
+        @if (dettaglio.riepilogo.oltreConservazione) {
+          <p><ion-note color="warning">{{ 'documents.pages.edit.retentionExpired' | transloco }}</ion-note></p>
+        }
+
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'documents.pages.edit.versions' | transloco }}</ion-label></ion-item>
+        <ion-list>
+          @for (v of dettaglio.versioni; track v.id) {
+            <ion-item button (click)="download(v.numero)">
+              <ion-label>
+                <h3>v{{ v.numero }} – {{ v.nomeFile }} ({{ size(v.dimensione) }})</h3>
+                <p>{{ v.data | date: 'dd/MM/yyyy HH:mm' }} {{ v.autore }} {{ v.note }}</p>
+              </ion-label>
+              <ion-icon slot="end" name="download-outline"></ion-icon>
+            </ion-item>
+          }
+        </ion-list>
+
+        @if (dettaglio.destinatari.length) {
+          <ion-item class="nvx-item-4-title"><ion-label>{{ 'documents.pages.edit.recipients' | transloco }}</ion-label></ion-item>
+          <ion-list>
+            @for (r of dettaglio.destinatari; track r.id) {
+              <ion-item>
+                <ion-label>
+                  <h3>{{ r.nominativo }}</h3>
+                  <p>
+                    {{ 'documents.pages.edit.opened' | transloco }}: {{ r.dataPrimaApertura ? (r.dataPrimaApertura | date: 'dd/MM/yyyy HH:mm') : '–' }}
+                    · {{ 'documents.pages.edit.downloaded' | transloco }}: {{ r.dataDownload ? (r.dataDownload | date: 'dd/MM/yyyy HH:mm') : '–' }}
+                    @if (r.presaVisioneRichiesta) { · {{ 'documents.pages.edit.acknowledged' | transloco }}: {{ r.dataPresaVisione ? (r.dataPresaVisione | date: 'dd/MM/yyyy HH:mm') : '–' }} }
+                  </p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      }
+      <br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

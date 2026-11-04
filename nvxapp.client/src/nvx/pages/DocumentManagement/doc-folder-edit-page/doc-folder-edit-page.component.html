@@ -1,0 +1,37 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'documents.pages.folderEdit.info' | transloco }}</ion-label>
+      </ion-item>
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-input type="text" formControlName="descrizione" [label]="'documents.fields.description' | transloco" labelPlacement="floating" maxlength="100"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-select formControlName="idDoc_Cartella" [label]="'documents.fields.parentFolder' | transloco" labelPlacement="floating">
+            <ion-select-option [value]="null">–</ion-select-option>
+            @for (x of setup?.cartelle ?? []; track x.id) {
+              @if (x.id !== _editModel?.id) { <ion-select-option [value]="x.id">{{ x.percorso }}</ion-select-option> }
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="ordine" [label]="'documents.fields.order' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="visibileUtenti" justify="start">{{ 'documents.fields.visibleToUsers' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.folderEdit.visibleNote' | transloco }}</ion-note>
+      </form>
+      <br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
