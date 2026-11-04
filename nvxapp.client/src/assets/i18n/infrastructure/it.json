@@ -86,7 +86,9 @@
     "ticketTypeAiSettings": "Configura risposte AI",
     "application": {
       "1": "Moke",
-      "2": "Presenze"
+      "2": "Presenze",
+      "3": "CRM",
+      "4": "Documentale"
     },
     "storagePlans": "Pacchetti di spazio",
     "companyStorage": "Spazio documenti"
@@ -863,7 +865,9 @@
     "application": {
       "1": "Moke",
       "2": "Presenze",
-      "general": "Generale"
+      "general": "Generale",
+      "3": "CRM",
+      "4": "Documentale"
     },
     "aiPending": "Risposta automatica in corso",
     "notification": {
