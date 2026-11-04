@@ -86,7 +86,9 @@
     "ticketTypeAiSettings": "Configure AI answers",
     "application": {
       "1": "Moke",
-      "2": "Attendance"
+      "2": "Attendance",
+      "3": "CRM",
+      "4": "Document management"
     },
     "storagePlans": "Storage plans",
     "companyStorage": "Document storage"
@@ -863,7 +865,9 @@
     "application": {
       "1": "Moke",
       "2": "Attendance",
-      "general": "General"
+      "general": "General",
+      "3": "CRM",
+      "4": "Document management"
     },
     "aiPending": "Automatic answer in progress",
     "notification": {
