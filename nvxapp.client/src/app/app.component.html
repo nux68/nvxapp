@@ -73,18 +73,24 @@
             </ion-accordion>
           }
 
-          <!-- 3. applicativi attivi (es. "Presenze"): le sezioni che seguono sono dell'applicativo -->
-          @if (applicativiAttivi.length > 0) {
-            <div class="nvx-menu-application">
-              @for (app of applicativiAttivi; track app; let last = $last) {
-                {{ 'menu.application.' + app | transloco }}@if (!last) { · }
-              }
-            </div>
-          }
-
-          <!-- 4. sezioni dell'utente e dei ruoli (SuperUser, Centro, Studio, Azienda...) come sono dichiarate -->
-          @for (sezione of sezioniMenu; track $index) {
-            <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
+          <!-- 3. "Amministrazione" (voci comuni di Infrastructure) e una sezione per applicativo attivo: dentro, le sottosezioni
+                  dei ruoli, che si aprono e si chiudono una alla volta come le sezioni -->
+          @for (app of sezioniApplicativi; track app.chiave) {
+            <ion-accordion value="{{app.chiave}}" toggleIcon="chevron-down" toggleIconSlot="end" class="nvx-menu-application">
+              <ion-item slot="header">
+                <ion-label>{{ app.titolo | transloco }}</ion-label>
+                @if (appBadge(app) > 0) {
+                  <ion-badge slot="end" color="danger">{{ appBadge(app) }}</ion-badge>
+                }
+              </ion-item>
+              <div class="nvx-menu-application-content" slot="content">
+                <ion-accordion-group [value]="app.aperta">
+                  @for (sezione of app.sezioni; track $index) {
+                    <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
+                  }
+                </ion-accordion-group>
+              </div>
+            </ion-accordion>
           }
 
         </ion-accordion-group>
