@@ -19,9 +19,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
      Chi sta lavorando nel documentale (azienda e ruoli del token) e cosa puo' fare (ANALISI_DOCUMENTALE.md §4):
         - CompanyPowerAdmin: configurazione (tipologie, cartelle, impostazioni) e archivio aziendale
         - CompanyAdmin     : archivio aziendale
-        - documenti del personale: solo con abilitazione esplicita per utente (Doc_UtenteAbilitazione),
-          anche per PowerAdmin e Admin; le abilitazioni le gestiscono il SuperUser, il DealerPowerAdmin del centro
-          e il CompanyPowerAdmin gia' abilitato a vedere i documenti del personale
+        - documenti del personale: il CompanyPowerAdmin e' sempre abilitato (vede e carica); il CompanyAdmin solo con
+          abilitazione esplicita per utente (Doc_UtenteAbilitazione), che gestiscono il CompanyPowerAdmin, il SuperUser
+          e il DealerPowerAdmin del centro
         - dipendente (User): i propri documenti pubblicati, quelli di cui e' destinatario e le cartelle visibili agli utenti
     */
     public sealed class DocContesto
@@ -97,8 +97,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
             var abil = await _db.Doc_UtenteAbilitazione.AsNoTracking().FirstOrDefaultAsync(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente);
             bool powerAdmin = ruoli.Contains(nameof(RoleCode.CompanyPowerAdmin));
             bool admin = ruoli.Contains(nameof(RoleCode.CompanyAdmin));
-            bool vede = (powerAdmin || admin) && (abil?.VedePersonale ?? false);
-            bool carica = (powerAdmin || admin) && (abil?.CaricaPersonale ?? false);
+            // il CompanyPowerAdmin e' sempre abilitato; il CompanyAdmin solo se abilitato esplicitamente
+            bool vede = powerAdmin || (admin && (abil?.VedePersonale ?? false));
+            bool carica = powerAdmin || (admin && (abil?.CaricaPersonale ?? false));
 
             _contesto = new DocContesto
             {
@@ -110,7 +111,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
                 Admin = admin,
                 VedePersonale = vede || carica,
                 CaricaPersonale = carica,
-                GestisceAbilitazioni = (powerAdmin && vede) || await _authorizer.CanManageCompanyAsync(idCompany),
+                GestisceAbilitazioni = powerAdmin || await _authorizer.CanManageCompanyAsync(idCompany),
                 IdDip_Anagrafica = string.IsNullOrEmpty(idUtente) ? null
                     : await _db.Dip_Anagrafica.AsNoTracking().Where(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente).Select(x => (int?)x.Id).FirstOrDefaultAsync()
             };

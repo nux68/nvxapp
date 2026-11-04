@@ -13,9 +13,12 @@
             <ion-label>
               <h3>{{ x.userName }}</h3>
               <p>{{ x.ruoli }}</p>
+              @if (x.fisso) {
+                <p>{{ 'documents.pages.permissions.fixed' | transloco }}</p>
+              }
             </ion-label>
-            <ion-toggle slot="end" [checked]="x.vedePersonale" (ionChange)="set(x, 'vedePersonale', $event.detail.checked)">{{ 'documents.fields.seesPersonnel' | transloco }}</ion-toggle>
-            <ion-toggle slot="end" [checked]="x.caricaPersonale" (ionChange)="set(x, 'caricaPersonale', $event.detail.checked)">{{ 'documents.fields.uploadsPersonnel' | transloco }}</ion-toggle>
+            <ion-toggle slot="end" [disabled]="x.fisso" [checked]="x.vedePersonale" (ionChange)="set(x, 'vedePersonale', $event.detail.checked)">{{ 'documents.fields.seesPersonnel' | transloco }}</ion-toggle>
+            <ion-toggle slot="end" [disabled]="x.fisso" [checked]="x.caricaPersonale" (ionChange)="set(x, 'caricaPersonale', $event.detail.checked)">{{ 'documents.fields.uploadsPersonnel' | transloco }}</ion-toggle>
           </ion-item>
         }
       </ion-list>

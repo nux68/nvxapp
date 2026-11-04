@@ -56,6 +56,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         public string Ruoli { get; set; } = string.Empty;
         public bool VedePersonale { get; set; }
         public bool CaricaPersonale { get; set; }
+        // CompanyPowerAdmin: sempre abilitato, non modificabile
+        public bool Fisso { get; set; }
     }
 
     // dipendente per le scelte (destinatario dei documenti del personale)

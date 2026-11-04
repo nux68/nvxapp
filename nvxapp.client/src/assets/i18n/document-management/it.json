@@ -156,7 +156,8 @@
       },
       "permissions": {
         "title": "Abilitazioni ai documenti del personale",
-        "note": "Gli amministratori vedono e caricano i documenti del personale (cedolini compresi) solo se abilitati qui. Chi carica vede anche."
+        "note": "Il CompanyPowerAdmin vede e carica sempre i documenti del personale (cedolini compresi); i CompanyAdmin solo se abilitati qui. Chi carica vede anche.",
+        "fixed": "Sempre abilitato (CompanyPowerAdmin)"
       },
       "settings": {
         "title": "Impostazioni del documentale",
