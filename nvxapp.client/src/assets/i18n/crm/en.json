@@ -86,7 +86,8 @@
       "um": "UoM",
       "validaFinoAl": "Valid until",
       "valore": "Value",
-      "valoreAperto": "Open value"
+      "valoreAperto": "Open value",
+      "ivaTotale": "VAT"
     },
     "validation": {
       "checkFields": "Check the highlighted fields.",
