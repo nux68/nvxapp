@@ -31,7 +31,9 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.superUserPage', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' }
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' },
+      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storagePlans', component: "StoragePlanListPageComponent", url: '/storageplanlist', icon: 'server' },
+      { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.companyStorage', component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' }
     ];
   }
 
@@ -51,7 +53,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'menu.dealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'menu.dealerAdmin'      , component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.dealerUsers'     , component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' }
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
+      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.companyStorage'                , component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' }
     ];
   }
 
@@ -61,7 +64,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem  , zorder: 100, group: 0, title: 'menu.financialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 200, group: 0, title: 'menu.financialAdvisorAdmin'      , component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 300, group: 0, title: 'menu.financialAdvisorUsers'     , component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'menu.companies'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' }
+      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'menu.companies'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
+      { menuType: MenuType.MenuItem  , zorder: 500, group: 0, title: 'menu.companyStorage'     , component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' }
     ];
   }
 

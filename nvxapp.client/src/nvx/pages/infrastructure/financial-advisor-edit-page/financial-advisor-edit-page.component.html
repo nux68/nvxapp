@@ -86,6 +86,27 @@
         <ion-note class="nvx-nota-disabled">{{ 'pages.financialAdvisorEdit.disabledNote' | transloco }}</ion-note>
       </form>
 
+      <!-- Applicativi abilitati dello studio (funzioni lato studio): li cambiano solo il SuperUser e il DealerPowerAdmin del centro -->
+      @if (_editModel?.applications?.length) {
+        <br />
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.financialAdvisorEdit.applications' | transloco }}</ion-label>
+        </ion-item>
+        @for (app of _editModel.applications; track app.applicationType) {
+          <ion-item>
+            <ion-checkbox justify="start" labelPlacement="end"
+                          [checked]="app.active"
+                          [disabled]="_editModel.applicationsReadOnly"
+                          (ionChange)="app.active = $event.detail.checked">
+              {{ app.descrizione }}
+            </ion-checkbox>
+          </ion-item>
+        }
+        <ion-note>
+          {{ (_editModel.applicationsReadOnly ? 'pages.financialAdvisorEdit.applicationsReadOnly' : 'pages.financialAdvisorEdit.applicationsNote') | transloco }}
+        </ion-note>
+      }
+
       <br />
 
     </ion-card-content>

@@ -14,6 +14,12 @@ namespace nvxapp.server.data.Infrastructure
 
         public DbSet<AppSetting> AppSetting { get; set; }
         public DbSet<CompanyApplication> CompanyApplication { get; set; }
+        public DbSet<FinancialAdvisorApplication> FinancialAdvisorApplication { get; set; }
+
+        // spazio dei file delle aziende (documentale)
+        public DbSet<StoragePlan> StoragePlan { get; set; }
+        public DbSet<CompanyStorage> CompanyStorage { get; set; }
+        public DbSet<CompanyStorageHistory> CompanyStorageHistory { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
         public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
@@ -49,6 +55,8 @@ namespace nvxapp.server.data.Infrastructure
             Gen_DealerAndCompany_Init(modelBuilder);
             Gen_AppSetting(modelBuilder);
             Gen_CompanyApplication(modelBuilder);
+            Gen_FinancialAdvisorApplication(modelBuilder);
+            Gen_Storage(modelBuilder);
             Gen_CompanyMenuRestriction(modelBuilder);
             Gen_CompanyRegistrationRequest(modelBuilder);
             Gen_Ticket(modelBuilder);
@@ -88,6 +96,71 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasKey(e => e.Key);
             });
         }
+        /*
+         Spazio dei file delle aziende (ANALISI_DOCUMENTALE.md §5.3).
+         Dati iniziali: pacchetti 1, 5 e 20 GB (predefinito 1 GB) e i valori predefiniti dell'installazione
+         (dimensione massima del file 50 MB, avviso all'80%).
+        */
+        public const string Key_StorageMaxFileMB = "Storage_MaxFileMB";
+        public const string Key_StorageWarningPercent = "Storage_WarningPercent";
+
+        private void Gen_Storage(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StoragePlan>(entity =>
+            {
+                entity.ToTable("StoragePlan", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Descrizione).IsUnique();
+                // al piu' un pacchetto predefinito
+                entity.HasIndex(e => e.Predefinito).IsUnique().HasFilter("\"Predefinito\"");
+                // i pacchetti iniziali si inseriscono nella migration (Migrations/Public/PopolateStorage.cs): HasData con Id
+                // espliciti non fa avanzare la sequenza identity di PostgreSQL
+            });
+
+            modelBuilder.Entity<CompanyStorage>(entity =>
+            {
+                entity.ToTable("CompanyStorage", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.IdCompany).IsUnique();
+                entity.HasOne(e => e.CompanyNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdCompany)
+                      .OnDelete(DeleteBehavior.Cascade);
+                // un pacchetto usato non si elimina (si disattiva)
+                entity.HasOne(e => e.StoragePlanNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdStoragePlan)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // storico mensile: nessuna chiave esterna, resta anche dopo la cancellazione dell'azienda (fatturazione)
+            modelBuilder.Entity<CompanyStorageHistory>(entity =>
+            {
+                entity.ToTable("CompanyStorageHistory", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdCompany, e.Anno, e.Mese }).IsUnique();
+            });
+
+            modelBuilder.Entity<AppSetting>().HasData(
+                new AppSetting { Key = Key_StorageMaxFileMB, Value = "50" },
+                new AppSetting { Key = Key_StorageWarningPercent, Value = "80" });
+        }
+
+        // applicativi abilitati per studio (funzioni lato studio)
+        private void Gen_FinancialAdvisorApplication(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FinancialAdvisorApplication>(entity =>
+            {
+                entity.ToTable("FinancialAdvisorApplication", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdFinancialAdvisor, e.ApplicationType }).IsUnique();
+                entity.HasOne(e => e.FinancialAdvisorNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdFinancialAdvisor)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
         private void Gen_CompanyApplication(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CompanyApplication>(entity =>

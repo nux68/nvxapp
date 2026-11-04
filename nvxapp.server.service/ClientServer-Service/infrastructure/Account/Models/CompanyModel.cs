@@ -52,6 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         // CompanyGet li restituisce, CompanyPut li applica (attivo -> schema verificato/creato,
         // non attivo -> accesso bloccato, lo schema resta)
         public List<CompanyApplicationModel> Applications { get; set; } = new List<CompanyApplicationModel>();
+        // applicativi visibili ma non modificabili (li cambiano solo il SuperUser e il DealerPowerAdmin del centro)
+        public bool ApplicationsReadOnly { get; set; }
     }
     public class CompanyGetInModel
     {

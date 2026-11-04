@@ -17,6 +17,7 @@ using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Text.Json;
 
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 {
     /*
@@ -51,6 +52,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         private readonly ITenantProvisioningService _tenantProvisioningService;
         private readonly TenancySettings _tenancySettings;
         private readonly IEnumerable<IApplicationDataDeleter> _applicationDataDeleters;
+        private readonly IFileStorage _fileStorage;
 
         public DeletionService(IMapper mapper,
                                UserManager<ApplicationUser> userManager,
@@ -62,12 +64,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                                PublicDbContext db,
                                ITenantProvisioningService tenantProvisioningService,
                                TenancySettings tenancySettings,
-                               IEnumerable<IApplicationDataDeleter> applicationDataDeleters) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                               IEnumerable<IApplicationDataDeleter> applicationDataDeleters,
+                               IFileStorage fileStorage) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _db = db;
             _tenantProvisioningService = tenantProvisioningService;
             _tenancySettings = tenancySettings;
             _applicationDataDeleters = applicationDataDeleters;
+            _fileStorage = fileStorage;
         }
 
         public virtual async Task<GenericResult<DeletionPreviewOutModel>> DeletionPreview(GenericRequest<DeletionPreviewInModel> model, Boolean isSubProcess)
@@ -155,6 +159,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                     await Registra(piano, retVal.Counts);
 
                     await transaction.CommitAsync();
+                }
+
+                // file delle aziende eliminate (storage su disco): dopo la conferma, perche' non si annullano con il rollback
+                foreach (var idCompany in piano.Aziende)
+                {
+                    try
+                    {
+                        await _fileStorage.DeleteCompanyAsync(idCompany);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "[Deletion] File dell'azienda {IdCompany} non eliminati: vanno tolti a mano dalla cartella dei file.", idCompany);
+                    }
                 }
 
                 Log.Information("[Deletion] {NodeType} {Descrizione} eliminato da {UserId}: {Riepilogo}",

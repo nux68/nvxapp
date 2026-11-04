@@ -87,7 +87,9 @@
     "application": {
       "1": "Moke",
       "2": "Presenze"
-    }
+    },
+    "storagePlans": "Pacchetti di spazio",
+    "companyStorage": "Spazio documenti"
   },
   "showcase": {
     "menu": {
@@ -377,6 +379,7 @@
       "title": "UserImpersonate"
     },
     "companyEdit": {
+      "applicationsReadOnly": "Gli applicativi li attivano e disattivano solo il SuperUser e il DealerPowerAdmin del centro.",
       "title": "CompanyEditPage",
       "info": "Info",
       "description": "Descrizione",
@@ -407,6 +410,9 @@
       "disabledNote": "Le righe disabilitate non compaiono nelle liste, salvo \"Mostra anche i disabilitati\"."
     },
     "financialAdvisorEdit": {
+      "applicationsReadOnly": "Gli applicativi dello studio li abilitano solo il SuperUser e il DealerPowerAdmin del centro.",
+      "applicationsNote": "Abilitano le funzioni lato studio (es. area studio del documentale). Non attivano gli applicativi sulle aziende dello studio.",
+      "applications": "Applicativi dello studio",
       "title": "Financial Advisor",
       "info": "Info",
       "description": "Descrizione",
@@ -655,6 +661,61 @@
       "useParentDocuments": "Usa la documentazione dei livelli superiori",
       "defaultOwnDocuments": "solo documentazione del nodo",
       "infoParentDocuments": "\"Usa la documentazione dei livelli superiori\": l'assistente usa anche i documenti dei livelli sopra (e del SuperUser) pubblicati per i livelli sotto; spento, usa solo quelli del nodo."
+    },
+    "storagePlanList": {
+      "title": "Pacchetti di spazio",
+      "columnDescription": "Pacchetto",
+      "columnQuota": "Spazio",
+      "columnMaxFile": "File max",
+      "columnDefault": "Predefinito",
+      "columnCompanies": "Aziende",
+      "defaultValue": "predefinita",
+      "newPlan": "Nuovo pacchetto",
+      "settings": "Valori predefiniti",
+      "showDisabled": "Mostra anche i disattivati",
+      "confirmDelete": "Eliminare il pacchetto?",
+      "confirmDeactivate": "Il pacchetto è usato da {{companies}} aziende: verrà solo disattivato (non più assegnabile). Continuare?",
+      "settingsSummary": "Dimensione massima predefinita del file: {{maxFile}} MB · avviso al {{warning}}% · spazio usato da tutte le aziende: {{used}} MB"
+    },
+    "storagePlanEdit": {
+      "title": "Pacchetto di spazio",
+      "info": "Pacchetto",
+      "description": "Descrizione",
+      "quota": "Spazio (MB)",
+      "quotaRequired": "Indicare uno spazio maggiore di zero.",
+      "maxFile": "Dimensione massima del file (MB)",
+      "maxFileNote": "Vuoto = valore predefinito dell'installazione.",
+      "order": "Ordine",
+      "active": "Attivo",
+      "activeNote": "Un pacchetto disattivato resta alle aziende che lo hanno ma non si assegna più.",
+      "default": "Predefinito",
+      "defaultNote": "Assegnato alle aziende quando attivano il documentale. Ce n'è sempre uno solo."
+    },
+    "storageSettings": {
+      "title": "Valori predefiniti dello spazio",
+      "info": "Valori predefiniti",
+      "maxFile": "Dimensione massima del file (MB)",
+      "maxFileInvalid": "Indicare un valore maggiore di zero.",
+      "warning": "Soglia di avviso (%)",
+      "warningInvalid": "Indicare un valore tra 1 e 99.",
+      "note": "Valgono per i pacchetti e le aziende che non hanno valori propri. Alla soglia e al 100% arriva un avviso al CompanyPowerAdmin e al DealerPowerAdmin; oltre il 100% non si caricano documenti."
+    },
+    "companyStorageList": {
+      "title": "Spazio documenti delle aziende",
+      "columnCompany": "Azienda",
+      "columnStudio": "Studio",
+      "columnPlan": "Pacchetto",
+      "columnUsed": "Usato",
+      "columnPercent": "%",
+      "columnFiles": "File"
+    },
+    "companyStorageEdit": {
+      "title": "Spazio documenti dell'azienda",
+      "plan": "Pacchetto",
+      "maxFile": "Dimensione massima del file (MB)",
+      "warning": "Soglia di avviso (%)",
+      "used": "Usati {{used}} MB su {{quota}} MB ({{percent}}%), {{files}} file",
+      "note": "Vuoti = valori del pacchetto o predefiniti (ora {{maxFile}} MB e {{warning}}%)."
     }
   },
   "components": {
