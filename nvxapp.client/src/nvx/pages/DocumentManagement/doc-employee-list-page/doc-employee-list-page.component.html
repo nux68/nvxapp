@@ -9,18 +9,24 @@
     <ion-card-content>
       @if (!abilitato) {
         <ion-note color="warning">{{ 'documents.pages.employeeList.notEnabled' | transloco }}</ion-note>
-      } @else {
-        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.employeeList.note' | transloco }}</ion-note>
       }
+      <!-- opzioni della lista: Mostra disabilitati e la spiegazione delle icone -->
+      <nvx-list-options
+        [showDisabledLabel]="'documents.pages.employeeList.showDisabled' | transloco"
+        [(showDisabled)]="showDisabled"
+        [note]="'documents.pages.employeeList.note' | transloco">
+      </nvx-list-options>
       <nvx-list
         [items]="items"
         [columns]="columns"
         [actions]="actions"
         trackKey="id"
-        icon="people-outline"
+        [icon]="iconOf"
+        [highlight]="haAccount"
         [searchText]="searchText"
         [rowDisabled]="isDisabled"
-        [disabledToggleLabel]="'documents.pages.list.showDisabled' | transloco">
+        [disabledToggleExternal]="true"
+        [(showDisabled)]="showDisabled">
       </nvx-list>
     </ion-card-content>
   </ion-card>

@@ -146,8 +146,9 @@
         "title": "Employees",
         "new": "New employee",
         "noAccount": "No access (registry only)",
-        "note": "Employees marked 🔑 have an account and use the app (company users with the User role); the others are registry only and receive documents without being able to view them in the app.",
-        "notEnabled": "Seeing employees requires the personnel documents permission (Permissions page)."
+        "note": "Employees with the key icon (highlighted) have an account and use the app (company users with the User role); the others are registry only and receive documents without being able to view them in the app.",
+        "notEnabled": "Seeing employees requires the personnel documents permission (Permissions page).",
+        "showDisabled": "Show disabled"
       },
       "employeeEdit": {
         "title": "Employee",
