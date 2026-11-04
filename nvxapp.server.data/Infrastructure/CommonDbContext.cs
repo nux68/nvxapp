@@ -51,31 +51,19 @@ namespace nvxapp.server.data.Infrastructure
 
         /*
          Le entita' comuni sono partial: i rami degli applicativi aggiungono navigazioni verso le proprie tabelle
-         (es. Dip_Anagrafica.Dip_RapportoLavoro delle presenze). Qui si ignorano tutte le navigazioni che non
-         portano a un tipo del modello Common, cosi' il modello (e le migration) di Common restano uguali in ogni ramo.
+         (es. Dip_Anagrafica.Dip_RapportoLavoro delle presenze). Qui si escludono dal modello TUTTE le entita' del
+         progetto dati che non sono comuni (o di public referenziate): seguendo quelle navigazioni EF le scoprirebbe
+         comunque, trascinando nel modello le tabelle dell'applicativo. Cosi' il modello (e le migration) di Common
+         restano uguali in ogni ramo.
         */
         private static void IgnoreApplicationNavigations(ModelBuilder modelBuilder)
         {
-            // si ignorano i TIPI di destinazione (non solo le proprieta'): altrimenti le convenzioni di EF li
-            // scoprirebbero comunque seguendo le navigazioni, trascinando nel modello tutte le tabelle dell'applicativo
-            var foreign = new HashSet<Type>();
-            foreach (var type in new[] { typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica) })
-            {
-                foreach (var property in type.GetProperties())
-                {
-                    var target = property.PropertyType;
-                    if (target.IsGenericType && typeof(System.Collections.IEnumerable).IsAssignableFrom(target))
-                        target = target.GetGenericArguments()[0];
-
-                    bool isEntity = target.IsClass && target != typeof(string) && target.Namespace != null
-                                    && target.Namespace.StartsWith("nvxapp.server.data.Entities");
-                    if (isEntity && !_commonTypes.Contains(target))
-                        foreign.Add(target);
-                }
-            }
-
-            foreach (var target in foreign)
-                modelBuilder.Ignore(target);
+            var others = typeof(nvxapp.server.data.Entities.BaseEntity).Assembly.GetTypes()
+                .Where(t => t.IsClass && !t.IsAbstract && !t.IsNested
+                            && t.Namespace != null && t.Namespace.StartsWith("nvxapp.server.data.Entities")
+                            && !_commonTypes.Contains(t));
+            foreach (var type in others)
+                modelBuilder.Ignore(type);
         }
 
         /*

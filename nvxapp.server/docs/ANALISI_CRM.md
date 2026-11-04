@@ -252,12 +252,15 @@ Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALIS
 - [x] prove via API in multi-tenant (clienti, contatti, isolamento tra aziende, attivazione presenze, blocco della cancellazione)
 - [ ] prova in **modalità singola** (tutto in public)
 
-**Decisioni del 03-04/11/2026 da realizzare**
-- [ ] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript)
-- [ ] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev)
-- [ ] `Az_Cliente.Default` → `Az_Cfg.IdAz_ClienteDefault` (Infrastructure_Dev + AttendanceTracking_Dev)
-- [ ] `Az_Cliente.Attivo` (esclusi dalle scelte, "Mostra disabilitati" negli elenchi)
-- [ ] `Az_Cliente.Tipo` (Cliente / Fornitore / Entrambi)
+**Decisioni del 03-04/11/2026 da realizzare** (spostamento e adattamento dei dati fatti il 04/11/2026, commit 71978b5c e seguenti su Infrastructure_Dev; migration azzerate e database ricreato)
+- [x] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript); si attivano solo gli applicativi con contesto registrato nel ramo
+- [x] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev; dettaglio in `ANALISI_DOCUMENTALE.md` §11)
+- [x] `Az_Cliente.Default` → `Az_Cfg.IdAz_ClienteDefault` (Infrastructure_Dev + AttendanceTracking_Dev)
+- [x] `Az_Cliente.Attivo` (campo)
+- [ ] clienti disattivati esclusi dalle scelte e "Mostra disabilitati" negli elenchi (client)
+- [x] `Az_Cliente.Tipo` (Cliente / Fornitore / Entrambi, campo)
+- [ ] scelte "cliente" limitate a Cliente ed Entrambi (client e servizi delle presenze)
+- [x] migration azzerate (InitPublic, InitCommon, InitMoke, AttendanceTracking_Init) e database di sviluppo ricreato il 04/11/2026; prove via API (attivazione presenze, dipendenti nello schema Common, cliente predefinito in `Az_Cfg`, blocco della cancellazione, CRM non attivabile finché non ha il suo contesto)
 - [ ] attivazione degli applicativi solo da SuperUser e DealerPowerAdmin del centro (controllo in `CompanyApplicationPut`, oggi assente; pagina in sola lettura per gli altri)
 - [ ] `FinancialAdvisorApplication` (abilitazione degli applicativi per studio) e applicativi dello studio in `UserLoad`
 
