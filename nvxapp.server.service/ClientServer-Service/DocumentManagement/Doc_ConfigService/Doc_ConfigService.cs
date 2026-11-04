@@ -67,7 +67,10 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 };
 
                 if (ctx.VedePersonale)
+                {
+                    await AllineaUtentiAsync(ctx);
                     retVal.Dipendenti = await DipendentiAsync(ctx);
+                }
 
                 return retVal;
             }, isSubProcess);
@@ -318,15 +321,62 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         // ---------------------------------------------------------------------------
 
         private async Task<List<Doc_DipendenteModel>> DipendentiAsync(DocContesto ctx)
-            => (await _db.Dip_Anagrafica.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync())
-               .Select(x => new Doc_DipendenteModel
-               {
-                   Id = x.Id, Nominativo = (x.Cognome + " " + x.Nome).Trim(), Cognome = x.Cognome, Nome = x.Nome,
-                   CodiceFiscale = x.CodiceFiscale, Matricola = x.Matricola, Email = x.Email, DataCessazione = x.DataCessazione,
-                   Attivo = x.Attivo, HaUtente = x.IdAspNetUsers != null
-               })
-               .OrderBy(x => x.Nominativo)
-               .ToList();
+        {
+            var dipendenti = await _db.Dip_Anagrafica.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
+            var idUtenti = dipendenti.Where(x => x.IdAspNetUsers != null).Select(x => x.IdAspNetUsers!).ToList();
+            var nomi = await _publicDb.Users.Where(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            return dipendenti.Select(x => new Doc_DipendenteModel
+                             {
+                                 Id = x.Id, Nominativo = (x.Cognome + " " + x.Nome).Trim(), Cognome = x.Cognome, Nome = x.Nome,
+                                 CodiceFiscale = x.CodiceFiscale, Matricola = x.Matricola, Email = x.Email, DataCessazione = x.DataCessazione,
+                                 Attivo = x.Attivo, HaUtente = x.IdAspNetUsers != null,
+                                 UserName = nomi.FirstOrDefault(n => n.Id == x.IdAspNetUsers)?.UserName
+                             })
+                             .OrderBy(x => x.Nominativo)
+                             .ToList();
+        }
+
+        /*
+         Gli utenti dell'azienda con il ruolo User (i dipendenti con accesso all'app) sono dipendenti anche nel documentale:
+         chi non ha ancora l'anagrafica comune (es. le presenze la creano solo al primo accesso, o le presenze non sono attive)
+         la riceve qui, con il nome utente come cognome provvisorio (modificabile). Le presenze completano poi i loro dati
+         (rapporto di lavoro, reparto e competenza) al primo accesso.
+        */
+        private async Task AllineaUtentiAsync(DocContesto ctx)
+        {
+            var idRuoloUser = await _publicDb.Roles.Where(r => r.Name == nameof(RoleCode.User)).Select(r => r.Id).FirstOrDefaultAsync();
+            if (idRuoloUser == null)
+                return;
+            var utenti = await _publicDb.UserCompany.Where(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
+                                        .Where(x => _publicDb.UserRoles.Any(r => r.UserId == x.IdAspNetUsers && r.RoleId == idRuoloUser))
+                                        .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
+            var conAnagrafica = await _db.Dip_Anagrafica.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers != null)
+                                         .Select(x => x.IdAspNetUsers!).ToListAsync();
+            var mancanti = utenti.Except(conAnagrafica).ToList();
+            if (mancanti.Count == 0)
+                return;
+
+            var nomi = await _publicDb.Users.Where(u => mancanti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            foreach (var idUtente in mancanti)
+                _db.Dip_Anagrafica.Add(new nvxapp.server.data.Entities.Tenant.Dip_Anagrafica
+                {
+                    IdAz_Anagrafica = ctx.IdAz_Anagrafica,
+                    IdAspNetUsers = idUtente,
+                    Cognome = nomi.FirstOrDefault(n => n.Id == idUtente)?.UserName,
+                    Attivo = true,
+                    CreationDate = DateTime.Now,
+                    ChangeUser = ctx.IdUtente
+                });
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                // creata nel frattempo da un'altra richiesta (es. le presenze): indice unico azienda/utente
+                _db.ChangeTracker.Clear();
+            }
+        }
 
         private async Task<Doc_CfgModel> CfgAsync(DocContesto ctx)
         {

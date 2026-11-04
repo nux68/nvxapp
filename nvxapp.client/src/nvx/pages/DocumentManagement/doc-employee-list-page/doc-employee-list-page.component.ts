@@ -22,6 +22,8 @@ export class DocEmployeeListPageComponent {
   public title: string;
   public searchText!: string;
   public items: DocDipendenteModel[] | null = null;
+  // l'elenco si vede solo con l'abilitazione ai documenti del personale
+  public abilitato = true;
   public readonly columns: NvxListColumn<DocDipendenteModel>[];
   public readonly actions: NvxListAction<DocDipendenteModel>[];
   public readonly isDisabled = (x: DocDipendenteModel) => !x.attivo;
@@ -38,7 +40,8 @@ export class DocEmployeeListPageComponent {
       { key: 'nominativo', title: t('documents.fields.employee'), mobile: 'title' },
       { key: 'codiceFiscale', title: t('documents.fields.taxCode') },
       { key: 'matricola', title: t('documents.fields.employeeNumber'), mobile: 'note' },
-      { key: 'haUtente', title: t('documents.fields.hasAccount'), align: 'center', value: x => x.haUtente ? '✓' : '' },
+      { key: 'haUtente', title: t('documents.fields.hasAccount'), mobile: 'subtitle',
+        value: x => x.haUtente ? '🔑 ' + (x.userName ?? '') : t('documents.pages.employeeList.noAccount'), sortValue: x => (x.haUtente ? '0' : '1') + x.nominativo },
     ];
     const btnEdit = userInterfaceService.Btn_Modifica;
     btnEdit.event = (x: DocDipendenteModel) => this.navCtrl.navigateForward('/docemployeeedit', { state: { item: { ...x }, setup: this.setup } });
@@ -49,6 +52,7 @@ export class DocEmployeeListPageComponent {
 
   ionViewWillEnter() {
     this.load();
+    // nuovo dipendente: solo chi carica i documenti del personale (lo verifica anche il server)
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('documents.pages.employeeList.new'), 'add-circle-outline', () =>
         this.navCtrl.navigateForward('/docemployeeedit', { state: { item: new DocDipendenteModel(), setup: this.setup } })),
@@ -62,6 +66,7 @@ export class DocEmployeeListPageComponent {
   load() {
     this.service.SetupGet(new GenericRequest<DocEmptyInModel>(DocEmptyInModel)).subscribe(res => {
       this.setup = res.data;
+      this.abilitato = !!res.data?.permessi?.vedePersonale;
       this.items = res.success && res.data ? res.data.dipendenti : [];
     });
   }

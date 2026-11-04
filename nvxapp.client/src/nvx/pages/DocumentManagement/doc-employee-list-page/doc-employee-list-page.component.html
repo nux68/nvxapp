@@ -7,6 +7,11 @@
 <ion-content [fullscreen]="true" class="nvx-wide">
   <ion-card>
     <ion-card-content>
+      @if (!abilitato) {
+        <ion-note color="warning">{{ 'documents.pages.employeeList.notEnabled' | transloco }}</ion-note>
+      } @else {
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.employeeList.note' | transloco }}</ion-note>
+      }
       <nvx-list
         [items]="items"
         [columns]="columns"

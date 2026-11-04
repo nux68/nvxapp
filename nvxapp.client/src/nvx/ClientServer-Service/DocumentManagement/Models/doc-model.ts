@@ -55,6 +55,8 @@ export class DocDipendenteModel {
   public dataCessazione: string | null = null;
   public attivo = true;
   public haUtente = false;
+  // nome utente dell'account (accesso all'app)
+  public userName: string | null = null;
 }
 
 export class DocAbilitazioneModel {

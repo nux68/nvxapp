@@ -71,6 +71,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         public DateTime? DataCessazione { get; set; }
         public bool Attivo { get; set; } = true;
         public bool HaUtente { get; set; }
+        // nome utente dell'account collegato (accesso all'app)
+        public string? UserName { get; set; }
     }
 
     public class Doc_DipendentePutInModel { public Doc_DipendenteModel Dipendente { get; set; } = new Doc_DipendenteModel(); }
