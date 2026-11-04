@@ -19,4 +19,7 @@ le mod. vanno fatte sul branch corrente
 non effettuare mai commit verso origin, tutte le mod. fatte devono rimenere locali
    
    
+## ATTENZIONE !!! 
+Con "Applicativo completo" si intende il merge  di Infrastructure,AttendanceTracking,CRM,DocumentManagement nel branch AllFunction_Dev e AllFunction
+quando richiesto, produci quasta sequenza di merge
    
