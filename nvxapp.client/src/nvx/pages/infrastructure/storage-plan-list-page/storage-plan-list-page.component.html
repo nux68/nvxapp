@@ -1,0 +1,30 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+      @if (settings) {
+        <p class="nvx-nota-disabled">
+          {{ 'pages.storagePlanList.settingsSummary' | transloco: { maxFile: settings.maxFileMB, warning: settings.warningPercent, used: totalUsed } }}
+        </p>
+      }
+      <nvx-list
+        [items]="plans"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="server-outline"
+        [searchText]="searchText"
+        [sort]="sortByOrdine"
+        [rowDisabled]="isDisabled"
+        [disabledToggleLabel]="'pages.storagePlanList.showDisabled' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
