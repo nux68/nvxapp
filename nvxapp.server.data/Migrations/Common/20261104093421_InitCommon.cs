@@ -43,7 +43,8 @@ namespace nvxapp.server.data.Migrations.Common
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    Attivo = table.Column<bool>(type: "boolean", nullable: false),
                     PartitaIva = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: true),
                     CodiceFiscale = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
                     Indirizzo = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -66,6 +67,43 @@ namespace nvxapp.server.data.Migrations.Common
                     table.PrimaryKey("PK_Az_Cliente", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Az_Cliente_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dip_Anagrafica",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsers = table.Column<string>(type: "text", nullable: true),
+                    Cognome = table.Column<string>(type: "text", nullable: true),
+                    Nome = table.Column<string>(type: "text", nullable: true),
+                    Matricola = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    CodiceFiscale = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
+                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    DataCessazione = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Attivo = table.Column<bool>(type: "boolean", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_Anagrafica", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_Anagrafica_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Dip_Anagrafica_Az_Anagrafica_IdAz_Anagrafica",
                         column: x => x.IdAz_Anagrafica,
                         principalTable: "Az_Anagrafica",
                         principalColumn: "Id",
@@ -117,6 +155,22 @@ namespace nvxapp.server.data.Migrations.Common
                 name: "IX_Az_ClienteContatto_IdAz_Cliente",
                 table: "Az_ClienteContatto",
                 column: "IdAz_Cliente");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_Anagrafica_IdAspNetUsers",
+                table: "Dip_Anagrafica",
+                column: "IdAspNetUsers");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_Anagrafica_IdAz_Anagrafica_CodiceFiscale",
+                table: "Dip_Anagrafica",
+                columns: new[] { "IdAz_Anagrafica", "CodiceFiscale" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_Anagrafica_IdAz_Anagrafica_IdAspNetUsers",
+                table: "Dip_Anagrafica",
+                columns: new[] { "IdAz_Anagrafica", "IdAspNetUsers" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -124,6 +178,9 @@ namespace nvxapp.server.data.Migrations.Common
         {
             migrationBuilder.DropTable(
                 name: "Az_ClienteContatto");
+
+            migrationBuilder.DropTable(
+                name: "Dip_Anagrafica");
 
             migrationBuilder.DropTable(
                 name: "Az_Cliente");

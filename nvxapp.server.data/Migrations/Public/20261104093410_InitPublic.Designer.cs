@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261103085541_InitPublic")]
+    [Migration("20261104093410_InitPublic")]
     partial class InitPublic
     {
         /// <inheritdoc />
