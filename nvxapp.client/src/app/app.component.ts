@@ -11,6 +11,7 @@ import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/mai
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 import { TicketNotifierService } from '../nvx/Utility/infrastructure/ticket-notifier.service';
+import { UserNotifierService } from '../nvx/Utility/infrastructure/user-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
@@ -83,6 +84,7 @@ export class AppComponent implements OnInit {
               private longJobNotifierService: LongJobNotifierService,
               private jobNotifierService: JobNotifierService,
               public ticketNotifierService: TicketNotifierService,
+              private userNotifierService: UserNotifierService,
               private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
               public showcaseService: ShowcaseService,
               titleService: Title
@@ -145,6 +147,11 @@ export class AppComponent implements OnInit {
           // ticket di assistenza: avviso, contatore del menu e pagine aperte
           this.signalrService.on('TicketNotifier').subscribe((data) => {
             this.ticketNotifierService.ticketNotifier(data);
+          });
+
+          // avvisi a comparsa degli applicativi (es. promemoria del CRM)
+          this.signalrService.on('UserNotifier').subscribe((data) => {
+            this.userNotifierService.userNotifier(data);
           });
 
         }
