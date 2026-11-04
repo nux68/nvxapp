@@ -506,4 +506,8 @@
     <value>Il nuovo pacchetto è più piccolo dello spazio già usato: l'azienda non potrà caricare documenti finché non scende sotto.</value>
     <comment>spazio a disposizione</comment>
   </data>
+  <data name="CustomerEditNotAllowed" xml:space="preserve">
+    <value>Solo gli amministratori dell'azienda possono modificare l'anagrafica dei clienti.</value>
+    <comment>Az_ClientePut/Delete e Az_ClienteContattoPut/Delete per chi non e' CompanyPowerAdmin o CompanyAdmin</comment>
+  </data>
 </root>

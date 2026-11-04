@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
         private readonly IAz_ClienteContattoRepository _az_ClienteContattoRepository;
         private readonly IAz_ClienteRepository _az_ClienteRepository;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
+        private readonly IApplicationActivationAuthorizer _authorizer;
 
         public Az_ClienteContattoService(IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
@@ -35,10 +37,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                                          IHttpContextAccessor httpContextAccessor,
                                          IConfiguration configuration,
                                          ICommonCompanyUtility commonCompanyUtility,
+                                         IApplicationActivationAuthorizer authorizer,
                                          IAz_ClienteRepository az_ClienteRepository,
                                          IAz_ClienteContattoRepository az_ClienteContattoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _commonCompanyUtility = commonCompanyUtility;
+            _authorizer = authorizer;
             _az_ClienteRepository = az_ClienteRepository;
             _az_ClienteContattoRepository = az_ClienteContattoRepository;
         }
@@ -75,6 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Az_ClienteContattoPutOutModel();
+                await SoloAmministratori();
                 var dati = model.Data.Az_ClienteContatto;
 
                 if (string.IsNullOrWhiteSpace(dati.Cognome) && string.IsNullOrWhiteSpace(dati.Nome))
@@ -111,6 +116,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
         {
             return await ExecuteAction(model, async () =>
             {
+                await SoloAmministratori();
                 var retVal = new Az_ClienteContattoDeleteOutModel();
                 var contatto = await ContattoDellAzienda(model.Data.Id);
                 if (contatto != null)
@@ -120,6 +126,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                 }
                 return retVal;
             }, isSubProcess);
+        }
+
+        // modifiche all'anagrafica comune dei clienti: amministratori dell'azienda (le pagine degli applicativi,
+        // es. il CRM per i commerciali, hanno servizi propri con le loro regole)
+        private async Task SoloAmministratori()
+        {
+            if (!await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.CompanyPowerAdmin)) && !await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.CompanyAdmin)))
+                throw new UserMessageException(InfrastructureMessages.Get("CustomerEditNotAllowed"));
         }
 
         private async Task<Az_Cliente> ClienteDellAzienda(int idAz_Cliente)

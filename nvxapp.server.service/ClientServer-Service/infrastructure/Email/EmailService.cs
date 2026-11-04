@@ -25,7 +25,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
         public bool Configured => !string.IsNullOrWhiteSpace(_configuration["Email:Host"])
                                   && !string.IsNullOrWhiteSpace(_configuration["Email:FromAddress"]);
 
-        public async Task SendAsync(string to, string subject, string html, string text)
+        public Task SendAsync(string to, string subject, string html, string text)
+            => SendAsync(to, subject, html, text, Array.Empty<EmailAttachment>());
+
+        public async Task SendAsync(string to, string subject, string html, string text, IEnumerable<EmailAttachment> attachments)
         {
             string host = _configuration["Email:Host"] ?? string.Empty;
             string from = _configuration["Email:FromAddress"] ?? string.Empty;
@@ -37,7 +40,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
             message.From.Add(new MailboxAddress(_configuration["Email:FromName"] ?? string.Empty, from));
             message.To.Add(MailboxAddress.Parse(to));
             message.Subject = subject;
-            message.Body = new BodyBuilder { HtmlBody = html, TextBody = text }.ToMessageBody();
+            var body = new BodyBuilder { HtmlBody = html, TextBody = text };
+            foreach (var a in attachments)
+                body.Attachments.Add(a.FileName, a.Content, ContentType.Parse(a.ContentType));
+            message.Body = body.ToMessageBody();
 
             int.TryParse(_configuration["Email:Port"], out int port);
             var security = (_configuration["Email:Security"] ?? "StartTls") switch
@@ -68,5 +74,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
 
         /// <summary>Invia un'email in HTML con la versione in testo semplice.</summary>
         Task SendAsync(string to, string subject, string html, string text);
+
+        /// <summary>Come sopra, con file allegati (es. il PDF di un'offerta del CRM).</summary>
+        Task SendAsync(string to, string subject, string html, string text, IEnumerable<EmailAttachment> attachments);
+    }
+
+    public sealed class EmailAttachment
+    {
+        public string FileName { get; init; } = string.Empty;
+        public string ContentType { get; init; } = "application/octet-stream";
+        public byte[] Content { get; init; } = Array.Empty<byte>();
     }
 }
