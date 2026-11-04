@@ -144,7 +144,10 @@
       },
       "employeeList": {
         "title": "Dipendenti",
-        "new": "Nuovo dipendente"
+        "new": "Nuovo dipendente",
+        "noAccount": "Senza accesso (solo anagrafica)",
+        "note": "Con 🔑 i dipendenti che hanno un account e accedono all'app (gli utenti dell'azienda con ruolo User); gli altri sono solo in anagrafica e ricevono i documenti senza poterli consultare in app.",
+        "notEnabled": "Per vedere i dipendenti serve l'abilitazione ai documenti del personale (pagina Abilitazioni)."
       },
       "employeeEdit": {
         "title": "Dipendente",
