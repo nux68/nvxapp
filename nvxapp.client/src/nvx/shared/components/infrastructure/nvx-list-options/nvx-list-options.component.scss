@@ -37,3 +37,11 @@
   gap: 4px 24px;
   padding: 0 4px;
 }
+
+// nota su una riga propria, sotto le scelte
+.nvx-list-options-note {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--nvx-text-muted, var(--ion-color-medium));
+}
