@@ -40,4 +40,6 @@ export enum ApplicationType {
   Common = 0,
   Moke = 1,
   AttendanceTracking = 2,
+  Crm = 3,
+  DocumentManagement = 4,
 }

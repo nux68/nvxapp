@@ -28,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ITenantProvisioningService _tenantProvisioningService;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
+        private readonly ApplicationDbContextRegistry _applicationDbContextRegistry;
 
         public CompanyApplicationService(IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
@@ -39,12 +40,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                          ICompanyRepository companyRepository,
                                          ICompanyApplicationRepository companyApplicationRepository,
                                          ITenantProvisioningService tenantProvisioningService,
-                                         ICompanyInitializerRegistry companyInitializerRegistry) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                         ICompanyInitializerRegistry companyInitializerRegistry,
+                                         ApplicationDbContextRegistry applicationDbContextRegistry) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _companyRepository = companyRepository;
             _companyApplicationRepository = companyApplicationRepository;
             _tenantProvisioningService = tenantProvisioningService;
             _companyInitializerRegistry = companyInitializerRegistry;
+            _applicationDbContextRegistry = applicationDbContextRegistry;
         }
 
         public virtual async Task<GenericResult<CompanyApplicationListOutModel>> CompanyApplicationList(GenericRequest<CompanyApplicationListInModel> model, Boolean isSubProcess)
@@ -69,8 +72,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                 CompanyApplicationPutOutModel retVal = new CompanyApplicationPutOutModel();
 
                 var application = model.Data.ApplicationType;
-                // Common (dati comuni) non si attiva: e' sempre presente
-                if (!Enum.IsDefined(application) || !application.IsActivatable())
+                // Common (dati comuni) non si attiva: e' sempre presente; un applicativo senza contesto in questo ramo
+                // (es. CRM o documentale prima del loro sviluppo) non si puo' attivare
+                if (!Enum.IsDefined(application) || !application.IsActivatable() || !_applicationDbContextRegistry.IsRegistered(application))
                     throw new UserMessageException(InfrastructureMessages.Get("ApplicationInvalid", (int)application));
 
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
@@ -116,7 +120,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         }
 
         // Tutti gli applicativi dell'enum ApplicationType (letto dinamicamente: un nuovo valore
-        // compare da solo) con lo stato per l'azienda, tranne Common (sempre presente).
+        // compare da solo) con lo stato per l'azienda, tranne Common (sempre presente) e gli applicativi senza
+        // contesto registrato in questo ramo (es. CRM e documentale finche' non sono sviluppati).
         // idCompany = 0 (azienda nuova): tutti non attivi.
         public List<CompanyApplicationModel> Applications(int idCompany)
         {
@@ -125,7 +130,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                 : new List<nvxapp.server.data.Entities.Public.CompanyApplication>();
 
             return Enum.GetValues<ApplicationType>()
-                       .Where(application => application.IsActivatable())
+                       .Where(application => application.IsActivatable() && _applicationDbContextRegistry.IsRegistered(application))
                        .Select(application => ToModel(idCompany, application, rows.FirstOrDefault(x => x.ApplicationType == application)))
                        .ToList();
         }
