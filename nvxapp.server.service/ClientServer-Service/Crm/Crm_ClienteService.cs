@@ -133,6 +133,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 }
                 var utenti = (await _utility.UtentiAsync(ctx)).Select(u => u.Id).ToHashSet();
                 var responsabile = string.IsNullOrEmpty(d.IdResponsabile) ? null : d.IdResponsabile;
+                // cliente nuovo di un commerciale senza responsabile indicato: resta suo
+                if (d.Id == 0 && responsabile == null && !ctx.Amministratore)
+                    responsabile = ctx.IdUtente;
                 if (responsabile != null && !utenti.Contains(responsabile))
                     throw new UserMessageException(CrmMessages.Get("UserInvalid"));
                 if (responsabile != dati.IdAspNetUsersResponsabile)
