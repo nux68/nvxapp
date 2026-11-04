@@ -21,14 +21,16 @@ export class MainMenuService implements iMainMenuService {
 
   // Le voci di menu di un applicativo compaiono solo se l'applicativo e' attivo per l'azienda
   // dell'utente (AuthService.ActiveApplications, da UserLoad). Le voci dell'infrastruttura sempre.
+  // Ogni voce ricorda l'applicativo da cui arriva (MainMenuItem.application): il menu laterale la mette nella sezione
+  // dell'applicativo; le voci di Infrastructure non lo hanno e vanno nella sezione "Amministrazione".
   private forApplication(items: MainMenuItem[], application: ApplicationType): MainMenuItem[] {
-    return this.authService.hasApplication(application) ? items : [];
+    return this.authService.hasApplication(application) ? items.map(item => ({ ...item, application })) : [];
   }
 
   // Voci lato studio di un applicativo: compaiono se l'applicativo e' abilitato per lo studio dell'utente
   // (AuthService.FinancialAdvisorApplications, da UserLoad), indipendentemente dalle aziende.
   private forFinancialAdvisorApplication(items: MainMenuItem[], application: ApplicationType): MainMenuItem[] {
-    return this.authService.hasFinancialAdvisorApplication(application) ? items : [];
+    return this.authService.hasFinancialAdvisorApplication(application) ? items.map(item => ({ ...item, application })) : [];
   }
 
   
@@ -327,6 +329,7 @@ export class MainMenuItem {
   roles?: string[]; // aggiunta proprietà opzionale per i ruoli
   nonConfigurabile?: boolean; // voce di sistema: il CompanyPowerAdmin non puo' nasconderla (pagina "Menu utenti")
   badge?: () => number; // numero mostrato accanto alla voce (es. un signal degli applicativi), 0 = nessuno
+  application?: ApplicationType; // applicativo della voce (lo imposta MainMenuService); assente = Infrastructure
 
   constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;

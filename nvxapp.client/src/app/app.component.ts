@@ -41,11 +41,11 @@ export class AppComponent implements OnInit {
   public groupedUserMenu: GroupMainMenuItem[] = [];
   // sezione "Assistenza", in fondo al menu per tutti gli utenti collegati
   public groupedSupportMenu: GroupMainMenuItem[] = [];
-  // Ordine del menu dopo il login: Accesso, Assistenza, il nome degli applicativi attivi (es. "Presenze"),
-  // poi le altre sezioni (utente e ruoli) come sono dichiarate
+  // Menu dopo il login: Accesso, Assistenza, poi una sezione espandibile "Amministrazione" con le voci comuni di
+  // Infrastructure e una per ogni applicativo attivo (titolo = nome dell'applicativo) con le sue voci.
+  // Dentro ogni sezione le sottosezioni (gruppi dei ruoli) si aprono e si chiudono una alla volta, come le sezioni.
   public sezioniAccesso: SezioneMenu[] = [];
-  public sezioniMenu: SezioneMenu[] = [];
-  public applicativiAttivi: ApplicationType[] = [];
+  public sezioniApplicativi: SezioneApplicativo[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
   // sezione dello showcase aperta all'inizio: la prima, oppure quella del login ("Area riservata")
@@ -179,42 +179,72 @@ export class AppComponent implements OnInit {
   }
 
   
-  // sezioni dei ruoli dell'utente, nell'ordine del menu (utente, SuperUser, Admin, Centro, Studio, Azienda)
-  private sezioniRuoli(): SezioneMenu[] {
-    const sezioni: [GroupMainMenuItem[], boolean, (component: string) => boolean][] = [
-      [this.groupedUserMenu, true, c => this.showPage4User(c)],
-      [this.groupedSuperUserMenu, this.authService.IsSuperUser, c => this.showPage4SuperUser(c)],
-      [this.groupedAdminMenu, this.authService.IsInGroupAdmin, c => this.showPage4Admin(c)],
-      [this.groupedDealerAdminMenu, this.authService.IsInGroupDealerAdmin, c => this.showPage4DealerAdmin(c)],
-      [this.groupedFinancialAdvisorAdminMenu, this.authService.IsInGroupFinancialAdvisorAdmin, c => this.showPage4FinancialAdvisorAdmin(c)],
-      [this.groupedCompanyAdminMenu, this.authService.IsInGroupCompanyAdmin, c => this.showPage4CompanyAdmin(c)],
+  // voci dei ruoli dell'utente, nell'ordine del menu (utente, SuperUser, Admin, Centro, Studio, Azienda),
+  // con la regola che decide quali voci mostrare
+  private vociRuoli(): [MainMenuItem[], (component: string) => boolean][] {
+    const ruoli: [MainMenuItem[], boolean, (component: string) => boolean][] = [
+      [this.getMenuItem4User(), true, c => this.showPage4User(c)],
+      [this.appPages4SuperUser, this.authService.IsSuperUser, c => this.showPage4SuperUser(c)],
+      [this.appPages4Admin, this.authService.IsInGroupAdmin, c => this.showPage4Admin(c)],
+      [this.appPages4DealerAdmin, this.authService.IsInGroupDealerAdmin, c => this.showPage4DealerAdmin(c)],
+      [this.appPages4FinancialAdvisorAdmin, this.authService.IsInGroupFinancialAdvisorAdmin, c => this.showPage4FinancialAdvisorAdmin(c)],
+      [this.getMenuItem4CompanyAdmin(), this.authService.IsInGroupCompanyAdmin, c => this.showPage4CompanyAdmin(c)],
     ];
-    return sezioni.filter(([, visibili]) => visibili)
-                  .map(([gruppi, , mostra]) => ({ gruppi: gruppi.filter(g => g.menuItem.length > 0), mostra }));
+    return ruoli.filter(([, visibili]) => visibili).map(([voci, , mostra]) => [voci, mostra]);
   }
 
-  // "Accesso" (sezione dell'utente di Infrastructure) in testa, le altre sezioni dopo Assistenza e il nome degli applicativi
+  // un gruppo ha almeno una voce visibile con la regola della sua sezione
+  private haVoci(gruppi: GroupMainMenuItem[], mostra: (component: string) => boolean): boolean {
+    return gruppi.some(g => g.menuItem.some(p => p.menuType === MenuType.MenuItem && mostra(p.component)));
+  }
+
+  // Accesso in testa; poi "Amministrazione" (voci di Infrastructure) e una sezione per applicativo attivo
   private componiMenu(): void {
     const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
-    const [utente, ...ruoli] = this.sezioniRuoli();
+    const ruoli = this.vociRuoli();
 
-    this.sezioniAccesso = [{ gruppi: utente.gruppi.filter(g => g.menuHeader.title === accesso), mostra: utente.mostra }];
-    this.sezioniMenu = [{ gruppi: utente.gruppi.filter(g => g.menuHeader.title !== accesso), mostra: utente.mostra }, ...ruoli];
-    this.applicativiAttivi = (Object.values(ApplicationType).filter(v => typeof v === 'number') as ApplicationType[])
-      .filter(a => this.authService.hasApplication(a));
+    const [vociUtente, mostraUtente] = ruoli[0];
+    this.sezioniAccesso = [{ gruppi: this.groupMenu(vociUtente).filter(g => g.menuHeader.title === accesso), mostra: mostraUtente }];
+
+    // applicativi con voci, nell'ordine dell'enum (le voci lato studio contano per l'applicativo)
+    const applicativi = [...new Set(ruoli.flatMap(([voci]) => voci.map(v => v.application)).filter((a): a is ApplicationType => a != null))]
+      .sort((a, b) => a - b);
+    const chiavi: (ApplicationType | null)[] = [null, ...applicativi];
+
+    this.sezioniApplicativi = chiavi.map(app => {
+      // gruppi dell'applicativo per ogni ruolo: intestazioni prese da tutto l'elenco del ruolo (un applicativo puo'
+      // mettere le sue voci in un gruppo dichiarato da Infrastructure, es. "Generale")
+      const sezioni: SezioneMenu[] = ruoli
+        .map(([voci, mostra]) => ({
+          gruppi: this.groupMenu(voci.filter(v => (v.application ?? null) === app), voci)
+                      .filter(g => g.menuHeader.title !== accesso),
+          mostra
+        }))
+        .filter(s => this.haVoci(s.gruppi, s.mostra));
+      const primo = sezioni.flatMap(s => s.gruppi.filter(g => g.menuItem.some(p => p.menuType === MenuType.MenuItem && s.mostra(p.component))))[0];
+      return {
+        chiave: app == null ? 'admin' : 'app' + app,
+        titolo: app == null ? 'menu.administration' : 'menu.application.' + app,
+        sezioni,
+        aperta: primo?.menuHeader.title ?? ''
+      };
+    }).filter(a => a.sezioni.length > 0);
   }
 
-  // prima sezione del menu con voci visibili da aprire dopo il login, saltando "Accesso" (login, logout, dati utente)
-  // e "Assistenza", che si apre solo se non ce ne sono altre; altrimenti resta "Accesso"
+  // sezione aperta dopo il login: il primo applicativo con voci, altrimenti "Amministrazione", altrimenti
+  // "Assistenza" (se ha voci), altrimenti "Accesso"
   private primaSezioneAperta(): string {
     const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
-    const sezioni: SezioneMenu[] = [...this.sezioniMenu, { gruppi: this.groupedSupportMenu, mostra: () => true }];
-    for (const { gruppi, mostra } of sezioni) {
-      const gruppo = gruppi.find(g => g.menuHeader.title !== accesso &&
-        g.menuItem.some(p => p.menuType === MenuType.MenuItem && mostra(p.component)));
-      if (gruppo) return gruppo.menuHeader.title;
-    }
+    const applicativo = this.sezioniApplicativi.find(a => a.chiave !== 'admin') ?? this.sezioniApplicativi[0];
+    if (applicativo) return applicativo.chiave;
+    if (this.groupedSupportMenu.length > 0) return this.groupedSupportMenu[0].menuHeader.title;
     return accesso;
+  }
+
+  // somma dei contatori delle voci di una sezione di applicativo (es. richieste da approvare), visibile a sezione chiusa
+  public appBadge(app: SezioneApplicativo): number {
+    return app.sezioni.reduce((totale, s) => totale + s.gruppi.reduce((t, g) =>
+      t + g.menuItem.filter(p => p.menuType === MenuType.MenuItem && s.mostra(p.component)).reduce((n, p) => n + this.menuBadge(p), 0), 0), 0);
   }
 
   // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente o badge della voce), 0 = nessuno
@@ -399,9 +429,12 @@ export class AppComponent implements OnInit {
     return notes[noteIndex] ? notes[noteIndex].title : '';
   }
 
-  groupMenu(menuItems: MainMenuItem[]): GroupMainMenuItem[] {
+  // intestazioni: da intestazioniDa (di solito tutto l'elenco del ruolo) se le voci sono solo una parte, es. quelle di un applicativo
+  groupMenu(menuItems: MainMenuItem[], intestazioniDa: MainMenuItem[] = menuItems): GroupMainMenuItem[] {
 
     const groups: GroupMainMenuItem[] = [];
+    const intestazioni = intestazioniDa.filter(item => item.menuType === MenuType.MenuHeader);
+    menuItems = [...menuItems.filter(item => item.menuType !== MenuType.MenuHeader), ...intestazioni];
 
     // una voce il cui gruppo non ha intestazione (es. la sezione e' dichiarata da un applicativo non attivo
     // o non presente nel ramo) va nella prima sezione invece di sparire
@@ -499,6 +532,14 @@ export class AppComponent implements OnInit {
 }
 
 
+
+// sezione espandibile del menu: "Amministrazione" (voci di Infrastructure) o un applicativo, con le sue sottosezioni
+export interface SezioneApplicativo {
+  chiave: string;          // valore dell'accordion: 'admin' o 'app<numero>'
+  titolo: string;          // chiave di traduzione
+  sezioni: SezioneMenu[];  // sottosezioni per ruolo
+  aperta: string;          // sottosezione aperta all'inizio
+}
 
 // sezioni di un elenco di ruolo con la regola che decide quali voci mostrare
 export interface SezioneMenu {
