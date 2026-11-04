@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 
 // ruoli che gestiscono (o leggono) documentazione e risposte AI: SuperUser, centro, studio, azienda (non il DEV)
@@ -75,6 +76,10 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.companyPowerAdmin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.companyAdmin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
+      // Anagrafiche comuni (schema Common): visibili se l'azienda ha almeno un applicativo che usa i clienti
+      { menuType: MenuType.MenuHeader, zorder: 5000,  group: 6, title: 'menu.registry'                                          , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem  , zorder: 5100,  group: 6, title: 'menu.customers'         , roles: ['CompanyPowerAdmin']  , component: "CustomerListPageComponent", url: '/customerlist', icon: 'business',
+        anyApplication: [ApplicationType.AttendanceTracking, ApplicationType.Crm, ApplicationType.DocumentManagement] },
       // nella sezione Parametri (gruppo 1, intestazione dichiarata dal menu presenze), dopo le altre voci
       { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
