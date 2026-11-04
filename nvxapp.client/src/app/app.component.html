@@ -45,7 +45,27 @@
             <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
           }
 
-          <!-- 2. Assistenza: per tutti gli utenti collegati (voci filtrate per ruolo in getGroupedSupport) -->
+          <!-- 2. "Amministrazione" (voci comuni di Infrastructure) e una sezione per applicativo attivo: dentro, le sottosezioni
+                  dei ruoli, che si aprono e si chiudono una alla volta come le sezioni -->
+          @for (app of sezioniApplicativi; track app.chiave) {
+            <ion-accordion value="{{app.chiave}}" toggleIcon="chevron-down" toggleIconSlot="end" class="nvx-menu-application">
+              <ion-item slot="header">
+                <ion-label>{{ app.titolo | transloco }}</ion-label>
+                @if (appBadge(app) > 0) {
+                  <ion-badge slot="end" color="danger">{{ appBadge(app) }}</ion-badge>
+                }
+              </ion-item>
+              <div class="nvx-menu-application-content" slot="content">
+                <ion-accordion-group [value]="sottosezioniAperte[app.chiave]">
+                  @for (sezione of app.sezioni; track $index) {
+                    <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
+                  }
+                </ion-accordion-group>
+              </div>
+            </ion-accordion>
+          }
+
+          <!-- 3. Assistenza, in fondo: per tutti gli utenti collegati (voci filtrate per ruolo in getGroupedSupport) -->
           @for (group of groupedSupportMenu; track group.menuHeader.title) {
             <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
               <ion-item slot="header">
@@ -69,26 +89,6 @@
                     </ion-menu-toggle>
                   }
                 </ion-list>
-              </div>
-            </ion-accordion>
-          }
-
-          <!-- 3. "Amministrazione" (voci comuni di Infrastructure) e una sezione per applicativo attivo: dentro, le sottosezioni
-                  dei ruoli, che si aprono e si chiudono una alla volta come le sezioni -->
-          @for (app of sezioniApplicativi; track app.chiave) {
-            <ion-accordion value="{{app.chiave}}" toggleIcon="chevron-down" toggleIconSlot="end" class="nvx-menu-application">
-              <ion-item slot="header">
-                <ion-label>{{ app.titolo | transloco }}</ion-label>
-                @if (appBadge(app) > 0) {
-                  <ion-badge slot="end" color="danger">{{ appBadge(app) }}</ion-badge>
-                }
-              </ion-item>
-              <div class="nvx-menu-application-content" slot="content">
-                <ion-accordion-group [value]="app.aperta">
-                  @for (sezione of app.sezioni; track $index) {
-                    <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
-                  }
-                </ion-accordion-group>
               </div>
             </ion-accordion>
           }
