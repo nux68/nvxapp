@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
         private readonly ICommonCompanyUtility _commonCompanyUtility;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly IEnumerable<ICommonEntityUsage> _commonEntityUsages;
+        private readonly IApplicationActivationAuthorizer _authorizer;
 
         public Az_ClienteService(IMapper mapper,
                                  UserManager<ApplicationUser> userManager,
@@ -35,8 +37,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                                  ICommonCompanyUtility commonCompanyUtility,
                                  ICompanyApplicationRepository companyApplicationRepository,
                                  IEnumerable<ICommonEntityUsage> commonEntityUsages,
+                                 IApplicationActivationAuthorizer authorizer,
                                  IAz_ClienteRepository az_ClienteRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _authorizer = authorizer;
             _az_ClienteRepository = az_ClienteRepository;
             _commonCompanyUtility = commonCompanyUtility;
             _companyApplicationRepository = companyApplicationRepository;
@@ -77,6 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
             return await ExecuteAction(model, async () =>
             {
                 Az_ClientePutOutModel retVal = new Az_ClientePutOutModel();
+                await SoloAmministratori();
 
                 var az_Anagrafica = await _commonCompanyUtility.CurrentAz_AnagraficaAsync(this.CurrentCompany);
 
@@ -98,6 +103,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
             return await ExecuteAction(model, async () =>
             {
                 Az_ClienteDeleteOutModel retVal = new Az_ClienteDeleteOutModel();
+                await SoloAmministratori();
 
                 var az_Cliente = await ClienteDellAzienda(model.Data.Id);
                 if (az_Cliente != null)
@@ -117,6 +123,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
 
                 return retVal;
             }, isSubProcess);
+        }
+
+        // modifiche all'anagrafica comune dei clienti: amministratori dell'azienda (le pagine degli applicativi,
+        // es. il CRM per i commerciali, hanno servizi propri con le loro regole)
+        private async Task SoloAmministratori()
+        {
+            if (!await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.CompanyPowerAdmin)) && !await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.CompanyAdmin)))
+                throw new UserMessageException(InfrastructureMessages.Get("CustomerEditNotAllowed"));
         }
 
         // cliente solo se appartiene all'azienda della richiesta (in modalita' singola le aziende condividono la tabella)

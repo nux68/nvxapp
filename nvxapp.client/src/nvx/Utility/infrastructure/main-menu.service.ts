@@ -1,6 +1,7 @@
 import { Injectable, Type, inject } from '@angular/core';
 import { MainMenuAttendanceTrackingService } from './main-menu-attendance-tracking.service';
 import { MainMenuDocumentManagementService } from './main-menu-document-management.service';
+import { MainMenuCrmService } from './main-menu-crm.service';
 import { MainMenuInfrastructureService } from './main-menu-infrastructure.service';
 import { AuthService } from './auth.service';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
@@ -17,7 +18,13 @@ export class MainMenuService implements iMainMenuService {
   constructor(private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private mainMenuAttendanceTrackingService: MainMenuAttendanceTrackingService,
               private mainMenuDocumentManagementService: MainMenuDocumentManagementService,
+              private mainMenuCrmService: MainMenuCrmService,
               private authService: AuthService) { }
+
+  // Voci di Infrastructure: sempre, salvo quelle legate ad applicativi (MainMenuItem.anyApplication, es. "Clienti")
+  private forInfrastructure(items: MainMenuItem[]): MainMenuItem[] {
+    return items.filter(item => !item.anyApplication || item.anyApplication.some(a => this.authService.hasApplication(a)));
+  }
 
   // Le voci di menu di un applicativo compaiono solo se l'applicativo e' attivo per l'azienda
   // dell'utente (AuthService.ActiveApplications, da UserLoad). Le voci dell'infrastruttura sempre.
@@ -39,10 +46,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4SuperUser.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4SuperUser).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4SuperUser, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuCrmService.Pages4SuperUser, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuDocumentManagementService.Pages4SuperUser, ApplicationType.DocumentManagement).forEach((item) => {
@@ -57,10 +67,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4Admin.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4Admin).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4Admin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuCrmService.Pages4Admin, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuDocumentManagementService.Pages4Admin, ApplicationType.DocumentManagement).forEach((item) => {
@@ -75,10 +88,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4DealerAdmin.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4DealerAdmin).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4DealerAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuCrmService.Pages4DealerAdmin, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuDocumentManagementService.Pages4DealerAdmin, ApplicationType.DocumentManagement).forEach((item) => {
@@ -93,10 +109,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4CompanyAdmin.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4CompanyAdmin).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4CompanyAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuCrmService.Pages4CompanyAdmin, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuDocumentManagementService.Pages4CompanyAdmin, ApplicationType.DocumentManagement).forEach((item) => {
@@ -111,10 +130,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4FinancialAdvisorAdmin.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4FinancialAdvisorAdmin).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4FinancialAdvisorAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forFinancialAdvisorApplication(this.mainMenuCrmService.Pages4FinancialAdvisorAdmin, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forFinancialAdvisorApplication(this.mainMenuDocumentManagementService.Pages4FinancialAdvisorAdmin, ApplicationType.DocumentManagement).forEach((item) => {
@@ -129,10 +151,13 @@ export class MainMenuService implements iMainMenuService {
 
     let mainMenuItem: MainMenuItem[] = [];
 
-    this.mainMenuInfrastructureService.Pages4User.forEach((item) => {
+    this.forInfrastructure(this.mainMenuInfrastructureService.Pages4User).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4User, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuCrmService.Pages4User, ApplicationType.Crm).forEach((item) => {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuDocumentManagementService.Pages4User, ApplicationType.DocumentManagement).forEach((item) => {
@@ -153,7 +178,8 @@ export class MainMenuService implements iMainMenuService {
     return Math.max(
       this.mainMenuInfrastructureService.GetWorkingMode,
       this.mainMenuAttendanceTrackingService.GetWorkingMode,
-      this.mainMenuDocumentManagementService.GetWorkingMode
+      this.mainMenuDocumentManagementService.GetWorkingMode,
+      this.mainMenuCrmService.GetWorkingMode
     );
 
   }
@@ -330,6 +356,7 @@ export class MainMenuItem {
   nonConfigurabile?: boolean; // voce di sistema: il CompanyPowerAdmin non puo' nasconderla (pagina "Menu utenti")
   badge?: () => number; // numero mostrato accanto alla voce (es. un signal degli applicativi), 0 = nessuno
   application?: ApplicationType; // applicativo della voce (lo imposta MainMenuService); assente = Infrastructure
+  anyApplication?: ApplicationType[]; // voce di Infrastructure visibile solo se l'azienda ha almeno uno di questi applicativi
 
   constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;
@@ -378,6 +405,7 @@ export enum WorkingMode {
 
   Infrastructure = 0,
   AttendanceTracking = 1,
-  DocumentManagement = 2
+  DocumentManagement = 2,
+  Crm = 3
 
 }
