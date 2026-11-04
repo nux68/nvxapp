@@ -1,0 +1,41 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ _editModel?.azienda }} – {{ _editModel?.studio }}</ion-label>
+      </ion-item>
+      <p class="nvx-nota-disabled">{{ Used }}</p>
+
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-select formControlName="idStoragePlan" [label]="'pages.companyStorageEdit.plan' | transloco" labelPlacement="floating">
+            @for (p of plans; track p.id) {
+              <ion-select-option [value]="p.id">{{ p.descrizione }} ({{ p.quotaMB.toLocaleString() }} MB)</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input type="number" formControlName="maxFileMBAzienda" [label]="'pages.companyStorageEdit.maxFile' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="warningPercentAzienda" [label]="'pages.companyStorageEdit.warning' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.companyStorageEdit.note' | transloco: { maxFile: _editModel?.maxFileMB, warning: _editModel?.warningPercent } }}</ion-note>
+      </form>
+
+      <br />
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

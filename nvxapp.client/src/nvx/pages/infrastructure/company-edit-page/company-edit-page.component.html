@@ -94,13 +94,14 @@
           <ion-item>
             <ion-checkbox justify="start" labelPlacement="end"
                           [checked]="app.active"
+                          [disabled]="_editModel.applicationsReadOnly"
                           (ionChange)="app.active = $event.detail.checked">
               {{ app.descrizione }}
             </ion-checkbox>
           </ion-item>
         }
         <ion-note>
-          {{ 'pages.companyEdit.applicationsNote' | transloco }}
+          {{ (_editModel.applicationsReadOnly ? 'pages.companyEdit.applicationsReadOnly' : 'pages.companyEdit.applicationsNote') | transloco }}
         </ion-note>
       }
 

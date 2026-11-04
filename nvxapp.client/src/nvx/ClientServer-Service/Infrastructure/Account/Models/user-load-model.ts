@@ -22,6 +22,8 @@ export class UserDataModel  {
 
   // applicativi attivi per l'azienda dell'utente (valori di ApplicationType)
   public activeApplications: ApplicationType[] = [];
+  // applicativi abilitati per lo studio dell'utente (funzioni lato studio)
+  public financialAdvisorApplications: ApplicationType[] = [];
 
   // voci di menu nascoste ai ruoli dell'azienda (configurate dal CompanyPowerAdmin)
   public menuRestrictions: MenuRestrictionModel[] = [];

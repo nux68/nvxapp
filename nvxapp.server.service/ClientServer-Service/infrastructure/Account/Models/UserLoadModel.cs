@@ -34,6 +34,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         // applicativi attivi per l'azienda dell'utente (vuoto per utenti senza azienda)
         public List<ApplicationType> ActiveApplications { get; set; }
 
+        // applicativi abilitati per lo studio dell'utente (funzioni lato studio; vuoto per chi non e' di uno studio)
+        public List<ApplicationType> FinancialAdvisorApplications { get; set; } = new List<ApplicationType>();
+
         // voci di menu nascoste ai ruoli dell'azienda dell'utente
         public List<CompanyMenuRestrictionModel> MenuRestrictions { get; set; }
 

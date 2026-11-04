@@ -41,6 +41,17 @@ export class AuthService {
     return this.activeApplicationsSubject.getValue().includes(application);
   }
 
+  // applicativi abilitati per lo studio dell'utente corrente (da UserLoad): funzioni lato studio
+  private financialAdvisorApplicationsSubject = new BehaviorSubject<ApplicationType[]>([]);
+
+  public setFinancialAdvisorApplications(applications: ApplicationType[] | null | undefined): void {
+    this.financialAdvisorApplicationsSubject.next(applications ?? []);
+  }
+
+  public hasFinancialAdvisorApplication(application: ApplicationType): boolean {
+    return this.financialAdvisorApplicationsSubject.getValue().includes(application);
+  }
+
   // voci di menu nascoste ai ruoli dell'azienda dell'utente corrente (da UserLoad)
   private menuRestrictionsSubject = new BehaviorSubject<{ url: string, role: string }[]>([]);
 

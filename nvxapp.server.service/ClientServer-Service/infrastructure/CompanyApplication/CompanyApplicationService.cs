@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         private readonly ITenantProvisioningService _tenantProvisioningService;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ApplicationDbContextRegistry _applicationDbContextRegistry;
+        private readonly IApplicationActivationAuthorizer _applicationActivationAuthorizer;
 
         public CompanyApplicationService(IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
@@ -41,13 +42,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                          ICompanyApplicationRepository companyApplicationRepository,
                                          ITenantProvisioningService tenantProvisioningService,
                                          ICompanyInitializerRegistry companyInitializerRegistry,
-                                         ApplicationDbContextRegistry applicationDbContextRegistry) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                         ApplicationDbContextRegistry applicationDbContextRegistry,
+                                         IApplicationActivationAuthorizer applicationActivationAuthorizer) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _companyRepository = companyRepository;
             _companyApplicationRepository = companyApplicationRepository;
             _tenantProvisioningService = tenantProvisioningService;
             _companyInitializerRegistry = companyInitializerRegistry;
             _applicationDbContextRegistry = applicationDbContextRegistry;
+            _applicationActivationAuthorizer = applicationActivationAuthorizer;
         }
 
         public virtual async Task<GenericResult<CompanyApplicationListOutModel>> CompanyApplicationList(GenericRequest<CompanyApplicationListInModel> model, Boolean isSubProcess)
@@ -82,7 +85,40 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
                 var row = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id && x.ApplicationType == application).FirstOrDefault();
 
-                if (model.Data.Active)
+                // cambiare lo stato e' riservato al SuperUser e al DealerPowerAdmin del centro (stesso stato: nessun controllo,
+                // perche' il salvataggio dell'azienda rimanda sempre tutti gli applicativi)
+                if (model.Data.Active != (row?.Active ?? false) && !await _applicationActivationAuthorizer.CanManageCompanyAsync(company.Id))
+                    throw new UserMessageException(InfrastructureMessages.Get("ApplicationActivationNotAllowed"));
+
+                row = await SetActiveAsync(company, application, model.Data.Active, row);
+
+                retVal.CompanyApplication = ToModel(company.Id, application, row);
+                return retVal;
+            }, isSubProcess);
+        }
+
+        /*
+         Applicativi che il ramo attiva sulle aziende appena create (es. presenze con ActivateOnNewCompany):
+         nessun controllo del ruolo, perche' non e' una scelta dell'utente. Da usare SOLO subito dopo la creazione
+         dell'azienda.
+        */
+        public async Task ActivateForNewCompanyAsync(int idCompany, ApplicationType application)
+        {
+            if (!application.IsActivatable() || !_applicationDbContextRegistry.IsRegistered(application))
+                return;
+            var company = await _companyRepository.FindByIdAsync(idCompany)
+                          ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyNotFoundWithId", idCompany));
+            var row = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id && x.ApplicationType == application).FirstOrDefault();
+            await SetActiveAsync(company, application, true, row);
+        }
+
+        public Task<bool> CanManageAsync(int idCompany) => _applicationActivationAuthorizer.CanManageCompanyAsync(idCompany);
+
+        // attiva o disattiva (gia' autorizzato): attivazione con schema e dati iniziali, disattivazione con soli dati conservati
+        private async Task<nvxapp.server.data.Entities.Public.CompanyApplication?> SetActiveAsync(Company company, ApplicationType application, bool active,
+                                                                                                  nvxapp.server.data.Entities.Public.CompanyApplication? row)
+        {
+                if (active)
                 {
                     if (row == null)
                     {
@@ -113,10 +149,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                     row.DeactivationDate = DateTime.Now;
                     row = await _companyApplicationRepository.UpdateAsync(row);
                 }
-
-                retVal.CompanyApplication = ToModel(company.Id, application, row);
-                return retVal;
-            }, isSubProcess);
+                return row;
         }
 
         // Tutti gli applicativi dell'enum ApplicationType (letto dinamicamente: un nuovo valore
@@ -162,5 +195,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
         // tutti gli applicativi con lo stato per l'azienda (senza chiamata API)
         public List<CompanyApplicationModel> Applications(int idCompany);
+
+        // l'utente corrente puo' cambiare gli applicativi dell'azienda (SuperUser o DealerPowerAdmin del centro)
+        public Task<bool> CanManageAsync(int idCompany);
+
+        // applicativi che il ramo attiva sulle aziende appena create (senza controllo del ruolo)
+        public Task ActivateForNewCompanyAsync(int idCompany, ApplicationType application);
     }
 }

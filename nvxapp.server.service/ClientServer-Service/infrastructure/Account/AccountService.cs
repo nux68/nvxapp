@@ -12,6 +12,8 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Extension;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
@@ -49,6 +51,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ICompanyMenuRestrictionRepository _companyMenuRestrictionRepository;
         private readonly ICompanyApplicationService _companyApplicationService;
+        private readonly IFinancialAdvisorApplicationService _financialAdvisorApplicationService;
+        private readonly IFinancialAdvisorApplicationRepository _financialAdvisorApplicationRepository;
         private readonly IEnumerable<IUserCompanyListExtension> _userCompanyListExtensions;
 
 
@@ -77,6 +81,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               ICompanyMenuRestrictionRepository companyMenuRestrictionRepository,
                               ICompanyApplicationService companyApplicationService,
                               IEnumerable<IUserCompanyListExtension> userCompanyListExtensions,
+                              IFinancialAdvisorApplicationService financialAdvisorApplicationService,
+                              IFinancialAdvisorApplicationRepository financialAdvisorApplicationRepository,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -98,6 +104,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _companyMenuRestrictionRepository = companyMenuRestrictionRepository;
             _companyApplicationService = companyApplicationService;
             _userCompanyListExtensions = userCompanyListExtensions;
+            _financialAdvisorApplicationService = financialAdvisorApplicationService;
+            _financialAdvisorApplicationRepository = financialAdvisorApplicationRepository;
             _hubContext = hubContext;
         }
 
@@ -307,6 +315,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                             retVal.UserData.Id = model.Data.Id;
                             retVal.UserData.UserName = applicationUser.UserName;
+
+                            // applicativi abilitati dello studio dell'utente (funzioni lato studio, es. area studio del documentale)
+                            if (int.TryParse(financialAdvisor, out var idFinancialAdvisorActive))
+                                retVal.UserData.FinancialAdvisorApplications = _financialAdvisorApplicationRepository.ActiveApplications(idFinancialAdvisorActive);
 
                             // applicativi attivi dell'azienda dell'utente (il client mostra solo quelli)
                             if (int.TryParse(company, out var idCompanyActive))
@@ -585,7 +597,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = financialAdvisor.Descrizione,
                         IdFinancialAdvisor = financialAdvisor.Id,
-                        Disabled = _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == financialAdvisor.Id && x.MainUser).Any(x => x.Disabled)
+                        Disabled = _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == financialAdvisor.Id && x.MainUser).Any(x => x.Disabled),
+                        Applications = _financialAdvisorApplicationService.Applications(financialAdvisor.Id),
+                        ApplicationsReadOnly = !await _financialAdvisorApplicationService.CanManageAsync(financialAdvisor.Id)
                     };
                 }
                 else
@@ -593,7 +607,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
                     {
                         Descrizione = "",
-                        IdFinancialAdvisor = 0
+                        IdFinancialAdvisor = 0,
+                        Applications = _financialAdvisorApplicationService.Applications(0),
+                        ApplicationsReadOnly = true
                     };
                 }
 
@@ -692,6 +708,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     ////
                 }
 
+                // applicativi abilitati dello studio: cambia lo stato solo il SuperUser o il DealerPowerAdmin del centro
+                // (FinancialAdvisorApplicationPut lo verifica; stesso stato = nessun controllo)
+                if (financialAdvisor != null && model.Data.FinancialAdvisorEdit.Applications != null)
+                {
+                    foreach (var application in model.Data.FinancialAdvisorEdit.Applications)
+                    {
+                        var reqApp = new GenericRequest<FinancialAdvisorApplicationPutInModel>();
+                        reqApp.Data = new FinancialAdvisorApplicationPutInModel()
+                        {
+                            IdFinancialAdvisor = financialAdvisor.Id,
+                            ApplicationType = application.ApplicationType,
+                            Active = application.Active
+                        };
+                        await _financialAdvisorApplicationService.FinancialAdvisorApplicationPut(reqApp, true);
+                    }
+                }
+
 
 
 
@@ -775,7 +808,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         Descrizione = company.Descrizione,
                         IdCompany = company.Id,
                         Disabled = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id && x.MainUser).Any(x => x.Disabled),
-                        Applications = _companyApplicationService.Applications(company.Id)
+                        Applications = _companyApplicationService.Applications(company.Id),
+                        ApplicationsReadOnly = !await _companyApplicationService.CanManageAsync(company.Id)
                     };
                 }
                 else
@@ -784,7 +818,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = "",
                         IdCompany = 0,
-                        Applications = _companyApplicationService.Applications(0)
+                        Applications = _companyApplicationService.Applications(0),
+                        ApplicationsReadOnly = !await _financialAdvisorApplicationService.CanManageAsync(int.TryParse(this.CurrentFinancialAdvisor, out var idStudioNuova) ? idStudioNuova : 0)
                     };
                 }
 
@@ -800,6 +835,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             return await ExecuteAction(model, async () =>
             {
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
+                bool nuovaAziendaApplicativi = false;
 
 
                 Company? company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
@@ -835,6 +871,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
+                    nuovaAziendaApplicativi = true;
 
                     // nessun applicativo attivo: si attivano con CompanyApplicationPut
 
@@ -890,7 +927,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 // applicativi dell'azienda:
                 //  - spuntato: attivato se serve e schema verificato a ogni salvataggio (creato se manca)
                 //  - tolto: solo disattivato, lo schema e i dati restano
-                if (company != null && model.Data.CompanyEdit.Applications != null)
+                // - solo il SuperUser e il DealerPowerAdmin del centro cambiano lo stato (CompanyApplicationPut lo verifica);
+                //   su un'azienda nuova chi non e' autorizzato (es. lo studio che la crea) non attiva nulla
+                if (company != null && model.Data.CompanyEdit.Applications != null
+                    && (!nuovaAziendaApplicativi || await _companyApplicationService.CanManageAsync(company.Id)))
                 {
                     foreach (var application in model.Data.CompanyEdit.Applications)
                     {

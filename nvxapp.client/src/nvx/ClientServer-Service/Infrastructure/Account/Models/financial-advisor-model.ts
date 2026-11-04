@@ -1,3 +1,4 @@
+import { ApplicationType } from './user-load-model';
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { RolesModel } from "./user-roles-model";
 
@@ -23,9 +24,23 @@ export class FinancialAdvisorListOutModel extends ModelResult {
 }
 
 
+// applicativo abilitato per lo studio (funzioni lato studio; FinancialAdvisorApplicationModel del server)
+export class FinancialAdvisorApplicationModel {
+  public idFinancialAdvisor: number = 0;
+  public applicationType: ApplicationType = ApplicationType.Moke;
+  public descrizione: string = '';
+  public active: boolean = false;
+  public activationDate: string | null = null;
+  public deactivationDate: string | null = null;
+}
+
 export class FinancialAdvisorEditModel {
   /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
   public disabled: boolean = false;
+  /** applicativi abilitati dello studio */
+  public applications: FinancialAdvisorApplicationModel[] = [];
+  /** applicativi visibili ma non modificabili (li cambiano solo il SuperUser e il DealerPowerAdmin del centro) */
+  public applicationsReadOnly: boolean = true;
 
   constructor(
     public idFinancialAdvisor: number = 0,

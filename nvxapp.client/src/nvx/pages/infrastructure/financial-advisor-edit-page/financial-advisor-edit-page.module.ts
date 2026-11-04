@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonToggle } from '@ionic/angular';
+import { IonCard, IonCardContent, IonCheckbox, IonContent, IonInput, IonItem, IonLabel, IonNote, IonToggle } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { FinancialAdvisorEditPageComponent } from './financial-advisor-edit-page.component';
@@ -16,7 +16,7 @@ import { FinancialAdvisorEditPageComponent } from './financial-advisor-edit-page
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonToggle,
+    IonCard, IonCardContent, IonCheckbox, IonContent, IonInput, IonItem, IonLabel, IonNote, IonToggle,
     RouterModule.forChild([
       {
         path: '',

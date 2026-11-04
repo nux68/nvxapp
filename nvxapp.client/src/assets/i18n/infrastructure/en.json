@@ -87,7 +87,9 @@
     "application": {
       "1": "Moke",
       "2": "Attendance"
-    }
+    },
+    "storagePlans": "Storage plans",
+    "companyStorage": "Document storage"
   },
   "showcase": {
     "menu": {
@@ -377,6 +379,7 @@
       "title": "Impersonate user"
     },
     "companyEdit": {
+      "applicationsReadOnly": "Applications can only be activated or deactivated by the SuperUser and the centre's DealerPowerAdmin.",
       "title": "Edit company",
       "info": "Info",
       "description": "Description",
@@ -407,6 +410,9 @@
       "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected."
     },
     "financialAdvisorEdit": {
+      "applicationsReadOnly": "Firm applications can only be enabled by the SuperUser and the centre's DealerPowerAdmin.",
+      "applicationsNote": "They enable the firm-side features (e.g. the document management firm area). They do not activate the applications on the firm's companies.",
+      "applications": "Firm applications",
       "title": "Financial Advisor",
       "info": "Info",
       "description": "Description",
@@ -655,6 +661,61 @@
       "useParentDocuments": "Use the documentation of the upper levels",
       "defaultOwnDocuments": "node documentation only",
       "infoParentDocuments": "\"Use the documentation of the upper levels\": the assistant also uses the documents of the upper levels (and of the SuperUser) published for the lower levels; off, it uses only the node's own documents."
+    },
+    "storagePlanList": {
+      "title": "Storage plans",
+      "columnDescription": "Plan",
+      "columnQuota": "Space",
+      "columnMaxFile": "Max file",
+      "columnDefault": "Default",
+      "columnCompanies": "Companies",
+      "defaultValue": "default",
+      "newPlan": "New plan",
+      "settings": "Default values",
+      "showDisabled": "Also show inactive",
+      "confirmDelete": "Delete the plan?",
+      "confirmDeactivate": "The plan is used by {{companies}} companies: it will only be deactivated (no longer assignable). Continue?",
+      "settingsSummary": "Default maximum file size: {{maxFile}} MB · warning at {{warning}}% · space used by all companies: {{used}} MB"
+    },
+    "storagePlanEdit": {
+      "title": "Storage plan",
+      "info": "Plan",
+      "description": "Description",
+      "quota": "Space (MB)",
+      "quotaRequired": "Enter a space greater than zero.",
+      "maxFile": "Maximum file size (MB)",
+      "maxFileNote": "Empty = installation default.",
+      "order": "Order",
+      "active": "Active",
+      "activeNote": "An inactive plan stays with the companies that have it but can no longer be assigned.",
+      "default": "Default",
+      "defaultNote": "Assigned to companies when they activate document management. There is always only one."
+    },
+    "storageSettings": {
+      "title": "Storage default values",
+      "info": "Default values",
+      "maxFile": "Maximum file size (MB)",
+      "maxFileInvalid": "Enter a value greater than zero.",
+      "warning": "Warning threshold (%)",
+      "warningInvalid": "Enter a value between 1 and 99.",
+      "note": "They apply to plans and companies without their own values. At the threshold and at 100% the CompanyPowerAdmin and the DealerPowerAdmin are notified; beyond 100% no documents can be uploaded."
+    },
+    "companyStorageList": {
+      "title": "Company document storage",
+      "columnCompany": "Company",
+      "columnStudio": "Firm",
+      "columnPlan": "Plan",
+      "columnUsed": "Used",
+      "columnPercent": "%",
+      "columnFiles": "Files"
+    },
+    "companyStorageEdit": {
+      "title": "Company document storage",
+      "plan": "Plan",
+      "maxFile": "Maximum file size (MB)",
+      "warning": "Warning threshold (%)",
+      "used": "{{used}} MB used of {{quota}} MB ({{percent}}%), {{files}} files",
+      "note": "Empty = plan or default values (now {{maxFile}} MB and {{warning}}%)."
     }
   },
   "components": {

@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -46,6 +47,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
+
+        // applicativi abilitati dello studio (funzioni lato studio); null = non modificare
+        public List<FinancialAdvisorApplicationModel>? Applications { get; set; }
+        // visibili ma non modificabili (li cambiano solo il SuperUser e il DealerPowerAdmin del centro)
+        public bool ApplicationsReadOnly { get; set; }
     }
     public class FinancialAdvisorGetInModel
     {

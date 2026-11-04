@@ -164,6 +164,18 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasKey("Key");
 
                     b.ToTable("AppSetting", "public");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "Storage_MaxFileMB",
+                            Value = "50"
+                        },
+                        new
+                        {
+                            Key = "Storage_WarningPercent",
+                            Value = "80"
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationRole", b =>
@@ -452,6 +464,112 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("CompanyRegistrationRequest", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyStorage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FileCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdStoragePlan")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("LastRecalc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("LastWarningDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("LastWarningPercent")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxFileMB")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("ReservedBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("UsedBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<int?>("WarningPercent")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany")
+                        .IsUnique();
+
+                    b.HasIndex("IdStoragePlan");
+
+                    b.ToTable("CompanyStorage", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyStorageHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("FileCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Mese")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Pacchetto")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("QuotaMB")
+                        .HasColumnType("integer");
+
+                    b.Property<long>("UsedBytes")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany", "Anno", "Mese")
+                        .IsUnique();
+
+                    b.ToTable("CompanyStorageHistory", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
                 {
                     b.Property<int>("Id")
@@ -694,6 +812,97 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasIndex("IdDealer");
 
                     b.ToTable("FinancialAdvisor", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisorApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActivationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ApplicationType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DeactivationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdFinancialAdvisor", "ApplicationType")
+                        .IsUnique();
+
+                    b.ToTable("FinancialAdvisorApplication", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.StoragePlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("MaxFileMB")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Predefinito")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QuotaMB")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Descrizione")
+                        .IsUnique();
+
+                    b.HasIndex("Predefinito")
+                        .IsUnique()
+                        .HasFilter("\"Predefinito\"");
+
+                    b.ToTable("StoragePlan", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
@@ -1304,6 +1513,25 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("CompanyNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyStorage", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.StoragePlan", "StoragePlanNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdStoragePlan")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CompanyNavigation");
+
+                    b.Navigation("StoragePlanNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Document", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
@@ -1350,6 +1578,17 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired();
 
                     b.Navigation("DealerNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisorApplication", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", "FinancialAdvisorNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdFinancialAdvisor")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FinancialAdvisorNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
