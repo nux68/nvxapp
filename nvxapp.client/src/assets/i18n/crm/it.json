@@ -86,7 +86,8 @@
       "um": "UM",
       "validaFinoAl": "Valida fino al",
       "valore": "Valore",
-      "valoreAperto": "Valore aperto"
+      "valoreAperto": "Valore aperto",
+      "ivaTotale": "IVA"
     },
     "validation": {
       "checkFields": "Controlla i campi evidenziati.",

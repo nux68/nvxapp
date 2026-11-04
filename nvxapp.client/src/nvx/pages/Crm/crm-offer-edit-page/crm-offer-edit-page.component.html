@@ -64,7 +64,7 @@
         <ion-button size="small" fill="outline" shape="round" (click)="aggiungiRiga()"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.pages.offerEdit.addLine' | transloco }}</ion-button>
         <div class="crm-totali">
           <div>{{ 'crm.fields.imponibile' | transloco }}: <strong>{{ importo(imponibile) }}</strong></div>
-          <div>{{ 'crm.fields.iva' | transloco }}: <strong>{{ importo(iva) }}</strong></div>
+          <div>{{ 'crm.fields.ivaTotale' | transloco }}: <strong>{{ importo(iva) }}</strong></div>
           <div>{{ 'crm.fields.totale' | transloco }}: <strong>{{ importo(imponibile + iva) }}</strong></div>
         </div>
         <form [formGroup]="_editForm">
