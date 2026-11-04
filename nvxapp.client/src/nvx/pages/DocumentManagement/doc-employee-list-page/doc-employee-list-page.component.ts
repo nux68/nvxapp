@@ -27,6 +27,11 @@ export class DocEmployeeListPageComponent {
   public readonly columns: NvxListColumn<DocDipendenteModel>[];
   public readonly actions: NvxListAction<DocDipendenteModel>[];
   public readonly isDisabled = (x: DocDipendenteModel) => !x.attivo;
+  // opzioni della lista (nvx-list-options)
+  public showDisabled = false;
+  // con account (accede all'app): icona della chiave ed evidenziato; senza: solo anagrafica
+  public readonly iconOf = (x: DocDipendenteModel) => x.haUtente ? 'key-outline' : 'person-outline';
+  public readonly haAccount = (x: DocDipendenteModel) => x.haUtente;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
@@ -41,7 +46,7 @@ export class DocEmployeeListPageComponent {
       { key: 'codiceFiscale', title: t('documents.fields.taxCode') },
       { key: 'matricola', title: t('documents.fields.employeeNumber'), mobile: 'note' },
       { key: 'haUtente', title: t('documents.fields.hasAccount'), mobile: 'subtitle',
-        value: x => x.haUtente ? '🔑 ' + (x.userName ?? '') : t('documents.pages.employeeList.noAccount'), sortValue: x => (x.haUtente ? '0' : '1') + x.nominativo },
+        value: x => x.haUtente ? (x.userName ?? '') : t('documents.pages.employeeList.noAccount'), sortValue: x => (x.haUtente ? '0' : '1') + x.nominativo },
     ];
     const btnEdit = userInterfaceService.Btn_Modifica;
     btnEdit.event = (x: DocDipendenteModel) => this.navCtrl.navigateForward('/docemployeeedit', { state: { item: { ...x }, setup: this.setup } });
