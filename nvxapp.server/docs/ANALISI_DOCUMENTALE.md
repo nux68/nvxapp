@@ -284,17 +284,21 @@ Legenda: [x] fatto · [ ] da fare.
 
 **Dati comuni (schema Common)** – checklist completa in `ANALISI_CRM.md` §10, Fase 0. In sintesi:
 - [x] schema Common (`Common = 0`) con `Az_Anagrafica`, `Az_Cliente`, `Az_ClienteContatto`, API comuni, `ICommonEntityUsage`, deleter, migration azzerate e database ricreato (03/11/2026)
-- [ ] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript)
-- [ ] `Az_Cliente`: `Default` → `Az_Cfg.IdAz_ClienteDefault`, nuovi `Attivo` e `Tipo`
+- [x] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript) – 04/11/2026
+- [x] `Az_Cliente`: `Default` → `Az_Cfg.IdAz_ClienteDefault`, nuovi `Attivo` e `Tipo` – 04/11/2026
+- [x] migration azzerate e database di sviluppo ricreato – 04/11/2026
 - [ ] pagine Clienti e menu **Anagrafiche** nell'infrastruttura, contatti nella pagina cliente
 
 **Dipendenti in Common** (§2.1)
-- [ ] `Dip_Anagrafica` spostata in Common (entità, repository, servizi di scrittura comuni)
-- [ ] `IdAspNetUsers` facoltativo con indice unico parziale (`WHERE IdAspNetUsers IS NOT NULL`); nuovi campi `Email`, `DataCessazione`, `Attivo`
-- [ ] presenze (AttendanceTracking_Dev): `Dip_Anagrafica` mappata esclusa, lavoro solo sui dipendenti con utente, scritture tramite i servizi comuni
-- [ ] deleter: togliendo l'utente dall'azienda le presenze cancellano i propri dati; la riga del dipendente resta (utente scollegato, `DataCessazione`) e la elimina il deleter Common solo se nessun applicativo la usa (`ICommonEntityUsage`)
+- [x] `Dip_Anagrafica` spostata in Common come classe partial (le presenze aggiungono `Dip_RapportoLavoro` e `Dip_Competenza` nel loro ramo; `CommonDbContext` esclude dal suo modello le entità non comuni) – 04/11/2026
+- [x] nuovo `IdAz_Anagrafica` (azienda del dipendente, serve in modalità singola e per i dipendenti senza account); `IdAspNetUsers` facoltativo con chiave esterna SetNull; indice unico (`IdAz_Anagrafica`, `IdAspNetUsers`) – i NULL non si scontrano, niente indice parziale; nuovi campi `Email`, `DataCessazione`, `Attivo`
+- [x] presenze (AttendanceTracking_Dev): `Dip_Anagrafica` mappata esclusa; ricerca del dipendente nell'azienda corrente; creazione e salvataggio con l'azienda; i campi comuni non gestiti dalla pagina delle presenze restano quelli salvati
+- [ ] scritture del dipendente tramite servizi comuni (oggi le presenze scrivono con il proprio contesto sulla tabella comune; servirà con il documentale)
+- [ ] presenze: verifica che nessuna pagina o elaborazione elenchi i dipendenti scollegati (senza utente)
+- [x] utente tolto dall'azienda: il dipendente resta, scollegato, non attivo e con `DataCessazione` (`CommonDataDeleter`); utente eliminato: scollegato dalla chiave esterna
+- [ ] deleter delle presenze (manca ancora) che cancella i propri dati del dipendente; eliminazione del dipendente comune solo se nessun applicativo lo usa (`ICommonEntityUsage`)
 - [ ] invito di un dipendente senza account (creazione dell'utente e collegamento alla riga esistente)
-- [ ] nuove migration Common e presenze (o nuovo azzeramento, da decidere al momento)
+- [x] migration Common e presenze azzerate e database ricreato – 04/11/2026
 
 **Attivazione degli applicativi** (§4.1)
 - [ ] `CompanyApplicationPut` accettato solo da SuperUser e DealerPowerAdmin del centro dell'azienda (oggi nessun controllo); pagina in sola lettura per gli altri ruoli
