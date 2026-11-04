@@ -3,7 +3,7 @@
 Branch: **CRM_Dev** (riceve i merge da Infrastructure, si mergia in CRM).
 La parte sulle **tabelle condivise** (§2) è lavoro di **Infrastructure_Dev** e va fatta *prima* di iniziare il CRM: vale anche per il Documentale (`ANALISI_DOCUMENTALE.md`, che rimanda qui).
 
-Stato: analisi completa, **tutte le decisioni prese** (§9, 03-04/11/2026). Lavori fatti e da fare: §10.
+Stato: analisi completa, **tutte le decisioni prese** (§9, 03-04/11/2026). **Fase 0 e Fase 1 implementate il 04/11/2026** (CRM_Dev); restano i punti aperti della checklist §10 (import, AI, GDPR completo, Fase 2). Lavori fatti e da fare: §10.
 
 **Predisposizione fatta il 03/11/2026** (dettaglio nella checklist §10) (decisioni dell'utente): schema Common con valore **`Common = 0`**, sempre creato per ogni azienda;
 in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` restava nelle presenze**; il 04/11/2026 è stato deciso di spostare anche lei in Common (vedi `ANALISI_DOCUMENTALE.md` §2.1, da implementare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
@@ -257,40 +257,44 @@ Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALIS
 - [x] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev; dettaglio in `ANALISI_DOCUMENTALE.md` §11)
 - [x] `Az_Cliente.Default` → `Az_Cfg.IdAz_ClienteDefault` (Infrastructure_Dev + AttendanceTracking_Dev)
 - [x] `Az_Cliente.Attivo` (campo)
-- [ ] clienti disattivati esclusi dalle scelte e "Mostra disabilitati" negli elenchi (client)
+- [x] clienti disattivati esclusi dalle scelte e "Mostra disabilitati" negli elenchi (client; 04/11)
 - [x] `Az_Cliente.Tipo` (Cliente / Fornitore / Entrambi, campo)
-- [ ] scelte "cliente" limitate a Cliente ed Entrambi (client e servizi delle presenze)
+- [x] scelte "cliente" limitate a Cliente ed Entrambi nel client (commessa delle presenze, opportunità e offerte del CRM; 04/11) – i servizi delle presenze non lo ricontrollano ancora
 - [x] migration azzerate (InitPublic, InitCommon, InitMoke, AttendanceTracking_Init) e database di sviluppo ricreato il 04/11/2026; prove via API (attivazione presenze, dipendenti nello schema Common, cliente predefinito in `Az_Cfg`, blocco della cancellazione, CRM non attivabile finché non ha il suo contesto)
-- [ ] attivazione degli applicativi solo da SuperUser e DealerPowerAdmin del centro (controllo in `CompanyApplicationPut`, oggi assente; pagina in sola lettura per gli altri)
-- [ ] `FinancialAdvisorApplication` (abilitazione degli applicativi per studio) e applicativi dello studio in `UserLoad`
+- [x] attivazione degli applicativi solo da SuperUser e DealerPowerAdmin del centro (`ApplicationActivationAuthorizer`, fatto con il documentale)
+- [x] `FinancialAdvisorApplication` (abilitazione degli applicativi per studio) e applicativi dello studio in `UserLoad` (fatto con il documentale)
 
 **Client comune**
-- [ ] pagine Clienti (`customer-list/edit`), servizio Angular, pipe e handler AI spostati dalle presenze all'infrastruttura (Infrastructure_Dev; poi rimozione delle copie su AttendanceTracking_Dev)
-- [ ] menu **Anagrafiche** dell'infrastruttura, visibile con almeno un applicativo che usa i clienti
-- [ ] contatti del cliente nella pagina di modifica del cliente (elenco + dialog)
-- [ ] campi `Attivo` e `Tipo` nelle pagine clienti
+- [x] pagine Clienti (`customer-list/edit`) e servizio Angular nell'infrastruttura, copie tolte dalle presenze; la cache delle presenze si ricarica con `CommonDataEventsService` (04/11). La pipe e l'handler AI dei clienti restano nelle presenze (li usano solo loro)
+- [x] menu **Anagrafiche** dell'infrastruttura, visibile con almeno un applicativo che usa i clienti (`MainMenuItem.anyApplication`)
+- [x] contatti del cliente nella pagina di modifica del cliente (elenco + dialog)
+- [x] campi `Attivo` e `Tipo` nelle pagine clienti; modifiche all'anagrafica comune solo per CompanyPowerAdmin e CompanyAdmin
 
 **Prima del primo rilascio su un database con dati**
 - [ ] procedura di spostamento dei dati presenze → Common (§2.4), idempotente, provata su una copia del database
 
 ### Fase 1 – CRM (CRM_Dev, creato da Infrastructure dopo la Fase 0)
-- [ ] creazione del ramo CRM_Dev da Infrastructure
-- [ ] `CrmDbContext` (`ApplicationType.Crm`), design-time factory, `Installers4Crm`, migration iniziale
-- [ ] configurazione (§5.1) e wizard di attivazione con valori predefiniti multilingua
-- [ ] `Crm_ClienteDati` e scheda cliente CRM (stato, responsabile, fonte, tag)
-- [ ] visibilità dei commerciali (`Crm_Cfg.VisibilitaUtenti`, predefinita "solo i propri"), controllata lato server
-- [ ] lead e conversione in cliente
-- [ ] opportunità, pipeline kanban, storico delle fasi
-- [ ] attività, agenda, promemoria (SignalR)
-- [ ] offerte con righe, PDF e invio email
-- [ ] note e allegati (`Crm_Allegato`)
-- [ ] report (pipeline, conversione, vinte/perse, attività per utente)
-- [ ] import clienti/contatti da Excel/CSV con controllo duplicati; export Excel
-- [ ] riassegnazione in blocco dei clienti di un commerciale
-- [ ] `CrmCommonEntityUsage` e `CrmDataDeleter`
-- [ ] menu, rotte, site-name, showcase, multilingua (`CrmMessages`, i18n `crm`)
+Implementata il 04/11/2026 (commit 846a9400 e seguenti su CRM_Dev; in Infrastructure: punti di aggancio, `IUserNotifier`, email con allegati).
+- [x] creazione del ramo CRM_Dev da Infrastructure
+- [x] `CrmDbContext` (`ApplicationType.Crm`, schema `tenant_<id>_3`), design-time factory, `Installers4Crm`, migration `Crm_Init` (17 tabelle)
+- [x] configurazione (§5.1) con valori predefiniti multilingua creati all'attivazione (`CrmCompanyInitializer`; nessun wizard dedicato: si modificano dalle pagine Tabelle e Impostazioni)
+- [x] `Crm_ClienteDati` e scheda cliente CRM (stato, responsabile, fonte, tag, settore, fatturato, consenso) con contatti, opportunità, attività, offerte, note e allegati
+- [x] visibilità dei commerciali (`Crm_Cfg.Visibilita`, predefinita "solo i propri": clienti propri, senza responsabile o in cui sono coinvolti), controllata in ogni servizio (`CrmUtility`)
+- [x] lead e conversione in cliente (nuovo o esistente, contatto, opportunità; attività e note passano al cliente)
+- [x] opportunità, pipeline kanban (trascinamento HTML5, scelta della fase su mobile, motivo per le perse), storico delle fasi e del valore
+- [x] attività, agenda (oggi / scadute / prossime / fatte), promemoria SignalR (`CrmReminderService` + `IUserNotifier` di Infrastructure)
+- [x] offerte con righe, totali calcolati dal server, numerazione per anno, PDF (MigraDoc) e invio email con il PDF allegato
+- [x] note (fissate, autore) e allegati (`Crm_Allegato`, max 20 MB, su disco; non contano nello spazio del documentale)
+- [x] report (pipeline per fase/responsabile con valore pesato, vinte/perse nel periodo, conversione dei lead, attività per utente)
+- [ ] import clienti/contatti da Excel/CSV con controllo duplicati
+- [x] export Excel dei clienti (ClosedXML, con i filtri della pagina)
+- [x] riassegnazione in blocco di clienti, opportunità, lead e attività da fare di un commerciale
+- [x] `CrmCommonEntityUsage` (cliente usato da opportunità/offerte/attività/allegati non cancellabile) e `CrmDataDeleter` (utente rimosso: dati senza responsabile, attività annullate)
+- [x] menu, rotte, multilingua (`CrmMessages`, i18n `crm`) – site-name e showcase non servono per ora
 - [ ] handler chat AI CRM
-- [ ] GDPR: consenso marketing, esportazione e anonimizzazione di un contatto
+- [x] GDPR: consenso marketing con data (clienti e lead)
+- [ ] GDPR: esportazione e anonimizzazione di un contatto
+- [x] prove via API (42 controlli: visibilità, totali, PDF, conversione, riassegnazione, blocco della cancellazione) e nel browser sull'applicativo completo
 
 ### Fase 2 – Integrazioni
 - [ ] presenze: sezione "Commesse e ore" nella scheda cliente (interfaccia in Infrastructure, implementazione su AttendanceTracking_Dev)
