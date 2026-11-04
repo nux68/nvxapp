@@ -41,9 +41,9 @@ export class AppComponent implements OnInit {
   public groupedUserMenu: GroupMainMenuItem[] = [];
   // sezione "Assistenza", in fondo al menu per tutti gli utenti collegati
   public groupedSupportMenu: GroupMainMenuItem[] = [];
-  // Menu dopo il login: Accesso, Assistenza, poi una sezione espandibile "Amministrazione" con le voci comuni di
+  // Menu dopo il login: Accesso, poi una sezione espandibile "Amministrazione" con le voci comuni di
   // Infrastructure e una per ogni applicativo attivo (titolo = nome dell'applicativo) con le sue voci.
-  // Dentro ogni sezione le sottosezioni (gruppi dei ruoli) si aprono e si chiudono una alla volta, come le sezioni.
+  // Dentro ogni sezione le sottosezioni (gruppi dei ruoli) si aprono e si chiudono una alla volta, come le sezioni. In fondo "Assistenza".
   public sezioniAccesso: SezioneMenu[] = [];
   public sezioniApplicativi: SezioneApplicativo[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
@@ -54,6 +54,8 @@ export class AppComponent implements OnInit {
   // sezione aperta del menu: una stringa, non un array (ion-accordion-group non e' "multiple": con un array
   // la sezione non si apriva quando il valore cambiava dopo il login)
   public selectedMenu: string = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
+  // sottosezione aperta di ogni sezione di applicativo (chiave della sezione -> titolo della sottosezione)
+  public sottosezioniAperte: Record<string, string> = {};
   
 
 
@@ -167,8 +169,14 @@ export class AppComponent implements OnInit {
       // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso".
       // Si imposta dopo che le sezioni nuove sono state disegnate: ion-accordion-group apre solo gli accordion
       // che esistono gia' quando il valore cambia (al login le sezioni arrivano insieme ai ruoli).
+      // Vale anche per le sottosezioni: dopo un'impersonificazione la sezione "Amministrazione" resta, ma le sue
+      // sottosezioni cambiano (es. da "SuperUser" a "Centro") e quella nuova non si aprirebbe.
       const sezione = this.primaSezioneAperta();
-      setTimeout(() => this.selectedMenu = sezione);
+      const sottosezioni = Object.fromEntries(this.sezioniApplicativi.map(a => [a.chiave, a.aperta]));
+      setTimeout(() => {
+        this.selectedMenu = sezione;
+        this.sottosezioniAperte = sottosezioni;
+      });
 
       
 
@@ -232,9 +240,10 @@ export class AppComponent implements OnInit {
   }
 
   // dopo il login si apre solo il primo applicativo disponibile (mai "Amministrazione"), con la sua prima sottosezione
-  // aperta (SezioneApplicativo.aperta); senza applicativi il menu resta tutto chiuso
+  // aperta (SezioneApplicativo.aperta); senza applicativi (es. SuperUser o centro, anche impersonificati) si apre
+  // "Amministrazione", altrimenti le loro voci (utenti, studi...) resterebbero nascoste in un menu tutto chiuso
   private primaSezioneAperta(): string {
-    return this.sezioniApplicativi.find(a => a.chiave !== 'admin')?.chiave ?? '';
+    return (this.sezioniApplicativi.find(a => a.chiave !== 'admin') ?? this.sezioniApplicativi[0])?.chiave ?? '';
   }
 
   // somma dei contatori delle voci di una sezione di applicativo (es. richieste da approvare), visibile a sezione chiusa
