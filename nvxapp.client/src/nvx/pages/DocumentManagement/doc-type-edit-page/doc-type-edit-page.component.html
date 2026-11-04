@@ -1,0 +1,52 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'documents.pages.typeEdit.info' | transloco }}</ion-label>
+      </ion-item>
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-input type="text" formControlName="codice" [label]="'documents.fields.code' | transloco" labelPlacement="floating" maxlength="20"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="text" formControlName="descrizione" [label]="'documents.fields.description' | transloco" labelPlacement="floating" maxlength="100"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-select formControlName="categoria" [label]="'documents.fields.category' | transloco" labelPlacement="floating">
+            <ion-select-option [value]="0">{{ 'documents.category.0' | transloco }}</ion-select-option>
+            <ion-select-option [value]="1">{{ 'documents.category.1' | transloco }}</ion-select-option>
+            <ion-select-option [value]="2">{{ 'documents.category.2' | transloco }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.typeEdit.categoryNote' | transloco }}</ion-note>
+        <ion-item>
+          <ion-input type="number" formControlName="anniConservazione" [label]="'documents.fields.retention' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'documents.pages.typeEdit.retentionNote' | transloco }}</ion-note>
+        <ion-item>
+          <ion-toggle formControlName="haCompetenza" justify="start">{{ 'documents.fields.hasPeriod' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="haScadenza" justify="start">{{ 'documents.fields.hasExpiry' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="presaVisioneRichiesta" justify="start">{{ 'documents.fields.requiresAcknowledgement' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="ordine" [label]="'documents.fields.order' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="active" justify="start">{{ 'documents.fields.active' | transloco }}</ion-toggle>
+        </ion-item>
+      </form>
+      <br />
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

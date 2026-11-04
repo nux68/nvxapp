@@ -1,0 +1,189 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NotAllowed" xml:space="preserve">
+    <value>Operazione non consentita.</value>
+  </data>
+  <data name="CfgInvalid" xml:space="preserve">
+    <value>Valori non validi: giorni del cestino e versioni da conservare non possono essere negativi.</value>
+  </data>
+  <data name="TypeInvalid" xml:space="preserve">
+    <value>Tipologia non valida: servono codice, descrizione e anni di conservazione maggiori di zero (se indicati).</value>
+  </data>
+  <data name="TypeDuplicate" xml:space="preserve">
+    <value>Esiste già una tipologia con codice {0}.</value>
+  </data>
+  <data name="TypeNotFound" xml:space="preserve">
+    <value>Tipologia non trovata.</value>
+  </data>
+  <data name="TypeInactive" xml:space="preserve">
+    <value>La tipologia "{0}" non è più attiva.</value>
+  </data>
+  <data name="TypeCategoryInUse" xml:space="preserve">
+    <value>La categoria non si può cambiare: la tipologia è già usata da documenti.</value>
+  </data>
+  <data name="FolderInvalid" xml:space="preserve">
+    <value>Indicare la descrizione della cartella.</value>
+  </data>
+  <data name="FolderNotFound" xml:space="preserve">
+    <value>Cartella non trovata.</value>
+  </data>
+  <data name="FolderParentInvalid" xml:space="preserve">
+    <value>Cartella superiore non valida.</value>
+  </data>
+  <data name="FolderSystem" xml:space="preserve">
+    <value>Le cartelle predefinite non si eliminano.</value>
+  </data>
+  <data name="FolderNotEmpty" xml:space="preserve">
+    <value>La cartella contiene documenti o altre cartelle.</value>
+  </data>
+  <data name="PermissionUserInvalid" xml:space="preserve">
+    <value>Si abilitano solo gli amministratori dell'azienda.</value>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Documento non trovato.</value>
+  </data>
+  <data name="VersionNotFound" xml:space="preserve">
+    <value>Versione non trovata.</value>
+  </data>
+  <data name="DocumentInTrash" xml:space="preserve">
+    <value>Il documento è nel cestino.</value>
+  </data>
+  <data name="DocumentNotInTrash" xml:space="preserve">
+    <value>Il documento non è nel cestino.</value>
+  </data>
+  <data name="TitleRequired" xml:space="preserve">
+    <value>Indicare il titolo del documento.</value>
+  </data>
+  <data name="PersonnelNotAllowed" xml:space="preserve">
+    <value>Per i documenti del personale serve l'abilitazione a caricarli.</value>
+  </data>
+  <data name="EmployeeRequired" xml:space="preserve">
+    <value>Indicare il dipendente del documento.</value>
+  </data>
+  <data name="CustomerRequired" xml:space="preserve">
+    <value>Indicare il cliente del documento.</value>
+  </data>
+  <data name="PeriodInvalid" xml:space="preserve">
+    <value>Competenza non valida (mese 1-12).</value>
+  </data>
+  <data name="NotRecipient" xml:space="preserve">
+    <value>Non sei destinatario del documento o la presa visione è già registrata.</value>
+  </data>
+  <data name="DuplicateFile" xml:space="preserve">
+    <value>Lo stesso file è già presente in un altro documento.</value>
+  </data>
+  <data name="FileNameInvalid" xml:space="preserve">
+    <value>Nome del file non valido.</value>
+  </data>
+  <data name="FileTypeNotAllowed" xml:space="preserve">
+    <value>Tipo di file non ammesso ({0}).</value>
+  </data>
+  <data name="FileEmpty" xml:space="preserve">
+    <value>Il file è vuoto.</value>
+  </data>
+  <data name="FileMissing" xml:space="preserve">
+    <value>Il file del documento non è disponibile.</value>
+  </data>
+  <data name="NotifySubject" xml:space="preserve">
+    <value>Nuovo documento: {0}</value>
+  </data>
+  <data name="NotifyText" xml:space="preserve">
+    <value>Ciao {0}, è disponibile un nuovo documento: "{1}". Lo trovi in "I miei documenti".</value>
+  </data>
+  <data name="NotifyTextAcknowledge" xml:space="preserve">
+    <value>Ciao {0}, è disponibile un nuovo documento: "{1}". Aprilo in "I miei documenti" e conferma la presa visione.</value>
+  </data>
+  <data name="DeletionCountDocuments" xml:space="preserve">
+    <value>Documenti</value>
+  </data>
+  <data name="CustomerUsedByDocuments" xml:space="preserve">
+    <value>documenti: {0}</value>
+  </data>
+  <data name="DefaultTypePayslip" xml:space="preserve">
+    <value>Cedolino</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeCU" xml:space="preserve">
+    <value>Certificazione Unica</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeContract" xml:space="preserve">
+    <value>Contratto di lavoro</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeMedical" xml:space="preserve">
+    <value>Certificato medico</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeTraining" xml:space="preserve">
+    <value>Attestato di formazione</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeNotice" xml:space="preserve">
+    <value>Comunicazione al dipendente</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeF24" xml:space="preserve">
+    <value>F24</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeDURC" xml:space="preserve">
+    <value>DURC</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeRegistry" xml:space="preserve">
+    <value>Visura camerale</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeCustomerContract" xml:space="preserve">
+    <value>Contratto con il cliente</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultTypeGeneric" xml:space="preserve">
+    <value>Documento generico</value>
+    <comment>tipologia predefinita</comment>
+  </data>
+  <data name="DefaultFolderPersonnel" xml:space="preserve">
+    <value>Personale</value>
+    <comment>cartella predefinita</comment>
+  </data>
+  <data name="DefaultFolderAdministration" xml:space="preserve">
+    <value>Amministrazione</value>
+    <comment>cartella predefinita</comment>
+  </data>
+  <data name="DefaultFolderCustomers" xml:space="preserve">
+    <value>Clienti</value>
+    <comment>cartella predefinita</comment>
+  </data>
+  <data name="DefaultFolderNotices" xml:space="preserve">
+    <value>Comunicazioni</value>
+    <comment>cartella predefinita</comment>
+  </data>
+  <data name="EmployeeNameRequired" xml:space="preserve">
+    <value>Indicare cognome o nome del dipendente.</value>
+  </data>
+  <data name="EmployeeTaxCodeInvalid" xml:space="preserve">
+    <value>Codice fiscale non valido (16 caratteri, o 11 cifre).</value>
+  </data>
+  <data name="EmployeeTaxCodeDuplicate" xml:space="preserve">
+    <value>Il codice fiscale {0} è già di un altro dipendente.</value>
+  </data>
+  <data name="EmployeeNumberDuplicate" xml:space="preserve">
+    <value>La matricola {0} è già di un altro dipendente.</value>
+  </data>
+  <data name="EmployeeNotFound" xml:space="preserve">
+    <value>Dipendente non trovato.</value>
+  </data>
+</root>

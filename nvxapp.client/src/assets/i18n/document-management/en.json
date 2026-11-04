@@ -1,0 +1,178 @@
+{
+  "documents": {
+    "menu": {
+      "section": "Documents",
+      "archive": "Archive",
+      "employees": "Employees",
+      "types": "Types",
+      "folders": "Folders",
+      "permissions": "Permissions",
+      "settings": "Settings",
+      "log": "Access log",
+      "storage": "Storage",
+      "mine": "My documents"
+    },
+    "buttons": {
+      "download": "Download",
+      "acknowledge": "Acknowledge",
+      "newVersion": "New version",
+      "trash": "Trash",
+      "restore": "Restore"
+    },
+    "status": {
+      "0": "Draft",
+      "1": "Published",
+      "2": "Archived"
+    },
+    "category": {
+      "0": "Personnel",
+      "1": "Company",
+      "2": "Customer"
+    },
+    "action": {
+      "0": "Upload",
+      "1": "New version",
+      "2": "Edit",
+      "3": "View",
+      "4": "Download",
+      "5": "Acknowledgement",
+      "6": "Trash",
+      "7": "Restore",
+      "8": "Deletion"
+    },
+    "fields": {
+      "title": "Title",
+      "type": "Type",
+      "reference": "Reference",
+      "period": "Period",
+      "expiry": "Expiry",
+      "size": "Size",
+      "folder": "Folder",
+      "employee": "Employee",
+      "year": "Year",
+      "month": "Month",
+      "customer": "Customer",
+      "description": "Description",
+      "date": "Date",
+      "status": "Status",
+      "versionNote": "Version notes",
+      "acknowledgement": "Acknowledgement",
+      "code": "Code",
+      "category": "Category",
+      "retention": "Retention years",
+      "documents": "Documents",
+      "hasPeriod": "Has a period (month/year)",
+      "hasExpiry": "Has an expiry date",
+      "requiresAcknowledgement": "Requires acknowledgement",
+      "order": "Order",
+      "active": "Active",
+      "visibleToUsers": "Visible to employees",
+      "parentFolder": "Parent folder",
+      "taxCode": "Tax code",
+      "employeeNumber": "Employee number",
+      "hasAccount": "Account",
+      "lastName": "Last name",
+      "firstName": "First name",
+      "email": "Personal email",
+      "endDate": "End date",
+      "trashDays": "Days in trash",
+      "versionsToKeep": "Versions to keep",
+      "emailNotifications": "Email notifications to employees",
+      "seesPersonnel": "Sees",
+      "uploadsPersonnel": "Uploads",
+      "user": "User",
+      "action": "Action",
+      "detail": "Detail"
+    },
+    "pages": {
+      "list": {
+        "title": "Document archive",
+        "upload": "Upload document",
+        "trash": "Trash",
+        "archive": "Back to the archive",
+        "emptyTrash": "Empty the trash",
+        "confirmEmptyTrash": "Permanently delete all documents in the trash?",
+        "confirmDelete": "Permanently delete the document and its files?",
+        "search": "Search in text",
+        "all": "All",
+        "showDisabled": "Also show inactive",
+        "trashNote": "Trash: documents are permanently deleted after the days set in the settings, or immediately with \"Delete\".",
+        "truncated": "Showing the first 500 documents: refine the filters."
+      },
+      "edit": {
+        "title": "Document",
+        "new": "New document",
+        "info": "Document data",
+        "chooseFile": "Choose the file",
+        "fileRequired": "Choose the file to upload.",
+        "typeRequired": "Choose the type.",
+        "titleRequired": "Enter the title.",
+        "statusNote": "A draft document is not visible to the employee.",
+        "versions": "Versions",
+        "recipients": "Recipients",
+        "opened": "Opened",
+        "downloaded": "Downloaded",
+        "acknowledged": "Acknowledged",
+        "confirmTrash": "Move the document to the trash?",
+        "retentionExpired": "The document is past the retention years of its type: consider deleting it."
+      },
+      "mine": {
+        "title": "My documents",
+        "toAcknowledge": "To acknowledge",
+        "confirmAcknowledge": "Do you confirm you have read \"{{title}}\"?"
+      },
+      "typeList": {
+        "title": "Document types",
+        "new": "New type",
+        "confirmDelete": "Delete the type? If documents use it, it will only be deactivated."
+      },
+      "typeEdit": {
+        "title": "Document type",
+        "info": "Type",
+        "categoryNote": "Personnel: visible to the employee and to those enabled for personnel documents. Company and Customer: to administrators.",
+        "retentionNote": "After this period documents are only flagged, never deleted automatically. Empty = no limit."
+      },
+      "folderList": {
+        "title": "Folders",
+        "new": "New folder",
+        "confirmDelete": "Delete the folder?"
+      },
+      "folderEdit": {
+        "title": "Folder",
+        "info": "Folder",
+        "visibleNote": "Company documents in the folder are also visible, read-only, to employees."
+      },
+      "employeeList": {
+        "title": "Employees",
+        "new": "New employee"
+      },
+      "employeeEdit": {
+        "title": "Employee",
+        "info": "Employee data",
+        "emailNote": "Used for notifications when the employee has no account."
+      },
+      "permissions": {
+        "title": "Personnel document permissions",
+        "note": "Administrators see and upload personnel documents (payslips included) only if enabled here. Uploading includes seeing."
+      },
+      "settings": {
+        "title": "Document management settings",
+        "info": "Settings",
+        "trashNote": "Documents in the trash for longer are deleted overnight. 0 = never.",
+        "versionsNote": "Keep only the last N versions (0 = all). Documents requiring acknowledgement always keep them.",
+        "emailNote": "Notify the employee when a new document arrives (if email sending is configured)."
+      },
+      "log": {
+        "title": "Access log"
+      },
+      "storage": {
+        "title": "Document storage",
+        "used": "{{used}} MB used of {{quota}} MB ({{percent}}%)",
+        "files": "{{files}} files · maximum file size {{maxFile}} MB · warning at {{warning}}%",
+        "over": "Out of space",
+        "warning": "Almost full",
+        "note": "Beyond 100% no documents can be uploaded. Ask the centre for a larger plan."
+      }
+    }
+  }
+}

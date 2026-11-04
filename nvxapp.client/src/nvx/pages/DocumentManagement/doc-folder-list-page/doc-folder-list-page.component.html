@@ -1,0 +1,20 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <nvx-list
+        [items]="items"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="folder-outline"
+        [searchText]="searchText">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
