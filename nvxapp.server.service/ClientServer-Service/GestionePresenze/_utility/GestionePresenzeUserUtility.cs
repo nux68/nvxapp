@@ -159,17 +159,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         Nome = nome
                     };
                     await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
-
-                    // nuovo dipendente: assegnazione al reparto e alla competenza di default dell'azienda
-                    var usrCompany = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefault();
-                    if (usrCompany != null)
-                    {
-                        await AssegnaRepartoDefault(IdAspNetUsers, usrCompany.IdCompany);
-
-                        var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrCompany.IdCompany, true);
-                        if (company_DATA.az_Anagrafica != null)
-                            await CompletaCompetenzaDefault(new List<string> { IdAspNetUsers }, company_DATA.az_Anagrafica.Id);
-                    }
                 }
                 else
                 {
@@ -186,6 +175,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     var usrC = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefault();
                     if (usrC != null)
                     {
+                        // dipendente nuovo per le presenze (l'anagrafica comune puo' averla gia' creata un altro applicativo,
+                        // es. il documentale): assegnazione al reparto e alla competenza di default dell'azienda
+                        await AssegnaRepartoDefault(IdAspNetUsers, usrC.IdCompany);
+                        var company_DATA_Default = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
+                        if (company_DATA_Default.az_Anagrafica != null)
+                            await CompletaCompetenzaDefault(new List<string> { IdAspNetUsers }, company_DATA_Default.az_Anagrafica.Id);
+
                         var res_1 = await Get_Az_SubCommessaAttivita_Default(usrC.IdCompany);
                         var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
 
