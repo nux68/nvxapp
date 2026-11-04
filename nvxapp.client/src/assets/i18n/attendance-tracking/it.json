@@ -594,36 +594,6 @@
         "back": "Indietro",
         "usersWarning": "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   {{admin}} / {{powerAdmin}}"
       },
-      "customerEdit": {
-        "title": "Cliente",
-        "anagrafica": "Anagrafica",
-        "ragioneSociale": "Ragione sociale",
-        "ragioneSocialeRequired": "La ragione sociale è obbligatoria.",
-        "ragioneSocialeMaxLength": "La ragione sociale non può superare i {{max}} caratteri.",
-        "referente": "Referente",
-        "datiFiscali": "Dati fiscali",
-        "partitaIva": "Partita IVA",
-        "partitaIvaPattern": "La partita IVA è composta da 11 cifre.",
-        "codiceFiscale": "Codice fiscale",
-        "codiceFiscalePattern": "Il codice fiscale è di 16 caratteri (persona) o 11 cifre (società).",
-        "sede": "Sede",
-        "indirizzo": "Indirizzo",
-        "cap": "CAP",
-        "citta": "Città",
-        "provincia": "Provincia",
-        "nazione": "Nazione",
-        "provinciaPattern": "La provincia è la sigla di 2 lettere (es. MI).",
-        "nazionePattern": "La nazione è il codice di 2 lettere (es. IT).",
-        "contatti": "Contatti",
-        "telefono": "Telefono",
-        "email": "Email",
-        "pec": "PEC",
-        "pecInvalid": "Inserisci una PEC valida.",
-        "fatturazioneElettronica": "Fatturazione elettronica",
-        "codiceDestinatario": "Codice destinatario (SDI)",
-        "codiceDestinatarioPattern": "Il codice destinatario è di 7 caratteri (6 per la Pubblica Amministrazione).",
-        "note": "Note"
-      },
       "departmentList": {
         "title": "Reparti",
         "columnReparto": "Reparto",
@@ -770,12 +740,6 @@
         "confirmDelete": "Confermi la cancellazione della sede?",
         "fabAdd": "Nuova Sede",
         "columnSite": "Sede"
-      },
-      "customerList": {
-        "title": "Clienti",
-        "confirmDelete": "Confermi la cancellazione del cliente?",
-        "fabAdd": "Nuovo",
-        "columnCustomer": "Cliente"
       },
       "activityList": {
         "title": "Attività",
@@ -1250,7 +1214,6 @@
       "esameSpese": "Esame spese",
       "gestioneCommesse": "Parametri Commesse",
       "commesse": "Commesse",
-      "clienti": "Clienti",
       "reparti": "Reparti",
       "sedi": "Sedi",
       "attivita": "Attività",

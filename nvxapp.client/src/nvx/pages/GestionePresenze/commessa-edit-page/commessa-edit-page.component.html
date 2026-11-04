@@ -72,7 +72,7 @@
               <ion-item>
                 <ion-label position="stacked">{{ 'attendance.pages.commessaEdit.cliente' | transloco }}</ion-label>
                 <ion-select formControlName="idAz_Cliente" [placeholder]="'attendance.pages.commessaEdit.selezionaCliente' | transloco">
-                  @for (cliente of _az_ClienteModelList; track cliente) {
+                  @for (cliente of clientiSelezionabili; track cliente.id) {
                     <ion-select-option [value]="cliente.id">
                       {{ cliente.descrizione }}
                     </ion-select-option>

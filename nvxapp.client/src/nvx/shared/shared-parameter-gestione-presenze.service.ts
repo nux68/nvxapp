@@ -1,3 +1,5 @@
+import { inject } from '@angular/core';
+import { CommonDataEventsService } from '../Utility/infrastructure/common-data-events.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, catchError, forkJoin, map, Observable, of, retry, tap, timer } from 'rxjs';
 import { GenericRequest } from '../ClientServer-Service/ModelsBase/generic-request';
@@ -9,8 +11,8 @@ import { Par_Competenza_GetAll_InModel, Par_CompetenzaModel } from '../ClientSer
 import { ParCompetenzaService } from '../ClientServer-Service/GestionePresenze/Par_Competenza/par-competenza.service';
 import { Az_Commessa_GetAll_InModel, Az_CommessaModel } from '../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { AzCommessaService } from '../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
-import { Az_Cliente_GetAll_InModel, Az_ClienteModel } from '../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
-import { AzClienteService } from '../ClientServer-Service/GestionePresenze/Az_Cliente/az-cliente.service';
+import { Az_Cliente_GetAll_InModel, Az_ClienteModel } from '../ClientServer-Service/Infrastructure/Az_Cliente/Models/az-cliente-model';
+import { AzClienteService } from '../ClientServer-Service/Infrastructure/Az_Cliente/az-cliente.service';
 import { RolesListInModel, RolesModel } from '../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 import { Dip_Anagrafica_GetAll_InModel, Dip_AnagraficaModel } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
@@ -79,7 +81,10 @@ export class SharedParameterGestionePresenzeService {
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     private azSubCommessaAttivitaService: AzSubCommessaAttivitaService,
     
-  ) { }
+  ) {
+    // clienti modificati nelle pagine dell'infrastruttura (anagrafica comune): si ricarica la cache delle scelte
+    inject(CommonDataEventsService).ClientiModificati$.subscribe(() => this.Reload(ParTable.Az_Cliente).subscribe());
+  }
 
   // un caricatore per ogni tabella in cache: usati tutti insieme al login (InitCall) o singolarmente (Reload)
   private readonly loaders: Record<ParTable, { label: string, load: () => Observable<any> }> = {
