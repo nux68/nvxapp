@@ -56,6 +56,7 @@ export class AppComponent implements OnInit {
   public selectedMenu: string = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
   // sottosezione aperta di ogni sezione di applicativo (chiave della sezione -> titolo della sottosezione)
   public sottosezioniAperte: Record<string, string> = {};
+  private timerApertura: ReturnType<typeof setTimeout> | undefined;
   
 
 
@@ -173,7 +174,10 @@ export class AppComponent implements OnInit {
       // sottosezioni cambiano (es. da "SuperUser" a "Centro") e quella nuova non si aprirebbe.
       const sezione = this.primaSezioneAperta();
       const sottosezioni = Object.fromEntries(this.sezioniApplicativi.map(a => [a.chiave, a.aperta]));
-      setTimeout(() => {
+      // Al login e all'impersonificazione ruoli e applicativi arrivano uno dopo l'altro: conta solo l'ultimo ricalcolo,
+      // altrimenti si aprirebbe prima "Amministrazione" (ancora senza applicativi) e, a meta' animazione, non si richiuderebbe.
+      clearTimeout(this.timerApertura);
+      this.timerApertura = setTimeout(() => {
         this.selectedMenu = sezione;
         this.sottosezioniAperte = sottosezioni;
       });
