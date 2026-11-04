@@ -3,17 +3,16 @@
 Branch: **CRM_Dev** (riceve i merge da Infrastructure, si mergia in CRM).
 La parte sulle **tabelle condivise** (§2) è lavoro di **Infrastructure_Dev** e va fatta *prima* di iniziare il CRM: vale anche per il Documentale (`ANALISI_DOCUMENTALE.md`, che rimanda qui).
 
-Stato: analisi. Le scelte da confermare sono raccolte al §9.
+Stato: analisi completa, **tutte le decisioni prese** (§9, 03-04/11/2026). Lavori fatti e da fare: §10.
 
-**Predisposizione fatta il 03/11/2026** (decisioni dell'utente): schema Common con valore **`Common = 0`**, sempre creato per ogni azienda;
-in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` resta nelle presenze**
-(a chi attiva solo il documentale i dipendenti possono non interessare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
+**Predisposizione fatta il 03/11/2026** (dettaglio nella checklist §10) (decisioni dell'utente): schema Common con valore **`Common = 0`**, sempre creato per ogni azienda;
+in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` restava nelle presenze**; il 04/11/2026 è stato deciso di spostare anche lei in Common (vedi `ANALISI_DOCUMENTALE.md` §2.1, da implementare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
 AttendanceTracking) e database ricreato. Le pagine client dei clienti restano per ora nelle presenze (stesse API `api/Az_Cliente/*`, ora in
-Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I valori di CRM e documentale nell'enum non sono ancora stati assegnati.
+Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I valori di CRM e documentale nell'enum sono decisi (`Crm = 3`, `DocumentManagement = 4`) ma non ancora aggiunti.
 
 ---
 
-## 1. Situazione attuale (cosa c'è già)
+## 1. Situazione di partenza (prima della predisposizione del 03/11/2026)
 
 - **Applicativi e schemi.** `ApplicationType` (Moke = 1, AttendanceTracking = 2). In multi-tenant ogni azienda ha uno schema per applicativo **attivo**: `tenant_<IdAzienda>_<IdApp>`; in modalità singola tutto sta in `public`. L'attivazione è in `public.CompanyApplication`; `TenantSchemaAccessor` blocca l'accesso a un applicativo non attivo.
 - **Regola dei contesti** (`ApplicationDbContextBase`): un contesto può leggere le tabelle di `public` (mappate con schema esplicito ed `ExcludeFromMigrations()`), ma **non** può riferirsi alle tabelle di un altro applicativo.
@@ -61,16 +60,21 @@ Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I va
 | `Az_Anagrafica` | presenze | **Common** (ancora dell'azienda; serve in modalità singola come discriminante `IdCompany`) | tutti |
 | `Az_Cliente` | presenze | **Common** | presenze (commesse, statistiche), CRM, documentale (fascicolo cliente) |
 | `Az_ClienteContatto` | – (oggi un solo campo `Referente`) | **Common, nuova**: persone di riferimento del cliente | CRM, documentale (destinatari esterni) |
-| `Dip_Anagrafica` | presenze | **Common** (vedi `ANALISI_DOCUMENTALE.md` §2) | presenze, documentale |
-| `Az_Sedi`, `Az_SediReparto` | presenze | restano nelle presenze per ora (legate ad approvazioni/attività) – decisione §9 | presenze |
+| `Dip_Anagrafica` | presenze | **Common** (deciso il 04/11/2026, vedi `ANALISI_DOCUMENTALE.md` §2.1; da fare) | presenze, documentale |
+| `Az_Sedi`, `Az_SediReparto` | presenze | **restano nelle presenze** (deciso) | presenze |
 | `Az_Commessa` e figli | presenze | **restano nelle presenze** (sottocommesse, attività, reparti, utenti sono logica presenze) | presenze; il CRM le collega in modo "debole" (§5.3) |
 | `Az_Cfg`, `Par_*` | presenze | restano | presenze |
 
-Campo `Az_Cliente.Default`: oggi serve al wizard presenze per il cliente della commessa predefinita. Si può tenere (innocuo) oppure spostare in `Az_Cfg` delle presenze come `IdAz_ClienteDefault`. Consiglio: spostarlo, per rispettare la regola "nessun campo di un solo applicativo".
+Campi di `Az_Cliente` decisi il 04/11/2026:
+- `Default` (serve solo al wizard presenze per il cliente della commessa predefinita) **si sposta** in `Az_Cfg` delle presenze come `IdAz_ClienteDefault`, per rispettare la regola "nessun campo di un solo applicativo";
+- nuovo campo **`Attivo`** (predefinito sì): un cliente disattivato resta nello storico (commesse, opportunità, documenti) ma non viene più proposto nelle scelte; gli elenchi lo mostrano con l'opzione "Mostra disabilitati" già presente nelle liste;
+- nuovo campo **`Tipo`** (Cliente / Fornitore / Entrambi, predefinito Cliente): predispone i fornitori senza doverli aggiungere dopo in una tabella comune già piena; le scelte "cliente" (commesse, opportunità) propongono Cliente ed Entrambi.
 
 ### 2.4 Spostamento dei dati esistenti (presenze → Common)
 
 È il punto più delicato: in produzione ci sono già `Az_Anagrafica`, `Az_Cliente`, `Dip_Anagrafica` con dati e FK.
+
+*Non è servita*: il 03/11/2026 il database di sviluppo è stato ricreato con le migration iniziali. Va realizzata solo prima del primo rilascio su un database **con dati** (installazioni già in uso).
 
 **Multi-tenant** (per ogni azienda con presenze):
 1. crea lo schema Common (`CREATE SCHEMA`), **senza** applicare la sua migration iniziale;
@@ -88,7 +92,7 @@ Ordine di esecuzione all'avvio: provisioning Common (con lo spostamento) → mig
 
 - Entità, contesto, servizi, controller, pagine **Clienti** (e Contatti) passano in **Infrastructure_Dev**: le pagine `customer-list/edit`, il servizio Angular `Az_Cliente`, la pipe e l'handler AI dei clienti si spostano dalle cartelle `GestionePresenze` a quelle infrastrutturali.
 - Il menu "Clienti" va in un gruppo **Anagrafiche** dell'infrastruttura, visibile se l'azienda ha almeno un applicativo che usa i clienti (presenze, CRM, documentale) – non legato a un singolo applicativo.
-- **Tutti** i nuovi valori di `ApplicationType` (Common, CRM, DocumentManagement) si aggiungono **subito** in Infrastructure_Dev (anche nel gemello TypeScript in `company-model.ts`), così CRM_Dev e DocumentManagement_Dev non litigano sull'enum al merge in AllFunction. Proposta: `Common = 3`, `Crm = 4`, `DocumentManagement = 5` (valori **definitivi**: finiscono nei nomi degli schemi).
+- **Tutti** i nuovi valori di `ApplicationType` (Common, CRM, DocumentManagement) si aggiungono **subito** in Infrastructure_Dev (anche nel gemello TypeScript in `company-model.ts`), così CRM_Dev e DocumentManagement_Dev non litigano sull'enum al merge in AllFunction. Decisi: `Common = 0` (già presente), `Crm = 3`, `DocumentManagement = 4` (valori **definitivi**: finiscono nei nomi degli schemi).
 - Su AttendanceTracking_Dev, dopo il merge da Infrastructure: rimuovere le copie delle entità/servizi spostati, mappare le comuni come escluse, migration "vuota" (§2.4).
 - I rami CRM_Dev e DocumentManagement_Dev ancora non esistono: si creano da **Infrastructure** *dopo* questo passo.
 
@@ -100,7 +104,7 @@ Un applicativo non referenzia le tabelle di un altro. Quando serve un'integrazio
 - chi la usa (CRM) la chiede alla DI e la chiama solo se registrata **e** l'applicativo è attivo per l'azienda; altrimenti la sezione semplicemente non si mostra.
 - Eventuali collegamenti a righe di un altro applicativo si salvano come **ID senza FK** (es. `Crm_Opportunita.IdCommessaPresenze`), con controllo di esistenza via interfaccia.
 
-**Cancellazione di un record comune** (es. un cliente): le FK tra schemi la bloccano se è usato, ma il messaggio sarebbe tecnico. Serve un registro `ISharedEntityUsageChecker` (stesso schema dei deleter): ogni applicativo dice "questo cliente è usato da 3 commesse / 2 opportunità" e il servizio Clienti mostra un messaggio chiaro prima di cancellare. In alternativa (consigliato in aggiunta) disattivazione logica del cliente.
+**Cancellazione di un record comune** (es. un cliente): le FK tra schemi la bloccano se è usato, ma il messaggio sarebbe tecnico. Registro `ICommonEntityUsage` (stesso schema dei deleter, già fatto in Infrastructure con l'implementazione delle presenze): ogni applicativo dice "questo cliente è usato da 3 commesse / 2 opportunità" e il servizio Clienti mostra un messaggio chiaro prima di cancellare. In aggiunta (deciso) il campo `Attivo` per disattivare il cliente senza cancellarlo.
 
 ---
 
@@ -123,11 +127,11 @@ Riusa i ruoli dell'azienda (ricordare: un utente può essere **User + Admin** in
 | User (commerciale) | vede i clienti/opportunità di cui è **responsabile** o in cui è coinvolto, più i clienti "condivisi"; gestisce le proprie attività |
 | Studio / Dealer | nessun accesso ai dati CRM (se non impersonando, come oggi) |
 
-Regola di visibilità configurabile per azienda (`Crm_Cfg.VisibilitaUtenti`: *tutti vedono tutto* / *solo i propri*). Le voci di menu si possono nascondere per ruolo con `CompanyMenuRestriction` (già esistente).
+Regola di visibilità configurabile per azienda (`Crm_Cfg.VisibilitaUtenti`: *tutti vedono tutto* / *solo i propri*), **predefinita "solo i propri"** (deciso il 04/11/2026). Le voci di menu si possono nascondere per ruolo con `CompanyMenuRestriction` (già esistente).
 
 ---
 
-## 5. Modello dati CRM (schema `tenant_<id>_4`, prefisso `Crm_`)
+## 5. Modello dati CRM (schema `tenant_<id>_3`, prefisso `Crm_`)
 
 Tutte le tabelle derivano da `BaseEntity` (Id, CreationDate, ModifiedDate, ChangeUser). Prefisso `Crm_` per evitare collisioni di nomi tra contesti (verificate all'avvio).
 
@@ -158,12 +162,12 @@ Il wizard di attivazione (come `company-attendance-wizard`) crea valori predefin
 | `Crm_AttivitaPartecipante` | altri utenti coinvolti (appuntamenti) | `AspNetUsers` |
 | `Crm_Offerta` + `Crm_OffertaRiga` | numero/anno, data, validità, stato (Bozza/Inviata/Accettata/Rifiutata), righe con prodotto, quantità, prezzo, sconto, IVA; totali | `Crm_Opportunita`, `Az_Cliente`, `Crm_Par_Prodotto` |
 | `Crm_Nota` | note libere sul cliente/opportunità (testo, autore, data, fissata in alto) | |
-| `Crm_Allegato` | file della trattativa/offerta (stesso schema di `Dip_GG_NotaSpesa_Allegato`). Se il documentale è attivo, vedi §5.3 | |
+| `Crm_Allegato` | file della trattativa/offerta (stesso schema di `Dip_GG_NotaSpesa_Allegato`). **Sempre qui**, anche con il documentale attivo (deciso il 04/11/2026) | |
 
 ### 5.3 Integrazioni (facoltative, §2.6)
 
 - **Presenze attive**: dalla scheda cliente, sezione "Commesse e ore" (lettura tramite interfaccia: commesse del cliente, ore del periodo dalle statistiche attività). Da un'opportunità **vinta** si può proporre la creazione della commessa nelle presenze (`ICommessaCreator` implementato su AttendanceTracking_Dev) e se ne salva l'ID in `IdCommessaPresenze`.
-- **Documentale attivo**: la scheda cliente mostra il **fascicolo del cliente** del documentale; gli allegati CRM possono essere archiviati lì invece che in `Crm_Allegato` (decisione §9).
+- **Documentale attivo**: la scheda cliente mostra (in lettura) il **fascicolo del cliente** del documentale; gli allegati del CRM restano comunque in `Crm_Allegato` (deciso).
 - **Ticket/assistenza**: nessuna dipendenza.
 
 ---
@@ -197,6 +201,7 @@ Il wizard di attivazione (come `company-attendance-wizard`) crea valori predefin
 - **Multilingua**: risorse `CrmMessages.resx/.en.resx` sul server, cartella i18n `crm` sul client (`i18n-folders.ts`), come per le presenze.
 - **Menu e rotte**: `main-menu-crm.service.ts`, `route-crm.service.ts`, `site-name-crm.ts`, `showcase-crm.service.ts`, registrati in `main-menu.service.ts`/`route.service.ts` con `forApplication(..., ApplicationType.Crm)`.
 - **Backend**: `Installers4Crm` registra `CrmDbContext` con `AddApplicationDbContext<CrmDbContext>(ApplicationType.Crm)`; `CrmDbContextDesignTimeFactory` per `dotnet ef`; cartelle `Crm` in entità, repository, servizi, mapper (AutoMapper), controller, seguendo `CONTRIBUTING_infrastruttura.md`.
+- **Uso dei clienti comuni**: `CrmCommonEntityUsage : ICommonEntityUsage` ("opportunità: 2, offerte: 1") per bloccare con un messaggio chiaro la cancellazione di un cliente usato.
 - **Cancellazione fisica**: `CrmDataDeleter : IApplicationDataDeleter` (conteggi per l'anteprima; dati in modalità singola; per l'utente rimosso: riassegna o svuota il responsabile, non cancella i clienti).
 - **GDPR**: consenso marketing con data e fonte; esportazione dei dati di un contatto; cancellazione di un contatto su richiesta (diritto all'oblio) senza perdere le statistiche (anonimizzazione).
 - **Pagine**: elenchi con `app-generic-list`, modifiche con `BasePageConfirmCancelComponent`, dialog con `BaseDialogConfirmCancelComponent`.
@@ -206,31 +211,86 @@ Il wizard di attivazione (come `company-attendance-wizard`) crea valori predefin
 
 ## 8. Piano di lavoro
 
-**Fase 0 – Infrastructure_Dev (prerequisito comune a CRM e documentale)**
-1. `ApplicationType`: `Common = 3`, `Crm = 4`, `DocumentManagement = 5` (C# e TypeScript).
-2. `CommonDbContext`, accessor "sempre attivo", provisioning per tutte le aziende, search_path a tre schemi, ordine dei deleter.
-3. Spostamento entità `Az_Anagrafica`, `Az_Cliente`, `Dip_Anagrafica` + nuova `Az_ClienteContatto`; servizi, controller, pagine Clienti/Contatti, menu "Anagrafiche".
-4. Procedura di spostamento dati (§2.4), `ISharedEntityUsageChecker`.
-5. Merge Infrastructure → AttendanceTracking_Dev: adeguamento presenze (rimozione copie, mappature escluse, migration vuota) e prova completa su DB copia, in modalità singola **e** multi-tenant.
-
-**Fase 1 – CRM_Dev (creato da Infrastructure)**
-6. Contesto, configurazione, wizard di attivazione.
-7. Scheda cliente CRM, lead, opportunità + pipeline, attività + agenda + promemoria.
-8. Offerte con PDF ed email.
-9. Report, import/export.
-10. Chat AI CRM, deleter, multilingua.
-
-**Fase 2 – integrazioni**: commesse/ore presenze, fascicolo documentale, AI avanzata.
+Le fasi sono quelle della checklist al §10: **Fase 0** in Infrastructure_Dev (prerequisito comune a CRM e documentale, poi merge fino alle presenze), **Fase 1** su CRM_Dev, **Fase 2** integrazioni con presenze e documentale.
 
 ---
 
-## 9. Decisioni da prendere
+## 9. Decisioni
 
-1. **Schema Common** (§2.1 opzione D) – confermare l'approccio.
-2. **Valori dell'enum** `Common = 3`, `Crm = 4`, `DocumentManagement = 5`.
-3. **`Az_Cliente.Default`** – spostarlo in `Az_Cfg` delle presenze (consigliato) o tenerlo.
-4. **`Az_Sedi`/`Az_SediReparto`** – restano nelle presenze ora, o vanno subito in Common (servirebbero al documentale per distribuire documenti per reparto)?
-5. **Visibilità predefinita** dei commerciali: tutti vedono tutto, o solo i propri?
-6. **Allegati CRM** con documentale attivo: archiviati nel documentale o sempre in `Crm_Allegato`?
-7. **Clienti disattivati** (campo `Attivo` in `Az_Cliente`) invece della sola cancellazione: consigliato.
-8. Se in futuro il CRM dovrà gestire anche **fornitori**: `Az_Cliente` con un campo Tipo (Cliente/Fornitore/Entrambi), da decidere ora perché la tabella diventa comune.
+1. **Schema Common** (§2.1 opzione D) – deciso e predisposto il 03/11/2026.
+2. **Valori dell'enum**: `Common = 0`, `Crm = 3`, `DocumentManagement = 4`, da aggiungere subito in Infrastructure – deciso il 04/11/2026.
+3. **`Az_Cliente.Default`** – si sposta in `Az_Cfg` delle presenze (`IdAz_ClienteDefault`) – deciso il 04/11/2026.
+4. **`Az_Sedi`/`Az_SediReparto`** – restano nelle presenze – deciso il 04/11/2026.
+5. **Visibilità dei commerciali** – configurabile per azienda, predefinita "solo i propri" – deciso il 04/11/2026.
+6. **Allegati CRM** – sempre in `Crm_Allegato`, anche con il documentale attivo – deciso il 04/11/2026.
+7. **Clienti disattivati** – nuovo campo `Attivo` in `Az_Cliente` – deciso il 04/11/2026.
+8. **Fornitori** – nuovo campo `Tipo` (Cliente/Fornitore/Entrambi) in `Az_Cliente` – deciso il 04/11/2026.
+9. **Attivazione** – solo SuperUser e DealerPowerAdmin del centro, per tutti gli applicativi – deciso il 03/11/2026 (`ANALISI_DOCUMENTALE.md` §4.1, S2).
+10. **`Dip_Anagrafica` in Common** – deciso il 04/11/2026 (`ANALISI_DOCUMENTALE.md` §2.1).
+
+---
+
+## 10. Lavori fatti e da fare
+
+Legenda: [x] fatto · [ ] da fare.
+
+### Fase 0 – Dati comuni e prerequisiti (Infrastructure_Dev, poi merge fino ad AttendanceTracking)
+
+Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALISI_DOCUMENTALE.md` §11) rimanda qui.
+
+**Schema Common** (fatto il 03/11/2026, commit f4b99d2c su Infrastructure_Dev e 2b5e63b3 su AttendanceTracking_Dev)
+- [x] `ApplicationType.Common = 0`, escluso dall'attivazione degli applicativi (server e client)
+- [x] `CommonDbContext`, accessor senza controllo di attivazione, provisioning per tutte le aziende (Common migrato per primo)
+- [x] search_path dei contesti degli applicativi: schema app, schema Common, public
+- [x] `Az_Anagrafica` e `Az_Cliente` spostate in Common; nuova `Az_ClienteContatto`
+- [x] repository in `Repositories/Tenant/Common`, utilità `ICommonCompanyUtility`, inizializzatore `CommonCompanyInitializer`
+- [x] API comuni `api/Az_Cliente/*` (filtrate sull'azienda corrente) e `api/Az_ClienteContatto/*`
+- [x] `ICommonEntityUsage` (cliente usato non cancellabile) con l'implementazione delle presenze (commesse)
+- [x] `CommonDataDeleter` (eseguito per ultimo) nella cancellazione fisica
+- [x] presenze adeguate (AttendanceTracking_Dev): tabelle comuni mappate escluse, servizi clienti tolti, "azienda nuova" = senza `Az_Cfg`
+- [x] migration azzerate (InitPublic, InitCommon, InitMoke, AttendanceTracking_Init) e database di sviluppo ricreato
+- [x] prove via API in multi-tenant (clienti, contatti, isolamento tra aziende, attivazione presenze, blocco della cancellazione)
+- [ ] prova in **modalità singola** (tutto in public)
+
+**Decisioni del 03-04/11/2026 da realizzare**
+- [ ] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript)
+- [ ] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev)
+- [ ] `Az_Cliente.Default` → `Az_Cfg.IdAz_ClienteDefault` (Infrastructure_Dev + AttendanceTracking_Dev)
+- [ ] `Az_Cliente.Attivo` (esclusi dalle scelte, "Mostra disabilitati" negli elenchi)
+- [ ] `Az_Cliente.Tipo` (Cliente / Fornitore / Entrambi)
+- [ ] attivazione degli applicativi solo da SuperUser e DealerPowerAdmin del centro (controllo in `CompanyApplicationPut`, oggi assente; pagina in sola lettura per gli altri)
+- [ ] `FinancialAdvisorApplication` (abilitazione degli applicativi per studio) e applicativi dello studio in `UserLoad`
+
+**Client comune**
+- [ ] pagine Clienti (`customer-list/edit`), servizio Angular, pipe e handler AI spostati dalle presenze all'infrastruttura (Infrastructure_Dev; poi rimozione delle copie su AttendanceTracking_Dev)
+- [ ] menu **Anagrafiche** dell'infrastruttura, visibile con almeno un applicativo che usa i clienti
+- [ ] contatti del cliente nella pagina di modifica del cliente (elenco + dialog)
+- [ ] campi `Attivo` e `Tipo` nelle pagine clienti
+
+**Prima del primo rilascio su un database con dati**
+- [ ] procedura di spostamento dei dati presenze → Common (§2.4), idempotente, provata su una copia del database
+
+### Fase 1 – CRM (CRM_Dev, creato da Infrastructure dopo la Fase 0)
+- [ ] creazione del ramo CRM_Dev da Infrastructure
+- [ ] `CrmDbContext` (`ApplicationType.Crm`), design-time factory, `Installers4Crm`, migration iniziale
+- [ ] configurazione (§5.1) e wizard di attivazione con valori predefiniti multilingua
+- [ ] `Crm_ClienteDati` e scheda cliente CRM (stato, responsabile, fonte, tag)
+- [ ] visibilità dei commerciali (`Crm_Cfg.VisibilitaUtenti`, predefinita "solo i propri"), controllata lato server
+- [ ] lead e conversione in cliente
+- [ ] opportunità, pipeline kanban, storico delle fasi
+- [ ] attività, agenda, promemoria (SignalR)
+- [ ] offerte con righe, PDF e invio email
+- [ ] note e allegati (`Crm_Allegato`)
+- [ ] report (pipeline, conversione, vinte/perse, attività per utente)
+- [ ] import clienti/contatti da Excel/CSV con controllo duplicati; export Excel
+- [ ] riassegnazione in blocco dei clienti di un commerciale
+- [ ] `CrmCommonEntityUsage` e `CrmDataDeleter`
+- [ ] menu, rotte, site-name, showcase, multilingua (`CrmMessages`, i18n `crm`)
+- [ ] handler chat AI CRM
+- [ ] GDPR: consenso marketing, esportazione e anonimizzazione di un contatto
+
+### Fase 2 – Integrazioni
+- [ ] presenze: sezione "Commesse e ore" nella scheda cliente (interfaccia in Infrastructure, implementazione su AttendanceTracking_Dev)
+- [ ] presenze: da opportunità vinta a commessa (`ICommessaCreator`, `IdCommessaPresenze`)
+- [ ] documentale: fascicolo del cliente in lettura nella scheda cliente
+- [ ] AI avanzata (riepilogo cliente, prossima azione, bozza email)
