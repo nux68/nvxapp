@@ -1,5 +1,6 @@
 import { Injectable, Type, inject } from '@angular/core';
 import { MainMenuAttendanceTrackingService } from './main-menu-attendance-tracking.service';
+import { MainMenuDocumentManagementService } from './main-menu-document-management.service';
 import { MainMenuInfrastructureService } from './main-menu-infrastructure.service';
 import { AuthService } from './auth.service';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
@@ -15,12 +16,19 @@ export class MainMenuService implements iMainMenuService {
 
   constructor(private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private mainMenuAttendanceTrackingService: MainMenuAttendanceTrackingService,
+              private mainMenuDocumentManagementService: MainMenuDocumentManagementService,
               private authService: AuthService) { }
 
   // Le voci di menu di un applicativo compaiono solo se l'applicativo e' attivo per l'azienda
   // dell'utente (AuthService.ActiveApplications, da UserLoad). Le voci dell'infrastruttura sempre.
   private forApplication(items: MainMenuItem[], application: ApplicationType): MainMenuItem[] {
     return this.authService.hasApplication(application) ? items : [];
+  }
+
+  // Voci lato studio di un applicativo: compaiono se l'applicativo e' abilitato per lo studio dell'utente
+  // (AuthService.FinancialAdvisorApplications, da UserLoad), indipendentemente dalle aziende.
+  private forFinancialAdvisorApplication(items: MainMenuItem[], application: ApplicationType): MainMenuItem[] {
+    return this.authService.hasFinancialAdvisorApplication(application) ? items : [];
   }
 
   
@@ -33,6 +41,9 @@ export class MainMenuService implements iMainMenuService {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4SuperUser, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuDocumentManagementService.Pages4SuperUser, ApplicationType.DocumentManagement).forEach((item) => {
       mainMenuItem.push(item);
     });
 
@@ -50,6 +61,9 @@ export class MainMenuService implements iMainMenuService {
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4Admin, ApplicationType.AttendanceTracking).forEach((item) => {
       mainMenuItem.push(item);
     });
+    this.forApplication(this.mainMenuDocumentManagementService.Pages4Admin, ApplicationType.DocumentManagement).forEach((item) => {
+      mainMenuItem.push(item);
+    });
 
     return mainMenuItem;
 
@@ -63,6 +77,9 @@ export class MainMenuService implements iMainMenuService {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4DealerAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forApplication(this.mainMenuDocumentManagementService.Pages4DealerAdmin, ApplicationType.DocumentManagement).forEach((item) => {
       mainMenuItem.push(item);
     });
 
@@ -80,6 +97,9 @@ export class MainMenuService implements iMainMenuService {
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4CompanyAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
       mainMenuItem.push(item);
     });
+    this.forApplication(this.mainMenuDocumentManagementService.Pages4CompanyAdmin, ApplicationType.DocumentManagement).forEach((item) => {
+      mainMenuItem.push(item);
+    });
 
     return mainMenuItem;
 
@@ -93,6 +113,9 @@ export class MainMenuService implements iMainMenuService {
       mainMenuItem.push(item);
     });
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4FinancialAdvisorAdmin, ApplicationType.AttendanceTracking).forEach((item) => {
+      mainMenuItem.push(item);
+    });
+    this.forFinancialAdvisorApplication(this.mainMenuDocumentManagementService.Pages4FinancialAdvisorAdmin, ApplicationType.DocumentManagement).forEach((item) => {
       mainMenuItem.push(item);
     });
 
@@ -110,6 +133,9 @@ export class MainMenuService implements iMainMenuService {
     this.forApplication(this.mainMenuAttendanceTrackingService.Pages4User, ApplicationType.AttendanceTracking).forEach((item) => {
       mainMenuItem.push(item);
     });
+    this.forApplication(this.mainMenuDocumentManagementService.Pages4User, ApplicationType.DocumentManagement).forEach((item) => {
+      mainMenuItem.push(item);
+    });
 
     return mainMenuItem;
 
@@ -124,7 +150,8 @@ export class MainMenuService implements iMainMenuService {
 
     return Math.max(
       this.mainMenuInfrastructureService.GetWorkingMode,
-      this.mainMenuAttendanceTrackingService.GetWorkingMode
+      this.mainMenuAttendanceTrackingService.GetWorkingMode,
+      this.mainMenuDocumentManagementService.GetWorkingMode
     );
 
   }
@@ -347,6 +374,7 @@ export enum MenuType {
 export enum WorkingMode {
 
   Infrastructure = 0,
-  AttendanceTracking = 1
+  AttendanceTracking = 1,
+  DocumentManagement = 2
 
 }

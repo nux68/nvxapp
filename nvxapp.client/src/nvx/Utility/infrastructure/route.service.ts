@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 import { RouteInfrastructureService } from './route-infrastructure.service';
 import { RouteAttendanceTrackingService } from './route-attendance-tracking.service';
+import { RouteDocumentManagementService } from './route-document-management.service';
 import { applicationGuard } from '../../pages/RoleGuard/infrastructure/application-guard';
+import { financialAdvisorApplicationGuard } from '../../pages/RoleGuard/infrastructure/financial-advisor-application-guard';
 import { menuRestrictionGuard } from '../../pages/RoleGuard/infrastructure/menu-restriction-guard';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { ShowcaseService } from './showcase.service';
@@ -16,15 +18,19 @@ import { ShowcaseAttendanceTrackingService } from './showcase-attendance-trackin
 export class RouteService {
 
   constructor(private routeInfrastructureService: RouteInfrastructureService,
-              private routeAttendanceTrackingService: RouteAttendanceTrackingService) { }
+              private routeAttendanceTrackingService: RouteAttendanceTrackingService,
+              private routeDocumentManagementService: RouteDocumentManagementService) { }
 
   public getRoutes(): Routes {
     const routesFromService1 = this.routeInfrastructureService.getRoutes();
     const routesFromService2 = this.forApplication(this.routeAttendanceTrackingService.getRoutes(), ApplicationType.AttendanceTracking);
+    // documentale: pagine dell'azienda (applicativo attivo) e pagine lato studio (applicativo abilitato per lo studio)
+    const routesDocumentManagement = this.forApplication(this.routeDocumentManagementService.getRoutes(), ApplicationType.DocumentManagement)
+      .concat(this.forFinancialAdvisorApplication(this.routeDocumentManagementService.getStudioRoutes(), ApplicationType.DocumentManagement));
     // showcase (pagine pubbliche prima del login): non dipende dagli applicativi attivi
     const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService()).getRoutes();
 
-    return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2));
+    return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2, routesDocumentManagement));
   }
 
   // A tutte le rotte (di ogni applicativo) si aggiunge menuRestrictionGuard: blocca le voci di menu
@@ -42,6 +48,14 @@ export class RouteService {
     return routes.map((route: Route) => ({
       ...route,
       canActivate: [...(route.canActivate ?? []), applicationGuard(application)],
+    }));
+  }
+
+  // Le rotte lato studio di un applicativo sono accessibili solo se l'applicativo e' abilitato per lo studio.
+  private forFinancialAdvisorApplication(routes: Routes, application: ApplicationType): Routes {
+    return routes.map((route: Route) => ({
+      ...route,
+      canActivate: [...(route.canActivate ?? []), financialAdvisorApplicationGuard(application)],
     }));
   }
 

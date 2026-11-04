@@ -1,4 +1,5 @@
 import { I18N_FOLDER_ATTENDANCE_TRACKING } from './i18n-attendance-tracking';
+import { I18N_FOLDER_DOCUMENT_MANAGEMENT } from './i18n-document-management';
 
 /*
  Cartelle dei file di traduzione, in src/assets/i18n/<cartella>/<lingua>.json.
@@ -9,4 +10,5 @@ import { I18N_FOLDER_ATTENDANCE_TRACKING } from './i18n-attendance-tracking';
 export const I18N_FOLDERS: string[] = [
   'infrastructure',
   I18N_FOLDER_ATTENDANCE_TRACKING,
+  I18N_FOLDER_DOCUMENT_MANAGEMENT,
 ].filter((x): x is string => !!x);
