@@ -251,6 +251,7 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 
 - **Database**: `pg_dump` giornaliero via cron (`docker compose exec postgres pg_dump ...`) in una cartella del VPS, con rotazione (es. 14 giorni) e **copia fuori dal VPS** (PC, storage esterno). Senza copia esterna, se si perde il VPS si perdono anche i backup.
 - **Chiavi DataProtection**: stanno nel DB (punto 4), quindi sono già nel dump.
+- **File dei documenti** (documentale, dal 04/11/2026): stanno nel volume `nvxapp_files` (`/app/Files`), **non** nel database. Vanno copiati insieme al dump (es. `tar` del volume con lo stesso cron) e ripristinati insieme: un dump senza i file ha i documenti senza contenuto.
 - **File `DockerVps.env`** (il `.env` del server): copia sicura fuori dal server (gestore di password), non in git.
 - **Snapshot Contabo**: prima di ogni rilascio (ne è incluso 1). Il backup automatico a €1,65/mese è un'ulteriore sicurezza, ma non sostituisce il dump: ripristina tutta la macchina, non il singolo database.
 - Prova di ripristino del dump su un database di test almeno una volta, prima di andare in produzione.

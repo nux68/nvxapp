@@ -144,6 +144,8 @@ namespace nvxapp.server.Utility
 
             // pulizia dei file prodotti dai job (Export:RetentionHours)
             builder.Services.AddHostedService<JobFileCleanupService>();
+            // spazio dei file delle aziende: riallineamento notturno e fotografia mensile
+            builder.Services.AddHostedService<StorageMaintenanceService>();
 
 
             return builder.Services;

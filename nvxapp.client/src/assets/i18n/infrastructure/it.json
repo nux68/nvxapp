@@ -377,6 +377,7 @@
       "title": "UserImpersonate"
     },
     "companyEdit": {
+      "applicationsReadOnly": "Gli applicativi li attivano e disattivano solo il SuperUser e il DealerPowerAdmin del centro.",
       "title": "CompanyEditPage",
       "info": "Info",
       "description": "Descrizione",
@@ -407,6 +408,9 @@
       "disabledNote": "Le righe disabilitate non compaiono nelle liste, salvo \"Mostra anche i disabilitati\"."
     },
     "financialAdvisorEdit": {
+      "applicationsReadOnly": "Gli applicativi dello studio li abilitano solo il SuperUser e il DealerPowerAdmin del centro.",
+      "applicationsNote": "Abilitano le funzioni lato studio (es. area studio del documentale). Non attivano gli applicativi sulle aziende dello studio.",
+      "applications": "Applicativi dello studio",
       "title": "Financial Advisor",
       "info": "Info",
       "description": "Descrizione",

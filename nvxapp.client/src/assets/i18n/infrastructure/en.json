@@ -377,6 +377,7 @@
       "title": "Impersonate user"
     },
     "companyEdit": {
+      "applicationsReadOnly": "Applications can only be activated or deactivated by the SuperUser and the centre's DealerPowerAdmin.",
       "title": "Edit company",
       "info": "Info",
       "description": "Description",
@@ -407,6 +408,9 @@
       "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected."
     },
     "financialAdvisorEdit": {
+      "applicationsReadOnly": "Firm applications can only be enabled by the SuperUser and the centre's DealerPowerAdmin.",
+      "applicationsNote": "They enable the firm-side features (e.g. the document management firm area). They do not activate the applications on the firm's companies.",
+      "applications": "Firm applications",
       "title": "Financial Advisor",
       "info": "Info",
       "description": "Description",

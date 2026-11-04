@@ -42,6 +42,7 @@ export class UserNavigationService {
 
       this.authService.setRole(userData.roles);
       this.authService.setActiveApplications(userData.activeApplications);
+      this.authService.setFinancialAdvisorApplications(userData.financialAdvisorApplications);
       this.authService.setMenuRestrictions(userData.menuRestrictions);
     }
 
@@ -70,7 +71,9 @@ export class UserNavigationService {
           this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
           // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
           this._userCronology[this._userCronology.length - 1].userData.activeApplications = usl.data.userData.activeApplications;
+          this._userCronology[this._userCronology.length - 1].userData.financialAdvisorApplications = usl.data.userData.financialAdvisorApplications;
           this.authService.setActiveApplications(usl.data.userData.activeApplications);
+          this.authService.setFinancialAdvisorApplications(usl.data.userData.financialAdvisorApplications);
           this._userCronology[this._userCronology.length - 1].userData.menuRestrictions = usl.data.userData.menuRestrictions;
           this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
 
@@ -111,7 +114,9 @@ export class UserNavigationService {
             this.authService.setRole(this._userCronology[idx].userData.roles);
             // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
             this._userCronology[idx].userData.activeApplications = usl.data.userData.activeApplications;
+            this._userCronology[idx].userData.financialAdvisorApplications = usl.data.userData.financialAdvisorApplications;
             this.authService.setActiveApplications(usl.data.userData.activeApplications);
+            this.authService.setFinancialAdvisorApplications(usl.data.userData.financialAdvisorApplications);
             this._userCronology[idx].userData.menuRestrictions = usl.data.userData.menuRestrictions;
             this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
 

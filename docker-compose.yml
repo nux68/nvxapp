@@ -48,8 +48,11 @@ services:
       # si decide al primo avvio su database vuoto e non si puo' piu' cambiare (Note/Migrazioni.txt)
       NVXAPP_DbParameter__MultiTenant: ${NVXAPP_DbParameter__MultiTenant:-true}
       NVXAPP_Swagger__Enabled: ${NVXAPP_Swagger__Enabled:-false}
+      # file dei documenti (documentale): fuori dal database, nel volume nvxapp_files (da includere nei backup)
+      NVXAPP_FileStorage__Root: /app/Files
     volumes:
       - nvxapp_logs:/app/Logs
+      - nvxapp_files:/app/Files
     logging: *logging
 
   postgres:
@@ -87,5 +90,6 @@ services:
 
 volumes:
   nvxapp_logs:
+  nvxapp_files:
   pg_data:
   rabbit_data:

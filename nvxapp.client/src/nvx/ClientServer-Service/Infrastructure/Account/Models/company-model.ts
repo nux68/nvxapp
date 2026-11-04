@@ -28,6 +28,8 @@ export class CompanyListOutModel extends ModelResult {
 export class CompanyEditModel {
   /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
   public disabled: boolean = false;
+  /** applicativi visibili ma non modificabili (li cambiano solo il SuperUser e il DealerPowerAdmin del centro) */
+  public applicationsReadOnly: boolean = false;
 
   constructor(
     public idCompany: number = 0,
