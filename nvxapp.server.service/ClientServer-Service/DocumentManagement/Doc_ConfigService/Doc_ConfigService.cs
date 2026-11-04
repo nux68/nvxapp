@@ -22,7 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
     /*
      Configurazione del documentale dell'azienda (ANALISI_DOCUMENTALE.md §6.1): impostazioni, tipologie, cartelle,
      abilitazioni ai documenti del personale. Tipologie, cartelle e impostazioni: CompanyPowerAdmin.
-     Abilitazioni: SuperUser, DealerPowerAdmin del centro, CompanyPowerAdmin gia' abilitato.
+     Abilitazioni dei CompanyAdmin: CompanyPowerAdmin, SuperUser, DealerPowerAdmin del centro (il CompanyPowerAdmin e'
+     sempre abilitato e non si modifica).
     */
     public class Doc_ConfigService : ServiceBase, IDoc_ConfigService
     {
@@ -245,8 +246,11 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
                 // solo gli amministratori dell'azienda (CompanyPowerAdmin e CompanyAdmin) si abilitano
                 var ammessi = await AbilitazioniAsync(ctx);
-                if (!ammessi.Any(x => x.IdAspNetUsers == dati.IdAspNetUsers))
+                var ammesso = ammessi.FirstOrDefault(x => x.IdAspNetUsers == dati.IdAspNetUsers);
+                if (ammesso == null)
                     throw new UserMessageException(DocumentManagementMessages.Get("PermissionUserInvalid"));
+                if (ammesso.Fisso)
+                    throw new UserMessageException(DocumentManagementMessages.Get("PermissionFixed"));
 
                 var row = await _db.Doc_UtenteAbilitazione.AsTracking().FirstOrDefaultAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers == dati.IdAspNetUsers);
                 if (row == null)
@@ -437,14 +441,23 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
             var nomi = await _publicDb.Users.Where(u => utenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
             var abil = await _db.Doc_UtenteAbilitazione.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
 
+            var idPowerAdmin = ruoli.FirstOrDefault(r => r.Name == nameof(RoleCode.CompanyPowerAdmin))?.Id;
+
+            // il CompanyPowerAdmin (anche se e' pure CompanyAdmin) e' sempre abilitato: riga fissa, non modificabile
             return conRuolo.GroupBy(x => x.UserId)
-                           .Select(g => new Doc_AbilitazioneModel
+                           .Select(g =>
                            {
-                               IdAspNetUsers = g.Key,
-                               UserName = nomi.FirstOrDefault(n => n.Id == g.Key)?.UserName ?? g.Key,
-                               Ruoli = string.Join(", ", g.Select(r => ruoli.First(x => x.Id == r.RoleId).Name)),
-                               VedePersonale = abil.FirstOrDefault(a => a.IdAspNetUsers == g.Key)?.VedePersonale ?? false,
-                               CaricaPersonale = abil.FirstOrDefault(a => a.IdAspNetUsers == g.Key)?.CaricaPersonale ?? false,
+                               bool fisso = g.Any(r => r.RoleId == idPowerAdmin);
+                               var a = abil.FirstOrDefault(x => x.IdAspNetUsers == g.Key);
+                               return new Doc_AbilitazioneModel
+                               {
+                                   IdAspNetUsers = g.Key,
+                                   UserName = nomi.FirstOrDefault(n => n.Id == g.Key)?.UserName ?? g.Key,
+                                   Ruoli = string.Join(", ", g.Select(r => ruoli.First(x => x.Id == r.RoleId).Name)),
+                                   VedePersonale = fisso || (a?.VedePersonale ?? false),
+                                   CaricaPersonale = fisso || (a?.CaricaPersonale ?? false),
+                                   Fisso = fisso,
+                               };
                            })
                            .OrderBy(x => x.UserName)
                            .ToList();

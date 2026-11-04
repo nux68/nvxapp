@@ -63,7 +63,7 @@ Fuori dall'ambito della prima versione: **conservazione sostitutiva a norma** (r
 | User (dipendente) | **solo i propri** documenti personali + cartelle condivise a cui ha accesso; presa visione, caricamento su richiesta |
 | Dealer / SuperUser | nessun accesso ai contenuti (solo impersonando, come oggi) |
 
-**Documenti del personale** *(deciso)*: caricarli e vederli (cedolini e buste paga dei colleghi compresi) è consentito a CompanyPowerAdmin e CompanyAdmin **solo con un'abilitazione esplicita per utente** (nuova tabella `Doc_UtenteAbilitazione` nello schema dell'azienda: IdAspNetUsers, CaricaPersonale, VedePersonale; la gestisce il CompanyPowerAdmin abilitato o chi attiva il documentale, S2). Senza abilitazione l'admin non vede i documenti del personale, nemmeno nell'elenco. Il dipendente vede sempre i propri.
+**Documenti del personale** *(deciso)*: caricarli e vederli (cedolini e buste paga dei colleghi compresi) è consentito al **CompanyPowerAdmin sempre** (deciso il 04/11/2026) e al CompanyAdmin **solo con un'abilitazione esplicita per utente** (nuova tabella `Doc_UtenteAbilitazione` nello schema dell'azienda: IdAspNetUsers, CaricaPersonale, VedePersonale; la gestiscono il CompanyPowerAdmin e chi attiva il documentale, S2; nella pagina Abilitazioni il CompanyPowerAdmin compare come riga fissa, non modificabile). Senza abilitazione il CompanyAdmin non vede i documenti del personale, nemmeno nell'elenco. Il dipendente vede sempre i propri.
 
 Accesso dello studio a più aziende: il servizio lavora azienda per azienda con `TenantScope.Use(idCompany)` (già usato da job e inizializzatori), dopo aver verificato che l'azienda appartenga allo studio dell'utente. Nessun accesso diretto agli schemi di altre aziende senza questo controllo.
 
@@ -266,8 +266,8 @@ Stesso flusso per CU e altri documenti per dipendente; un tracciato diverso (es.
 1. **Storage**: su disco (FileSystem, volume Docker) – deciso.
 2. **Cifratura** dei file a riposo: per ora no – deciso.
 3. **`Dip_Anagrafica` in Common** (§2.1): deciso il 04/11/2026, con `IdAspNetUsers` facoltativo e conservazione del dipendente dopo la rimozione dell'utente; cambia anche le presenze.
-4. **Chi carica i documenti del personale**: lo studio e, nell'azienda, CompanyPowerAdmin e CompanyAdmin **solo con abilitazione esplicita** (§4) – deciso.
-5. **Chi vede i documenti del personale dei colleghi**: CompanyPowerAdmin e CompanyAdmin **solo con abilitazione esplicita** (§4) – deciso.
+4. **Chi carica i documenti del personale**: lo studio e, nell'azienda, il CompanyPowerAdmin (sempre, deciso il 04/11/2026) e il CompanyAdmin **solo con abilitazione esplicita** (§4) – deciso.
+5. **Chi vede i documenti del personale dei colleghi**: il CompanyPowerAdmin (sempre, deciso il 04/11/2026) e il CompanyAdmin **solo con abilitazione esplicita** (§4) – deciso.
 6. **Spazio a disposizione** (§5.3) – deciso il 03/11/2026: configurano SuperUser e DealerPowerAdmin (S2); oltre quota **si bloccano i caricamenti**; valori predefiniti per **dimensione massima del file** e **soglia di avviso**; spazio solo da **pacchetti predefiniti** (`StoragePlan`); **non** si contano i file degli altri applicativi; spazio **solo per azienda**. Pacchetti iniziali *(decisi)*: **1, 5 e 20 GB**. Valori predefiniti *(decisi il 04/11/2026)*: **50 MB** per file e avviso all'**80%**.
 7. **Fine conservazione**: i documenti vengono solo segnalati, mai eliminati in automatico – deciso.
 8. **Contenuti all'AI**: per ora nessuno – deciso (§7.6).
@@ -330,7 +330,7 @@ Legenda: [x] fatto · [ ] da fare.
 - [x] `DocumentManagementDbContext` (`ApplicationType.DocumentManagement`, schema `tenant_<id>_4`), design-time factory, installer, migration iniziale
 - [x] configurazione (`Doc_Cfg`, tipologie, cartelle ad albero con "visibile ai dipendenti") e inizializzazione all'attivazione con tipologie e cartelle predefinite multilingua
 - [ ] metadati per tipologia (`Doc_Par_TipoMetadato`) e permessi per cartella (`Doc_CartellaPermesso`): per ora competenza, scadenza e "visibile ai dipendenti" coprono i casi della prima versione
-- [x] abilitazioni per utente ai documenti del personale (`Doc_UtenteAbilitazione`: carica / vede) per CompanyPowerAdmin e CompanyAdmin
+- [x] abilitazioni per utente ai documenti del personale (`Doc_UtenteAbilitazione`: carica / vede) per i CompanyAdmin; il CompanyPowerAdmin è sempre abilitato (04/11)
 - [x] dipendenti anche senza account (anagrafica comune) gestiti dal documentale
 - [x] archivio: cartelle, filtri (testo, cartella, tipologia, dipendente, anno), fascicoli per dipendente e cliente tramite i filtri, avviso dei duplicati
 - [ ] caricamento multiplo e anteprima PDF/immagini nel browser (oggi un file alla volta e download)

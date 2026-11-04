@@ -186,4 +186,8 @@
   <data name="EmployeeNotFound" xml:space="preserve">
     <value>Dipendente non trovato.</value>
   </data>
+  <data name="PermissionFixed" xml:space="preserve">
+    <value>Il CompanyPowerAdmin è sempre abilitato ai documenti del personale: l'abilitazione non si modifica.</value>
+    <comment>Doc_AbilitazionePut su un CompanyPowerAdmin</comment>
+  </data>
 </root>

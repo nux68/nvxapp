@@ -65,6 +65,8 @@ export class DocAbilitazioneModel {
   public ruoli = '';
   public vedePersonale = false;
   public caricaPersonale = false;
+  // CompanyPowerAdmin: sempre abilitato, non modificabile
+  public fisso = false;
 }
 
 export class DocDocumentoListModel {

@@ -156,7 +156,8 @@
       },
       "permissions": {
         "title": "Personnel document permissions",
-        "note": "Administrators see and upload personnel documents (payslips included) only if enabled here. Uploading includes seeing."
+        "note": "The CompanyPowerAdmin always sees and uploads personnel documents (payslips included); CompanyAdmins only if enabled here. Uploading includes seeing.",
+        "fixed": "Always enabled (CompanyPowerAdmin)"
       },
       "settings": {
         "title": "Document management settings",
