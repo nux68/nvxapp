@@ -1,0 +1,49 @@
+<app-page-toolbar [title]="title" [showFilter]="false" [showBreadcrumbs]="true"></app-page-toolbar>
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-grid class="ion-no-padding">
+        <ion-row class="ion-align-items-center">
+          <ion-col size="12" size-md="4"><ion-item><ion-input type="date" [(ngModel)]="dal" [label]="'crm.pages.report.from' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+          <ion-col size="12" size-md="4"><ion-item><ion-input type="date" [(ngModel)]="al" [label]="'crm.pages.report.to' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+          <ion-col size="12" size-md="4"><ion-button fill="outline" shape="round" (click)="load()"><ion-icon slot="start" name="refresh-outline"></ion-icon>{{ 'crm.pages.report.refresh' | transloco }}</ion-button></ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+  @if (report) {
+    <ion-card>
+      <ion-card-content>
+        <div class="crm-kpi">
+          <div><span>{{ 'crm.pages.report.won' | transloco }}</span><strong>{{ report.vinte }}</strong><small>{{ importo(report.valoreVinto) }}</small></div>
+          <div><span>{{ 'crm.pages.report.lost' | transloco }}</span><strong>{{ report.perse }}</strong><small>{{ 'crm.pages.report.winRate' | transloco }} {{ tassoVinte }}%</small></div>
+          <div><span>{{ 'crm.pages.report.leads' | transloco }}</span><strong>{{ report.leadCreati }}</strong><small>{{ 'crm.pages.report.converted' | transloco }} {{ report.leadConvertiti }} ({{ conversione }}%)</small></div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    @for (sez of [
+      { titolo: 'crm.pages.report.pipelineByPhase', righe: report.pipelinePerFase, campo: 'valore', pesato: true },
+      { titolo: 'crm.pages.report.pipelineByOwner', righe: report.pipelinePerResponsabile, campo: 'valore', pesato: true },
+      { titolo: 'crm.pages.report.wonByOwner', righe: report.vintePerResponsabile, campo: 'valore', pesato: false },
+      { titolo: 'crm.pages.report.lostByReason', righe: report.persePerMotivo, campo: 'numero', pesato: false },
+      { titolo: 'crm.pages.report.activitiesByUser', righe: report.attivitaPerUtente, campo: 'numero', pesato: false }
+    ]; track sez.titolo) {
+      <ion-card>
+        <ion-card-header><ion-card-title>{{ sez.titolo | transloco }}</ion-card-title></ion-card-header>
+        <ion-card-content>
+          @if (sez.righe.length === 0) { <ion-note class="nvx-nota-disabled">{{ 'crm.pages.report.empty' | transloco }}</ion-note> }
+          @for (r of sez.righe; track r.chiave) {
+            <div class="crm-bar-row">
+              <div class="crm-bar-label">{{ r.etichetta }}</div>
+              <div class="crm-bar"><div class="crm-bar-fill" [style.width]="barra(sez.righe, r, $any(sez.campo))"></div></div>
+              <div class="crm-bar-value">
+                {{ r.numero }}@if (sez.campo === 'valore') { · {{ importo(r.valore) }} }
+                @if (sez.pesato) { <small>({{ 'crm.pages.report.weighted' | transloco }} {{ importo(r.valorePesato) }})</small> }
+              </div>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</ion-content>

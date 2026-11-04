@@ -1,0 +1,19 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-segment [(ngModel)]="sezione" (ionChange)="filtra()" [scrollable]="true">
+        <ion-segment-button value="oggi"><ion-label>{{ 'crm.pages.activityList.today' | transloco }}</ion-label></ion-segment-button>
+        <ion-segment-button value="scadute"><ion-label>{{ 'crm.pages.activityList.overdue' | transloco }} @if (conta('scadute') > 0) { <ion-badge color="danger">{{ conta('scadute') }}</ion-badge> }</ion-label></ion-segment-button>
+        <ion-segment-button value="prossime"><ion-label>{{ 'crm.pages.activityList.next' | transloco }}</ion-label></ion-segment-button>
+        <ion-segment-button value="fatte"><ion-label>{{ 'crm.pages.activityList.closed' | transloco }}</ion-label></ion-segment-button>
+      </ion-segment>
+      @if (amministratore) {
+        <ion-item lines="none"><ion-toggle [(ngModel)]="soloMie" (ionChange)="load()">{{ 'crm.pages.activityList.onlyMine' | transloco }}</ion-toggle></ion-item>
+      }
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="calendar-outline" [searchText]="searchText" [highlight]="scaduta"
+        [emptyText]="'crm.pages.activityList.empty' | transloco"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

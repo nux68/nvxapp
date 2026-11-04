@@ -1,0 +1,17 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-segment [(ngModel)]="tabella" (ionChange)="mostra()" [scrollable]="true">
+        @for (t of tabelle; track t) {
+          <ion-segment-button [value]="t"><ion-label>{{ 'crm.enums.tabella.' + t | transloco }}</ion-label></ion-segment-button>
+        }
+      </ion-segment>
+      <ion-note class="nvx-nota-disabled">{{ 'crm.pages.parList.note' | transloco }}</ion-note>
+      <nvx-list-options [showDisabledLabel]="'crm.common.showDisabled' | transloco" [(showDisabled)]="showDisabled"></nvx-list-options>
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="list-outline" [searchText]="searchText" [sort]="sort"
+        [rowDisabled]="isDisabled" [disabledToggleExternal]="true" [(showDisabled)]="showDisabled"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

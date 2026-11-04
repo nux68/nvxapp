@@ -1,0 +1,83 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      @if (scheda) {
+        <ion-segment [(ngModel)]="sezione">
+          <ion-segment-button value="dati"><ion-label>{{ 'crm.sections.dati' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="allegati"><ion-label>{{ 'crm.sections.allegati' | transloco }} ({{ scheda.allegati.length }})</ion-label></ion-segment-button>
+        </ion-segment>
+        @if (scheda.offerta.dataInvio) {
+          <ion-note class="nvx-nota-disabled">{{ 'crm.pages.offerEdit.sentOn' | transloco: { data: (scheda.offerta.dataInvio | date: 'dd/MM/yyyy HH:mm') } }}</ion-note>
+        }
+      }
+      <div [hidden]="sezione !== 'dati'">
+        <form [formGroup]="_editForm">
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idAz_Cliente" [label]="'crm.fields.cliente' | transloco" labelPlacement="floating" interface="popover">
+                @for (c of clientiScelta; track c.id) { <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idAz_ClienteContatto" [label]="'crm.fields.contatto' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                @for (c of contatti; track c.id) { <ion-select-option [value]="c.id">{{ c.nominativo }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Opportunita" [label]="'crm.fields.opportunita' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                @for (o of opportunitaCliente; track o.id) { <ion-select-option [value]="o.id">{{ o.titolo }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="12" size-md="4"><ion-item><ion-input type="date" formControlName="data" [label]="'crm.fields.data' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-input type="date" formControlName="validaFinoAl" [label]="'crm.fields.validaFinoAl' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="stato" [label]="'crm.fields.stato' | transloco" labelPlacement="floating" interface="popover">
+                @for (s of stati; track s) { <ion-select-option [value]="s">{{ 'crm.enums.statoOfferta.' + s | transloco }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-item><ion-input formControlName="oggetto" maxlength="200" [label]="'crm.fields.oggetto' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        </form>
+
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'crm.pages.offerEdit.lines' | transloco }}</ion-label></ion-item>
+        <div class="crm-righe">
+          @for (r of righe; track $index; let i = $index) {
+            <ion-grid class="ion-no-padding crm-riga">
+              <ion-row class="ion-align-items-center">
+                <ion-col size="12" size-md="3"><ion-item><ion-select [(ngModel)]="r.idCrm_Par_Prodotto" (ionChange)="prodotto(r)" [label]="'crm.fields.prodotto' | transloco" labelPlacement="floating" interface="popover">
+                  <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                  @for (p of setupService.attivi(setupService.setup?.prodotti, r.idCrm_Par_Prodotto); track p.id) { <ion-select-option [value]="p.id">{{ p.codice ? p.codice + ' - ' : '' }}{{ p.descrizione }}</ion-select-option> }
+                </ion-select></ion-item></ion-col>
+                <ion-col size="12" size-md="4"><ion-item><ion-input [(ngModel)]="r.descrizione" maxlength="500" [label]="'crm.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+                <ion-col size="4" size-md="1"><ion-item><ion-input type="number" [(ngModel)]="r.quantita" [label]="'crm.fields.quantita' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+                <ion-col size="4" size-md="1"><ion-item><ion-input type="number" [(ngModel)]="r.prezzo" [label]="'crm.fields.prezzo' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+                <ion-col size="4" size-md="1"><ion-item><ion-input type="number" [(ngModel)]="r.scontoPerc" [label]="'crm.fields.sconto' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+                <ion-col size="4" size-md="1"><ion-item><ion-input type="number" [(ngModel)]="r.aliquotaIva" [label]="'crm.fields.iva' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+                <ion-col size="8" size-md="1" class="ion-text-end">
+                  <strong>{{ importo(importoRiga(r)) }}</strong>
+                  <ion-button size="small" fill="clear" color="danger" (click)="eliminaRiga(i)" [title]="'common.buttons.delete' | transloco"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          }
+        </div>
+        <ion-button size="small" fill="outline" shape="round" (click)="aggiungiRiga()"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.pages.offerEdit.addLine' | transloco }}</ion-button>
+        <div class="crm-totali">
+          <div>{{ 'crm.fields.imponibile' | transloco }}: <strong>{{ importo(imponibile) }}</strong></div>
+          <div>{{ 'crm.fields.iva' | transloco }}: <strong>{{ importo(iva) }}</strong></div>
+          <div>{{ 'crm.fields.totale' | transloco }}: <strong>{{ importo(imponibile + iva) }}</strong></div>
+        </div>
+        <form [formGroup]="_editForm">
+          <ion-item><ion-textarea formControlName="note" rows="3" maxlength="4000" [autoGrow]="true" [label]="'crm.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+        </form>
+        @if (scheda && scheda.offerta.stato === 0) {
+          <ion-button size="small" fill="clear" color="danger" (click)="elimina()"><ion-icon slot="start" name="trash-outline"></ion-icon>{{ 'crm.pages.offerEdit.delete' | transloco }}</ion-button>
+        }
+      </div>
+      @if (scheda && sezione === 'allegati') {
+        <crm-attachments [allegati]="scheda.allegati" [idCrm_Offerta]="scheda.offerta.id" (changed)="ricarica()"></crm-attachments>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

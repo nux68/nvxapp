@@ -1,0 +1,30 @@
+<ion-item>
+  <ion-textarea [(ngModel)]="testo" rows="2" [autoGrow]="true" maxlength="4000" [placeholder]="'crm.notes.placeholder' | transloco"></ion-textarea>
+  <ion-button slot="end" size="small" fill="outline" shape="round" [disabled]="!testo.trim()" (click)="aggiungi()">
+    <ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.notes.add' | transloco }}
+  </ion-button>
+</ion-item>
+@if (note.length === 0) {
+  <ion-note class="nvx-nota-disabled">{{ 'crm.notes.empty' | transloco }}</ion-note>
+}
+<ion-list>
+  @for (n of note; track n.id) {
+    <ion-item lines="full">
+      <ion-icon slot="start" [name]="n.fissata ? 'pin' : 'chatbox-outline'" [color]="n.fissata ? 'primary' : 'medium'"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <p style="white-space: pre-wrap; color: var(--ion-text-color)">{{ n.testo }}</p>
+        <p>{{ n.autore }} · {{ dataOra(n.data) }}</p>
+      </ion-label>
+      @if (n.modificabile) {
+        <ion-buttons slot="end">
+          <ion-button size="small" (click)="fissa(n)" [title]="(n.fissata ? 'crm.notes.unpin' : 'crm.notes.pin') | transloco">
+            <ion-icon slot="icon-only" [name]="n.fissata ? 'pin' : 'pin-outline'"></ion-icon>
+          </ion-button>
+          <ion-button size="small" color="danger" (click)="elimina(n)" [title]="'common.buttons.delete' | transloco">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      }
+    </ion-item>
+  }
+</ion-list>

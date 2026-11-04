@@ -1,0 +1,55 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Par_TipoAttivita" [label]="'crm.fields.tipoAttivita' | transloco" labelPlacement="floating" interface="popover">
+              @for (t of setupService.attivi(setupService.setup?.tipiAttivita, _editForm.get('idCrm_Par_TipoAttivita')?.value); track t.id) { <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="8"><ion-item><ion-input formControlName="oggetto" maxlength="200" [label]="'crm.fields.oggetto' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-input type="datetime-local" formControlName="inizio" [label]="'crm.fields.inizio' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-input type="datetime-local" formControlName="fine" [label]="'crm.fields.fine' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idAssegnatario" [label]="'crm.fields.assegnatario' | transloco" labelPlacement="floating" interface="popover">
+              @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+          </ion-row>
+          @if (!daLead) {
+            <ion-row>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idAz_Cliente" [label]="'crm.fields.cliente' | transloco" labelPlacement="floating" interface="popover">
+                @for (c of clientiScelta; track c.id) { <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idAz_ClienteContatto" [label]="'crm.fields.contatto' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                @for (c of contatti; track c.id) { <ion-select-option [value]="c.id">{{ c.nominativo }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Opportunita" [label]="'crm.fields.opportunita' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                @for (o of opportunitaCliente; track o.id) { <ion-select-option [value]="o.id">{{ o.titolo }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+            </ion-row>
+          } @else {
+            <ion-note class="nvx-nota-disabled">{{ 'crm.pages.activityEdit.leadNote' | transloco }}</ion-note>
+          }
+        </ion-grid>
+        <ion-item><ion-textarea formControlName="descrizione" rows="3" maxlength="4000" [autoGrow]="true" [label]="'crm.fields.descrizione' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="stato" [label]="'crm.fields.stato' | transloco" labelPlacement="floating" interface="popover">
+              @for (s of stati; track s) { <ion-select-option [value]="s">{{ 'crm.enums.statoAttivita.' + s | transloco }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="8"><ion-item><ion-textarea formControlName="esito" rows="2" maxlength="2000" [autoGrow]="true" [label]="'crm.fields.esito' | transloco" labelPlacement="floating"></ion-textarea></ion-item></ion-col>
+          </ion-row>
+        </ion-grid>
+        @if (esistente) {
+          <ion-button size="small" fill="clear" color="danger" (click)="elimina()"><ion-icon slot="start" name="trash-outline"></ion-icon>{{ 'crm.pages.activityEdit.delete' | transloco }}</ion-button>
+        }
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

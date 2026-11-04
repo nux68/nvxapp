@@ -1,0 +1,45 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-item>
+              <ion-select [(ngModel)]="filtro.idResponsabile" (ionChange)="load()" [label]="'crm.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.all' | transloco }}</ion-select-option>
+                @for (u of setupService.setup?.utenti ?? []; track u.id) {
+                  <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-item>
+              <ion-select [(ngModel)]="filtro.stato" (ionChange)="load()" [label]="'crm.fields.stato' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.all' | transloco }}</ion-select-option>
+                @for (s of stati; track s) {
+                  <ion-select-option [value]="s">{{ 'crm.enums.statoCliente.' + s | transloco }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-item>
+              <ion-select [(ngModel)]="filtro.idTag" (ionChange)="load()" [label]="'crm.fields.tag' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.all' | transloco }}</ion-select-option>
+                @for (g of setupService.setup?.tag ?? []; track g.id) {
+                  <ion-select-option [value]="g.id">{{ g.descrizione }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <nvx-list-options [showDisabledLabel]="'crm.common.showDisabled' | transloco" [(showDisabled)]="showDisabled"></nvx-list-options>
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="business-outline" [searchText]="searchText" [sort]="sort"
+        [rowDisabled]="isDisabled" [disabledToggleExternal]="true" [(showDisabled)]="showDisabled"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

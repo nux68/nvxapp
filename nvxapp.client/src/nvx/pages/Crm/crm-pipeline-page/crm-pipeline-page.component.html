@@ -1,0 +1,57 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-grid class="ion-no-padding">
+        <ion-row class="ion-align-items-center">
+          <ion-col size="12" size-md="6">
+            <ion-segment [(ngModel)]="vista">
+              <ion-segment-button value="kanban"><ion-label>{{ 'crm.pages.pipeline.kanban' | transloco }}</ion-label></ion-segment-button>
+              <ion-segment-button value="elenco"><ion-label>{{ 'crm.pages.pipeline.list' | transloco }}</ion-label></ion-segment-button>
+            </ion-segment>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-select [(ngModel)]="idResponsabile" (ionChange)="load()" [label]="'crm.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.all' | transloco }}</ion-select-option>
+                @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      @if (vista === 'kanban') {
+        <ion-note class="nvx-nota-disabled">{{ 'crm.pages.pipeline.dragNote' | transloco }}</ion-note>
+        <div class="crm-kanban">
+          @for (f of fasi; track f.id) {
+            <div class="crm-kanban-col" [class.crm-won]="f.tipo === 1" [class.crm-lost]="f.tipo === 2" (dragover)="sopra($event)" (drop)="rilascia($event, f)">
+              <div class="crm-kanban-head">
+                <strong>{{ f.descrizione }}</strong>
+                <span>{{ colonna(f).length }} · {{ importo(totale(f)) }}</span>
+              </div>
+              @for (o of colonna(f); track o.id) {
+                <div class="crm-kanban-card" draggable="true" (dragstart)="inizio($event, o)" (click)="apri(o)">
+                  <div class="crm-card-title">{{ o.titolo }}</div>
+                  <div class="crm-card-sub">{{ o.cliente }}</div>
+                  <div class="crm-card-foot">
+                    <span>{{ importo(o.valore) }} · {{ o.probabilita }}%</span>
+                    <ion-button size="small" fill="clear" (click)="$event.stopPropagation(); scegliFase(o)" [title]="'crm.pages.pipeline.movePhase' | transloco">
+                      <ion-icon slot="icon-only" name="swap-horizontal-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                  @if (o.dataChiusuraPrevista || o.responsabile) {
+                    <div class="crm-card-sub">{{ data(o.dataChiusura ?? o.dataChiusuraPrevista) }} {{ o.responsabile }}</div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <nvx-list [items]="opportunita" [columns]="columns" [actions]="actions" icon="git-network-outline" [searchText]="searchText"></nvx-list>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
