@@ -231,14 +231,10 @@ export class AppComponent implements OnInit {
     }).filter(a => a.sezioni.length > 0);
   }
 
-  // sezione aperta dopo il login: il primo applicativo con voci, altrimenti "Amministrazione", altrimenti
-  // "Assistenza" (se ha voci), altrimenti "Accesso"
+  // dopo il login si apre solo il primo applicativo disponibile (mai "Amministrazione"), con la sua prima sottosezione
+  // aperta (SezioneApplicativo.aperta); senza applicativi il menu resta tutto chiuso
   private primaSezioneAperta(): string {
-    const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
-    const applicativo = this.sezioniApplicativi.find(a => a.chiave !== 'admin') ?? this.sezioniApplicativi[0];
-    if (applicativo) return applicativo.chiave;
-    if (this.groupedSupportMenu.length > 0) return this.groupedSupportMenu[0].menuHeader.title;
-    return accesso;
+    return this.sezioniApplicativi.find(a => a.chiave !== 'admin')?.chiave ?? '';
   }
 
   // somma dei contatori delle voci di una sezione di applicativo (es. richieste da approvare), visibile a sezione chiusa
