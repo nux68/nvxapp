@@ -1,0 +1,28 @@
+.crm-kpi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+
+  div { display: flex; flex-direction: column; min-width: 160px; }
+  span { font-size: 0.85rem; color: var(--nvx-text-muted, var(--ion-color-medium)); }
+  strong { font-size: 1.6rem; }
+  small { color: var(--nvx-text-muted, var(--ion-color-medium)); }
+}
+
+.crm-bar-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1fr) 2fr minmax(140px, auto);
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+  font-size: 0.9rem;
+}
+
+.crm-bar { background: var(--nvx-hover, rgba(127, 127, 127, 0.12)); border-radius: 4px; height: 12px; overflow: hidden; }
+.crm-bar-fill { background: var(--ion-color-primary); height: 100%; }
+.crm-bar-value { text-align: right; white-space: nowrap; small { margin-left: 4px; color: var(--nvx-text-muted, var(--ion-color-medium)); } }
+
+@media (max-width: 576px) {
+  .crm-bar-row { grid-template-columns: 1fr; }
+  .crm-bar-value { text-align: left; }
+}

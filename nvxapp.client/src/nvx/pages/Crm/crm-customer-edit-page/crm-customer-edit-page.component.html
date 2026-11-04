@@ -1,0 +1,109 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      @if (scheda) {
+        <ion-segment [(ngModel)]="sezione" [scrollable]="true">
+          <ion-segment-button value="dati"><ion-label>{{ 'crm.sections.dati' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="contatti"><ion-label>{{ 'crm.sections.contatti' | transloco }} ({{ scheda.contatti.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="opportunita"><ion-label>{{ 'crm.sections.opportunita' | transloco }} ({{ scheda.opportunita.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="attivita"><ion-label>{{ 'crm.sections.attivita' | transloco }} ({{ scheda.attivita.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="offerte"><ion-label>{{ 'crm.sections.offerte' | transloco }} ({{ scheda.offerte.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="note"><ion-label>{{ 'crm.sections.note' | transloco }} ({{ scheda.note.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="allegati"><ion-label>{{ 'crm.sections.allegati' | transloco }} ({{ scheda.allegati.length }})</ion-label></ion-segment-button>
+        </ion-segment>
+      } @else {
+        <ion-note class="nvx-nota-disabled">{{ 'crm.pages.customerEdit.newNote' | transloco }}</ion-note>
+      }
+
+      <form [formGroup]="_editForm" [hidden]="sezione !== 'dati'">
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'crm.pages.customerEdit.registry' | transloco }}</ion-label></ion-item>
+        <ion-item><ion-input formControlName="descrizione" maxlength="100" [label]="'crm.fields.ragioneSociale' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        @if (_editForm.get('descrizione')?.invalid && _editForm.get('descrizione')?.touched) {
+          <ion-note color="danger">{{ 'crm.validation.customerName' | transloco }}</ion-note>
+        }
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="tipo" [label]="'crm.fields.tipoCliente' | transloco" labelPlacement="floating" interface="popover">
+              @for (t of tipi; track t) { <ion-select-option [value]="t">{{ 'pages.customerEdit.tipi.' + t | transloco }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="stato" [label]="'crm.fields.stato' | transloco" labelPlacement="floating" interface="popover">
+              @for (s of stati; track s) { <ion-select-option [value]="s">{{ 'crm.enums.statoCliente.' + s | transloco }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-toggle formControlName="attivo">{{ 'crm.fields.attivo' | transloco }}</ion-toggle></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idResponsabile" [label]="'crm.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+              @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Par_Fonte" [label]="'crm.fields.fonte' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+              @for (f of setupService.attivi(setupService.setup?.fonti, _editForm.get('idCrm_Par_Fonte')?.value); track f.id) { <ion-select-option [value]="f.id">{{ f.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="tag" [multiple]="true" [label]="'crm.fields.tag' | transloco" labelPlacement="floating">
+              @for (g of setupService.setup?.tag ?? []; track g.id) { <ion-select-option [value]="g.id">{{ g.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="3"><ion-item><ion-input formControlName="settore" maxlength="100" [label]="'crm.fields.settore' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input formControlName="sito" maxlength="200" [label]="'crm.fields.sito' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input type="number" formControlName="fatturatoStimato" [label]="'crm.fields.fatturato' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input type="number" formControlName="numeroDipendenti" [label]="'crm.fields.dipendenti' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-item><ion-checkbox formControlName="consensoMarketing" labelPlacement="end" justify="start">{{ 'crm.fields.consensoMarketing' | transloco }}</ion-checkbox></ion-item>
+        @if (_editModel?.dataConsenso) { <ion-note class="nvx-nota-disabled">{{ 'crm.fields.dataConsenso' | transloco }}: {{ data(_editModel?.dataConsenso) }}</ion-note> }
+
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'crm.pages.customerEdit.fiscal' | transloco }}</ion-label></ion-item>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-input formControlName="partitaIva" maxlength="11" [label]="'pages.customerEdit.partitaIva' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-input formControlName="codiceFiscale" maxlength="16" [label]="'pages.customerEdit.codiceFiscale' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="4"><ion-item><ion-input formControlName="codiceDestinatario" maxlength="7" [label]="'pages.customerEdit.codiceDestinatario' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="6"><ion-item><ion-input formControlName="indirizzo" maxlength="100" [label]="'pages.customerEdit.indirizzo' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="4" size-md="2"><ion-item><ion-input formControlName="cap" maxlength="10" [label]="'pages.customerEdit.cap' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="8" size-md="2"><ion-item><ion-input formControlName="citta" maxlength="50" [label]="'pages.customerEdit.citta' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="6" size-md="1"><ion-item><ion-input formControlName="provincia" maxlength="2" [label]="'pages.customerEdit.provincia' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="6" size-md="1"><ion-item><ion-input formControlName="nazione" maxlength="2" [label]="'pages.customerEdit.nazione' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="3"><ion-item><ion-input type="tel" formControlName="telefono" maxlength="30" [label]="'pages.customerEdit.telefono' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input type="email" formControlName="email" maxlength="100" [label]="'pages.customerEdit.email' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input type="email" formControlName="pec" maxlength="100" [label]="'pages.customerEdit.pec' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="12" size-md="3"><ion-item><ion-input formControlName="referente" maxlength="100" [label]="'pages.customerEdit.referente' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+        </ion-grid>
+        @if (_editForm.invalid && _editForm.touched) { <ion-note color="danger">{{ 'crm.validation.checkFields' | transloco }}</ion-note> }
+        <ion-item><ion-textarea formControlName="note" rows="3" maxlength="500" [autoGrow]="true" [label]="'pages.customerEdit.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+      </form>
+
+      @if (scheda) {
+        @switch (sezione) {
+          @case ('contatti') {
+            <ion-button size="small" fill="outline" shape="round" (click)="contatto(null)"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.contatti" [columns]="colContatti" [actions]="azContatti" icon="person-outline" [highlight]="principale"></nvx-list>
+          }
+          @case ('opportunita') {
+            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmopportunityedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.opportunita" [columns]="colOpportunita" [actions]="azOpportunita" icon="git-network-outline"></nvx-list>
+          }
+          @case ('attivita') {
+            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmactivityedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.attivita" [columns]="colAttivita" [actions]="azAttivita" icon="calendar-outline"></nvx-list>
+          }
+          @case ('offerte') {
+            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmofferedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.offerte" [columns]="colOfferte" [actions]="azOfferte" icon="document-text-outline"></nvx-list>
+          }
+          @case ('note') { <crm-notes [note]="scheda.note" [idAz_Cliente]="scheda.cliente.id" (changed)="ricarica()"></crm-notes> }
+          @case ('allegati') { <crm-attachments [allegati]="scheda.allegati" [idAz_Cliente]="scheda.cliente.id" (changed)="ricarica()"></crm-attachments> }
+        }
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

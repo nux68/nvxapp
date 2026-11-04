@@ -1,0 +1,300 @@
+{
+  "crm": {
+    "menu": {
+      "section": "CRM",
+      "settingsSection": "Configurazione CRM",
+      "customers": "Clienti",
+      "leads": "Lead",
+      "pipeline": "Pipeline",
+      "activities": "Agenda",
+      "offers": "Offerte",
+      "report": "Report",
+      "tables": "Tabelle",
+      "settings": "Impostazioni",
+      "reassign": "Riassegnazione"
+    },
+    "common": {
+      "add": "Aggiungi",
+      "all": "Tutti",
+      "none": "Nessuno",
+      "showDisabled": "Mostra disabilitati"
+    },
+    "sections": {
+      "dati": "Dati",
+      "contatti": "Contatti",
+      "opportunita": "Opportunità",
+      "attivita": "Attività",
+      "offerte": "Offerte",
+      "note": "Note",
+      "allegati": "Allegati",
+      "storico": "Storico"
+    },
+    "fields": {
+      "assegnatario": "Assegnata a",
+      "attivo": "Attivo",
+      "azienda": "Azienda",
+      "chiusura": "Data di chiusura",
+      "chiusuraPrevista": "Chiusura prevista",
+      "citta": "Città",
+      "cliente": "Cliente",
+      "codice": "Codice",
+      "colore": "Colore",
+      "consensoMarketing": "Consenso alle comunicazioni commerciali",
+      "contatto": "Contatto",
+      "creato": "Creato il",
+      "data": "Data",
+      "dataConsenso": "Consenso dato il",
+      "descrizione": "Descrizione",
+      "dipendenti": "N. dipendenti",
+      "durata": "Durata (minuti)",
+      "esito": "Esito",
+      "fase": "Fase",
+      "fatturato": "Fatturato stimato",
+      "fine": "Fine",
+      "fonte": "Fonte",
+      "icona": "Icona (nome Ionicons)",
+      "imponibile": "Imponibile",
+      "inizio": "Inizio",
+      "iva": "IVA %",
+      "motivoPerdita": "Motivo della perdita",
+      "nominativo": "Nominativo",
+      "note": "Note",
+      "numero": "Numero",
+      "oggetto": "Oggetto",
+      "opportunita": "Opportunità",
+      "opportunitaAperte": "Opp. aperte",
+      "ordine": "Ordine",
+      "prezzo": "Prezzo",
+      "probabilita": "Probabilità %",
+      "prodotto": "Prodotto",
+      "prossimaAttivita": "Prossima attività",
+      "quando": "Quando",
+      "quantita": "Q.tà",
+      "ragioneSociale": "Ragione sociale",
+      "responsabile": "Responsabile",
+      "riferimento": "Riferimento",
+      "sconto": "Sconto %",
+      "settore": "Settore",
+      "sito": "Sito web",
+      "stato": "Stato",
+      "tag": "Etichette",
+      "tipoAttivita": "Tipo",
+      "tipoCliente": "Tipo anagrafica",
+      "tipoFase": "Tipo di fase",
+      "titolo": "Titolo",
+      "totale": "Totale",
+      "um": "UM",
+      "validaFinoAl": "Valida fino al",
+      "valore": "Valore",
+      "valoreAperto": "Valore aperto"
+    },
+    "validation": {
+      "checkFields": "Controlla i campi evidenziati.",
+      "customerName": "La ragione sociale è obbligatoria (max 100 caratteri)."
+    },
+    "contact": {
+      "title": "Persona di riferimento",
+      "nominativo": "Nominativo",
+      "cognome": "Cognome",
+      "nome": "Nome",
+      "ruolo": "Ruolo",
+      "telefono": "Telefono",
+      "cellulare": "Cellulare",
+      "email": "Email",
+      "principale": "Contatto principale",
+      "principaleShort": "principale",
+      "note": "Note",
+      "nameRequired": "Inserisci il cognome o il nome.",
+      "confirmDelete": "Confermi la cancellazione della persona di riferimento?"
+    },
+    "notes": {
+      "placeholder": "Scrivi una nota...",
+      "add": "Aggiungi",
+      "empty": "Nessuna nota.",
+      "pin": "Fissa in alto",
+      "unpin": "Togli dall'alto",
+      "confirmDelete": "Confermi la cancellazione della nota?"
+    },
+    "attachments": {
+      "upload": "Carica un file",
+      "maxSize": "Massimo 20 MB",
+      "empty": "Nessun allegato.",
+      "download": "Scarica",
+      "confirmDelete": "Confermi la cancellazione di {{nome}}?"
+    },
+    "convert": {
+      "title": "Converti il lead in cliente",
+      "note": "Il lead diventa un cliente (nuovo, con i suoi dati, o uno esistente) con la persona di riferimento; attività e note passano al cliente.",
+      "customer": "Cliente",
+      "newCustomer": "Nuovo cliente dai dati del lead",
+      "createOpportunity": "Crea anche un'opportunità"
+    },
+    "send": {
+      "title": "Invia l'offerta",
+      "note": "L'offerta si invia in PDF allegato e diventa \"Inviata\".",
+      "email": "Email del destinatario",
+      "message": "Messaggio",
+      "messagePlaceholder": "Vuoto = testo predefinito"
+    },
+    "pages": {
+      "customerList": {
+        "title": "Clienti",
+        "new": "Nuovo cliente",
+        "export": "Esporta in Excel"
+      },
+      "customerEdit": {
+        "title": "Scheda cliente",
+        "registry": "Anagrafica e dati commerciali",
+        "fiscal": "Dati fiscali e recapiti",
+        "newNote": "Salva il cliente per aggiungere contatti, opportunità, attività, offerte, note e allegati."
+      },
+      "leadList": {
+        "title": "Lead",
+        "new": "Nuovo lead",
+        "showClosed": "Mostra anche convertiti e scartati"
+      },
+      "leadEdit": {
+        "title": "Lead",
+        "convert": "Converti",
+        "converted": "Convertito nel cliente {{cliente}}."
+      },
+      "pipeline": {
+        "title": "Pipeline",
+        "new": "Nuova opportunità",
+        "kanban": "Colonne",
+        "list": "Elenco",
+        "dragNote": "Trascina una scheda per cambiarne la fase (o usa il pulsante con le frecce). Vinte e perse degli ultimi 30 giorni.",
+        "movePhase": "Cambia fase",
+        "lossReason": "Motivo della perdita"
+      },
+      "opportunityEdit": {
+        "title": "Opportunità",
+        "delete": "Cancella l'opportunità",
+        "confirmDelete": "Confermi la cancellazione dell'opportunità (con storico, attività e note)?"
+      },
+      "activityList": {
+        "title": "Agenda",
+        "new": "Nuova attività",
+        "today": "Oggi",
+        "overdue": "Scadute",
+        "next": "Prossime",
+        "closed": "Fatte / annullate",
+        "done": "Fatta",
+        "onlyMine": "Solo le mie",
+        "empty": "Nessuna attività."
+      },
+      "activityEdit": {
+        "title": "Attività",
+        "delete": "Cancella l'attività",
+        "confirmDelete": "Confermi la cancellazione dell'attività?",
+        "leadNote": "Attività di un lead: dopo la conversione passa al cliente."
+      },
+      "offerList": {
+        "title": "Offerte",
+        "new": "Nuova offerta"
+      },
+      "offerEdit": {
+        "title": "Offerta",
+        "lines": "Righe",
+        "addLine": "Aggiungi riga",
+        "delete": "Cancella l'offerta",
+        "confirmDelete": "Confermi la cancellazione dell'offerta in bozza?",
+        "sentOn": "Inviata il {{data}}"
+      },
+      "parList": {
+        "title": "Tabelle del CRM",
+        "new": "Nuovo valore",
+        "note": "Un valore usato non si cancella: disattivalo (resta nello storico ma non si propone più).",
+        "confirmDelete": "Confermi la cancellazione di {{nome}}?"
+      },
+      "parEdit": {
+        "phaseNote": "Le fasi \"vinta\" e \"persa\" chiudono l'opportunità; deve restare almeno una fase attiva di ogni tipo."
+      },
+      "settings": {
+        "title": "Impostazioni del CRM",
+        "visibility": "Visibilità dei commerciali",
+        "visibilityLabel": "I commerciali (ruolo User) vedono",
+        "visibilityNote": "Con \"solo i propri\" vedono i clienti di cui sono responsabili, quelli senza responsabile e quelli in cui sono coinvolti. Gli amministratori vedono sempre tutto.",
+        "general": "Generale",
+        "currency": "Valuta (codice di 3 lettere)",
+        "reminder": "Preavviso dei promemoria (minuti)",
+        "reminderNote": "Avviso a comparsa all'assegnatario prima dell'inizio dell'attività; 0 = nessun promemoria.",
+        "offers": "Offerte",
+        "prefix": "Prefisso del numero",
+        "validity": "Validità predefinita (giorni)",
+        "terms": "Condizioni in fondo al PDF"
+      },
+      "reassign": {
+        "title": "Riassegnazione",
+        "run": "Riassegna",
+        "note": "Passa a un altro utente (o lascia senza responsabile) i dati di un commerciale, es. alle dimissioni.",
+        "from": "Da",
+        "to": "A",
+        "nobody": "Nessuno (senza responsabile)",
+        "activities": "Attività da fare",
+        "done": "Riassegnati: clienti {{clienti}}, opportunità {{opportunita}}, lead {{lead}}, attività {{attivita}}."
+      },
+      "report": {
+        "title": "Report del CRM",
+        "from": "Dal",
+        "to": "Al",
+        "refresh": "Aggiorna",
+        "won": "Vinte nel periodo",
+        "lost": "Perse nel periodo",
+        "winRate": "Tasso di successo",
+        "leads": "Lead creati",
+        "converted": "Convertiti",
+        "pipelineByPhase": "Pipeline aperta per fase",
+        "pipelineByOwner": "Pipeline aperta per responsabile",
+        "wonByOwner": "Vinte per responsabile",
+        "lostByReason": "Perse per motivo",
+        "activitiesByUser": "Attività fatte per utente",
+        "weighted": "pesato",
+        "empty": "Nessun dato."
+      }
+    },
+    "enums": {
+      "statoCliente": {
+        "0": "Prospect",
+        "1": "Cliente",
+        "2": "Ex cliente",
+        "3": "Non interessato"
+      },
+      "statoLead": {
+        "0": "Nuovo",
+        "1": "Contattato",
+        "2": "Qualificato",
+        "3": "Convertito",
+        "4": "Scartato"
+      },
+      "statoAttivita": {
+        "0": "Da fare",
+        "1": "Fatta",
+        "2": "Annullata"
+      },
+      "statoOfferta": {
+        "0": "Bozza",
+        "1": "Inviata",
+        "2": "Accettata",
+        "3": "Rifiutata"
+      },
+      "faseTipo": {
+        "0": "Aperta",
+        "1": "Vinta",
+        "2": "Persa"
+      },
+      "visibilita": {
+        "0": "Solo i propri clienti",
+        "1": "Tutti i clienti"
+      },
+      "tabella": {
+        "0": "Fasi",
+        "1": "Tipi di attività",
+        "2": "Motivi di perdita",
+        "3": "Fonti",
+        "4": "Prodotti",
+        "5": "Etichette"
+      }
+    }
+  }
+}

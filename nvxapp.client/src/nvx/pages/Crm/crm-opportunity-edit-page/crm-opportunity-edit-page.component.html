@@ -1,0 +1,92 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      @if (scheda) {
+        <ion-segment [(ngModel)]="sezione" [scrollable]="true">
+          <ion-segment-button value="dati"><ion-label>{{ 'crm.sections.dati' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="attivita"><ion-label>{{ 'crm.sections.attivita' | transloco }} ({{ scheda.attivita.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="offerte"><ion-label>{{ 'crm.sections.offerte' | transloco }} ({{ scheda.offerte.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="note"><ion-label>{{ 'crm.sections.note' | transloco }} ({{ scheda.note.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="allegati"><ion-label>{{ 'crm.sections.allegati' | transloco }} ({{ scheda.allegati.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="storico"><ion-label>{{ 'crm.sections.storico' | transloco }}</ion-label></ion-segment-button>
+        </ion-segment>
+      }
+      <form [formGroup]="_editForm" [hidden]="sezione !== 'dati'">
+        <ion-item><ion-input formControlName="titolo" maxlength="200" [label]="'crm.fields.titolo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-grid class="ion-no-padding">
+          <ion-row>
+            <ion-col size="12" size-md="6"><ion-item><ion-select formControlName="idAz_Cliente" [label]="'crm.fields.cliente' | transloco" labelPlacement="floating" interface="popover">
+              @for (c of clientiScelta; track c.id) { <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="6"><ion-item><ion-select formControlName="idAz_ClienteContatto" [label]="'crm.fields.contatto' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+              @for (c of contatti; track c.id) { <ion-select-option [value]="c.id">{{ c.nominativo }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Par_Fase" [label]="'crm.fields.fase' | transloco" labelPlacement="floating" interface="popover">
+              @for (f of setupService.attivi(setupService.setup?.fasi, _editForm.get('idCrm_Par_Fase')?.value); track f.id) { <ion-select-option [value]="f.id">{{ f.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="6" size-md="4"><ion-item><ion-input type="number" formControlName="valore" [label]="('crm.fields.valore' | transloco) + ' (' + (setupService.setup?.cfg?.valuta ?? 'EUR') + ')'" labelPlacement="floating"></ion-input></ion-item></ion-col>
+            <ion-col size="6" size-md="4"><ion-item><ion-input type="number" formControlName="probabilita" [label]="'crm.fields.probabilita' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="4"><ion-item><ion-input type="date" formControlName="dataChiusuraPrevista" [label]="'crm.fields.chiusuraPrevista' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+            @if (faseTipo !== 0) {
+              <ion-col size="12" size-md="4"><ion-item><ion-input type="date" formControlName="dataChiusura" [label]="'crm.fields.chiusura' | transloco" labelPlacement="stacked"></ion-input></ion-item></ion-col>
+            }
+            @if (faseTipo === 2) {
+              <ion-col size="12" size-md="4"><ion-item><ion-select formControlName="idCrm_Par_MotivoPerdita" [label]="'crm.fields.motivoPerdita' | transloco" labelPlacement="floating" interface="popover">
+                <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+                @for (m of setupService.attivi(setupService.setup?.motiviPerdita, _editForm.get('idCrm_Par_MotivoPerdita')?.value); track m.id) { <ion-select-option [value]="m.id">{{ m.descrizione }}</ion-select-option> }
+              </ion-select></ion-item></ion-col>
+            }
+          </ion-row>
+          <ion-row>
+            <ion-col size="12" size-md="6"><ion-item><ion-select formControlName="idResponsabile" [label]="'crm.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+              @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+            <ion-col size="12" size-md="6"><ion-item><ion-select formControlName="idCrm_Par_Fonte" [label]="'crm.fields.fonte' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
+              @for (f of setupService.attivi(setupService.setup?.fonti, _editForm.get('idCrm_Par_Fonte')?.value); track f.id) { <ion-select-option [value]="f.id">{{ f.descrizione }}</ion-select-option> }
+            </ion-select></ion-item></ion-col>
+          </ion-row>
+        </ion-grid>
+        <ion-item><ion-textarea formControlName="note" rows="3" maxlength="2000" [autoGrow]="true" [label]="'crm.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+        @if (scheda) {
+          <ion-button size="small" fill="clear" color="danger" (click)="elimina()"><ion-icon slot="start" name="trash-outline"></ion-icon>{{ 'crm.pages.opportunityEdit.delete' | transloco }}</ion-button>
+        }
+      </form>
+      @if (scheda) {
+        @switch (sezione) {
+          @case ('attivita') {
+            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmactivityedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.attivita" [columns]="colAttivita" [actions]="azAttivita" icon="calendar-outline"></nvx-list>
+          }
+          @case ('offerte') {
+            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmofferedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
+            <nvx-list [items]="scheda.offerte" [columns]="colOfferte" [actions]="azOfferte" icon="document-text-outline"></nvx-list>
+          }
+          @case ('note') { <crm-notes [note]="scheda.note" [idCrm_Opportunita]="scheda.opportunita.id" (changed)="ricarica()"></crm-notes> }
+          @case ('allegati') { <crm-attachments [allegati]="scheda.allegati" [idCrm_Opportunita]="scheda.opportunita.id" (changed)="ricarica()"></crm-attachments> }
+          @case ('storico') {
+            <ion-list>
+              @for (s of scheda.storico; track $index) {
+                <ion-item lines="full">
+                  <ion-label class="ion-text-wrap">
+                    <h3>{{ s.faseDa ? s.faseDa + ' → ' : '' }}{{ s.faseA }} · {{ importo(s.valoreA) }}</h3>
+                    <p>{{ dataOra(s.data) }} · {{ s.utente }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          }
+        }
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

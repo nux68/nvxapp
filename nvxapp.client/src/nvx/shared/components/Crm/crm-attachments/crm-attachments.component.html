@@ -1,0 +1,29 @@
+<ion-item lines="none">
+  <ion-button size="small" fill="outline" shape="round" [disabled]="caricamento" (click)="fileInput.click()">
+    <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>{{ 'crm.attachments.upload' | transloco }}
+  </ion-button>
+  <input #fileInput type="file" hidden (change)="carica($event)" />
+  <ion-note slot="end" class="nvx-nota-disabled">{{ 'crm.attachments.maxSize' | transloco }}</ion-note>
+</ion-item>
+@if (allegati.length === 0) {
+  <ion-note class="nvx-nota-disabled">{{ 'crm.attachments.empty' | transloco }}</ion-note>
+}
+<ion-list>
+  @for (a of allegati; track a.id) {
+    <ion-item lines="full">
+      <ion-icon slot="start" name="attach-outline"></ion-icon>
+      <ion-label class="ion-text-wrap">
+        <h3>{{ a.nomeFile }}</h3>
+        <p>{{ dimensione(a.dimensione) }} · {{ a.autore }} · {{ dataOra(a.data) }}</p>
+      </ion-label>
+      <ion-buttons slot="end">
+        <ion-button size="small" (click)="scarica(a)" [title]="'crm.attachments.download' | transloco">
+          <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+        </ion-button>
+        <ion-button size="small" color="danger" (click)="elimina(a)" [title]="'common.buttons.delete' | transloco">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  }
+</ion-list>

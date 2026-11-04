@@ -1,0 +1,26 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-note class="nvx-nota-disabled">{{ 'crm.pages.reassign.note' | transloco }}</ion-note>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-select formControlName="idDa" [label]="'crm.pages.reassign.from' | transloco" labelPlacement="floating" interface="popover">
+          @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+        </ion-select></ion-item>
+        <ion-item><ion-select formControlName="idA" [label]="'crm.pages.reassign.to' | transloco" labelPlacement="floating" interface="popover">
+          <ion-select-option [value]="null">{{ 'crm.pages.reassign.nobody' | transloco }}</ion-select-option>
+          @for (u of setupService.setup?.utenti ?? []; track u.id) { <ion-select-option [value]="u.id">{{ u.userName }}</ion-select-option> }
+        </ion-select></ion-item>
+        <ion-item><ion-checkbox formControlName="clienti" labelPlacement="end" justify="start">{{ 'crm.menu.customers' | transloco }}</ion-checkbox></ion-item>
+        <ion-item><ion-checkbox formControlName="opportunita" labelPlacement="end" justify="start">{{ 'crm.sections.opportunita' | transloco }}</ion-checkbox></ion-item>
+        <ion-item><ion-checkbox formControlName="lead" labelPlacement="end" justify="start">{{ 'crm.menu.leads' | transloco }}</ion-checkbox></ion-item>
+        <ion-item><ion-checkbox formControlName="attivitaDaFare" labelPlacement="end" justify="start">{{ 'crm.pages.reassign.activities' | transloco }}</ion-checkbox></ion-item>
+      </form>
+      @if (esito) {
+        <ion-note color="success">{{ 'crm.pages.reassign.done' | transloco: { clienti: esito.clienti, opportunita: esito.opportunita, lead: esito.lead, attivita: esito.attivita } }}</ion-note>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

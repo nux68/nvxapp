@@ -1,0 +1,11 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <nvx-list-options [showDisabledLabel]="'crm.pages.leadList.showClosed' | transloco" [(showDisabled)]="showDisabled"></nvx-list-options>
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="person-add-outline" [searchText]="searchText"
+        [rowDisabled]="isDisabled" [disabledToggleExternal]="true" [(showDisabled)]="showDisabled"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

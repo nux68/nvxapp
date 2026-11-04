@@ -1,0 +1,349 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="NotAllowed" xml:space="preserve">
+    <value>Operazione non consentita nel CRM.</value>
+  </data>
+  <data name="UserInvalid" xml:space="preserve">
+    <value>L'utente scelto non è un utente dell'azienda.</value>
+  </data>
+  <data name="ResponsibleChangeNotAllowed" xml:space="preserve">
+    <value>Solo gli amministratori dell'azienda possono assegnare ad altri.</value>
+  </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>La descrizione è obbligatoria.</value>
+  </data>
+  <data name="ParNotFound" xml:space="preserve">
+    <value>Valore di configurazione non trovato.</value>
+  </data>
+  <data name="ParInUse" xml:space="preserve">
+    <value>Il valore è usato: invece di cancellarlo, disattivalo.</value>
+  </data>
+  <data name="LastPhaseOfType" xml:space="preserve">
+    <value>Deve restare almeno una fase attiva di ogni tipo (aperta, vinta, persa).</value>
+  </data>
+  <data name="LastActivityType" xml:space="preserve">
+    <value>Deve restare almeno un tipo di attività attivo.</value>
+  </data>
+  <data name="ReassignInvalid" xml:space="preserve">
+    <value>Scegli l'utente da cui riassegnare e un destinatario diverso.</value>
+  </data>
+  <data name="PeriodInvalid" xml:space="preserve">
+    <value>Il periodo non è valido.</value>
+  </data>
+  <data name="FileMissing" xml:space="preserve">
+    <value>Il file non è più disponibile.</value>
+  </data>
+  <data name="CustomerNotFound" xml:space="preserve">
+    <value>Cliente non trovato o non visibile.</value>
+  </data>
+  <data name="CustomerNameRequired" xml:space="preserve">
+    <value>La ragione sociale è obbligatoria.</value>
+  </data>
+  <data name="CustomerStatus0" xml:space="preserve">
+    <value>Prospect</value>
+  </data>
+  <data name="CustomerStatus1" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="CustomerStatus2" xml:space="preserve">
+    <value>Ex cliente</value>
+  </data>
+  <data name="CustomerStatus3" xml:space="preserve">
+    <value>Non interessato</value>
+  </data>
+  <data name="CustomerUsedByOpportunities" xml:space="preserve">
+    <value>opportunità del CRM: {0}</value>
+  </data>
+  <data name="CustomerUsedByOffers" xml:space="preserve">
+    <value>offerte del CRM: {0}</value>
+  </data>
+  <data name="CustomerUsedByActivities" xml:space="preserve">
+    <value>attività del CRM: {0}</value>
+  </data>
+  <data name="CustomerUsedByAttachments" xml:space="preserve">
+    <value>allegati del CRM: {0}</value>
+  </data>
+  <data name="ExportCustomersSheet" xml:space="preserve">
+    <value>Clienti</value>
+  </data>
+  <data name="ExportCustomersFile" xml:space="preserve">
+    <value>Clienti_CRM</value>
+  </data>
+  <data name="ExportColCustomer" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="ExportColStatus" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="ExportColResponsible" xml:space="preserve">
+    <value>Responsabile</value>
+  </data>
+  <data name="ExportColCity" xml:space="preserve">
+    <value>Città</value>
+  </data>
+  <data name="ExportColEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="ExportColPhone" xml:space="preserve">
+    <value>Telefono</value>
+  </data>
+  <data name="ExportColTags" xml:space="preserve">
+    <value>Etichette</value>
+  </data>
+  <data name="ExportColOpenOpportunities" xml:space="preserve">
+    <value>Opportunità aperte</value>
+  </data>
+  <data name="ExportColOpenValue" xml:space="preserve">
+    <value>Valore aperto</value>
+  </data>
+  <data name="ExportColLastActivity" xml:space="preserve">
+    <value>Ultima attività</value>
+  </data>
+  <data name="ExportColNextActivity" xml:space="preserve">
+    <value>Prossima attività</value>
+  </data>
+  <data name="LeadNotFound" xml:space="preserve">
+    <value>Lead non trovato o non visibile.</value>
+  </data>
+  <data name="LeadNameRequired" xml:space="preserve">
+    <value>Inserisci il nominativo o l'azienda del lead.</value>
+  </data>
+  <data name="LeadAlreadyConverted" xml:space="preserve">
+    <value>Il lead è già stato convertito in cliente.</value>
+  </data>
+  <data name="OpportunityNotFound" xml:space="preserve">
+    <value>Opportunità non trovata o non visibile.</value>
+  </data>
+  <data name="OpportunityTitleRequired" xml:space="preserve">
+    <value>Il titolo dell'opportunità è obbligatorio.</value>
+  </data>
+  <data name="OpportunityHasAttachments" xml:space="preserve">
+    <value>L'opportunità ha degli allegati: cancellali prima.</value>
+  </data>
+  <data name="PhaseInvalid" xml:space="preserve">
+    <value>Fase non valida.</value>
+  </data>
+  <data name="ActivityNotFound" xml:space="preserve">
+    <value>Attività non trovata o non visibile.</value>
+  </data>
+  <data name="ActivitySubjectRequired" xml:space="preserve">
+    <value>L'oggetto dell'attività è obbligatorio.</value>
+  </data>
+  <data name="ActivityEndBeforeStart" xml:space="preserve">
+    <value>La fine è precedente all'inizio.</value>
+  </data>
+  <data name="ActivityTypeInvalid" xml:space="preserve">
+    <value>Tipo di attività non valido.</value>
+  </data>
+  <data name="ActivityLinkRequired" xml:space="preserve">
+    <value>Collega l'attività a un cliente o a un lead.</value>
+  </data>
+  <data name="ReminderTitle" xml:space="preserve">
+    <value>Promemoria CRM</value>
+  </data>
+  <data name="ReminderMessage" xml:space="preserve">
+    <value>{0} alle {1}</value>
+  </data>
+  <data name="ReminderMessageCustomer" xml:space="preserve">
+    <value>{0} alle {1} - {2}</value>
+  </data>
+  <data name="OfferNotFound" xml:space="preserve">
+    <value>Offerta non trovata o non visibile.</value>
+  </data>
+  <data name="OfferNoLines" xml:space="preserve">
+    <value>L'offerta deve avere almeno una riga.</value>
+  </data>
+  <data name="OfferLineDescriptionRequired" xml:space="preserve">
+    <value>Ogni riga deve avere una descrizione.</value>
+  </data>
+  <data name="OfferNotDraft" xml:space="preserve">
+    <value>Si cancellano solo le offerte in bozza.</value>
+  </data>
+  <data name="OfferHasAttachments" xml:space="preserve">
+    <value>L'offerta ha degli allegati: cancellali prima.</value>
+  </data>
+  <data name="EmailNotConfigured" xml:space="preserve">
+    <value>L'invio delle email non è configurato.</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Indirizzo email non valido.</value>
+  </data>
+  <data name="OfferEmailSubject" xml:space="preserve">
+    <value>Offerta {0} - {1}</value>
+  </data>
+  <data name="OfferEmailBody" xml:space="preserve">
+    <value>Buongiorno,
+in allegato l'offerta {0}.
+
+Cordiali saluti
+{1}</value>
+  </data>
+  <data name="OfferFileName" xml:space="preserve">
+    <value>Offerta</value>
+  </data>
+  <data name="OfferPdfTitle" xml:space="preserve">
+    <value>Offerta n. {0}</value>
+  </data>
+  <data name="OfferPdfDate" xml:space="preserve">
+    <value>Data: {0}</value>
+  </data>
+  <data name="OfferPdfValidUntil" xml:space="preserve">
+    <value>Valida fino al: {0}</value>
+  </data>
+  <data name="OfferPdfCustomer" xml:space="preserve">
+    <value>Spett.le</value>
+  </data>
+  <data name="OfferPdfVat" xml:space="preserve">
+    <value>P.IVA {0}</value>
+  </data>
+  <data name="OfferPdfAttention" xml:space="preserve">
+    <value>Alla c.a. {0}</value>
+  </data>
+  <data name="OfferPdfSubject" xml:space="preserve">
+    <value>Oggetto:</value>
+  </data>
+  <data name="OfferPdfPage" xml:space="preserve">
+    <value>Pagina</value>
+  </data>
+  <data name="OfferPdfColDescription" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="OfferPdfColQuantity" xml:space="preserve">
+    <value>Q.tà</value>
+  </data>
+  <data name="OfferPdfColUm" xml:space="preserve">
+    <value>UM</value>
+  </data>
+  <data name="OfferPdfColPrice" xml:space="preserve">
+    <value>Prezzo</value>
+  </data>
+  <data name="OfferPdfColDiscount" xml:space="preserve">
+    <value>Sconto</value>
+  </data>
+  <data name="OfferPdfColAmount" xml:space="preserve">
+    <value>Importo</value>
+  </data>
+  <data name="OfferPdfTaxable" xml:space="preserve">
+    <value>Imponibile</value>
+  </data>
+  <data name="OfferPdfVatTotal" xml:space="preserve">
+    <value>IVA</value>
+  </data>
+  <data name="OfferPdfTotal" xml:space="preserve">
+    <value>Totale</value>
+  </data>
+  <data name="NoteNotFound" xml:space="preserve">
+    <value>Nota non trovata.</value>
+  </data>
+  <data name="NoteTextRequired" xml:space="preserve">
+    <value>Il testo della nota è obbligatorio.</value>
+  </data>
+  <data name="NoteNotOwner" xml:space="preserve">
+    <value>Solo l'autore o un amministratore può modificare la nota.</value>
+  </data>
+  <data name="AttachmentNotFound" xml:space="preserve">
+    <value>Allegato non trovato.</value>
+  </data>
+  <data name="AttachmentLinkRequired" xml:space="preserve">
+    <value>Indica a cosa si riferisce (cliente, opportunità o offerta).</value>
+  </data>
+  <data name="AttachmentEmpty" xml:space="preserve">
+    <value>Il file è vuoto.</value>
+  </data>
+  <data name="AttachmentTooLarge" xml:space="preserve">
+    <value>Il file supera la dimensione massima di {0} MB.</value>
+  </data>
+  <data name="AttachmentNotOwner" xml:space="preserve">
+    <value>Solo chi l'ha caricato o un amministratore può cancellare l'allegato.</value>
+  </data>
+  <data name="ReportNoResponsible" xml:space="preserve">
+    <value>(senza responsabile)</value>
+  </data>
+  <data name="ReportNoReason" xml:space="preserve">
+    <value>(motivo non indicato)</value>
+  </data>
+  <data name="DeletionCountOpportunities" xml:space="preserve">
+    <value>Opportunità del CRM</value>
+  </data>
+  <data name="DeletionCountActivities" xml:space="preserve">
+    <value>Attività del CRM</value>
+  </data>
+  <data name="DeletionCountOffers" xml:space="preserve">
+    <value>Offerte del CRM</value>
+  </data>
+  <data name="DeletionCountLeads" xml:space="preserve">
+    <value>Lead del CRM</value>
+  </data>
+  <data name="DefaultPhaseNew" xml:space="preserve">
+    <value>Nuova</value>
+  </data>
+  <data name="DefaultPhaseQualified" xml:space="preserve">
+    <value>Qualificata</value>
+  </data>
+  <data name="DefaultPhaseProposal" xml:space="preserve">
+    <value>Proposta</value>
+  </data>
+  <data name="DefaultPhaseNegotiation" xml:space="preserve">
+    <value>Trattativa</value>
+  </data>
+  <data name="DefaultPhaseWon" xml:space="preserve">
+    <value>Vinta</value>
+  </data>
+  <data name="DefaultPhaseLost" xml:space="preserve">
+    <value>Persa</value>
+  </data>
+  <data name="DefaultActivityCall" xml:space="preserve">
+    <value>Chiamata</value>
+  </data>
+  <data name="DefaultActivityEmail" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="DefaultActivityMeeting" xml:space="preserve">
+    <value>Appuntamento</value>
+  </data>
+  <data name="DefaultActivityTask" xml:space="preserve">
+    <value>Attività</value>
+  </data>
+  <data name="DefaultLossPrice" xml:space="preserve">
+    <value>Prezzo</value>
+  </data>
+  <data name="DefaultLossCompetitor" xml:space="preserve">
+    <value>Scelto un concorrente</value>
+  </data>
+  <data name="DefaultLossNoBudget" xml:space="preserve">
+    <value>Nessun budget</value>
+  </data>
+  <data name="DefaultLossNoAnswer" xml:space="preserve">
+    <value>Nessuna risposta</value>
+  </data>
+  <data name="DefaultLossOther" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+  <data name="DefaultSourceWebsite" xml:space="preserve">
+    <value>Sito web</value>
+  </data>
+  <data name="DefaultSourceReferral" xml:space="preserve">
+    <value>Passaparola</value>
+  </data>
+  <data name="DefaultSourceFair" xml:space="preserve">
+    <value>Fiera / evento</value>
+  </data>
+  <data name="DefaultSourcePhone" xml:space="preserve">
+    <value>Telefono</value>
+  </data>
+  <data name="DefaultSourceOther" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+</root>

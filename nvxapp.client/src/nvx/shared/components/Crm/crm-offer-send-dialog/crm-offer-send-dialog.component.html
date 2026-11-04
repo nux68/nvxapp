@@ -1,0 +1,16 @@
+<app-page-toolbar [title]="Title" [showFilter]="false" [showBreadcrumbs]="false"></app-page-toolbar>
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-note class="nvx-nota-disabled">{{ 'crm.send.note' | transloco }}</ion-note>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-input type="email" formControlName="email" maxlength="200" [label]="'crm.send.email' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        @if (_editForm.get('email')?.invalid && _editForm.get('email')?.touched) {
+          <ion-note color="danger">{{ 'common.validation.emailInvalid' | transloco }}</ion-note>
+        }
+        <ion-item><ion-textarea formControlName="messaggio" rows="6" maxlength="4000" [autoGrow]="true" [label]="'crm.send.message' | transloco" labelPlacement="floating" [placeholder]="'crm.send.messagePlaceholder' | transloco"></ion-textarea></ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

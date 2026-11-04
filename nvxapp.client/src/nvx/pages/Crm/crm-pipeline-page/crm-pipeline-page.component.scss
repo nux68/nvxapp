@@ -1,0 +1,44 @@
+// colonne affiancate con scorrimento orizzontale; schede trascinabili
+.crm-kanban {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 0 12px;
+  align-items: flex-start;
+}
+
+.crm-kanban-col {
+  flex: 0 0 240px;
+  min-height: 200px;
+  background: var(--nvx-hover, rgba(127, 127, 127, 0.08));
+  border-radius: 10px;
+  padding: 8px;
+
+  &.crm-won { border-top: 3px solid var(--ion-color-success); }
+  &.crm-lost { border-top: 3px solid var(--ion-color-danger); }
+}
+
+.crm-kanban-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+
+  span { font-size: 0.8rem; color: var(--nvx-text-muted, var(--ion-color-medium)); }
+}
+
+.crm-kanban-card {
+  background: var(--ion-card-background, var(--ion-background-color));
+  border: 1px solid var(--nvx-border, rgba(127, 127, 127, 0.25));
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+  cursor: grab;
+
+  &:hover { border-color: var(--ion-color-primary); }
+}
+
+.crm-card-title { font-weight: 600; font-size: 0.9rem; }
+.crm-card-sub { font-size: 0.8rem; color: var(--nvx-text-muted, var(--ion-color-medium)); }
+.crm-card-foot { display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; }

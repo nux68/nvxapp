@@ -1,0 +1,300 @@
+{
+  "crm": {
+    "menu": {
+      "section": "CRM",
+      "settingsSection": "CRM settings",
+      "customers": "Customers",
+      "leads": "Leads",
+      "pipeline": "Pipeline",
+      "activities": "Agenda",
+      "offers": "Offers",
+      "report": "Reports",
+      "tables": "Tables",
+      "settings": "Settings",
+      "reassign": "Reassignment"
+    },
+    "common": {
+      "add": "Add",
+      "all": "All",
+      "none": "None",
+      "showDisabled": "Show disabled"
+    },
+    "sections": {
+      "dati": "Details",
+      "contatti": "Contacts",
+      "opportunita": "Opportunities",
+      "attivita": "Activities",
+      "offerte": "Offers",
+      "note": "Notes",
+      "allegati": "Attachments",
+      "storico": "History"
+    },
+    "fields": {
+      "assegnatario": "Assigned to",
+      "attivo": "Active",
+      "azienda": "Company",
+      "chiusura": "Close date",
+      "chiusuraPrevista": "Expected close",
+      "citta": "City",
+      "cliente": "Customer",
+      "codice": "Code",
+      "colore": "Colour",
+      "consensoMarketing": "Consent to marketing communications",
+      "contatto": "Contact",
+      "creato": "Created on",
+      "data": "Date",
+      "dataConsenso": "Consent given on",
+      "descrizione": "Description",
+      "dipendenti": "Employees",
+      "durata": "Duration (minutes)",
+      "esito": "Outcome",
+      "fase": "Phase",
+      "fatturato": "Estimated revenue",
+      "fine": "End",
+      "fonte": "Source",
+      "icona": "Icon (Ionicons name)",
+      "imponibile": "Taxable",
+      "inizio": "Start",
+      "iva": "VAT %",
+      "motivoPerdita": "Loss reason",
+      "nominativo": "Name",
+      "note": "Notes",
+      "numero": "Number",
+      "oggetto": "Subject",
+      "opportunita": "Opportunity",
+      "opportunitaAperte": "Open opp.",
+      "ordine": "Order",
+      "prezzo": "Price",
+      "probabilita": "Probability %",
+      "prodotto": "Product",
+      "prossimaAttivita": "Next activity",
+      "quando": "When",
+      "quantita": "Qty",
+      "ragioneSociale": "Company name",
+      "responsabile": "Owner",
+      "riferimento": "Related to",
+      "sconto": "Discount %",
+      "settore": "Industry",
+      "sito": "Website",
+      "stato": "Status",
+      "tag": "Tags",
+      "tipoAttivita": "Type",
+      "tipoCliente": "Registry type",
+      "tipoFase": "Phase type",
+      "titolo": "Title",
+      "totale": "Total",
+      "um": "UoM",
+      "validaFinoAl": "Valid until",
+      "valore": "Value",
+      "valoreAperto": "Open value"
+    },
+    "validation": {
+      "checkFields": "Check the highlighted fields.",
+      "customerName": "The company name is required (max 100 characters)."
+    },
+    "contact": {
+      "title": "Contact person",
+      "nominativo": "Name",
+      "cognome": "Surname",
+      "nome": "First name",
+      "ruolo": "Role",
+      "telefono": "Phone",
+      "cellulare": "Mobile",
+      "email": "Email",
+      "principale": "Main contact",
+      "principaleShort": "main",
+      "note": "Notes",
+      "nameRequired": "Enter the surname or the first name.",
+      "confirmDelete": "Confirm deletion of the contact person?"
+    },
+    "notes": {
+      "placeholder": "Write a note...",
+      "add": "Add",
+      "empty": "No notes.",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "confirmDelete": "Confirm deletion of the note?"
+    },
+    "attachments": {
+      "upload": "Upload a file",
+      "maxSize": "Max 20 MB",
+      "empty": "No attachments.",
+      "download": "Download",
+      "confirmDelete": "Confirm deletion of {{nome}}?"
+    },
+    "convert": {
+      "title": "Convert the lead into a customer",
+      "note": "The lead becomes a customer (a new one with its data, or an existing one) with the contact person; activities and notes move to the customer.",
+      "customer": "Customer",
+      "newCustomer": "New customer from the lead data",
+      "createOpportunity": "Also create an opportunity"
+    },
+    "send": {
+      "title": "Send the offer",
+      "note": "The offer is sent as an attached PDF and becomes \"Sent\".",
+      "email": "Recipient email",
+      "message": "Message",
+      "messagePlaceholder": "Empty = default text"
+    },
+    "pages": {
+      "customerList": {
+        "title": "Customers",
+        "new": "New customer",
+        "export": "Export to Excel"
+      },
+      "customerEdit": {
+        "title": "Customer card",
+        "registry": "Registry and sales data",
+        "fiscal": "Tax data and contacts",
+        "newNote": "Save the customer to add contacts, opportunities, activities, offers, notes and attachments."
+      },
+      "leadList": {
+        "title": "Leads",
+        "new": "New lead",
+        "showClosed": "Also show converted and discarded"
+      },
+      "leadEdit": {
+        "title": "Lead",
+        "convert": "Convert",
+        "converted": "Converted into customer {{cliente}}."
+      },
+      "pipeline": {
+        "title": "Pipeline",
+        "new": "New opportunity",
+        "kanban": "Board",
+        "list": "List",
+        "dragNote": "Drag a card to change its phase (or use the arrows button). Won and lost of the last 30 days.",
+        "movePhase": "Change phase",
+        "lossReason": "Loss reason"
+      },
+      "opportunityEdit": {
+        "title": "Opportunity",
+        "delete": "Delete the opportunity",
+        "confirmDelete": "Confirm deletion of the opportunity (with history, activities and notes)?"
+      },
+      "activityList": {
+        "title": "Agenda",
+        "new": "New activity",
+        "today": "Today",
+        "overdue": "Overdue",
+        "next": "Upcoming",
+        "closed": "Done / cancelled",
+        "done": "Done",
+        "onlyMine": "Only mine",
+        "empty": "No activities."
+      },
+      "activityEdit": {
+        "title": "Activity",
+        "delete": "Delete the activity",
+        "confirmDelete": "Confirm deletion of the activity?",
+        "leadNote": "Lead activity: after conversion it moves to the customer."
+      },
+      "offerList": {
+        "title": "Offers",
+        "new": "New offer"
+      },
+      "offerEdit": {
+        "title": "Offer",
+        "lines": "Lines",
+        "addLine": "Add line",
+        "delete": "Delete the offer",
+        "confirmDelete": "Confirm deletion of the draft offer?",
+        "sentOn": "Sent on {{data}}"
+      },
+      "parList": {
+        "title": "CRM tables",
+        "new": "New value",
+        "note": "A value in use cannot be deleted: deactivate it (it stays in the history but is no longer offered).",
+        "confirmDelete": "Confirm deletion of {{nome}}?"
+      },
+      "parEdit": {
+        "phaseNote": "The \"won\" and \"lost\" phases close the opportunity; at least one active phase of each type must remain."
+      },
+      "settings": {
+        "title": "CRM settings",
+        "visibility": "Sales rep visibility",
+        "visibilityLabel": "Sales reps (User role) see",
+        "visibilityNote": "With \"only their own\" they see the customers they own, those without an owner and those they are involved in. Administrators always see everything.",
+        "general": "General",
+        "currency": "Currency (3-letter code)",
+        "reminder": "Reminder notice (minutes)",
+        "reminderNote": "Pop-up notice to the assignee before the activity starts; 0 = no reminder.",
+        "offers": "Offers",
+        "prefix": "Number prefix",
+        "validity": "Default validity (days)",
+        "terms": "Terms at the bottom of the PDF"
+      },
+      "reassign": {
+        "title": "Reassignment",
+        "run": "Reassign",
+        "note": "Moves a sales rep's data to another user (or leaves it without an owner), e.g. when they leave.",
+        "from": "From",
+        "to": "To",
+        "nobody": "Nobody (no owner)",
+        "activities": "Activities to do",
+        "done": "Reassigned: customers {{clienti}}, opportunities {{opportunita}}, leads {{lead}}, activities {{attivita}}."
+      },
+      "report": {
+        "title": "CRM reports",
+        "from": "From",
+        "to": "To",
+        "refresh": "Refresh",
+        "won": "Won in period",
+        "lost": "Lost in period",
+        "winRate": "Win rate",
+        "leads": "Leads created",
+        "converted": "Converted",
+        "pipelineByPhase": "Open pipeline by phase",
+        "pipelineByOwner": "Open pipeline by owner",
+        "wonByOwner": "Won by owner",
+        "lostByReason": "Lost by reason",
+        "activitiesByUser": "Activities done by user",
+        "weighted": "weighted",
+        "empty": "No data."
+      }
+    },
+    "enums": {
+      "statoCliente": {
+        "0": "Prospect",
+        "1": "Customer",
+        "2": "Former customer",
+        "3": "Not interested"
+      },
+      "statoLead": {
+        "0": "New",
+        "1": "Contacted",
+        "2": "Qualified",
+        "3": "Converted",
+        "4": "Discarded"
+      },
+      "statoAttivita": {
+        "0": "To do",
+        "1": "Done",
+        "2": "Cancelled"
+      },
+      "statoOfferta": {
+        "0": "Draft",
+        "1": "Sent",
+        "2": "Accepted",
+        "3": "Rejected"
+      },
+      "faseTipo": {
+        "0": "Open",
+        "1": "Won",
+        "2": "Lost"
+      },
+      "visibilita": {
+        "0": "Only their own customers",
+        "1": "All customers"
+      },
+      "tabella": {
+        "0": "Phases",
+        "1": "Activity types",
+        "2": "Loss reasons",
+        "3": "Sources",
+        "4": "Products",
+        "5": "Tags"
+      }
+    }
+  }
+}

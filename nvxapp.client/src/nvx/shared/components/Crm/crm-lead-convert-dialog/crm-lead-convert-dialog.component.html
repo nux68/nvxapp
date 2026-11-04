@@ -1,0 +1,24 @@
+<app-page-toolbar [title]="Title" [showFilter]="false" [showBreadcrumbs]="false"></app-page-toolbar>
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-note class="nvx-nota-disabled">{{ 'crm.convert.note' | transloco }}</ion-note>
+      <form [formGroup]="_editForm">
+        <ion-item>
+          <ion-select formControlName="idAz_ClienteEsistente" [label]="'crm.convert.customer' | transloco" labelPlacement="floating" interface="popover">
+            <ion-select-option [value]="null">{{ 'crm.convert.newCustomer' | transloco }}</ion-select-option>
+            @for (c of clienti; track c.id) {
+              <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item><ion-checkbox formControlName="creaOpportunita" labelPlacement="end" justify="start">{{ 'crm.convert.createOpportunity' | transloco }}</ion-checkbox></ion-item>
+        @if (_editForm.get('creaOpportunita')?.value) {
+          <ion-item><ion-input formControlName="titoloOpportunita" maxlength="200" [label]="'crm.fields.titolo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+          <ion-item><ion-input type="number" formControlName="valoreOpportunita" [label]="'crm.fields.valore' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        }
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
