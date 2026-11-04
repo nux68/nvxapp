@@ -135,17 +135,22 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany(t => t.Az_Cliente)
                       .HasForeignKey(t => t.IdAz_Anagrafica);
             });
+
+            // dipendente comune (Common): le navigazioni verso le presenze sono nella partial Dip_Anagrafica.Presenze.cs
+            modelBuilder.Entity<Dip_Anagrafica>(entity =>
+            {
+                entity.ToTable("Dip_Anagrafica", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica);
+                entity.HasOne(t => t.AspNetUsersNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAspNetUsers);
+            });
         }
 
         private void Gen_Init_GestionePresenze(ModelBuilder modelBuilder)
         {
-
-            /* Dip_Anagrafica */
-            modelBuilder.Entity<Dip_Anagrafica>()
-                .HasOne(da => da.AspNetUsersNavigation)
-                .WithOne()
-                .HasForeignKey<Dip_Anagrafica>(da => da.IdAspNetUsers)
-                .OnDelete(DeleteBehavior.Cascade);
 
             /* Dip_RapportoLavoro */
             modelBuilder.Entity<Dip_RapportoLavoro>()
@@ -294,6 +299,13 @@ namespace nvxapp.server.data.Infrastructure
                 .WithOne()
                 .HasForeignKey<Az_Cfg>(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // cliente predefinito delle presenze (tabella comune Az_Cliente)
+            modelBuilder.Entity<Az_Cfg>()
+                .HasOne(t => t.Az_ClienteDefaultNavigation)
+                .WithMany()
+                .HasForeignKey(t => t.IdAz_ClienteDefault)
+                .OnDelete(DeleteBehavior.SetNull);
 
 
             /* Az_Sedi */

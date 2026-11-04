@@ -13,6 +13,11 @@ namespace nvxapp.server.data.Entities.Tenant
         [ForeignKey("IdAz_Anagrafica")]
         public virtual Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
 
+        // cliente predefinito delle presenze (commessa predefinita); il cliente sta nella tabella comune Az_Cliente
+        public int? IdAz_ClienteDefault { get; set; }
+        [ForeignKey("IdAz_ClienteDefault")]
+        public virtual Az_Cliente? Az_ClienteDefaultNavigation { get; set; }
+
         [Required]
         [MaxLength(50)]
         public TipoApprovazione ApprovazioneTipo { get; set; }

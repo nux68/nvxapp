@@ -8,6 +8,7 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -23,6 +24,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         private readonly IAz_AnagraficaRepository _az_AnagraficaRepository;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
+        private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor;
+
+        // azienda su cui si lavora: TenantScope (job, inizializzatori) o claim "company" del token
+        private int? AziendaCorrente()
+        {
+            if (TenantScope.CurrentCompany.HasValue)
+                return TenantScope.CurrentCompany;
+            var claim = _httpContextAccessor.HttpContext?.User?.FindFirst(TenantSchemaAccessor.CompanyClaim)?.Value;
+            return int.TryParse(claim, out var idCompany) && idCompany > 0 ? idCompany : null;
+        }
         private readonly IAz_SediRepository _az_SediRepository;
         private readonly IAz_SediRepartoRepository _az_RepartoRepository;
         private readonly IAz_CfgRepository _az_CfgRepository;
@@ -80,11 +91,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IDip_CompetenzaRepository dip_CompetenzaRepository,
                                            IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
                                            IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
-                                           ICommonCompanyUtility commonCompanyUtility
+                                           ICommonCompanyUtility commonCompanyUtility,
+                                           Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
                                            )
         {
             _mapper = mapper;
             _commonCompanyUtility = commonCompanyUtility;
+            _httpContextAccessor = httpContextAccessor;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
 
@@ -120,15 +133,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         {
             User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = new User_DATA_COMB_DipAna_DipRapp();
 
-            user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefaultAsync();
+            // il dipendente sta nella tabella comune Dip_Anagrafica: si cerca nell'azienda corrente (o, senza azienda,
+            // nella prima azienda dell'utente, come prima)
+            int? idCompanyDip = AziendaCorrente()
+                                ?? _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).Select(x => (int?)x.IdCompany).FirstOrDefault();
+            var az_AnagraficaDip = idCompanyDip.HasValue ? await _commonCompanyUtility.GetAz_AnagraficaAsync(idCompanyDip.Value, InitIfNotExsist) : null;
+
+            user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers &&
+                                                                                                         (az_AnagraficaDip == null || x.IdAz_Anagrafica == az_AnagraficaDip.Id))
+                                                                                         .FirstOrDefaultAsync();
             if (user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica == null)
             {
                 if (InitIfNotExsist)
                 {
                     // Cognome e Nome iniziali: personaggi Disney in sequenza (modificabili poi dall'anagrafica)
                     var (cognome, nome) = PersonaggioDisney(_dip_AnagraficaRepository.FindAll(x => true).Count());
+                    if (az_AnagraficaDip == null)
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyRecordNotFound"));
+
                     user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = new Dip_Anagrafica()
                     {
+                        IdAz_Anagrafica = az_AnagraficaDip.Id,
                         IdAspNetUsers = IdAspNetUsers,
                         Cognome = cognome,
                         Nome = nome
@@ -447,6 +472,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         }
 
 
+        // cliente predefinito delle presenze: si salva nella configurazione dell'azienda (Az_Cfg), non nel cliente comune
+        private async Task ImpostaClienteDefault(Az_Cfg? az_Cfg, int idAz_Cliente)
+        {
+            if (az_Cfg == null || az_Cfg.IdAz_ClienteDefault == idAz_Cliente)
+                return;
+            az_Cfg.IdAz_ClienteDefault = idAz_Cliente;
+            await _az_CfgRepository.UpsertAsync(az_Cfg);
+        }
+
         public async Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany)
         {
             Get_Az_SubCommessaAttivita_Default_OutModel retVal = new Get_Az_SubCommessaAttivita_Default_OutModel();
@@ -457,18 +491,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 int idAz = company_DATA.az_Anagrafica.Id;
 
-                // ?? 1. Cliente default ???????????????????????????????????????????
-                var cliente = (await _az_ClienteRepository.FindAll())
-                    .FirstOrDefault(c => c.IdAz_Anagrafica == idAz && c.Default);
+                // 1. Cliente predefinito delle presenze (Az_Cfg.IdAz_ClienteDefault; il cliente e' nella tabella comune)
+                var cliente = company_DATA.az_Cfg?.IdAz_ClienteDefault is int idClienteDefault
+                    ? await _az_ClienteRepository.FindAll(c => c.Id == idClienteDefault && c.IdAz_Anagrafica == idAz).FirstOrDefaultAsync()
+                    : null;
 
                 if (cliente == null)
                 {
                     cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente
                     {
                         IdAz_Anagrafica = idAz,
-                        Descrizione = "Default",
-                        Default = true
+                        Descrizione = "Default"
                     });
+                    await ImpostaClienteDefault(company_DATA.az_Cfg, cliente.Id);
                 }
 
                 // ?? 2. Commessa default ??????????????????????????????????????????
@@ -792,9 +827,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     var az_Cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente()
                     {
                         IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
-                        Default = true,
                         Descrizione = "Default",
                     });
+                    await ImpostaClienteDefault(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg, az_Cliente.Id);
 
 
                     var az_Commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa()

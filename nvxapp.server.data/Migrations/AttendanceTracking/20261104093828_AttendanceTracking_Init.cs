@@ -19,6 +19,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    IdAz_ClienteDefault = table.Column<int>(type: "integer", nullable: true),
                     ApprovazioneTipo = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -33,6 +34,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         principalTable: "Az_Anagrafica",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_Cfg_Az_Cliente_IdAz_ClienteDefault",
+                        column: x => x.IdAz_ClienteDefault,
+                        principalTable: "Az_Cliente",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -86,33 +93,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         name: "FK_Az_Sedi_Az_Anagrafica_IdAz_Anagrafica",
                         column: x => x.IdAz_Anagrafica,
                         principalTable: "Az_Anagrafica",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Dip_Anagrafica",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
-                    Cognome = table.Column<string>(type: "text", nullable: true),
-                    Nome = table.Column<string>(type: "text", nullable: true),
-                    Matricola = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    CodiceFiscale = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dip_Anagrafica", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Dip_Anagrafica_AspNetUsers_IdAspNetUsers",
-                        column: x => x.IdAspNetUsers,
-                        principalSchema: "public",
-                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1437,6 +1417,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Az_Cfg_IdAz_ClienteDefault",
+                table: "Az_Cfg",
+                column: "IdAz_ClienteDefault");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Az_Commessa_IdAz_Anagrafica",
                 table: "Az_Commessa",
                 column: "IdAz_Anagrafica");
@@ -1528,12 +1513,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "IX_Az_SubCommessaUser_IdAz_SubCommessa_IdAspNetUsers",
                 table: "Az_SubCommessaUser",
                 columns: new[] { "IdAz_SubCommessa", "IdAspNetUsers" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dip_Anagrafica_IdAspNetUsers",
-                table: "Dip_Anagrafica",
-                column: "IdAspNetUsers",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -1958,9 +1937,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             migrationBuilder.DropTable(
                 name: "Par_Orario");
-
-            migrationBuilder.DropTable(
-                name: "Dip_Anagrafica");
 
             migrationBuilder.DropTable(
                 name: "Az_SubCommessaAttivita");

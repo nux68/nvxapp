@@ -5,7 +5,9 @@ export class Az_ClienteModel {
   public id!: number;
   public idAz_Anagrafica!: number;
   public descrizione: string = ''; // ragione sociale
-  public default: boolean;
+  // tabella comune: Cliente / Fornitore / Entrambi (0/1/2) e disattivazione; il cliente predefinito delle presenze sta in Az_Cfg
+  public tipo: number = 0;
+  public attivo: boolean = true;
 
   public partitaIva: string | null = null;
   public codiceFiscale: string | null = null;

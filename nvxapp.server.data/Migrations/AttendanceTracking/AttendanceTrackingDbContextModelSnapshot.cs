@@ -190,6 +190,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdAz_ClienteDefault")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -197,6 +200,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_Anagrafica")
                         .IsUnique();
+
+                    b.HasIndex("IdAz_ClienteDefault");
 
                     b.ToTable("Az_Cfg");
                 });
@@ -208,6 +213,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Cap")
                         .HasMaxLength(10)
@@ -231,9 +239,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Default")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -281,6 +286,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<string>("Telefono")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -616,6 +624,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -630,9 +641,18 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("DataCessazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("IdAspNetUsers")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Matricola")
                         .HasMaxLength(20)
@@ -646,10 +666,14 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdAspNetUsers")
-                        .IsUnique();
+                    b.HasIndex("IdAspNetUsers");
 
-                    b.ToTable("Dip_Anagrafica");
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Dip_Anagrafica", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Competenza", b =>
@@ -2363,7 +2387,14 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Cliente", "Az_ClienteDefaultNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_ClienteDefault")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Az_ClienteDefaultNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Cliente", b =>
@@ -2515,12 +2546,18 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
-                        .WithOne()
-                        .HasForeignKey("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "IdAspNetUsers")
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers");
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("Az_AnagraficaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Competenza", b =>

@@ -52,7 +52,8 @@ export class CustomerListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
+    // il cliente predefinito (e ogni cliente usato da commesse) non si cancella: lo blocca il server con un messaggio
+    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
   }
 
 

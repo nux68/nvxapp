@@ -316,11 +316,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
                                 var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Id != null).ToList();
                                 var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
-                                var entity = _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+                                int idAz_Anagrafica = company_DATA.az_Anagrafica.Id;
+                                var entity = _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id && x.IdAz_Anagrafica == idAz_Anagrafica).FirstOrDefault();
 
                                 if(entity == null)
                                 {
                                     entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                                    entity.IdAz_Anagrafica = idAz_Anagrafica;
                                     entity.IdAspNetUsers = applicationUser.Id;
                                     entity.Id = 0 ;
                                     entity.Dip_RapportoLavoro = null;
@@ -331,7 +333,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 }
                                 else
                                 {
+                                    // campi comuni non gestiti dalla pagina delle presenze: restano quelli salvati
+                                    var esistente = entity;
                                     entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                                    entity.IdAz_Anagrafica = esistente.IdAz_Anagrafica;
+                                    entity.IdAspNetUsers = esistente.IdAspNetUsers;
+                                    entity.Email = esistente.Email;
+                                    entity.DataCessazione = esistente.DataCessazione;
+                                    entity.Attivo = esistente.Attivo;
                                     entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
                                 }
 

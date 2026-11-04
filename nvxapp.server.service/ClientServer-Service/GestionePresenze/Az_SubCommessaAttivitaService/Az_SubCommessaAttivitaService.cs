@@ -162,6 +162,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
                     var idAzAnagrafica  = company_DATA.az_Anagrafica.Id;
+                    // cliente predefinito delle presenze (Az_Cfg): il cliente comune non ha piu' il flag Default
+                    int? idClienteDefault = company_DATA.az_Cfg?.IdAz_ClienteDefault;
 
                     var commesse        = await _az_CommessaRepository.FindAll();
                     commesse            = commesse.Where(c => c.IdAz_Anagrafica == idAzAnagrafica).ToList();
@@ -196,7 +198,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             Commessa_Default         = com.Default,
 
                             Cliente_Descrizione      = cli.Descrizione,
-                            Cliente_Default          = cli.Default,
+                            Cliente_Default          = cli.Id == idClienteDefault,
 
                             SubCommessa_Id           = sub.Id,
                             SubCommessa_Decrizione   = sub.Descrizione ?? string.Empty,

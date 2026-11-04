@@ -92,7 +92,8 @@ storico migrazioni create
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica)
   Moke:   InitMoke
-  AttendanceTracking: AttendanceTracking_Init (Az_Anagrafica e Az_Cliente ora in Common, mappate escluse)
+  AttendanceTracking: AttendanceTracking_Init (Az_Anagrafica, Az_Cliente e Dip_Anagrafica in Common, mappate escluse;
+                      cliente predefinito in Az_Cfg.IdAz_ClienteDefault)
 
 
 aggiorna db
