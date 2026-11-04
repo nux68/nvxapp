@@ -56,6 +56,9 @@ namespace nvxapp.server.data.Infrastructure
         */
         private static void IgnoreApplicationNavigations(ModelBuilder modelBuilder)
         {
+            // si ignorano i TIPI di destinazione (non solo le proprieta'): altrimenti le convenzioni di EF li
+            // scoprirebbero comunque seguendo le navigazioni, trascinando nel modello tutte le tabelle dell'applicativo
+            var foreign = new HashSet<Type>();
             foreach (var type in new[] { typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica) })
             {
                 foreach (var property in type.GetProperties())
@@ -67,9 +70,12 @@ namespace nvxapp.server.data.Infrastructure
                     bool isEntity = target.IsClass && target != typeof(string) && target.Namespace != null
                                     && target.Namespace.StartsWith("nvxapp.server.data.Entities");
                     if (isEntity && !_commonTypes.Contains(target))
-                        modelBuilder.Entity(type).Ignore(property.Name);
+                        foreign.Add(target);
                 }
             }
+
+            foreach (var target in foreign)
+                modelBuilder.Ignore(target);
         }
 
         /*
