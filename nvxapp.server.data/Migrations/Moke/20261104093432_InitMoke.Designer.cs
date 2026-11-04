@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Moke
 {
     [DbContext(typeof(MokeDbContext))]
-    [Migration("20261103085602_InitMoke")]
+    [Migration("20261104093432_InitMoke")]
     partial class InitMoke
     {
         /// <inheritdoc />

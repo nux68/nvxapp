@@ -374,4 +374,8 @@
     <value>Customers</value>
     <comment>dati comuni dell'azienda (schema Common)</comment>
   </data>
+  <data name="DeletionCountEmployees" xml:space="preserve">
+    <value>Employees</value>
+    <comment>dati comuni dell'azienda (schema Common)</comment>
+  </data>
 </root>

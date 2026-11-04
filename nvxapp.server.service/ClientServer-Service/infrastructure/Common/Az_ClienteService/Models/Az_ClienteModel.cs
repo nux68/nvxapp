@@ -1,3 +1,4 @@
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Collections.Generic;
 
@@ -8,7 +9,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
         public int Id { get; set; }
         public int IdAz_Anagrafica { get; set; }
         public string? Descrizione { get; set; }   // ragione sociale
-        public Boolean Default { get; set; }
+        public TipoCliente Tipo { get; set; } = TipoCliente.Cliente;
+        public Boolean Attivo { get; set; } = true;
 
         public string? PartitaIva { get; set; }
         public string? CodiceFiscale { get; set; }

@@ -19,6 +19,8 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         Common = 0,
         Moke = 1,
         AttendanceTracking = 2,
+        Crm = 3,
+        DocumentManagement = 4,
     }
 
     public static class ApplicationTypeExtensions

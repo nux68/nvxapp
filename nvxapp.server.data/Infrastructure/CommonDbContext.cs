@@ -6,7 +6,8 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 namespace nvxapp.server.data.Infrastructure
 {
     /*
-     Applicativo 0 - Common: dati dell'azienda condivisi tra gli applicativi.
+     Applicativo 0 - Common: dati dell'azienda condivisi tra gli applicativi
+ (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica).
      multi-tenant: tenant_<IdAzienda>_0     modalita' singola: public
      Migration in Migrations/Common.
 
@@ -30,13 +31,45 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
         public virtual DbSet<Az_Cliente> Az_Cliente { get; set; }
         public virtual DbSet<Az_ClienteContatto> Az_ClienteContatto { get; set; }
+        public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
+
+        // tipi del modello Common (tabelle comuni e tabelle di public referenziate)
+        private static readonly HashSet<Type> _commonTypes = new()
+        {
+            typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica),
+            typeof(Company), typeof(ApplicationUser),
+        };
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            IgnoreApplicationNavigations(modelBuilder);
             Gen_PublicReferences(modelBuilder);
             Gen_Common(modelBuilder);
+        }
+
+        /*
+         Le entita' comuni sono partial: i rami degli applicativi aggiungono navigazioni verso le proprie tabelle
+         (es. Dip_Anagrafica.Dip_RapportoLavoro delle presenze). Qui si ignorano tutte le navigazioni che non
+         portano a un tipo del modello Common, cosi' il modello (e le migration) di Common restano uguali in ogni ramo.
+        */
+        private static void IgnoreApplicationNavigations(ModelBuilder modelBuilder)
+        {
+            foreach (var type in new[] { typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica) })
+            {
+                foreach (var property in type.GetProperties())
+                {
+                    var target = property.PropertyType;
+                    if (target.IsGenericType && typeof(System.Collections.IEnumerable).IsAssignableFrom(target))
+                        target = target.GetGenericArguments()[0];
+
+                    bool isEntity = target.IsClass && target != typeof(string) && target.Namespace != null
+                                    && target.Namespace.StartsWith("nvxapp.server.data.Entities");
+                    if (isEntity && !_commonTypes.Contains(target))
+                        modelBuilder.Entity(type).Ignore(property.Name);
+                }
+            }
         }
 
         /*
@@ -51,6 +84,14 @@ namespace nvxapp.server.data.Infrastructure
                 entity.Ignore(e => e.FinancialAdvisorNavigation);
                 entity.Ignore(e => e.UserCompany);
                 entity.Ignore(e => e.CompanyApplication);
+            });
+
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.ToTable("AspNetUsers", TenantSchemaName.Public, t => t.ExcludeFromMigrations());
+                entity.Ignore(e => e.UserDealer);
+                entity.Ignore(e => e.UserCompany);
+                entity.Ignore(e => e.UserFinancialAdvisor);
             });
         }
 
@@ -74,6 +115,24 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany(t => t.Az_Cliente)
                       .HasForeignKey(t => t.IdAz_Anagrafica)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            /* Dip_Anagrafica: l'utente e' facoltativo; eliminandolo il dipendente resta (SetNull) */
+            modelBuilder.Entity<Dip_Anagrafica>(entity =>
+            {
+                entity.ToTable("Dip_Anagrafica");
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.AspNetUsersNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAspNetUsers)
+                      .OnDelete(DeleteBehavior.SetNull);
+
+                // un utente e' al piu' un dipendente per azienda (i NULL non si scontrano: dipendenti senza account)
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.IdAspNetUsers }).IsUnique();
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.CodiceFiscale });
             });
 
             /* Az_ClienteContatto */

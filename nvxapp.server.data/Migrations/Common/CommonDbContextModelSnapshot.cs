@@ -22,6 +22,71 @@ namespace nvxapp.server.data.Migrations.Common
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AspNetUsers", "public", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -93,6 +158,9 @@ namespace nvxapp.server.data.Migrations.Common
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Cap")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
@@ -115,9 +183,6 @@ namespace nvxapp.server.data.Migrations.Common
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
-
-                    b.Property<bool>("Default")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -165,6 +230,9 @@ namespace nvxapp.server.data.Migrations.Common
                     b.Property<string>("Telefono")
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -232,6 +300,66 @@ namespace nvxapp.server.data.Migrations.Common
                     b.ToTable("Az_ClienteContatto", (string)null);
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("CodiceFiscale")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("Cognome")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataCessazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Matricola")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdAz_Anagrafica", "CodiceFiscale");
+
+                    b.HasIndex("IdAz_Anagrafica", "IdAspNetUsers")
+                        .IsUnique();
+
+                    b.ToTable("Dip_Anagrafica", (string)null);
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
@@ -263,6 +391,24 @@ namespace nvxapp.server.data.Migrations.Common
                         .IsRequired();
 
                     b.Navigation("Az_ClienteNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("Az_AnagraficaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>

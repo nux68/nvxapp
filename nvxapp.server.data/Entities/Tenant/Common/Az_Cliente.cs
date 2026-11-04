@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace nvxapp.server.data.Entities.Tenant
 {
     /*
-     Cliente dell'azienda (schema Common): condiviso tra gli applicativi (presenze, CRM, documentale).
+     Cliente (o fornitore) dell'azienda (schema Common): condiviso tra gli applicativi (presenze, CRM, documentale).
+ Il cliente predefinito delle presenze non sta qui ma in Az_Cfg.IdAz_ClienteDefault (dato delle sole presenze).
      Regola: qui solo dati validi per tutti; i dati di un solo applicativo vanno in una sua tabella
      di estensione 1-1 (es. Crm_ClienteDati), nel suo schema.
     */
@@ -19,7 +20,12 @@ namespace nvxapp.server.data.Entities.Tenant
         [Required]
         [MaxLength(100)]
         public string Descrizione { get; set; } = string.Empty;
-        public Boolean Default { get; set; }
+
+        // Cliente / Fornitore / Entrambi: le scelte "cliente" (commesse, opportunita') propongono Cliente ed Entrambi
+        public TipoCliente Tipo { get; set; } = TipoCliente.Cliente;
+
+        // disattivato: resta nello storico (commesse, opportunita', documenti) ma non si propone piu' nelle scelte
+        public Boolean Attivo { get; set; } = true;
 
         // dati fiscali
         [MaxLength(11)]
@@ -57,5 +63,13 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? Note { get; set; }
 
         public ICollection<Az_ClienteContatto>? Az_ClienteContatto { get; set; }
+    }
+
+    // i valori finiscono nel database: non vanno cambiati
+    public enum TipoCliente
+    {
+        Cliente = 0,
+        Fornitore = 1,
+        Entrambi = 2,
     }
 }
