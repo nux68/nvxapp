@@ -92,7 +92,9 @@
     },
     "storagePlans": "Pacchetti di spazio",
     "companyStorage": "Spazio documenti",
-    "administration": "Amministrazione"
+    "administration": "Amministrazione",
+    "registry": "Anagrafiche",
+    "customers": "Clienti"
   },
   "showcase": {
     "menu": {
@@ -719,6 +721,55 @@
       "warning": "Soglia di avviso (%)",
       "used": "Usati {{used}} MB su {{quota}} MB ({{percent}}%), {{files}} file",
       "note": "Vuoti = valori del pacchetto o predefiniti (ora {{maxFile}} MB e {{warning}}%)."
+    },
+    "customerEdit": {
+      "title": "Cliente",
+      "anagrafica": "Anagrafica",
+      "ragioneSociale": "Ragione sociale",
+      "ragioneSocialeRequired": "La ragione sociale è obbligatoria.",
+      "ragioneSocialeMaxLength": "La ragione sociale non può superare i {{max}} caratteri.",
+      "referente": "Referente",
+      "datiFiscali": "Dati fiscali",
+      "partitaIva": "Partita IVA",
+      "partitaIvaPattern": "La partita IVA è composta da 11 cifre.",
+      "codiceFiscale": "Codice fiscale",
+      "codiceFiscalePattern": "Il codice fiscale è di 16 caratteri (persona) o 11 cifre (società).",
+      "sede": "Sede",
+      "indirizzo": "Indirizzo",
+      "cap": "CAP",
+      "citta": "Città",
+      "provincia": "Provincia",
+      "nazione": "Nazione",
+      "provinciaPattern": "La provincia è la sigla di 2 lettere (es. MI).",
+      "nazionePattern": "La nazione è il codice di 2 lettere (es. IT).",
+      "contatti": "Contatti",
+      "telefono": "Telefono",
+      "email": "Email",
+      "pec": "PEC",
+      "pecInvalid": "Inserisci una PEC valida.",
+      "fatturazioneElettronica": "Fatturazione elettronica",
+      "codiceDestinatario": "Codice destinatario (SDI)",
+      "codiceDestinatarioPattern": "Il codice destinatario è di 7 caratteri (6 per la Pubblica Amministrazione).",
+      "note": "Note",
+      "tipo": "Tipo",
+      "tipi": {
+        "0": "Cliente",
+        "1": "Fornitore",
+        "2": "Cliente e fornitore"
+      },
+      "attivo": "Attivo",
+      "attivoNote": "Un cliente disattivato resta nello storico (commesse, opportunità, documenti) ma non viene più proposto nelle scelte.",
+      "persone": "Persone di riferimento",
+      "aggiungiPersona": "Aggiungi",
+      "nessunaPersona": "Nessuna persona di riferimento",
+      "personeDopoSalvataggio": "Le persone di riferimento si aggiungono dopo aver salvato il cliente."
+    },
+    "customerList": {
+      "title": "Clienti",
+      "confirmDelete": "Confermi la cancellazione del cliente?",
+      "fabAdd": "Nuovo",
+      "columnCustomer": "Cliente",
+      "showDisabled": "Mostra disabilitati"
     }
   },
   "components": {
@@ -819,6 +870,21 @@
     "nvxListOptions": {
       "title": "Opzioni",
       "enableDelete": "Abilita cancellazioni"
+    },
+    "customerContact": {
+      "title": "Persona di riferimento",
+      "nominativo": "Nominativo",
+      "cognome": "Cognome",
+      "nome": "Nome",
+      "ruolo": "Ruolo",
+      "telefono": "Telefono",
+      "cellulare": "Cellulare",
+      "email": "Email",
+      "principale": "principale",
+      "principaleLabel": "Contatto principale",
+      "note": "Note",
+      "nomeObbligatorio": "Inserisci il cognome o il nome.",
+      "confirmDelete": "Confermi la cancellazione della persona di riferimento?"
     }
   },
   "ticket": {

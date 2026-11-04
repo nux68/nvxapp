@@ -438,4 +438,8 @@
     <value>The new plan is smaller than the space already used: the company will not be able to upload documents until it goes below.</value>
     <comment>spazio a disposizione</comment>
   </data>
+  <data name="CustomerEditNotAllowed" xml:space="preserve">
+    <value>Only company administrators can change the customer registry.</value>
+    <comment>Az_ClientePut/Delete e Az_ClienteContattoPut/Delete per chi non e' CompanyPowerAdmin o CompanyAdmin</comment>
+  </data>
 </root>

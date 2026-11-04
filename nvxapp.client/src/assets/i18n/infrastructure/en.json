@@ -92,7 +92,9 @@
     },
     "storagePlans": "Storage plans",
     "companyStorage": "Document storage",
-    "administration": "Administration"
+    "administration": "Administration",
+    "registry": "Registry",
+    "customers": "Customers"
   },
   "showcase": {
     "menu": {
@@ -719,6 +721,55 @@
       "warning": "Warning threshold (%)",
       "used": "{{used}} MB used of {{quota}} MB ({{percent}}%), {{files}} files",
       "note": "Empty = plan or default values (now {{maxFile}} MB and {{warning}}%)."
+    },
+    "customerEdit": {
+      "title": "Customer",
+      "anagrafica": "Personal data",
+      "ragioneSociale": "Company name",
+      "ragioneSocialeRequired": "The company name is required.",
+      "ragioneSocialeMaxLength": "The company name cannot exceed {{max}} characters.",
+      "referente": "Contact person",
+      "datiFiscali": "Tax details",
+      "partitaIva": "VAT number",
+      "partitaIvaPattern": "The VAT number consists of 11 digits.",
+      "codiceFiscale": "Tax code",
+      "codiceFiscalePattern": "The tax code is 16 characters (individual) or 11 digits (company).",
+      "sede": "Site",
+      "indirizzo": "Address",
+      "cap": "Postcode",
+      "citta": "City",
+      "provincia": "Province",
+      "nazione": "Country",
+      "provinciaPattern": "The province is the 2-letter code (e.g. MI).",
+      "nazionePattern": "The country is the 2-letter code (e.g. IT).",
+      "contatti": "Contacts",
+      "telefono": "Phone",
+      "email": "Email",
+      "pec": "PEC",
+      "pecInvalid": "Enter a valid PEC address.",
+      "fatturazioneElettronica": "Electronic invoicing",
+      "codiceDestinatario": "Recipient code (SDI)",
+      "codiceDestinatarioPattern": "The recipient code is 7 characters (6 for the Public Administration).",
+      "note": "Notes",
+      "tipo": "Type",
+      "tipi": {
+        "0": "Customer",
+        "1": "Supplier",
+        "2": "Customer and supplier"
+      },
+      "attivo": "Active",
+      "attivoNote": "A deactivated customer stays in the history (jobs, opportunities, documents) but is no longer offered in selections.",
+      "persone": "Contact persons",
+      "aggiungiPersona": "Add",
+      "nessunaPersona": "No contact persons",
+      "personeDopoSalvataggio": "Contact persons can be added after saving the customer."
+    },
+    "customerList": {
+      "title": "Customers",
+      "confirmDelete": "Confirm deletion of the customer?",
+      "fabAdd": "New",
+      "columnCustomer": "Customer",
+      "showDisabled": "Show disabled"
     }
   },
   "components": {
@@ -819,6 +870,21 @@
     "nvxListOptions": {
       "title": "Options",
       "enableDelete": "Enable deletion"
+    },
+    "customerContact": {
+      "title": "Contact person",
+      "nominativo": "Name",
+      "cognome": "Surname",
+      "nome": "First name",
+      "ruolo": "Role",
+      "telefono": "Phone",
+      "cellulare": "Mobile",
+      "email": "Email",
+      "principale": "main",
+      "principaleLabel": "Main contact",
+      "note": "Notes",
+      "nomeObbligatorio": "Enter the surname or the first name.",
+      "confirmDelete": "Confirm deletion of the contact person?"
     }
   },
   "ticket": {
