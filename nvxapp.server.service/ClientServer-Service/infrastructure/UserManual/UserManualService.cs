@@ -75,7 +75,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                     throw new UserMessageException(InfrastructureMessages.Get("UserManualNotFound"));
 
                 // testo nella lingua della richiesta; nel job solo la scrittura del PDF
-                var manuale = provider.Build();
+                // solo le parti per i ruoli dell'utente con cui si lavora (anche impersonificato)
+                var utente = string.IsNullOrEmpty(CurrentUserId) ? null : await _userManager.FindByIdAsync(CurrentUserId);
+                var ruoli = utente == null ? new List<string>() : (await _userManager.GetRolesAsync(utente)).ToList();
+                var manuale = provider.Build(ruoli);
                 var sito = string.IsNullOrWhiteSpace(model.Data.SiteName) ? manuale.Title : model.Data.SiteName.Trim();
                 var jobId = Guid.NewGuid().ToString();
                 retVal.JobId = jobId;
