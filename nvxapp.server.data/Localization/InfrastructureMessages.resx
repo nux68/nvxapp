@@ -535,4 +535,8 @@
   <data name="UserManualContents" xml:space="preserve">
     <value>Indice</value>
   </data>
+  <data name="UserManualNoDescription" xml:space="preserve">
+    <value>Si apre dalla voce «{0}» della sezione {1} del menu.</value>
+    <comment>funzione del menu senza descrizione nel manuale</comment>
+  </data>
 </root>
