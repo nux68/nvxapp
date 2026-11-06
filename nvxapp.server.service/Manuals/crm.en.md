@@ -153,8 +153,8 @@ In the **Attachments** sections of customers, opportunities and offers press **U
 
 Reports only count the data the user can see.
 
-## Configuration (administrators)
-### Tables
+## Configuration (administrators) {CompanyPowerAdmin, CompanyAdmin}
+### Tables {CompanyPowerAdmin}
 **CRM settings > Tables** (CompanyPowerAdmin) collects the CRM tables, created at activation with default values:
 - **Phases**: description, type (open, won, lost), proposed probability and order in the pipeline;
 - **Activity types**: icon, colour and proposed duration;
@@ -164,7 +164,7 @@ Reports only count the data the user can see.
 
 > A value already in use cannot be deleted: deactivate it, it stays in the history but is no longer offered. At least one active phase of each type and at least one activity type must remain.
 
-### Settings
+### Settings {CompanyPowerAdmin}
 **CRM settings > Settings** (CompanyPowerAdmin):
 - **sales rep visibility** (only their own customers / all);
 - **currency** (3-letter code, for example EUR);

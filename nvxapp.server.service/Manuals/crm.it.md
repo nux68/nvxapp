@@ -153,8 +153,8 @@ Nelle sezioni **Allegati** di clienti, opportunità e offerte premi **Carica un 
 
 I report contano solo i dati che l'utente vede.
 
-## Configurazione (amministratori)
-### Tabelle
+## Configurazione (amministratori) {CompanyPowerAdmin, CompanyAdmin}
+### Tabelle {CompanyPowerAdmin}
 **Configurazione CRM > Tabelle** (CompanyPowerAdmin) raccoglie le tabelle del CRM, create all'attivazione con valori predefiniti:
 - **Fasi**: descrizione, tipo (aperta, vinta, persa), probabilità proposta e ordine nella pipeline;
 - **Tipi di attività**: icona, colore e durata proposta;
@@ -164,7 +164,7 @@ I report contano solo i dati che l'utente vede.
 
 > Un valore già usato non si può cancellare: disattivalo, resta nello storico ma non viene più proposto. Deve restare almeno una fase attiva per ogni tipo e almeno un tipo di attività.
 
-### Impostazioni
+### Impostazioni {CompanyPowerAdmin}
 **Configurazione CRM > Impostazioni** (CompanyPowerAdmin):
 - **visibilità dei commerciali** (solo i propri clienti / tutti);
 - **valuta** (codice di 3 lettere, per esempio EUR);
