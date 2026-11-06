@@ -1,4 +1,5 @@
 using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
 using MigraDoc.Rendering;
 using nvxapp.server.data.Localization;
 using PdfSharp.Fonts;
@@ -56,6 +57,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         private static readonly Color Primario = new(0x1F, 0x4E, 0x79);
         private static readonly Color Tenue = new(0x75, 0x75, 0x75);
         private static readonly Color SfondoNota = new(0xE3, 0xEB, 0xF3);
+        // colori delle figure generate (copertina, banner dei capitoli, diagrammi di flusso)
+        private static readonly Color BandaTesto = new(0xDC, 0xE6, 0xF2);   // testo tenue sulla banda scura
+        private static readonly Color NodoSfondo = new(0xEE, 0xF2, 0xF8);   // riquadro dei passi del flusso
+        // larghezza utile della pagina (21 cm meno i margini da 1,8 cm)
+        private const double LarghezzaUtile = 17.4;
 
         public static byte[] Crea(UserManualDocument manuale, string sito, Testi testi)
         {
@@ -98,17 +104,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             pie.AddText(testi.Pagina + " ");
             pie.AddPageField();
 
-            // intestazione nella prima pagina (niente copertina a pagina intera), poi indice e capitoli di seguito
-            var titolo = section.AddParagraph(manuale.Title);
-            titolo.Format.Font.Size = 22; titolo.Format.Font.Bold = true; titolo.Format.Font.Color = Primario;
+            // copertina: una banda colorata in testa alla prima pagina (titolo, sottotitolo, sito e data)
+            var copertina = section.AddTable();
+            copertina.Borders.Width = 0;
+            copertina.AddColumn(Unit.FromCentimeter(LarghezzaUtile));
+            var cRiga = copertina.AddRow();
+            cRiga.TopPadding = Unit.FromPoint(12);
+            cRiga.BottomPadding = Unit.FromPoint(12);
+            var cCella = cRiga.Cells[0];
+            cCella.Shading.Color = Primario;
+            cCella.Format.LeftIndent = Unit.FromCentimeter(0.45);
+            cCella.Format.RightIndent = Unit.FromCentimeter(0.45);
+            var titolo = cCella.AddParagraph(manuale.Title);
+            titolo.Format.Font.Size = 22; titolo.Format.Font.Bold = true; titolo.Format.Font.Color = Colors.White;
             if (!string.IsNullOrWhiteSpace(manuale.Subtitle))
             {
-                var sotto = section.AddParagraph(manuale.Subtitle!);
-                sotto.Format.Font.Size = 12; sotto.Format.Font.Color = Tenue; sotto.Format.SpaceBefore = Unit.FromPoint(4);
+                var sotto = cCella.AddParagraph(manuale.Subtitle!);
+                sotto.Format.Font.Size = 12; sotto.Format.Font.Color = BandaTesto; sotto.Format.SpaceBefore = Unit.FromPoint(3);
             }
-            var data = section.AddParagraph(sito + " · " + testi.GeneratoIl);
-            data.Format.SpaceBefore = Unit.FromPoint(4); data.Format.SpaceAfter = Unit.FromPoint(10); data.Format.Font.Color = Tenue;
-            data.Format.Borders.Bottom.Width = 0.75; data.Format.Borders.Bottom.Color = Primario;
+            var data = cCella.AddParagraph(sito + " · " + testi.GeneratoIl);
+            data.Format.Font.Size = 9; data.Format.Font.Color = BandaTesto; data.Format.SpaceBefore = Unit.FromPoint(6);
+            // spazio sotto la banda prima dell'indice
+            section.AddParagraph().Format.SpaceAfter = Unit.FromPoint(8);
 
             // indice dei capitoli
             var capitoli = manuale.Blocks.Where(b => b.Type == UserManualBlockType.Chapter).ToList();
@@ -127,12 +144,43 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             }
 
             int capitolo = 0;
-            foreach (var b in manuale.Blocks)
+            var blocchi = manuale.Blocks;
+            for (int i = 0; i < blocchi.Count; i++)
             {
+                var b = blocchi[i];
+                // passi consecutivi: prima il diagramma di flusso, poi i passi per esteso
+                if (b.Type == UserManualBlockType.Step)
+                {
+                    var passi = new List<UserManualBlock>();
+                    int j = i;
+                    while (j < blocchi.Count && blocchi[j].Type == UserManualBlockType.Step) { passi.Add(blocchi[j]); j++; }
+                    if (passi.Count >= 2 && passi.Count <= 6)
+                        FlussoPassi(section, passi);
+                    foreach (var p in passi)
+                    {
+                        var passo = section.AddParagraph();
+                        passo.Format.LeftIndent = Unit.FromCentimeter(0.8);
+                        passo.Format.FirstLineIndent = Unit.FromCentimeter(-0.6);
+                        passo.Format.SpaceAfter = Unit.FromPoint(2);
+                        passo.AddFormattedText(p.Number + ".  ", TextFormat.Bold);
+                        Testo(passo, p.Text);
+                    }
+                    i = j - 1;
+                    continue;
+                }
                 switch (b.Type)
                 {
                     case UserManualBlockType.Chapter:
-                        section.AddParagraph($"{++capitolo}. {b.Text}", StyleNames.Heading1);
+                        // banner del capitolo: barra colorata a sinistra e fondo tenue, mantenendo il titolo nell'indice del PDF
+                        var cap = section.AddParagraph($"{++capitolo}. {b.Text}", StyleNames.Heading1);
+                        cap.Format.Shading.Color = SfondoNota;
+                        cap.Format.LeftIndent = Unit.FromCentimeter(0.3);
+                        cap.Format.RightIndent = Unit.FromCentimeter(0.1);
+                        cap.Format.Borders.Left.Width = 3;
+                        cap.Format.Borders.Left.Color = Primario;
+                        cap.Format.Borders.DistanceFromLeft = Unit.FromPoint(5);
+                        cap.Format.Borders.DistanceFromTop = Unit.FromPoint(3);
+                        cap.Format.Borders.DistanceFromBottom = Unit.FromPoint(3);
                         break;
                     case UserManualBlockType.Section:
                         section.AddParagraph(b.Text, StyleNames.Heading2);
@@ -166,14 +214,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                         punto.AddText("•  ");
                         Testo(punto, b.Text);
                         break;
-                    case UserManualBlockType.Step:
-                        var passo = section.AddParagraph();
-                        passo.Format.LeftIndent = Unit.FromCentimeter(0.8);
-                        passo.Format.FirstLineIndent = Unit.FromCentimeter(-0.6);
-                        passo.Format.SpaceAfter = Unit.FromPoint(2);
-                        passo.AddFormattedText(b.Number + ".  ", TextFormat.Bold);
-                        Testo(passo, b.Text);
-                        break;
+                    // i passi (Step) sono gestiti prima dello switch, con il diagramma di flusso
                     case UserManualBlockType.Note:
                         var nota = section.AddParagraph();
                         nota.Format.Shading.Color = SfondoNota;
@@ -191,6 +232,63 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             using var ms = new MemoryStream();
             renderer.PdfDocument.Save(ms, false);
             return ms.ToArray();
+        }
+
+        // diagramma di flusso di una procedura: un riquadro numerato per ogni passo, collegati da frecce
+        private static void FlussoPassi(Section section, List<UserManualBlock> passi)
+        {
+            int n = passi.Count;
+            const double larghezzaFreccia = 0.6;
+            double larghezzaNodo = (LarghezzaUtile - larghezzaFreccia * (n - 1)) / n;
+
+            var tabella = section.AddTable();
+            tabella.Borders.Width = 0;
+            for (int k = 0; k < n; k++)
+            {
+                tabella.AddColumn(Unit.FromCentimeter(larghezzaNodo));
+                if (k < n - 1)
+                    tabella.AddColumn(Unit.FromCentimeter(larghezzaFreccia));
+            }
+
+            var riga = tabella.AddRow();
+            riga.TopPadding = Unit.FromPoint(4);
+            riga.BottomPadding = Unit.FromPoint(4);
+            for (int k = 0; k < n; k++)
+            {
+                var nodo = riga.Cells[k * 2];
+                nodo.Shading.Color = NodoSfondo;
+                nodo.Borders.Width = 0.5;
+                nodo.Borders.Color = Primario;
+                nodo.VerticalAlignment = VerticalAlignment.Center;
+                nodo.Format.Alignment = ParagraphAlignment.Center;
+                var numero = nodo.AddParagraph((k + 1).ToString());
+                numero.Format.Font.Bold = true; numero.Format.Font.Size = 13; numero.Format.Font.Color = Primario;
+                numero.Format.SpaceAfter = Unit.FromPoint(1);
+                var etichetta = nodo.AddParagraph(Etichetta(passi[k].Text));
+                etichetta.Format.Font.Size = 7.5; etichetta.Format.Font.Color = Tenue;
+
+                if (k < n - 1)
+                {
+                    var freccia = riga.Cells[k * 2 + 1];
+                    freccia.VerticalAlignment = VerticalAlignment.Center;
+                    freccia.Format.Alignment = ParagraphAlignment.Center;
+                    var segno = freccia.AddParagraph(">");
+                    segno.Format.Font.Size = 12; segno.Format.Font.Bold = true; segno.Format.Font.Color = Primario;
+                }
+            }
+            section.AddParagraph().Format.SpaceAfter = Unit.FromPoint(4);
+        }
+
+        // etichetta breve per il nodo del flusso: prima frase del passo, senza grassetto
+        private static string Etichetta(string testo)
+        {
+            testo = testo.Replace("**", "").Trim();
+            int stop = testo.IndexOfAny(new[] { '.', ':', ';' });
+            if (stop > 0 && stop <= 40)
+                testo = testo[..stop];
+            if (testo.Length > 38)
+                testo = testo[..37].TrimEnd() + "...";
+            return testo;
         }
 
         // testo con le parti **in grassetto**
