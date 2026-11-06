@@ -9,6 +9,7 @@
   <!-- testi dei manuali utente (Manuals/<codice>.<lingua>.md), letti da UserManualMarkdownProvider; WithCulture=false: il suffisso .it/.en non e' una cultura dei satelliti -->
   <ItemGroup>
     <EmbeddedResource Include="Manuals\**\*.md" WithCulture="false" />
+    <EmbeddedResource Include="Manuals\img\*.jpg;Manuals\img\*.png" WithCulture="false" />
   </ItemGroup>
 
   <ItemGroup>

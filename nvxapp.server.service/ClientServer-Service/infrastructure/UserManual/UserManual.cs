@@ -1,39 +1,59 @@
 using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Localization;
 using System.Globalization;
-using System.Reflection;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
 {
     /*
      Manuali utente in PDF, uno per ramo logico (funzioni base, presenze, CRM, documentale), generati con un job
      (UserManualService) e scaricati dalla barra dei job della pagina.
-     Ogni ramo registra un IUserManualProvider (registrazione automatica) e scrive il testo in Markdown semplice nei file
+
+     Il manuale si COMPONE dal menu reale dell'utente (lo manda il client: sezioni e voci che vede in quel momento, cioe'
+     ruoli, applicativi attivi e voci nascoste dal "Menu utenti"): un capitolo per sezione del menu, un paragrafo per voce,
+     con la schermata della pagina se c'e'. Cosi' il manuale segue le funzioni correnti del programma: una voce nuova
+     compare subito (con un testo generico finche' non ha la sua descrizione), una voce tolta sparisce.
+
+     Ogni ramo registra un IUserManualProvider (registrazione automatica) e scrive i testi in
      nvxapp.server.service/Manuals/<codice>.<lingua>.md (risorse incorporate; manca la lingua -> italiano):
-        # Titolo del manuale        (prima riga; la riga dopo, se non e' un titolo, e' il sottotitolo)
-        ## Capitolo
-        ### Paragrafo
-        testo libero (righe consecutive = un paragrafo)
-        - elenco puntato
-        1. passaggio numerato
-        > nota evidenziata
-        **Ruoli:** chi la usa        (riga di testo come le altre)
-     Capitoli e paragrafi per ruolo: elenco dei ruoli tra graffe in fondo al titolo, es.
-        ## Configurazione {CompanyPowerAdmin}
-        ### Approvare le richieste {CompanyPowerAdmin, CompanyAdmin}
-     il capitolo (fino al ## successivo) o il paragrafo (fino al ### o ## successivo) resta solo per chi ha almeno uno
-     di quei ruoli (quelli dell'utente con cui si sta lavorando, anche se impersonificato); senza graffe vale per tutti.
-     Cosi' il manuale descrive solo le funzioni che l'utente puo' usare.
+
+        # Titolo del manuale
+        sottotitolo                         (riga dopo il titolo)
+        ## Introduzione                     capitoli iniziali (prima del primo @@): sempre all'inizio
+        ...testo...
+        @@ /crmpipeline                     descrizione della funzione all'indirizzo /crmpipeline (fino al @@ o ## successivo)
+        ...testo...
+        ## Domande frequenti                capitoli dopo i blocchi @@: in fondo al manuale
+
+     Testo: righe consecutive = un paragrafo; "- " elenco puntato; "1. " passaggio numerato; "> " nota; **grassetto**;
+     "### " titoletto. Capitoli e titoletti dell'introduzione e dell'appendice per ruolo: ruoli tra graffe in fondo al
+     titolo (## Configurazione {CompanyPowerAdmin}); restano solo per chi ha almeno uno di quei ruoli.
+
+     Schermate: nvxapp.server.service/Manuals/img/<indirizzo>.jpg (indirizzo senza "/" iniziale, "/" interni -> "_"),
+     incorporate; si rigenerano con lo script nvxapp.server/Tools/ManualScreenshots (vedi il suo README).
     */
     public interface IUserManualProvider
     {
-        /// <summary>Codice del manuale (url /usermanual/&lt;codice&gt;, nome delle risorse Manuals/&lt;codice&gt;.&lt;lingua&gt;.md).</summary>
+        /// <summary>Codice del manuale (url /usermanual/&lt;codice&gt;, risorse Manuals/&lt;codice&gt;.&lt;lingua&gt;.md).</summary>
         string Code { get; }
 
         /// <summary>Applicativo che il manuale descrive: null = funzioni base (sempre disponibile).</summary>
         ApplicationType? Application { get; }
 
-        /// <summary>Manuale nella lingua corrente, con i soli capitoli e paragrafi dei ruoli indicati.</summary>
-        UserManualDocument Build(IReadOnlyCollection<string> ruoli);
+        /// <summary>Manuale nella lingua corrente, composto dal menu dell'utente e filtrato sui suoi ruoli.</summary>
+        UserManualDocument Build(IReadOnlyCollection<string> ruoli, IReadOnlyList<UserManualMenuSection> menu);
+    }
+
+    // sezione del menu dell'utente (titolo gia' tradotto) con le sue voci
+    public class UserManualMenuSection
+    {
+        public string Titolo { get; set; } = string.Empty;
+        public List<UserManualMenuItem> Voci { get; set; } = new();
+    }
+
+    public class UserManualMenuItem
+    {
+        public string Titolo { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
     }
 
     public class UserManualDocument
@@ -51,6 +71,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         Bullet = 4,
         Step = 5,
         Note = 6,
+        Image = 7,
+        Subsection = 8,
     }
 
     public class UserManualBlock
@@ -59,25 +81,44 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         public string Text { get; set; } = string.Empty;
         // numero del passaggio (Step)
         public int Number { get; set; }
+        // immagine (Image)
+        public byte[]? Data { get; set; }
     }
 
-    /// <summary>Provider che legge il testo dalle risorse Markdown incorporate di un assembly (di solito questo).</summary>
+    /// <summary>Provider che legge testi e schermate dalle risorse incorporate dell'assembly (di solito questo).</summary>
     public abstract class UserManualMarkdownProvider : IUserManualProvider
     {
         public abstract string Code { get; }
         public abstract ApplicationType? Application { get; }
 
-        public UserManualDocument Build(IReadOnlyCollection<string> ruoli)
+        public UserManualDocument Build(IReadOnlyCollection<string> ruoli, IReadOnlyList<UserManualMenuSection> menu)
         {
             var lingua = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            var testo = Leggi(lingua) ?? Leggi("it") ?? throw new InvalidOperationException($"Manuale {Code} mancante (Manuals/{Code}.it.md)");
-            return UserManualMarkdown.Parse(testo, ruoli);
+            var testo = Leggi($".Manuals.{Code}.{lingua}.md") ?? Leggi($".Manuals.{Code}.it.md")
+                        ?? throw new InvalidOperationException($"Manuale {Code} mancante (Manuals/{Code}.it.md)");
+            var parti = UserManualMarkdown.Parse(testo, ruoli);
+            return UserManualMarkdown.Componi(parti, menu, url => Immagine(url));
         }
 
-        private string? Leggi(string lingua)
+        // schermata della pagina: Manuals/img/<indirizzo>.jpg (o .png)
+        private byte[]? Immagine(string url)
+        {
+            var nome = UserManualMarkdown.NomeImmagine(url);
+            var assembly = GetType().Assembly;
+            var risorsa = assembly.GetManifestResourceNames()
+                                  .FirstOrDefault(n => n.EndsWith($".Manuals.img.{nome}.jpg", StringComparison.OrdinalIgnoreCase)
+                                                    || n.EndsWith($".Manuals.img.{nome}.png", StringComparison.OrdinalIgnoreCase));
+            if (risorsa == null)
+                return null;
+            using var stream = assembly.GetManifestResourceStream(risorsa)!;
+            using var ms = new MemoryStream();
+            stream.CopyTo(ms);
+            return ms.ToArray();
+        }
+
+        private string? Leggi(string suffisso)
         {
             var assembly = GetType().Assembly;
-            var suffisso = $".Manuals.{Code}.{lingua}.md";
             var nome = assembly.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(suffisso, StringComparison.OrdinalIgnoreCase));
             if (nome == null)
                 return null;
@@ -87,17 +128,32 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         }
     }
 
+    // testo del manuale diviso nelle sue parti (vedi il commento in cima)
+    public class UserManualParti
+    {
+        public string Title { get; set; } = string.Empty;
+        public string? Subtitle { get; set; }
+        public List<UserManualBlock> Introduzione { get; set; } = new();
+        public Dictionary<string, List<UserManualBlock>> Funzioni { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+        public List<UserManualBlock> Appendice { get; set; } = new();
+    }
+
     public static class UserManualMarkdown
     {
-        public static UserManualDocument Parse(string testo, IReadOnlyCollection<string>? ruoli = null)
+        // indirizzi del menu che non sono funzioni da descrivere
+        private static readonly string[] Esclusi = { "/usermanual", "/login", "/logout", "/userimpersonate" };
+
+        public static string NomeImmagine(string url) => url.Trim().TrimStart('/').Replace('/', '_').ToLowerInvariant();
+
+        public static UserManualParti Parse(string testo, IReadOnlyCollection<string>? ruoli = null)
         {
-            var doc = new UserManualDocument();
+            var parti = new UserManualParti();
+            List<UserManualBlock> corrente = parti.Introduzione;
+            bool funzioniIniziate = false;
             var paragrafo = new List<string>();
             int passo = 0;
-            // capitolo o paragrafo riservato ad altri ruoli: le righe fino al titolo successivo si saltano
             bool capitoloEscluso = false, paragrafoEscluso = false;
 
-            // "Titolo {RuoloA, RuoloB}" -> titolo senza graffe e se l'utente lo puo' vedere (nessuna graffa = tutti)
             (string Titolo, bool Ammesso) Titolo(string t)
             {
                 t = t.Trim();
@@ -112,7 +168,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             void Chiudi()
             {
                 if (paragrafo.Count > 0)
-                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = string.Join(" ", paragrafo) });
+                    corrente.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = string.Join(" ", paragrafo) });
                 paragrafo.Clear();
             }
 
@@ -125,8 +181,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                     passo = 0;
                     continue;
                 }
+                if (riga.StartsWith("@@"))
+                {
+                    // descrizione di una funzione del menu
+                    Chiudi();
+                    funzioniIniziate = true;
+                    capitoloEscluso = paragrafoEscluso = false;
+                    var url = riga[2..].Trim();
+                    corrente = new List<UserManualBlock>();
+                    parti.Funzioni[url] = corrente;
+                    passo = 0;
+                    continue;
+                }
+                if (riga.StartsWith("# "))
+                {
+                    Chiudi();
+                    parti.Title = riga[2..].Trim();
+                    continue;
+                }
                 if (riga.StartsWith("## "))
                 {
+                    Chiudi();
+                    // dopo i blocchi delle funzioni i capitoli vanno in appendice
+                    if (funzioniIniziate)
+                        corrente = parti.Appendice;
                     var (t, ammesso) = Titolo(riga[3..]);
                     capitoloEscluso = !ammesso;
                     paragrafoEscluso = false;
@@ -143,20 +221,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                     Chiudi();
                     continue;
                 }
-                if (riga.StartsWith("# "))
+                if (parti.Introduzione.Count == 0 && parti.Subtitle == null && parti.Title.Length > 0 && corrente == parti.Introduzione
+                    && paragrafo.Count == 0 && !riga.StartsWith('#') && !riga.StartsWith("- ") && !riga.StartsWith('>'))
                 {
-                    Chiudi();
-                    doc.Title = riga[2..].Trim();
-                    continue;
-                }
-                if (doc.Blocks.Count == 0 && doc.Subtitle == null && doc.Title.Length > 0 && !riga.StartsWith('#') && paragrafo.Count == 0 && !riga.StartsWith("- ") && !riga.StartsWith('>'))
-                {
-                    doc.Subtitle = riga;
+                    parti.Subtitle = riga;
                     continue;
                 }
                 UserManualBlockType? tipo = null;
                 string contenuto = riga;
-                if (riga.StartsWith("### ")) { tipo = UserManualBlockType.Section; contenuto = riga[4..]; }
+                if (riga.StartsWith("### ")) { tipo = corrente == parti.Introduzione || corrente == parti.Appendice ? UserManualBlockType.Section : UserManualBlockType.Subsection; contenuto = riga[4..]; }
                 else if (riga.StartsWith("## ")) { tipo = UserManualBlockType.Chapter; contenuto = riga[3..]; passo = 0; }
                 else if (riga.StartsWith("- ") || riga.StartsWith("* ")) { tipo = UserManualBlockType.Bullet; contenuto = riga[2..]; }
                 else if (riga.StartsWith('>')) { tipo = UserManualBlockType.Note; contenuto = riga.TrimStart('>').Trim(); }
@@ -175,9 +248,39 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 var blocco = new UserManualBlock { Type = tipo.Value, Text = contenuto.Trim() };
                 if (tipo == UserManualBlockType.Step)
                     blocco.Number = ++passo;
-                doc.Blocks.Add(blocco);
+                corrente.Add(blocco);
             }
             Chiudi();
+            return parti;
+        }
+
+        /// <summary>Manuale composto: introduzione, un capitolo per sezione del menu (una voce = un paragrafo con schermata e descrizione), appendice.</summary>
+        public static UserManualDocument Componi(UserManualParti parti, IReadOnlyList<UserManualMenuSection> menu, Func<string, byte[]?> immagine)
+        {
+            var doc = new UserManualDocument { Title = parti.Title, Subtitle = parti.Subtitle };
+            doc.Blocks.AddRange(parti.Introduzione);
+
+            foreach (var sezione in menu)
+            {
+                var voci = sezione.Voci.Where(v => !string.IsNullOrWhiteSpace(v.Url) && !Esclusi.Any(e => v.Url.StartsWith(e, StringComparison.OrdinalIgnoreCase)))
+                                       .GroupBy(v => v.Url, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToList();
+                if (voci.Count == 0)
+                    continue;
+                doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Chapter, Text = sezione.Titolo });
+                foreach (var voce in voci)
+                {
+                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Section, Text = voce.Titolo });
+                    var img = immagine(voce.Url);
+                    if (img != null)
+                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Image, Data = img });
+                    if (parti.Funzioni.TryGetValue(voce.Url, out var testo) && testo.Count > 0)
+                        doc.Blocks.AddRange(testo);
+                    else
+                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = InfrastructureMessages.Get("UserManualNoDescription", voce.Titolo, sezione.Titolo) });
+                }
+            }
+
+            doc.Blocks.AddRange(parti.Appendice);
             return doc;
         }
     }

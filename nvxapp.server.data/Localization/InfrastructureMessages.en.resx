@@ -467,4 +467,8 @@
   <data name="UserManualContents" xml:space="preserve">
     <value>Contents</value>
   </data>
+  <data name="UserManualNoDescription" xml:space="preserve">
+    <value>It opens from the "{0}" item in the {1} section of the menu.</value>
+    <comment>funzione del menu senza descrizione nel manuale</comment>
+  </data>
 </root>
