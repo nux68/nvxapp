@@ -1,0 +1,8 @@
+// elenco dei dipendenti da scegliere: altezza limitata, scorre
+.doc-multi-employees {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--nvx-border, rgba(127, 127, 127, 0.25));
+  border-radius: 8px;
+  margin: 4px 0 8px;
+}

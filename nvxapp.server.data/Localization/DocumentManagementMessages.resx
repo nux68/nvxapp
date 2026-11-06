@@ -190,4 +190,17 @@
     <value>Il CompanyPowerAdmin è sempre abilitato ai documenti del personale: l'abilitazione non si modifica.</value>
     <comment>Doc_AbilitazionePut su un CompanyPowerAdmin</comment>
   </data>
+  <data name="MultiNoEmployees" xml:space="preserve">
+    <value>Scegli almeno un dipendente.</value>
+  </data>
+  <data name="MultiPersonnelOnly" xml:space="preserve">
+    <value>L'invio a più dipendenti è previsto solo per le tipologie dei documenti del personale.</value>
+  </data>
+  <data name="MultiEmployeeError" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>invio multiplo: nominativo del dipendente e motivo</comment>
+  </data>
+  <data name="MultiDone" xml:space="preserve">
+    <value>Documento inviato a {0} dipendenti su {1}.</value>
+  </data>
 </root>

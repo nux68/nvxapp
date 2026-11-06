@@ -175,40 +175,113 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
 
                 var caricato = await CaricaFileAsync(ctx, file, nomeFile, contentType);
                 var retVal = new Doc_DocumentoPutOutModel();
-                try
-                {
-                    var now = DateTime.Now;
-                    var doc = new Doc_Documento
-                    {
-                        IdAz_Anagrafica = ctx.IdAz_Anagrafica,
-                        Origine = Doc_Origine.Azienda,
-                        VersioneCorrente = 1,
-                        Testo = caricato.Testo,
-                        CreationDate = now,
-                        ChangeUser = ctx.IdUtente
-                    };
-                    Applica(doc, dati, tipo);
-                    doc.Doc_Versione = new List<Doc_Versione> { caricato.Versione(1, dati.NoteVersione, ctx.IdUtente) };
-                    // documento con la prima versione (stesso salvataggio)
-                    doc = await _documentoRepository.CreateAsync(doc);
-
-                    await AggiornaDestinatarioDipendenteAsync(doc, tipo);
-                    await _quota.ConfirmAsync(ctx.IdCompany, caricato.Dimensione);
-                    caricato.Confermato = true;
-
-                    if (await _versioneRepository.FindAll(v => v.Hash == caricato.Hash && v.IdDoc_Documento != doc.Id && v.Doc_DocumentoNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
-                        retVal.Messages.Add(new Message(DocumentManagementMessages.Get("DuplicateFile"), MessageType.Warning));
-
-                    await _utility.LogAsync(ctx, Doc_LogAzione.Caricamento, doc.Id, 1, caricato.NomeFile);
-                    await NotificaAsync(ctx, doc, tipo);
-                    retVal.Dettaglio = await DettaglioAsync(ctx, doc.Id);
-                }
-                finally
-                {
-                    await caricato.AnnullaSeNonConfermatoAsync(_fileStorage, _quota, ctx.IdCompany);
-                }
+                var doc = await CreaDocumentoAsync(ctx, dati, tipo, caricato);
+                if (await _versioneRepository.FindAll(v => v.Hash == caricato.Hash && v.IdDoc_Documento != doc.Id && v.Doc_DocumentoNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
+                    retVal.Messages.Add(new Message(DocumentManagementMessages.Get("DuplicateFile"), MessageType.Warning));
+                retVal.Dettaglio = await DettaglioAsync(ctx, doc.Id);
                 return retVal;
             }, isSubProcess);
+        }
+
+        /*
+         Invio multiplo: lo stesso file come documento del personale a piu' dipendenti. Si crea UN documento per ogni
+         dipendente scelto (con la sua copia del file: cancellarne uno non tocca gli altri), con le stesse regole del
+         caricamento singolo (permesso CaricaPersonale, tipologia del personale, destinatario e presa visione, registro,
+         avviso email). Lo spazio si verifica prima per il totale; un dipendente non valido non blocca gli altri.
+        */
+        public virtual async Task<GenericResult<Doc_DocumentoUploadMultiploOutModel>> Doc_DocumentoUploadMultiplo(GenericRequest<Doc_DocumentoUploadMultiploInModel> model, Stream file, string nomeFile, string? contentType, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ctx = await _utility.ContestoAsync();
+                if (!ctx.CaricaPersonale)
+                    throw new UserMessageException(DocumentManagementMessages.Get("PersonnelNotAllowed"));
+                var ids = (model.Data.IdDip_Anagrafica ?? new List<int>()).Distinct().ToList();
+                if (ids.Count == 0)
+                    throw new UserMessageException(DocumentManagementMessages.Get("MultiNoEmployees"));
+                var dati = model.Data.Documento ?? new Doc_DocumentoEditModel();
+
+                // tipologia e dati controllati una volta (con il primo dipendente): solo documenti del personale
+                dati.IdDip_Anagrafica = ids[0];
+                var tipo = await ValidaAsync(ctx, dati, nuovo: true);
+                if (tipo.Categoria != Doc_Categoria.Personale)
+                    throw new UserMessageException(DocumentManagementMessages.Get("MultiPersonnelOnly"));
+
+                var letto = await LeggiFileAsync(file, nomeFile);
+                // spazio per tutte le copie: se non basta non si carica nulla
+                long totale = (long)letto.Bytes.Length * ids.Count;
+                await _quota.ReserveAsync(ctx.IdCompany, totale);
+                await _quota.ReleaseAsync(ctx.IdCompany, totale);
+
+                var dipendenti = await _dipendenteReadRepository.FindAll(x => ids.Contains(x.Id) && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                                                               .Select(x => new { x.Id, x.Cognome, x.Nome }).ToListAsync();
+                var retVal = new Doc_DocumentoUploadMultiploOutModel();
+                foreach (var id in ids)
+                {
+                    var dip = dipendenti.FirstOrDefault(d => d.Id == id);
+                    var nome = dip == null ? id.ToString() : $"{dip.Cognome} {dip.Nome}".Trim();
+                    if (dip == null)
+                    {
+                        retVal.Errori.Add(DocumentManagementMessages.Get("MultiEmployeeError", nome, DocumentManagementMessages.Get("EmployeeRequired")));
+                        continue;
+                    }
+                    try
+                    {
+                        var copia = Copia(dati);
+                        copia.IdDip_Anagrafica = id;
+                        var caricato = await SalvaFileAsync(ctx, letto, contentType);
+                        await CreaDocumentoAsync(ctx, copia, tipo, caricato);
+                        retVal.Creati++;
+                    }
+                    catch (UserMessageException ex)
+                    {
+                        retVal.Errori.Add(DocumentManagementMessages.Get("MultiEmployeeError", nome, ex.Message));
+                    }
+                }
+                retVal.Messages.Add(new Message(DocumentManagementMessages.Get("MultiDone", retVal.Creati, ids.Count),
+                                                retVal.Errori.Count == 0 ? MessageType.Information : MessageType.Warning));
+                return retVal;
+            }, isSubProcess);
+        }
+
+        private static Doc_DocumentoEditModel Copia(Doc_DocumentoEditModel d) => new()
+        {
+            IdDoc_Par_Tipo = d.IdDoc_Par_Tipo, IdDoc_Cartella = d.IdDoc_Cartella, IdDip_Anagrafica = d.IdDip_Anagrafica, IdAz_Cliente = d.IdAz_Cliente,
+            Titolo = d.Titolo, Descrizione = d.Descrizione, DataDocumento = d.DataDocumento, Anno = d.Anno, Mese = d.Mese,
+            DataScadenza = d.DataScadenza, Stato = d.Stato, NoteVersione = d.NoteVersione
+        };
+
+        // documento nuovo con la prima versione, destinatario, spazio confermato, registro e avviso (caricamento singolo e multiplo)
+        private async Task<Doc_Documento> CreaDocumentoAsync(DocContesto ctx, Doc_DocumentoEditModel dati, Doc_Par_Tipo tipo, FileCaricato caricato)
+        {
+            try
+            {
+                var doc = new Doc_Documento
+                {
+                    IdAz_Anagrafica = ctx.IdAz_Anagrafica,
+                    Origine = Doc_Origine.Azienda,
+                    VersioneCorrente = 1,
+                    Testo = caricato.Testo,
+                    CreationDate = DateTime.Now,
+                    ChangeUser = ctx.IdUtente
+                };
+                Applica(doc, dati, tipo);
+                doc.Doc_Versione = new List<Doc_Versione> { caricato.Versione(1, dati.NoteVersione, ctx.IdUtente) };
+                // documento con la prima versione (stesso salvataggio)
+                doc = await _documentoRepository.CreateAsync(doc);
+
+                await AggiornaDestinatarioDipendenteAsync(doc, tipo);
+                await _quota.ConfirmAsync(ctx.IdCompany, caricato.Dimensione);
+                caricato.Confermato = true;
+
+                await _utility.LogAsync(ctx, Doc_LogAzione.Caricamento, doc.Id, 1, caricato.NomeFile);
+                await NotificaAsync(ctx, doc, tipo);
+                return doc;
+            }
+            finally
+            {
+                await caricato.AnnullaSeNonConfermatoAsync(_fileStorage, _quota, ctx.IdCompany);
+            }
         }
 
         public virtual async Task<GenericResult<Doc_DocumentoPutOutModel>> Doc_DocumentoNewVersion(GenericRequest<Doc_DocumentoIdInModel> model, Stream file, string nomeFile, string? contentType, Boolean isSubProcess)
@@ -672,7 +745,17 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             }
         }
 
+        // file letto e controllato (nome, estensione, non vuoto), non ancora salvato
+        private sealed class FileLetto
+        {
+            public string Nome { get; init; } = string.Empty;
+            public byte[] Bytes { get; init; } = Array.Empty<byte>();
+        }
+
         private async Task<FileCaricato> CaricaFileAsync(DocContesto ctx, Stream file, string nomeFile, string? contentType)
+            => await SalvaFileAsync(ctx, await LeggiFileAsync(file, nomeFile), contentType);
+
+        private async Task<FileLetto> LeggiFileAsync(Stream file, string nomeFile)
         {
             var nome = Path.GetFileName((nomeFile ?? string.Empty).Replace('\\', '/'));
             if (string.IsNullOrWhiteSpace(nome) || nome.Length > 255)
@@ -686,6 +769,15 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             var bytes = buffer.ToArray();
             if (bytes.Length == 0)
                 throw new UserMessageException(DocumentManagementMessages.Get("FileEmpty"));
+            return new FileLetto { Nome = nome, Bytes = bytes };
+        }
+
+        // spazio prenotato, testo, hash e salvataggio di una copia del file
+        private async Task<FileCaricato> SalvaFileAsync(DocContesto ctx, FileLetto letto, string? contentType)
+        {
+            var nome = letto.Nome;
+            var bytes = letto.Bytes;
+            using var buffer = new MemoryStream(bytes, writable: false);
 
             // spazio: oltre quota o file troppo grande si blocca qui, prima di salvare
             await _quota.ReserveAsync(ctx.IdCompany, bytes.Length);
@@ -726,6 +818,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         Task<GenericResult<Doc_DocumentoListOutModel>> Doc_DocumentoList(GenericRequest<Doc_DocumentoListInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoGetOutModel>> Doc_DocumentoGet(GenericRequest<Doc_DocumentoGetInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoPutOutModel>> Doc_DocumentoUpload(GenericRequest<Doc_DocumentoEditModel> model, Stream file, string nomeFile, string? contentType, Boolean isSubProcess);
+        Task<GenericResult<Doc_DocumentoUploadMultiploOutModel>> Doc_DocumentoUploadMultiplo(GenericRequest<Doc_DocumentoUploadMultiploInModel> model, Stream file, string nomeFile, string? contentType, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoPutOutModel>> Doc_DocumentoNewVersion(GenericRequest<Doc_DocumentoIdInModel> model, Stream file, string nomeFile, string? contentType, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoPutOutModel>> Doc_DocumentoPut(GenericRequest<Doc_DocumentoPutInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoCestino(GenericRequest<Doc_DocumentoIdInModel> model, Boolean isSubProcess);

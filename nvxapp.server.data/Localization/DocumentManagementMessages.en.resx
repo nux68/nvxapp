@@ -190,4 +190,17 @@
     <value>The CompanyPowerAdmin always has access to personnel documents: the permission cannot be changed.</value>
     <comment>Doc_AbilitazionePut su un CompanyPowerAdmin</comment>
   </data>
+  <data name="MultiNoEmployees" xml:space="preserve">
+    <value>Choose at least one employee.</value>
+  </data>
+  <data name="MultiPersonnelOnly" xml:space="preserve">
+    <value>Sending to several employees is only for personnel document types.</value>
+  </data>
+  <data name="MultiEmployeeError" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>invio multiplo: nominativo del dipendente e motivo</comment>
+  </data>
+  <data name="MultiDone" xml:space="preserve">
+    <value>Document sent to {0} of {1} employees.</value>
+  </data>
 </root>

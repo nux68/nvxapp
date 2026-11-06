@@ -5,6 +5,7 @@ import { IonBadge, IonButton, IonCard, IonCardContent, IonCheckbox, IonCol, IonC
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { DocEmployeeListPageComponent } from './doc-employee-list-page.component';
+import { DocMultiSendDialogComponent } from './doc-multi-send-dialog/doc-multi-send-dialog.component';
 
 @NgModule({
   imports: [
@@ -15,6 +16,6 @@ import { DocEmployeeListPageComponent } from './doc-employee-list-page.component
     RouterModule.forChild([{ path: '', component: DocEmployeeListPageComponent }]),
     SharedComponentInfrastructureModule
   ],
-  declarations: [DocEmployeeListPageComponent],
+  declarations: [DocEmployeeListPageComponent, DocMultiSendDialogComponent],
 })
 export class DocEmployeeListPageModule { }

@@ -83,6 +83,16 @@ namespace nvxapp.server.Controllers.DocumentManagement
             return await _service.Doc_DocumentoUpload(request, stream, file.FileName, file.ContentType, false);
         }
 
+        // invio multiplo: data = { documento: {...}, idDip_Anagrafica: [..] }
+        [Authorize, HttpPost, Route("Doc_DocumentoUploadMultiplo")]
+        [RequestSizeLimit(MaxRichiesta), RequestFormLimits(MultipartBodyLengthLimit = MaxRichiesta)]
+        public async Task<GenericResult<Doc_DocumentoUploadMultiploOutModel>> Doc_DocumentoUploadMultiplo([FromForm] string data, IFormFile file)
+        {
+            var request = new GenericRequest<Doc_DocumentoUploadMultiploInModel> { Data = JsonConvert.DeserializeObject<Doc_DocumentoUploadMultiploInModel>(data) ?? new Doc_DocumentoUploadMultiploInModel() };
+            await using var stream = file.OpenReadStream();
+            return await _service.Doc_DocumentoUploadMultiplo(request, stream, file.FileName, file.ContentType, false);
+        }
+
         [Authorize, HttpPost, Route("Doc_DocumentoNewVersion")]
         [RequestSizeLimit(MaxRichiesta), RequestFormLimits(MultipartBodyLengthLimit = MaxRichiesta)]
         public async Task<GenericResult<Doc_DocumentoPutOutModel>> Doc_DocumentoNewVersion([FromForm] int id, IFormFile file)

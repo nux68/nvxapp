@@ -35,6 +35,20 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         public bool OltreConservazione { get; set; }
     }
 
+    // invio multiplo: stesso file come documento del personale a piu' dipendenti (un documento per dipendente)
+    public class Doc_DocumentoUploadMultiploInModel
+    {
+        public Doc_DocumentoEditModel Documento { get; set; } = new Doc_DocumentoEditModel();
+        public List<int> IdDip_Anagrafica { get; set; } = new List<int>();
+    }
+
+    public class Doc_DocumentoUploadMultiploOutModel : ModelResult
+    {
+        public int Creati { get; set; }
+        // un messaggio per ogni dipendente non riuscito (nominativo: motivo)
+        public List<string> Errori { get; set; } = new List<string>();
+    }
+
     // dati modificabili di un documento (e del caricamento)
     public class Doc_DocumentoEditModel
     {

@@ -38,5 +38,12 @@ export class MainMenuDocumentManagementService implements iMainMenuService {
     ];
   }
 
+  // sezione "Assistenza": manuale del documentale in PDF (pagina /usermanual/documents di Infrastructure)
+  public get Pages4Support(): MainMenuItem[] {
+    return [
+      { menuType: MenuType.MenuItem, zorder: 930, group: 0, title: 'documents.menu.manual', component: 'UserManualPageComponent', url: '/usermanual/documents', icon: 'book', nonConfigurabile: true },
+    ];
+  }
+
   public get GetWorkingMode(): WorkingMode { return WorkingMode.DocumentManagement; }
 }
