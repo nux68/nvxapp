@@ -13,7 +13,7 @@ Le pagine si trovano nella sezione **Documentale** del menu, sottosezione **Docu
 
 > I documenti del personale sono riservati: li vedono solo il dipendente interessato e gli amministratori abilitati. Ogni apertura, download e modifica resta nel registro degli accessi.
 
-## Per il dipendente: i miei documenti
+## Per il dipendente: i miei documenti {User}
 ### Consultare i documenti
 1. Apri **Documentale > Documenti > I miei documenti**.
 2. L'elenco mostra i documenti che ti riguardano, dal più recente; un pallino accanto al titolo indica quelli che non hai ancora aperto.
@@ -29,7 +29,7 @@ Alcune tipologie (per esempio cedolini, contratti, comunicazioni) richiedono di 
 
 > Se il documento cambia (nuova versione), la conferma resta legata a quello che hai letto: in caso di dubbi chiedi all'amministrazione.
 
-## Archivio dei documenti
+## Archivio dei documenti {CompanyPowerAdmin, CompanyAdmin}
 ### Cercare i documenti
 Apri **Documentale > Documenti > Archivio**. I filtri permettono di cercare per cartella, tipologia, categoria, dipendente, cliente, anno e per **testo**: la ricerca guarda il titolo, la descrizione e il testo contenuto nei file (PDF, documenti di testo...).
 
@@ -63,7 +63,7 @@ Con **Cestino** il documento esce dall'archivio ma si può ancora recuperare.
 
 I documenti nel cestino da più giorni di quelli indicati nelle impostazioni si eliminano automaticamente di notte.
 
-## Dipendenti
+## Dipendenti {CompanyPowerAdmin, CompanyAdmin}
 La pagina **Documentale > Documenti > Dipendenti** elenca i dipendenti a cui consegnare i documenti del personale. È visibile solo a chi è abilitato ai documenti del personale.
 - I dipendenti con l'**icona della chiave** (evidenziati) hanno un account e accedono all'app: sono gli utenti dell'azienda con ruolo User e compaiono qui automaticamente.
 - Gli altri sono **solo in anagrafica**: i loro documenti si archiviano, ma non possono consultarli in app finché non ricevono un accesso.
@@ -81,7 +81,7 @@ Per ogni dipendente scelto si crea un documento del personale con la sua copia d
 
 > Lo spazio viene controllato prima dell'invio per tutte le copie: se non basta, non si carica nulla.
 
-## Configurazione (CompanyPowerAdmin)
+## Configurazione (CompanyPowerAdmin) {CompanyPowerAdmin}
 ### Tipologie
 **Documentale > Documenti > Tipologie**. Ogni tipologia ha un codice, una descrizione e una **categoria**:
 - **Personale**: documenti di un dipendente, riservati;
@@ -105,5 +105,5 @@ Per ogni tipologia scegli gli **anni di conservazione** (vuoto = senza limite), 
 ### Registro accessi
 **Documentale > Documenti > Registro accessi** mostra chi ha caricato, aperto, scaricato, modificato, spostato nel cestino, ripristinato o eliminato ogni documento, con data e ora.
 
-## Spazio
+## Spazio {CompanyPowerAdmin, CompanyAdmin}
 **Documentale > Documenti > Spazio** mostra lo spazio usato e il pacchetto dell'azienda, il numero di file, la dimensione massima di un file e la soglia di avviso. Quando lo spazio supera la soglia gli amministratori ricevono un avviso; oltre il 100% non si caricano nuovi documenti. Per un pacchetto più grande rivolgiti al centro.
