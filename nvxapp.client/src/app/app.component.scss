@@ -93,7 +93,8 @@ ion-menu ion-list#nvx-list ion-item {
   --min-height: 40px;
   --padding-start: 10px;
   --padding-end: 10px;
-  --color: var(--ion-text-color);
+  // voci di menu evidenziate con il colore primario (testo e icona)
+  --color: var(--ion-color-primary);
   margin: 1px 0;
   font-size: 14px;
   border-radius: var(--nvx-radius-sm);
@@ -101,7 +102,7 @@ ion-menu ion-list#nvx-list ion-item {
   ion-icon {
     font-size: 19px;
     margin-inline-end: 14px;
-    color: var(--nvx-text-muted);
+    color: var(--ion-color-primary);
   }
 
   ion-label {
@@ -111,7 +112,7 @@ ion-menu ion-list#nvx-list ion-item {
 
 ion-menu ion-list#nvx-list ion-item.selected {
   --background: var(--nvx-surface-soft);
-  --color: var(--ion-text-color);
+  --color: var(--ion-color-primary);
 
   ion-icon {
     color: var(--ion-color-primary);

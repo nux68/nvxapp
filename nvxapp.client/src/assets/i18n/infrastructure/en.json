@@ -94,7 +94,8 @@
     "companyStorage": "Document storage",
     "administration": "Administration",
     "registry": "Registry",
-    "customers": "Customers"
+    "customers": "Customers",
+    "manualInfrastructure": "Basic functions manual"
   },
   "showcase": {
     "menu": {
@@ -770,6 +771,18 @@
       "fabAdd": "New",
       "columnCustomer": "Customer",
       "showDisabled": "Show disabled"
+    },
+    "userManual": {
+      "title": "Manual",
+      "description": "PDF user manual.",
+      "note": "The PDF is prepared in a few seconds: when ready it appears at the top, in the jobs bar, with the download button.",
+      "generate": "Prepare the PDF again",
+      "manuals": {
+        "infrastructure": {
+          "title": "Basic functions manual",
+          "description": "Access, menu, users and roles, impersonation, customers and shared registries, support and background jobs."
+        }
+      }
     }
   },
   "components": {
