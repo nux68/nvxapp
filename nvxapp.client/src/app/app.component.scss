@@ -56,6 +56,13 @@ ion-accordion-group {
   }
 }
 
+// voci principali del menu (primo livello: Accesso, Amministrazione, applicativi, Assistenza) in colore primario
+ion-accordion-group.nvx-menu-root > ion-accordion > ion-item[slot='header'] {
+  --color: var(--ion-color-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 // sezione di un applicativo (es. "Presenze") o "Amministrazione": intestazione in evidenza, sottosezioni rientrate
 ion-accordion-group ion-accordion.nvx-menu-application {
   border-top: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.25));
@@ -93,8 +100,7 @@ ion-menu ion-list#nvx-list ion-item {
   --min-height: 40px;
   --padding-start: 10px;
   --padding-end: 10px;
-  // voci di menu evidenziate con il colore primario (testo e icona)
-  --color: var(--ion-color-primary);
+  --color: var(--ion-text-color);
   margin: 1px 0;
   font-size: 14px;
   border-radius: var(--nvx-radius-sm);
@@ -102,7 +108,7 @@ ion-menu ion-list#nvx-list ion-item {
   ion-icon {
     font-size: 19px;
     margin-inline-end: 14px;
-    color: var(--ion-color-primary);
+    color: var(--nvx-text-muted);
   }
 
   ion-label {
@@ -112,7 +118,7 @@ ion-menu ion-list#nvx-list ion-item {
 
 ion-menu ion-list#nvx-list ion-item.selected {
   --background: var(--nvx-surface-soft);
-  --color: var(--ion-color-primary);
+  --color: var(--ion-text-color);
 
   ion-icon {
     color: var(--ion-color-primary);
