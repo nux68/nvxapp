@@ -11,7 +11,8 @@
       "report": "Report",
       "tables": "Tabelle",
       "settings": "Impostazioni",
-      "reassign": "Riassegnazione"
+      "reassign": "Riassegnazione",
+      "manual": "Manuale CRM"
     },
     "common": {
       "add": "Aggiungi",
@@ -295,6 +296,209 @@
         "3": "Fonti",
         "4": "Prodotti",
         "5": "Etichette"
+      }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Clienti, trattative e offerte della tua azienda, in cloud."
+      },
+      "home": {
+        "etichetta": "CRM in cloud",
+        "titolo": "Ogni cliente e ogni trattativa sotto controllo, senza fogli Excel",
+        "sottotitolo": "Anagrafiche, contatti, opportunità, attività e offerte in un'unica app: i commerciali seguono i propri clienti, i responsabili vedono la pipeline e i risultati.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "clienti": {
+            "title": "Scheda cliente completa",
+            "text": "Dati, persone di riferimento, opportunità, attività, offerte, note e allegati in un solo posto."
+          },
+          "pipeline": {
+            "title": "Pipeline a colonne",
+            "text": "Le trattative per fase: si spostano trascinandole, con il valore di ogni colonna."
+          },
+          "agenda": {
+            "title": "Agenda e promemoria",
+            "text": "Chiamate, appuntamenti e attività da fare, con un avviso prima dell'inizio."
+          },
+          "offerte": {
+            "title": "Offerte in PDF",
+            "text": "Righe, sconti e IVA calcolati, il PDF pronto e l'invio per email al cliente."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l'azienda",
+            "text": "Il CRM parte con fasi, tipi di attività, fonti e motivi di perdita già pronti."
+          },
+          "configura": {
+            "title": "Configura",
+            "text": "Prodotti, etichette e regole di visibilità: ogni commerciale vede i suoi clienti."
+          },
+          "vendi": {
+            "title": "Vendi",
+            "text": "Dal primo contatto all'offerta accettata, con la pipeline e i report sempre aggiornati."
+          }
+        },
+        "chiusuraTitolo": "Basta trattative perse nelle email",
+        "chiusuraTesto": "Registra la tua azienda e prova il CRM con i tuoi commerciali."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve per seguire clienti e trattative, dal primo contatto all'offerta.",
+        "sezioni": {
+          "clienti": {
+            "title": "Clienti e contatti",
+            "text": "Anagrafica unica dell'azienda con stato commerciale, responsabile, fonte, etichette e persone di riferimento."
+          },
+          "lead": {
+            "title": "Lead",
+            "text": "I contatti non ancora qualificati, convertiti in cliente con un clic insieme all'opportunità."
+          },
+          "pipeline": {
+            "title": "Opportunità e pipeline",
+            "text": "Valore, probabilità e chiusura prevista; lo storico di ogni cambio di fase."
+          },
+          "agenda": {
+            "title": "Agenda delle attività",
+            "text": "Oggi, scadute e prossime: chiamate, email, appuntamenti, con l'esito registrato."
+          },
+          "promemoria": {
+            "title": "Promemoria",
+            "text": "Un avviso a comparsa prima di ogni attività, con il pulsante per aprirla."
+          },
+          "offerte": {
+            "title": "Offerte",
+            "text": "Numerazione per anno, prodotti a listino, PDF con le tue condizioni e invio per email."
+          },
+          "note": {
+            "title": "Note e allegati",
+            "text": "Note fissate in alto e file su clienti, opportunità e offerte."
+          },
+          "visibilita": {
+            "title": "Visibilità dei commerciali",
+            "text": "Ogni commerciale vede i propri clienti, oppure tutti vedono tutto: lo decide l'azienda."
+          },
+          "report": {
+            "title": "Report",
+            "text": "Pipeline per fase e responsabile, vinte e perse per motivo, conversione dei lead, attività per utente."
+          },
+          "riassegna": {
+            "title": "Riassegnazione",
+            "text": "Quando un commerciale lascia, i suoi clienti e le sue trattative passano a un collega in un colpo solo."
+          },
+          "export": {
+            "title": "Export Excel",
+            "text": "L'elenco dei clienti con i filtri scelti, pronto in Excel."
+          },
+          "gdpr": {
+            "title": "Consenso privacy",
+            "text": "Consenso alle comunicazioni commerciali con la data, su clienti e lead."
+          },
+          "integrato": {
+            "title": "Integrato",
+            "text": "Gli stessi clienti della gestione presenze e del documentale, senza doppie anagrafiche."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Paghi per gli utenti che usano il CRM: tutte le funzioni sono sempre incluse.",
+        "piani": {
+          "prova": {
+            "nome": "Prova",
+            "periodo": "per 30 giorni",
+            "descrizione": "Per provare con i tuoi commerciali.",
+            "cta": "Inizia la prova"
+          },
+          "azienda": {
+            "nome": "Azienda",
+            "periodo": "per utente al mese",
+            "descrizione": "Per piccole e medie imprese.",
+            "cta": "Scegli Azienda"
+          },
+          "studio": {
+            "nome": "Su misura",
+            "prezzo": "Su richiesta",
+            "descrizione": "Per reti commerciali e più aziende.",
+            "cta": "Contattaci"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "Tutte le funzioni",
+          "fino3Utenti": "Fino a 3 utenti",
+          "tabellePronte": "Fasi e tabelle pronte",
+          "offertePdf": "Offerte in PDF e invio email",
+          "report": "Report e export Excel",
+          "assistenzaEmailTelefono": "Assistenza via email e telefono",
+          "piuAziende": "Più aziende",
+          "integrazioni": "Presenze e documentale integrati",
+          "importazione": "Importazione dei clienti",
+          "assistenzaPrioritaria": "Assistenza prioritaria"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "installare": {
+            "domanda": "Bisogna installare qualcosa?",
+            "risposta": "No: il CRM si usa dal browser del computer o dello smartphone."
+          },
+          "visibilita": {
+            "domanda": "Ogni commerciale vede tutti i clienti?",
+            "risposta": "Lo decide l'azienda: solo i propri clienti (predefinito) oppure tutti; gli amministratori vedono sempre tutto."
+          },
+          "presenze": {
+            "domanda": "Posso usarlo insieme alla gestione presenze?",
+            "risposta": "Sì: clienti e contatti sono gli stessi in tutti gli applicativi attivi."
+          },
+          "dati": {
+            "domanda": "Posso esportare i miei dati?",
+            "risposta": "Sì: l'elenco dei clienti si esporta in Excel e le offerte in PDF."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a piccole e medie imprese e ai loro commerciali.",
+        "paragrafo1": "Conosciamo da vicino il lavoro di chi vende: contatti sparsi tra email e telefono, offerte da rifare, trattative di cui si perde traccia.",
+        "paragrafo2": "{{siteName}} mette in ordine questo lavoro: ogni cliente ha la sua scheda, ogni trattativa la sua fase e ogni offerta il suo PDF.",
+        "valori": {
+          "semplice": {
+            "title": "Semplice per i commerciali",
+            "text": "Registrare una chiamata o un appuntamento richiede pochi secondi."
+          },
+          "ordinato": {
+            "title": "Ordinato per chi dirige",
+            "text": "Pipeline, risultati e attività di tutti sempre a portata di mano."
+          },
+          "vicino": {
+            "title": "Vicino alle aziende",
+            "text": "Pensato con chi vende ogni giorno, non per i grandi gruppi."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l'account della tua azienda e inizia a seguire clienti e trattative.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "pronto": "Fasi e tabelle già pronte",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l'informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un'email con il link per attivare l'account: aprilo per completare la registrazione.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "crm": {
+          "title": "Manuale del CRM",
+          "description": "Clienti, lead, pipeline e opportunità, agenda e promemoria, offerte in PDF, note e allegati, report; per gli amministratori visibilità, tabelle, impostazioni e riassegnazione."
+        }
       }
     }
   }

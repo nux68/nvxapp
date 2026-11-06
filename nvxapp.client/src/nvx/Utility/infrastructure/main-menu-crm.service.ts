@@ -47,5 +47,12 @@ export class MainMenuCrmService implements iMainMenuService {
     ];
   }
 
+  // sezione "Assistenza": manuale del CRM in PDF (solo con il CRM attivo, vedi MainMenuService.Pages4Support)
+  public get Pages4Support(): MainMenuItem[] {
+    return [
+      { menuType: MenuType.MenuItem, zorder: 920, group: 0, title: 'crm.menu.manual', component: 'UserManualPageComponent', url: '/usermanual/crm', icon: 'book', nonConfigurabile: true },
+    ];
+  }
+
   public get GetWorkingMode(): WorkingMode { return WorkingMode.Crm; }
 }
