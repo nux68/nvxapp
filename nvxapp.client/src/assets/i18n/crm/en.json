@@ -11,7 +11,8 @@
       "report": "Reports",
       "tables": "Tables",
       "settings": "Settings",
-      "reassign": "Reassignment"
+      "reassign": "Reassignment",
+      "manual": "CRM manual"
     },
     "common": {
       "add": "Add",
@@ -295,6 +296,209 @@
         "3": "Sources",
         "4": "Products",
         "5": "Tags"
+      }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Your company's customers, deals and offers, in the cloud."
+      },
+      "home": {
+        "etichetta": "Cloud CRM",
+        "titolo": "Every customer and every deal under control, without spreadsheets",
+        "sottotitolo": "Registries, contacts, opportunities, activities and offers in one app: sales reps follow their customers, managers see the pipeline and the results.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "clienti": {
+            "title": "Complete customer card",
+            "text": "Data, contact persons, opportunities, activities, offers, notes and attachments in one place."
+          },
+          "pipeline": {
+            "title": "Pipeline board",
+            "text": "Deals by phase: move them by dragging, with the value of each column."
+          },
+          "agenda": {
+            "title": "Agenda and reminders",
+            "text": "Calls, meetings and tasks to do, with a reminder before they start."
+          },
+          "offerte": {
+            "title": "PDF offers",
+            "text": "Lines, discounts and VAT calculated, the PDF ready and sent by email to the customer."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register the company",
+            "text": "The CRM starts with phases, activity types, sources and loss reasons ready to use."
+          },
+          "configura": {
+            "title": "Configure",
+            "text": "Products, tags and visibility rules: each sales rep sees their own customers."
+          },
+          "vendi": {
+            "title": "Sell",
+            "text": "From the first contact to the accepted offer, with pipeline and reports always up to date."
+          }
+        },
+        "chiusuraTitolo": "No more deals lost in emails",
+        "chiusuraTesto": "Register your company and try the CRM with your sales team."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything you need to follow customers and deals, from the first contact to the offer.",
+        "sezioni": {
+          "clienti": {
+            "title": "Customers and contacts",
+            "text": "Single company registry with sales status, owner, source, tags and contact persons."
+          },
+          "lead": {
+            "title": "Leads",
+            "text": "Not yet qualified contacts, converted into a customer with one click together with the opportunity."
+          },
+          "pipeline": {
+            "title": "Opportunities and pipeline",
+            "text": "Value, probability and expected close; the history of every phase change."
+          },
+          "agenda": {
+            "title": "Activity agenda",
+            "text": "Today, overdue and upcoming: calls, emails, meetings, with the outcome recorded."
+          },
+          "promemoria": {
+            "title": "Reminders",
+            "text": "A pop-up notice before each activity, with the button to open it."
+          },
+          "offerte": {
+            "title": "Offers",
+            "text": "Numbering per year, price-list products, PDF with your terms and sending by email."
+          },
+          "note": {
+            "title": "Notes and attachments",
+            "text": "Pinned notes and files on customers, opportunities and offers."
+          },
+          "visibilita": {
+            "title": "Sales rep visibility",
+            "text": "Each sales rep sees their own customers, or everyone sees everything: the company decides."
+          },
+          "report": {
+            "title": "Reports",
+            "text": "Pipeline by phase and owner, won and lost by reason, lead conversion, activities per user."
+          },
+          "riassegna": {
+            "title": "Reassignment",
+            "text": "When a sales rep leaves, their customers and deals move to a colleague in one go."
+          },
+          "export": {
+            "title": "Excel export",
+            "text": "The customer list with the chosen filters, ready in Excel."
+          },
+          "gdpr": {
+            "title": "Privacy consent",
+            "text": "Consent to marketing communications with its date, on customers and leads."
+          },
+          "integrato": {
+            "title": "Integrated",
+            "text": "The same customers as attendance and document management, without duplicate registries."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "You pay for the users of the CRM: all features are always included.",
+        "piani": {
+          "prova": {
+            "nome": "Trial",
+            "periodo": "for 30 days",
+            "descrizione": "To try it with your sales team.",
+            "cta": "Start the trial"
+          },
+          "azienda": {
+            "nome": "Company",
+            "periodo": "per user per month",
+            "descrizione": "For small and medium businesses.",
+            "cta": "Choose Company"
+          },
+          "studio": {
+            "nome": "Custom",
+            "prezzo": "On request",
+            "descrizione": "For sales networks and multiple companies.",
+            "cta": "Contact us"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "All features",
+          "fino3Utenti": "Up to 3 users",
+          "tabellePronte": "Phases and tables ready",
+          "offertePdf": "PDF offers and email sending",
+          "report": "Reports and Excel export",
+          "assistenzaEmailTelefono": "Email and phone support",
+          "piuAziende": "Multiple companies",
+          "integrazioni": "Attendance and documents integrated",
+          "importazione": "Customer import",
+          "assistenzaPrioritaria": "Priority support"
+        },
+        "nota": "Prices exclude VAT. No commitment: cancel whenever you want.",
+        "domande": {
+          "installare": {
+            "domanda": "Do I need to install anything?",
+            "risposta": "No: the CRM is used from the browser of your computer or smartphone."
+          },
+          "visibilita": {
+            "domanda": "Does every sales rep see all customers?",
+            "risposta": "The company decides: only their own customers (default) or all of them; administrators always see everything."
+          },
+          "presenze": {
+            "domanda": "Can I use it together with attendance management?",
+            "risposta": "Yes: customers and contacts are the same in all active applications."
+          },
+          "dati": {
+            "domanda": "Can I export my data?",
+            "risposta": "Yes: the customer list exports to Excel and offers to PDF."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "We have worked for years alongside small and medium businesses and their sales teams.",
+        "paragrafo1": "We know the work of those who sell: contacts scattered across emails and phones, offers to redo, deals that get lost.",
+        "paragrafo2": "{{siteName}} puts this work in order: every customer has its card, every deal its phase and every offer its PDF.",
+        "valori": {
+          "semplice": {
+            "title": "Simple for sales reps",
+            "text": "Logging a call or a meeting takes a few seconds."
+          },
+          "ordinato": {
+            "title": "Orderly for managers",
+            "text": "Everyone's pipeline, results and activities always at hand."
+          },
+          "vicino": {
+            "title": "Close to businesses",
+            "text": "Designed with people who sell every day, not for large corporations."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company's account and start following customers and deals.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "pronto": "Phases and tables ready",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We sent you an email with the link to activate the account: open it to complete the registration.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready. These are the users created: log in with the password you chose."
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "crm": {
+          "title": "CRM manual",
+          "description": "Customers, leads, pipeline and opportunities, agenda and reminders, PDF offers, notes and attachments, reports; for administrators visibility, tables, settings and reassignment."
+        }
       }
     }
   }
