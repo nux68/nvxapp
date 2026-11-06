@@ -94,7 +94,8 @@
     "companyStorage": "Spazio documenti",
     "administration": "Amministrazione",
     "registry": "Anagrafiche",
-    "customers": "Clienti"
+    "customers": "Clienti",
+    "manualInfrastructure": "Manuale funzioni base"
   },
   "showcase": {
     "menu": {
@@ -770,6 +771,18 @@
       "fabAdd": "Nuovo",
       "columnCustomer": "Cliente",
       "showDisabled": "Mostra disabilitati"
+    },
+    "userManual": {
+      "title": "Manuale",
+      "description": "Manuale utente in PDF.",
+      "note": "Il PDF si prepara in pochi secondi: quando è pronto compare in alto, nella barra dei lavori, con il pulsante per scaricarlo.",
+      "generate": "Prepara di nuovo il PDF",
+      "manuals": {
+        "infrastructure": {
+          "title": "Manuale delle funzioni di base",
+          "description": "Accesso, menu, utenti e ruoli, impersonificazione, clienti e anagrafiche comuni, assistenza e lavori in background."
+        }
+      }
     }
   },
   "components": {
