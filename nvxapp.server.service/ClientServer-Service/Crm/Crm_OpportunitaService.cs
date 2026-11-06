@@ -10,6 +10,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -25,7 +26,17 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_OpportunitaService : ServiceBase, ICrm_OpportunitaService
     {
-        private readonly CrmDbContext _db;
+        private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly ICrm_OpportunitaStoricoRepository _Crm_OpportunitaStorico;
+        private readonly ICrm_Az_ClienteReadRepository _Az_Cliente;
+        private readonly ICrm_Az_ClienteContattoReadRepository _Az_ClienteContatto;
+        private readonly ICrm_AllegatoRepository _Crm_Allegato;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_NotaRepository _Crm_Nota;
+        private readonly ICrm_OffertaRepository _Crm_Offerta;
+        private readonly ICrm_Par_FaseRepository _Crm_Par_Fase;
+        private readonly ICrm_Par_FonteRepository _Crm_Par_Fonte;
+        private readonly ICrm_Par_MotivoPerditaRepository _Crm_Par_MotivoPerdita;
         private readonly ICrmUtility _utility;
 
         public Crm_OpportunitaService(IMapper mapper,
@@ -34,10 +45,30 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                       IOptions<JwtParameter> jwtParameter,
                                       IHttpContextAccessor httpContextAccessor,
                                       IConfiguration configuration,
-                                      CrmDbContext db,
+                                      ICrm_OpportunitaRepository crm_OpportunitaRepository,
+                                      ICrm_OpportunitaStoricoRepository crm_OpportunitaStoricoRepository,
+                                      ICrm_Az_ClienteReadRepository az_ClienteRepository,
+                                      ICrm_Az_ClienteContattoReadRepository az_ClienteContattoRepository,
+                                      ICrm_AllegatoRepository crm_AllegatoRepository,
+                                      ICrm_AttivitaRepository crm_AttivitaRepository,
+                                      ICrm_NotaRepository crm_NotaRepository,
+                                      ICrm_OffertaRepository crm_OffertaRepository,
+                                      ICrm_Par_FaseRepository crm_Par_FaseRepository,
+                                      ICrm_Par_FonteRepository crm_Par_FonteRepository,
+                                      ICrm_Par_MotivoPerditaRepository crm_Par_MotivoPerditaRepository,
                                       ICrmUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Crm_Opportunita = crm_OpportunitaRepository;
+            _Crm_OpportunitaStorico = crm_OpportunitaStoricoRepository;
+            _Az_Cliente = az_ClienteRepository;
+            _Az_ClienteContatto = az_ClienteContattoRepository;
+            _Crm_Allegato = crm_AllegatoRepository;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Crm_Nota = crm_NotaRepository;
+            _Crm_Offerta = crm_OffertaRepository;
+            _Crm_Par_Fase = crm_Par_FaseRepository;
+            _Crm_Par_Fonte = crm_Par_FonteRepository;
+            _Crm_Par_MotivoPerdita = crm_Par_MotivoPerditaRepository;
             _utility = utility;
         }
 
@@ -69,24 +100,24 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var ctx = await _utility.ContestoAsync();
                 var o = await Visibile(ctx, model.Data.Id, false);
                 var cfg = await _utility.CfgAsync(ctx);
-                var fasi = await _db.Crm_Par_Fase.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.Descrizione);
-                var storico = await _db.Crm_OpportunitaStorico.AsNoTracking().Where(x => x.IdCrm_Opportunita == o.Id).OrderByDescending(x => x.Data).ToListAsync();
+                var fasi = await _Crm_Par_Fase.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.Descrizione);
+                var storico = await _Crm_OpportunitaStorico.FindAll(_ => true).Where(x => x.IdCrm_Opportunita == o.Id).OrderByDescending(x => x.Data).ToListAsync();
                 var nomi = await _utility.NomiAsync(storico.Select(s => s.IdAspNetUsers));
                 return new Crm_OpportunitaGetOutModel
                 {
                     Opportunita = Modello(o),
-                    Cliente = await _db.Az_Cliente.Where(c => c.Id == o.IdAz_Cliente).Select(c => c.Descrizione).FirstAsync(),
-                    Contatti = await CrmLists.ContattiAsync(_db, o.IdAz_Cliente),
+                    Cliente = await _Az_Cliente.FindAll(c => c.Id == o.IdAz_Cliente).Select(c => c.Descrizione).FirstAsync(),
+                    Contatti = await CrmLists.ContattiAsync(_Az_ClienteContatto, o.IdAz_Cliente),
                     Storico = storico.Select(s => new Crm_StoricoModel
                     {
                         Data = s.Data, Utente = s.IdAspNetUsers != null && nomi.TryGetValue(s.IdAspNetUsers, out var n) ? n : null,
                         FaseDa = s.IdCrm_Par_FaseDa is int da && fasi.TryGetValue(da, out var fd) ? fd : null,
                         FaseA = fasi.TryGetValue(s.IdCrm_Par_FaseA, out var fa) ? fa : string.Empty, ValoreDa = s.ValoreDa, ValoreA = s.ValoreA
                     }).ToList(),
-                    Attivita = (await CrmLists.AttivitaAsync(_db.Crm_Attivita.Where(a => a.IdCrm_Opportunita == o.Id), _utility)).OrderByDescending(a => a.Inizio).ToList(),
-                    Offerte = await CrmLists.OfferteAsync(_db.Crm_Offerta.Where(x => x.IdCrm_Opportunita == o.Id), cfg),
-                    Note = await CrmLists.NoteAsync(_db.Crm_Nota.Where(n => n.IdCrm_Opportunita == o.Id), ctx, _utility),
-                    Allegati = await CrmLists.AllegatiAsync(_db.Crm_Allegato.Where(a => a.IdCrm_Opportunita == o.Id), _utility),
+                    Attivita = (await CrmLists.AttivitaAsync(_Crm_Attivita.FindAll(a => a.IdCrm_Opportunita == o.Id), _utility)).OrderByDescending(a => a.Inizio).ToList(),
+                    Offerte = await CrmLists.OfferteAsync(_Crm_Offerta.FindAll(x => x.IdCrm_Opportunita == o.Id), cfg),
+                    Note = await CrmLists.NoteAsync(_Crm_Nota.FindAll(n => n.IdCrm_Opportunita == o.Id), ctx, _utility),
+                    Allegati = await CrmLists.AllegatiAsync(_Crm_Allegato.FindAll(a => a.IdCrm_Opportunita == o.Id), _utility),
                 };
             }, isSubProcess);
         }
@@ -114,7 +145,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 else
                 {
                     o = new Crm_Opportunita { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now, IdAspNetUsersResponsabile = ctx.Amministratore ? null : ctx.IdUtente };
-                    _db.Crm_Opportunita.Add(o);
+                    await _Crm_Opportunita.CreateAsync(o, false);
                 }
 
                 var responsabile = string.IsNullOrEmpty(d.IdResponsabile) ? null : d.IdResponsabile;
@@ -129,27 +160,27 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
 
                 o.Titolo = d.Titolo.Trim();
                 o.IdAz_Cliente = d.IdAz_Cliente;
-                o.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && await _db.Az_ClienteContatto.AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
+                o.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && await _Az_ClienteContatto.FindAll(_ => true).AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
                 o.Valore = Math.Max(0, d.Valore);
                 o.Probabilita = Math.Clamp(d.Probabilita, 0, 100);
                 o.DataChiusuraPrevista = d.DataChiusuraPrevista;
-                o.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _db.Crm_Par_Fonte.AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
+                o.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _Crm_Par_Fonte.FindAll(_ => true).AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
                 o.Note = string.IsNullOrWhiteSpace(d.Note) ? null : d.Note.Trim();
                 ApplicaFase(o, fase, d.IdCrm_Par_MotivoPerdita, faseDa == null || faseDa != fase.Id ? null : d.DataChiusura);
                 if (fase.Tipo == Crm_FaseTipo.Persa)
-                    o.IdCrm_Par_MotivoPerdita = d.IdCrm_Par_MotivoPerdita is int m && await _db.Crm_Par_MotivoPerdita.AnyAsync(x => x.Id == m && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? m : null;
+                    o.IdCrm_Par_MotivoPerdita = d.IdCrm_Par_MotivoPerdita is int m && await _Crm_Par_MotivoPerdita.FindAll(_ => true).AnyAsync(x => x.Id == m && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? m : null;
                 o.ModifiedDate = DateTime.Now;
                 o.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Opportunita.SaveChange();
 
                 if (faseDa != o.IdCrm_Par_Fase || valoreDa != o.Valore)
                 {
-                    _db.Crm_OpportunitaStorico.Add(new Crm_OpportunitaStorico
+                    await _Crm_OpportunitaStorico.CreateAsync(new Crm_OpportunitaStorico
                     {
                         IdCrm_Opportunita = o.Id, Data = DateTime.Now, IdAspNetUsers = ctx.IdUtente, IdCrm_Par_FaseDa = faseDa,
                         IdCrm_Par_FaseA = o.IdCrm_Par_Fase, ValoreDa = valoreDa, ValoreA = o.Valore, CreationDate = DateTime.Now
-                    });
-                    await _db.SaveChangesAsync();
+                    }, false);
+                    await _Crm_Opportunita.SaveChange();
                 }
                 return new Crm_OpportunitaPutOutModel { Opportunita = Modello(o) };
             }, isSubProcess);
@@ -170,15 +201,15 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 ApplicaFase(o, fase, model.Data.IdCrm_Par_MotivoPerdita, null);
                 o.Probabilita = fase.Probabilita;
                 if (fase.Tipo == Crm_FaseTipo.Persa)
-                    o.IdCrm_Par_MotivoPerdita = model.Data.IdCrm_Par_MotivoPerdita is int m && await _db.Crm_Par_MotivoPerdita.AnyAsync(x => x.Id == m && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? m : null;
+                    o.IdCrm_Par_MotivoPerdita = model.Data.IdCrm_Par_MotivoPerdita is int m && await _Crm_Par_MotivoPerdita.FindAll(_ => true).AnyAsync(x => x.Id == m && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? m : null;
                 o.ModifiedDate = DateTime.Now;
                 o.ChangeUser = ctx.IdUtente;
-                _db.Crm_OpportunitaStorico.Add(new Crm_OpportunitaStorico
+                await _Crm_OpportunitaStorico.CreateAsync(new Crm_OpportunitaStorico
                 {
                     IdCrm_Opportunita = o.Id, Data = DateTime.Now, IdAspNetUsers = ctx.IdUtente, IdCrm_Par_FaseDa = faseDa,
                     IdCrm_Par_FaseA = fase.Id, ValoreDa = o.Valore, ValoreA = o.Valore, CreationDate = DateTime.Now
-                });
-                await _db.SaveChangesAsync();
+                }, false);
+                await _Crm_Opportunita.SaveChange();
                 return new Crm_OpportunitaPutOutModel { Opportunita = Modello(o) };
             }, isSubProcess);
         }
@@ -189,11 +220,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             {
                 var ctx = await _utility.ContestoAsync();
                 var o = await Visibile(ctx, model.Data.Id, true);
-                if (await _db.Crm_Allegato.AnyAsync(a => a.IdCrm_Opportunita == o.Id))
+                if (await _Crm_Allegato.FindAll(_ => true).AnyAsync(a => a.IdCrm_Opportunita == o.Id))
                     throw new UserMessageException(CrmMessages.Get("OpportunityHasAttachments"));
                 // storico, attivita' e note si cancellano con l'opportunita'; le offerte restano senza collegamento
-                _db.Crm_Opportunita.Remove(o);
-                await _db.SaveChangesAsync();
+                await _Crm_Opportunita.DeleteAsync(o);
+                await _Crm_Opportunita.SaveChange();
                 return new Crm_IdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }
@@ -207,7 +238,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         }
 
         private async Task<Crm_Par_Fase> Fase(CrmContesto ctx, int id)
-            => await _db.Crm_Par_Fase.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+            => await _Crm_Par_Fase.FindAll(_ => true).FirstOrDefaultAsync(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
                ?? throw new UserMessageException(CrmMessages.Get("PhaseInvalid"));
 
         private static void ApplicaFase(Crm_Opportunita o, Crm_Par_Fase fase, int? idMotivo, DateTime? dataChiusura)

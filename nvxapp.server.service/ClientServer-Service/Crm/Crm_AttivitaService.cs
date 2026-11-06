@@ -10,6 +10,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -25,7 +26,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_AttivitaService : ServiceBase, ICrm_AttivitaService
     {
-        private readonly CrmDbContext _db;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_Az_ClienteContattoReadRepository _Az_ClienteContatto;
+        private readonly ICrm_Par_TipoAttivitaRepository _Crm_Par_TipoAttivita;
         private readonly ICrmUtility _utility;
 
         public Crm_AttivitaService(IMapper mapper,
@@ -34,10 +37,14 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                    IOptions<JwtParameter> jwtParameter,
                                    IHttpContextAccessor httpContextAccessor,
                                    IConfiguration configuration,
-                                   CrmDbContext db,
+                                   ICrm_AttivitaRepository crm_AttivitaRepository,
+                                   ICrm_Az_ClienteContattoReadRepository az_ClienteContattoRepository,
+                                   ICrm_Par_TipoAttivitaRepository crm_Par_TipoAttivitaRepository,
                                    ICrmUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Az_ClienteContatto = az_ClienteContattoRepository;
+            _Crm_Par_TipoAttivita = crm_Par_TipoAttivitaRepository;
             _utility = utility;
         }
 
@@ -76,7 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var retVal = new Crm_AttivitaGetOutModel { Attivita = Modello(a) };
                 if (a.IdAz_Cliente is int c)
                 {
-                    retVal.Contatti = await CrmLists.ContattiAsync(_db, c);
+                    retVal.Contatti = await CrmLists.ContattiAsync(_Az_ClienteContatto, c);
                     retVal.OpportunitaCliente = await CrmLists.OpportunitaAsync(_utility.OpportunitaVisibili(ctx).Where(o => o.IdAz_Cliente == c), _utility);
                 }
                 return retVal;
@@ -93,7 +100,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     throw new UserMessageException(CrmMessages.Get("ActivitySubjectRequired"));
                 if (d.Fine.HasValue && d.Fine < d.Inizio)
                     throw new UserMessageException(CrmMessages.Get("ActivityEndBeforeStart"));
-                if (!await _db.Crm_Par_TipoAttivita.AnyAsync(x => x.Id == d.IdCrm_Par_TipoAttivita && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+                if (!await _Crm_Par_TipoAttivita.FindAll(_ => true).AnyAsync(x => x.Id == d.IdCrm_Par_TipoAttivita && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
                     throw new UserMessageException(CrmMessages.Get("ActivityTypeInvalid"));
 
                 // collegamenti: devono essere visibili e coerenti con il cliente
@@ -115,7 +122,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 else
                 {
                     a = new Crm_Attivita { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now, IdAspNetUsersAssegnatario = ctx.IdUtente };
-                    _db.Crm_Attivita.Add(a);
+                    await _Crm_Attivita.CreateAsync(a, false);
                 }
 
                 var assegnatario = string.IsNullOrEmpty(d.IdAssegnatario) ? ctx.IdUtente : d.IdAssegnatario;
@@ -140,12 +147,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 a.Stato = d.Stato;
                 a.Esito = string.IsNullOrWhiteSpace(d.Esito) ? null : d.Esito.Trim();
                 a.IdAz_Cliente = d.IdAz_Cliente;
-                a.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && d.IdAz_Cliente != null && await _db.Az_ClienteContatto.AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
+                a.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && d.IdAz_Cliente != null && await _Az_ClienteContatto.FindAll(_ => true).AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
                 a.IdCrm_Opportunita = d.IdCrm_Opportunita;
                 a.IdCrm_Lead = d.IdCrm_Lead;
                 a.ModifiedDate = DateTime.Now;
                 a.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.SaveChange();
                 return new Crm_AttivitaPutOutModel { Attivita = Modello(a) };
             }, isSubProcess);
         }
@@ -162,7 +169,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     a.Esito = model.Data.Esito.Trim();
                 a.ModifiedDate = DateTime.Now;
                 a.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.SaveChange();
                 return new Crm_AttivitaPutOutModel { Attivita = Modello(a) };
             }, isSubProcess);
         }
@@ -173,8 +180,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             {
                 var ctx = await _utility.ContestoAsync();
                 var a = await Visibile(ctx, model.Data.Id, true);
-                _db.Crm_Attivita.Remove(a);
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.DeleteAsync(a);
+                await _Crm_Attivita.SaveChange();
                 return new Crm_IdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }

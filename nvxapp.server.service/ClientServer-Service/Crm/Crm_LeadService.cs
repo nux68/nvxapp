@@ -11,6 +11,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
@@ -27,7 +28,15 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_LeadService : ServiceBase, ICrm_LeadService
     {
-        private readonly CrmDbContext _db;
+        private readonly ICrm_LeadRepository _Crm_Lead;
+        private readonly ICrm_ClienteDatiRepository _Crm_ClienteDati;
+        private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly ICrm_OpportunitaStoricoRepository _Crm_OpportunitaStorico;
+        private readonly ICrm_Az_ClienteContattoReadRepository _Az_ClienteContatto;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_NotaRepository _Crm_Nota;
+        private readonly ICrm_Par_FaseRepository _Crm_Par_Fase;
+        private readonly ICrm_Par_FonteRepository _Crm_Par_Fonte;
         private readonly ICrmUtility _utility;
         private readonly IAz_ClienteRepository _clienteRepository;
         private readonly IAz_ClienteContattoRepository _contattoRepository;
@@ -38,12 +47,28 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                IOptions<JwtParameter> jwtParameter,
                                IHttpContextAccessor httpContextAccessor,
                                IConfiguration configuration,
-                               CrmDbContext db,
+                               ICrm_LeadRepository crm_LeadRepository,
+                               ICrm_ClienteDatiRepository crm_ClienteDatiRepository,
+                               ICrm_OpportunitaRepository crm_OpportunitaRepository,
+                               ICrm_OpportunitaStoricoRepository crm_OpportunitaStoricoRepository,
+                               ICrm_Az_ClienteContattoReadRepository az_ClienteContattoRepository,
+                               ICrm_AttivitaRepository crm_AttivitaRepository,
+                               ICrm_NotaRepository crm_NotaRepository,
+                               ICrm_Par_FaseRepository crm_Par_FaseRepository,
+                               ICrm_Par_FonteRepository crm_Par_FonteRepository,
                                ICrmUtility utility,
                                IAz_ClienteRepository clienteRepository,
                                IAz_ClienteContattoRepository contattoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Crm_Lead = crm_LeadRepository;
+            _Crm_ClienteDati = crm_ClienteDatiRepository;
+            _Crm_Opportunita = crm_OpportunitaRepository;
+            _Crm_OpportunitaStorico = crm_OpportunitaStoricoRepository;
+            _Az_ClienteContatto = az_ClienteContattoRepository;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Crm_Nota = crm_NotaRepository;
+            _Crm_Par_Fase = crm_Par_FaseRepository;
+            _Crm_Par_Fonte = crm_Par_FonteRepository;
             _utility = utility;
             _clienteRepository = clienteRepository;
             _contattoRepository = contattoRepository;
@@ -74,8 +99,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 return new Crm_LeadGetOutModel
                 {
                     Lead = Modello(lead, nomi),
-                    Attivita = (await CrmLists.AttivitaAsync(_db.Crm_Attivita.Where(a => a.IdCrm_Lead == lead.Id), _utility)).OrderByDescending(a => a.Inizio).ToList(),
-                    Note = await CrmLists.NoteAsync(_db.Crm_Nota.Where(n => n.IdCrm_Lead == lead.Id), ctx, _utility),
+                    Attivita = (await CrmLists.AttivitaAsync(_Crm_Attivita.FindAll(a => a.IdCrm_Lead == lead.Id), _utility)).OrderByDescending(a => a.Inizio).ToList(),
+                    Note = await CrmLists.NoteAsync(_Crm_Nota.FindAll(n => n.IdCrm_Lead == lead.Id), ctx, _utility),
                 };
             }, isSubProcess);
         }
@@ -99,7 +124,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 else
                 {
                     lead = new Crm_Lead { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now, IdAspNetUsersResponsabile = ctx.Amministratore ? null : ctx.IdUtente };
-                    _db.Crm_Lead.Add(lead);
+                    await _Crm_Lead.CreateAsync(lead, false);
                 }
 
                 var responsabile = string.IsNullOrEmpty(d.IdResponsabile) ? null : d.IdResponsabile;
@@ -118,7 +143,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 lead.Ruolo = Pulito(d.Ruolo);
                 lead.Email = Pulito(d.Email);
                 lead.Telefono = Pulito(d.Telefono);
-                lead.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _db.Crm_Par_Fonte.AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
+                lead.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _Crm_Par_Fonte.FindAll(_ => true).AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
                 // "Convertito" si ottiene solo con la conversione
                 lead.Stato = d.Stato == Crm_StatoLead.Convertito ? lead.Stato : d.Stato;
                 lead.Note = Pulito(d.Note);
@@ -129,7 +154,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 lead.ConsensoMarketing = d.ConsensoMarketing;
                 lead.ModifiedDate = DateTime.Now;
                 lead.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Lead.SaveChange();
 
                 var nomi = await _utility.NomiAsync(new[] { lead.IdAspNetUsersResponsabile });
                 return new Crm_LeadPutOutModel { Lead = Modello(lead, nomi) };
@@ -143,8 +168,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var ctx = await _utility.ContestoAsync();
                 var lead = await _utility.LeadVisibili(ctx).AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id) ?? throw new UserMessageException(CrmMessages.Get("LeadNotFound"));
                 // attivita' e note del lead si cancellano con lui (FK CASCADE)
-                _db.Crm_Lead.Remove(lead);
-                await _db.SaveChangesAsync();
+                await _Crm_Lead.DeleteAsync(lead);
+                await _Crm_Lead.SaveChange();
                 return new Crm_IdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }
@@ -174,19 +199,19 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                         Email = lead.Email,
                         Telefono = lead.Telefono,
                     });
-                    _db.Crm_ClienteDati.Add(new Crm_ClienteDati
+                    await _Crm_ClienteDati.CreateAsync(new Crm_ClienteDati
                     {
                         IdAz_Cliente = cliente.Id, Stato = Crm_StatoCliente.Prospect, IdCrm_Par_Fonte = lead.IdCrm_Par_Fonte,
                         IdAspNetUsersResponsabile = responsabile, ConsensoMarketing = lead.ConsensoMarketing, DataConsenso = lead.DataConsenso,
                         CreationDate = DateTime.Now, ChangeUser = ctx.IdUtente
-                    });
+                    }, false);
                 }
 
                 // persona di riferimento (se il lead ha un nominativo)
                 int? idContatto = null;
                 if (!string.IsNullOrWhiteSpace(lead.Cognome) || !string.IsNullOrWhiteSpace(lead.Nome))
                 {
-                    bool primo = !await _db.Az_ClienteContatto.AnyAsync(x => x.IdAz_Cliente == cliente.Id);
+                    bool primo = !await _Az_ClienteContatto.FindAll(_ => true).AnyAsync(x => x.IdAz_Cliente == cliente.Id);
                     var contatto = await _contattoRepository.UpsertAsync(new Az_ClienteContatto
                     {
                         IdAz_Cliente = cliente.Id, Cognome = lead.Cognome, Nome = lead.Nome, Ruolo = lead.Ruolo, Email = lead.Email,
@@ -199,7 +224,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 int? idOpportunita = null;
                 if (d.CreaOpportunita)
                 {
-                    var fase = await _db.Crm_Par_Fase.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Tipo == Crm_FaseTipo.Aperta)
+                    var fase = await _Crm_Par_Fase.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Tipo == Crm_FaseTipo.Aperta)
                                         .OrderBy(x => x.Ordine).FirstAsync();
                     var opp = new Crm_Opportunita
                     {
@@ -208,25 +233,25 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                         Probabilita = fase.Probabilita, IdAspNetUsersResponsabile = responsabile, IdCrm_Par_Fonte = lead.IdCrm_Par_Fonte,
                         IdCrm_Lead = lead.Id, CreationDate = DateTime.Now, ChangeUser = ctx.IdUtente
                     };
-                    _db.Crm_Opportunita.Add(opp);
-                    await _db.SaveChangesAsync();
-                    _db.Crm_OpportunitaStorico.Add(new Crm_OpportunitaStorico
+                    await _Crm_Opportunita.CreateAsync(opp, false);
+                    await _Crm_Lead.SaveChange();
+                    await _Crm_OpportunitaStorico.CreateAsync(new Crm_OpportunitaStorico
                     {
                         IdCrm_Opportunita = opp.Id, Data = DateTime.Now, IdAspNetUsers = ctx.IdUtente, IdCrm_Par_FaseA = fase.Id, ValoreA = opp.Valore, CreationDate = DateTime.Now
-                    });
+                    }, false);
                     idOpportunita = opp.Id;
                 }
 
                 // attivita' e note del lead passano al cliente
-                await _db.Crm_Attivita.Where(a => a.IdCrm_Lead == lead.Id).ExecuteUpdateAsync(s => s.SetProperty(a => a.IdAz_Cliente, cliente.Id));
-                await _db.Crm_Nota.Where(n => n.IdCrm_Lead == lead.Id).ExecuteUpdateAsync(s => s.SetProperty(n => n.IdAz_Cliente, cliente.Id));
+                await _Crm_Attivita.FindAll(a => a.IdCrm_Lead == lead.Id).ExecuteUpdateAsync(s => s.SetProperty(a => a.IdAz_Cliente, cliente.Id));
+                await _Crm_Nota.FindAll(n => n.IdCrm_Lead == lead.Id).ExecuteUpdateAsync(s => s.SetProperty(n => n.IdAz_Cliente, cliente.Id));
 
                 lead.Stato = Crm_StatoLead.Convertito;
                 lead.IdAz_Cliente = cliente.Id;
                 lead.DataConversione = DateTime.Now;
                 lead.ModifiedDate = DateTime.Now;
                 lead.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Lead.SaveChange();
                 return new Crm_LeadConvertiOutModel { IdAz_Cliente = cliente.Id, IdCrm_Opportunita = idOpportunita };
             }, isSubProcess);
         }

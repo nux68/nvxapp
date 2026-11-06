@@ -346,4 +346,8 @@ Cordiali saluti
   <data name="DefaultSourceOther" xml:space="preserve">
     <value>Altro</value>
   </data>
+  <data name="RetryLater" xml:space="preserve">
+    <value>Il CRM si sta preparando per l'azienda: riprova tra un istante.</value>
+    <comment>EnsureDefaults: richiesta contemporanea</comment>
+  </data>
 </root>

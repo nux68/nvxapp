@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.Crm;
-using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.Crm._utility
@@ -18,8 +18,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             Cellulare = x.Cellulare, Email = x.Email, Principale = x.Principale, Note = x.Note
         };
 
-        public static async Task<List<Crm_ContattoModel>> ContattiAsync(CrmDbContext db, int idAz_Cliente)
-            => (await db.Az_ClienteContatto.AsNoTracking().Where(x => x.IdAz_Cliente == idAz_Cliente)
+        public static async Task<List<Crm_ContattoModel>> ContattiAsync(ICrm_Az_ClienteContattoReadRepository contatti, int idAz_Cliente)
+            => (await contatti.FindAll(x => x.IdAz_Cliente == idAz_Cliente)
                         .OrderByDescending(x => x.Principale).ThenBy(x => x.Cognome).ThenBy(x => x.Nome).ToListAsync())
                .Select(Contatto).ToList();
 

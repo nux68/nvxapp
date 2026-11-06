@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.Crm;
@@ -67,13 +68,18 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         private readonly TenancySettings _tenancy;
         private readonly IApplicationDbContextFactory _factory;
         private readonly ITenantProvisioningService _provisioning;
+        private readonly IServiceProvider _sp;
+        private readonly IHttpContextAccessor _http;
         private readonly IFileStorage _fileStorage;
 
-        public CrmDataDeleter(TenancySettings tenancy, IApplicationDbContextFactory factory, ITenantProvisioningService provisioning, IFileStorage fileStorage)
+        public CrmDataDeleter(TenancySettings tenancy, IApplicationDbContextFactory factory, ITenantProvisioningService provisioning, IFileStorage fileStorage,
+                              IServiceProvider sp, IHttpContextAccessor http)
         {
             _tenancy = tenancy;
             _factory = factory;
             _provisioning = provisioning;
+            _sp = sp;
+            _http = http;
             _fileStorage = fileStorage;
         }
 
@@ -84,13 +90,14 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             await using var db = await CrmSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
             if (db == null)
                 return new List<DeletionCountModel>();
-            var idAz = await IdAzAsync(db, idCompany, cancellationToken);
+            var rep = new CrmRepositorySet(db, _sp, _http);
+            var idAz = await IdAzAsync(rep, idCompany, cancellationToken);
             return new List<DeletionCountModel>
             {
-                new() { Label = CrmMessages.Get("DeletionCountOpportunities"), Count = await db.Crm_Opportunita.CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
-                new() { Label = CrmMessages.Get("DeletionCountActivities"), Count = await db.Crm_Attivita.CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
-                new() { Label = CrmMessages.Get("DeletionCountOffers"), Count = await db.Crm_Offerta.CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
-                new() { Label = CrmMessages.Get("DeletionCountLeads"), Count = await db.Crm_Lead.CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = CrmMessages.Get("DeletionCountOpportunities"), Count = await rep.Crm_Opportunita.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = CrmMessages.Get("DeletionCountActivities"), Count = await rep.Crm_Attivita.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = CrmMessages.Get("DeletionCountOffers"), Count = await rep.Crm_Offerta.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = CrmMessages.Get("DeletionCountLeads"), Count = await rep.Crm_Lead.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
             };
         }
 
@@ -102,24 +109,25 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             await using var db = await CrmSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
             if (db == null)
                 return;
-            var idAz = await IdAzAsync(db, idCompany, cancellationToken);
+            var rep = new CrmRepositorySet(db, _sp, _http);
+            var idAz = await IdAzAsync(rep, idCompany, cancellationToken);
             if (idAz == 0)
                 return;
-            await db.Crm_Allegato.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Nota.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Attivita.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Offerta.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Opportunita.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Lead.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_ClienteTag.Where(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_ClienteDati.Where(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_Fase.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_TipoAttivita.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_MotivoPerdita.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_Fonte.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_Prodotto.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Par_Tag.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
-            await db.Crm_Cfg.Where(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Allegato.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Nota.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Attivita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Offerta.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Opportunita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Lead.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_ClienteTag.FindAll(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_ClienteDati.FindAll(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_Fase.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_TipoAttivita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_MotivoPerdita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_Fonte.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_Prodotto.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Par_Tag.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Crm_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 
         /*
@@ -131,23 +139,24 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             await using var db = await CrmSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
             if (db == null)
                 return;
-            var idAz = await IdAzAsync(db, idCompany, cancellationToken);
-            await db.Crm_ClienteDati.Where(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
+            var rep = new CrmRepositorySet(db, _sp, _http);
+            var idAz = await IdAzAsync(rep, idCompany, cancellationToken);
+            await rep.Crm_ClienteDati.FindAll(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, (string?)null), cancellationToken);
-            await db.Crm_Opportunita.Where(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
+            await rep.Crm_Opportunita.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, (string?)null), cancellationToken);
-            await db.Crm_Lead.Where(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
+            await rep.Crm_Lead.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersResponsabile == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, (string?)null), cancellationToken);
-            await db.Crm_Attivita.Where(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAssegnatario == idAspNetUsers && x.Stato == Crm_StatoAttivita.DaFare)
+            await rep.Crm_Attivita.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAssegnatario == idAspNetUsers && x.Stato == Crm_StatoAttivita.DaFare)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.Stato, Crm_StatoAttivita.Annullata), cancellationToken);
-            await db.Crm_Nota.Where(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
+            await rep.Crm_Nota.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAutore, (string?)null), cancellationToken);
-            await db.Crm_Allegato.Where(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
+            await rep.Crm_Allegato.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAutore, (string?)null), cancellationToken);
         }
 
-        private static Task<int> IdAzAsync(CrmDbContext db, int idCompany, CancellationToken cancellationToken)
-            => db.Az_Anagrafica.Where(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+        private static Task<int> IdAzAsync(CrmRepositorySet rep, int idCompany, CancellationToken cancellationToken)
+            => rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
     }
 
     public class CrmCommonEntityUsage : ICommonEntityUsage
@@ -155,12 +164,17 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         private readonly TenancySettings _tenancy;
         private readonly IApplicationDbContextFactory _factory;
         private readonly ITenantProvisioningService _provisioning;
+        private readonly IServiceProvider _sp;
+        private readonly IHttpContextAccessor _http;
 
-        public CrmCommonEntityUsage(TenancySettings tenancy, IApplicationDbContextFactory factory, ITenantProvisioningService provisioning)
+        public CrmCommonEntityUsage(TenancySettings tenancy, IApplicationDbContextFactory factory, ITenantProvisioningService provisioning,
+                                    IServiceProvider sp, IHttpContextAccessor http)
         {
             _tenancy = tenancy;
             _factory = factory;
             _provisioning = provisioning;
+            _sp = sp;
+            _http = http;
         }
 
         public ApplicationType Application => ApplicationType.Crm;
@@ -171,11 +185,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             await using var db = await CrmSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
             if (db == null)
                 return usi;
+            var rep = new CrmRepositorySet(db, _sp, _http);
             void Aggiungi(int n, string chiave) { if (n > 0) usi.Add(CrmMessages.Get(chiave, n)); }
-            Aggiungi(await db.Crm_Opportunita.CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByOpportunities");
-            Aggiungi(await db.Crm_Offerta.CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByOffers");
-            Aggiungi(await db.Crm_Attivita.CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByActivities");
-            Aggiungi(await db.Crm_Allegato.CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByAttachments");
+            Aggiungi(await rep.Crm_Opportunita.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByOpportunities");
+            Aggiungi(await rep.Crm_Offerta.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByOffers");
+            Aggiungi(await rep.Crm_Attivita.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByActivities");
+            Aggiungi(await rep.Crm_Allegato.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByAttachments");
             return usi;
         }
     }

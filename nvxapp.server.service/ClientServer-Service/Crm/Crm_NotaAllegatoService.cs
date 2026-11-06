@@ -10,6 +10,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
@@ -30,7 +31,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         // dimensione massima di un allegato del CRM
         public const long MaxAllegato = 20L * 1024 * 1024;
 
-        private readonly CrmDbContext _db;
+        private readonly ICrm_NotaRepository _Crm_Nota;
+        private readonly ICrm_AllegatoRepository _Crm_Allegato;
         private readonly ICrmUtility _utility;
         private readonly IFileStorage _fileStorage;
 
@@ -40,11 +42,13 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                        IOptions<JwtParameter> jwtParameter,
                                        IHttpContextAccessor httpContextAccessor,
                                        IConfiguration configuration,
-                                       CrmDbContext db,
+                                       ICrm_NotaRepository crm_NotaRepository,
+                                       ICrm_AllegatoRepository crm_AllegatoRepository,
                                        ICrmUtility utility,
                                        IFileStorage fileStorage) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Crm_Nota = crm_NotaRepository;
+            _Crm_Allegato = crm_AllegatoRepository;
             _utility = utility;
             _fileStorage = fileStorage;
         }
@@ -61,7 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 Crm_Nota n;
                 if (d.Id != 0)
                 {
-                    n = await _db.Crm_Nota.AsTracking().FirstOrDefaultAsync(x => x.Id == d.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                    n = await _Crm_Nota.FindAll(_ => true).AsTracking().FirstOrDefaultAsync(x => x.Id == d.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
                         ?? throw new UserMessageException(CrmMessages.Get("NoteNotFound"));
                     await ControllaCollegamento(ctx, n.IdAz_Cliente, n.IdCrm_Opportunita, n.IdCrm_Lead, null);
                     if (!ctx.Amministratore && n.IdAspNetUsersAutore != ctx.IdUtente)
@@ -75,16 +79,16 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                         IdAz_Anagrafica = ctx.IdAz_Anagrafica, IdAz_Cliente = d.IdAz_Cliente, IdCrm_Opportunita = d.IdCrm_Opportunita, IdCrm_Lead = d.IdCrm_Lead,
                         IdAspNetUsersAutore = ctx.IdUtente, CreationDate = DateTime.Now
                     };
-                    _db.Crm_Nota.Add(n);
+                    await _Crm_Nota.CreateAsync(n, false);
                 }
                 n.Testo = d.Testo.Trim();
                 n.Fissata = d.Fissata;
                 n.ModifiedDate = DateTime.Now;
                 n.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Nota.SaveChange();
                 return new Crm_NotaPutOutModel
                 {
-                    Nota = (await CrmLists.NoteAsync(_db.Crm_Nota.Where(x => x.Id == n.Id), ctx, _utility)).First()
+                    Nota = (await CrmLists.NoteAsync(_Crm_Nota.FindAll(x => x.Id == n.Id), ctx, _utility)).First()
                 };
             }, isSubProcess);
         }
@@ -94,13 +98,13 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await _utility.ContestoAsync();
-                var n = await _db.Crm_Nota.AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                var n = await _Crm_Nota.FindAll(_ => true).AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
                         ?? throw new UserMessageException(CrmMessages.Get("NoteNotFound"));
                 await ControllaCollegamento(ctx, n.IdAz_Cliente, n.IdCrm_Opportunita, n.IdCrm_Lead, null);
                 if (!ctx.Amministratore && n.IdAspNetUsersAutore != ctx.IdUtente)
                     throw new UserMessageException(CrmMessages.Get("NoteNotOwner"));
-                _db.Crm_Nota.Remove(n);
-                await _db.SaveChangesAsync();
+                await _Crm_Nota.DeleteAsync(n);
+                await _Crm_Nota.SaveChange();
                 return new Crm_IdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }
@@ -127,10 +131,10 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     ContentType = string.IsNullOrWhiteSpace(contentType) ? "application/octet-stream" : contentType,
                     Dimensione = length, StorageKey = key, IdAspNetUsersAutore = ctx.IdUtente, CreationDate = DateTime.Now, ChangeUser = ctx.IdUtente
                 };
-                _db.Crm_Allegato.Add(a);
+                await _Crm_Allegato.CreateAsync(a, false);
                 try
                 {
-                    await _db.SaveChangesAsync();
+                    await _Crm_Nota.SaveChange();
                 }
                 catch
                 {
@@ -139,7 +143,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 }
                 return new Crm_AllegatoUploadOutModel
                 {
-                    Allegato = (await CrmLists.AllegatiAsync(_db.Crm_Allegato.Where(x => x.Id == a.Id), _utility)).First()
+                    Allegato = (await CrmLists.AllegatiAsync(_Crm_Allegato.FindAll(x => x.Id == a.Id), _utility)).First()
                 };
             }, isSubProcess);
         }
@@ -159,8 +163,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var a = await Allegato(ctx, model.Data.Id, true);
                 if (!ctx.Amministratore && a.IdAspNetUsersAutore != ctx.IdUtente)
                     throw new UserMessageException(CrmMessages.Get("AttachmentNotOwner"));
-                _db.Crm_Allegato.Remove(a);
-                await _db.SaveChangesAsync();
+                await _Crm_Allegato.DeleteAsync(a);
+                await _Crm_Nota.SaveChange();
                 try { await _fileStorage.DeleteAsync(a.StorageKey); }
                 catch (Exception ex) { Log.Error(ex, "[CRM] File {Key} non eliminato", a.StorageKey); }
                 return new Crm_IdOutModel { Id = model.Data.Id };
@@ -170,7 +174,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         // ------------------------------------------------------------------------------------------------ utilita'
         private async Task<Crm_Allegato> Allegato(CrmContesto ctx, int id, bool tracking)
         {
-            var q = _db.Crm_Allegato.Where(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Crm_Allegato.FindAll(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             var a = await (tracking ? q.AsTracking() : q.AsNoTracking()).FirstOrDefaultAsync() ?? throw new UserMessageException(CrmMessages.Get("AttachmentNotFound"));
             await ControllaCollegamento(ctx, a.IdAz_Cliente, a.IdCrm_Opportunita, null, a.IdCrm_Offerta);
             return a;
