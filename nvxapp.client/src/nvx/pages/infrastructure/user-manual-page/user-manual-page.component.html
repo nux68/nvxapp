@@ -10,11 +10,11 @@
           <p>{{ description }}</p>
         </ion-label>
       </ion-item>
-      <ion-note class="nvx-nota-disabled">{{ 'pages.userManual.note' | transloco }}</ion-note>
+      <ion-note class="nvx-nota-disabled">{{ (inPreparazione ? 'pages.userManual.preparing' : 'pages.userManual.note') | transloco }}</ion-note>
       <br />
-      <ion-button fill="outline" shape="round" [disabled]="inPreparazione" (click)="genera()">
-        <ion-icon slot="start" name="document-text-outline"></ion-icon>
-        {{ 'pages.userManual.generate' | transloco }}
+      <ion-button shape="round" [disabled]="inPreparazione" (click)="scarica()">
+        <ion-icon slot="start" name="download-outline"></ion-icon>
+        {{ 'pages.userManual.download' | transloco }}
       </ion-button>
     </ion-card-content>
   </ion-card>
