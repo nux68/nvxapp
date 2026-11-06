@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
@@ -538,6 +539,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         private async Task Registra(Piano piano, List<DeletionCountModel> conteggi)
         {
             var nomeLogin = await NomeUtente(UserIdFirstConnection);
+            // registro di controllo: autore della modifica e' l'utente del login (anche durante un'impersonificazione),
+            // non l'utente impersonificato che il repository userebbe di norma
+            ((ICurrentUser)_deletionLogRepository).CurrentUserId = UserIdFirstConnection;
             await _deletionLogRepository.CreateAsync(new DeletionLog
             {
                 NodeType = piano.Target.NodeType,
