@@ -62,6 +62,13 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     ];
 
   }
+  // sezione "Assistenza": manuale utente della gestione presenze (PDF generato con un job)
+  public get Pages4Support(): MainMenuItem[] {
+    return [
+      { menuType: MenuType.MenuItem, zorder: 910, group: 0, title: 'attendance.menu.manual', component: 'UserManualPageComponent', url: '/usermanual/attendance', icon: 'book', nonConfigurabile: true },
+    ];
+  }
+
   public get Pages4User(): MainMenuItem[] {
     return [
       { menuType: MenuType.MenuHeader, zorder: 1000, group: 1, title: 'attendance.menu.presenze', roles: ['User'], component: '', url: '', icon: '' },
