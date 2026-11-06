@@ -4,6 +4,7 @@ using nvxapp.server.data.Entities;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Email;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
@@ -62,39 +63,62 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
     {
         private const long MB = 1024L * 1024L;
 
-        private readonly PublicDbContext _db;
+        private readonly ICompanyStorageRepository _companyStorageRepository;
+        private readonly IStoragePlanRepository _storagePlanRepository;
+        private readonly IAppSettingRepository _appSettingRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IUserCompanyRepository _userCompanyRepository;
+        private readonly IUserDealerRepository _userDealerRepository;
+        private readonly IAspNetUsersRepository _aspNetUsersRepository;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IEmailService _emailService;
         private readonly ILogger<StorageQuotaService> _logger;
 
-        public StorageQuotaService(PublicDbContext db, IEmailService emailService, ILogger<StorageQuotaService> logger)
+        public StorageQuotaService(ICompanyStorageRepository companyStorageRepository,
+                                   IStoragePlanRepository storagePlanRepository,
+                                   IAppSettingRepository appSettingRepository,
+                                   ICompanyRepository companyRepository,
+                                   IUserCompanyRepository userCompanyRepository,
+                                   IUserDealerRepository userDealerRepository,
+                                   IAspNetUsersRepository aspNetUsersRepository,
+                                   IAspNetRolesRepository aspNetRolesRepository,
+                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
+                                   IEmailService emailService,
+                                   ILogger<StorageQuotaService> logger)
         {
-            _db = db;
+            _companyStorageRepository = companyStorageRepository;
+            _storagePlanRepository = storagePlanRepository;
+            _appSettingRepository = appSettingRepository;
+            _companyRepository = companyRepository;
+            _userCompanyRepository = userCompanyRepository;
+            _userDealerRepository = userDealerRepository;
+            _aspNetUsersRepository = aspNetUsersRepository;
+            _aspNetRolesRepository = aspNetRolesRepository;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _emailService = emailService;
             _logger = logger;
         }
 
         public async Task<CompanyStorage> EnsureAsync(int idCompany, CancellationToken cancellationToken = default)
         {
-            var row = await _db.CompanyStorage.AsNoTracking().FirstOrDefaultAsync(x => x.IdCompany == idCompany, cancellationToken);
+            var row = await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstOrDefaultAsync(cancellationToken);
             if (row != null)
                 return row;
 
-            var plan = await _db.StoragePlan.AsNoTracking().Where(x => x.Active).OrderByDescending(x => x.Predefinito).ThenBy(x => x.Ordine).FirstOrDefaultAsync(cancellationToken)
+            var plan = await _storagePlanRepository.FindAll(x => x.Active).OrderByDescending(x => x.Predefinito).ThenBy(x => x.Ordine).FirstOrDefaultAsync(cancellationToken)
                        ?? throw new UserMessageException(InfrastructureMessages.Get("StorageNoPlan"));
 
             // inserimento idempotente (due richieste contemporanee per la stessa azienda)
-            await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                INSERT INTO public.""CompanyStorage"" (""IdCompany"", ""IdStoragePlan"", ""UsedBytes"", ""ReservedBytes"", ""FileCount"", ""LastWarningPercent"", ""CreationDate"", ""ModifiedDate"")
-                VALUES ({idCompany}, {plan.Id}, 0, 0, 0, 0, now(), now())
-                ON CONFLICT (""IdCompany"") DO NOTHING", cancellationToken);
+            await _companyStorageRepository.InsertIfMissingAsync(idCompany, plan.Id, cancellationToken);
 
-            return await _db.CompanyStorage.AsNoTracking().FirstAsync(x => x.IdCompany == idCompany, cancellationToken);
+            return await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstAsync(cancellationToken);
         }
 
         public async Task<StorageStatus> StatusAsync(int idCompany, CancellationToken cancellationToken = default)
         {
             var row = await EnsureAsync(idCompany, cancellationToken);
-            var plan = await _db.StoragePlan.AsNoTracking().FirstAsync(x => x.Id == row.IdStoragePlan, cancellationToken);
+            var plan = await _storagePlanRepository.FindAll(x => x.Id == row.IdStoragePlan).FirstAsync(cancellationToken);
             return new StorageStatus
             {
                 IdCompany = idCompany,
@@ -115,47 +139,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             if (bytes > status.MaxFileBytes)
                 throw new UserMessageException(InfrastructureMessages.Get("StorageFileTooLarge", Mb(bytes), Mb(status.MaxFileBytes)));
 
-            var updated = await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage"" cs
-                   SET ""ReservedBytes"" = cs.""ReservedBytes"" + {bytes}
-                  FROM public.""StoragePlan"" p
-                 WHERE p.""Id"" = cs.""IdStoragePlan""
-                   AND cs.""IdCompany"" = {idCompany}
-                   AND cs.""UsedBytes"" + cs.""ReservedBytes"" + {bytes} <= p.""QuotaMB""::bigint * {MB}", cancellationToken);
-
-            if (updated == 0)
+            if (!await _companyStorageRepository.ReserveAsync(idCompany, bytes, cancellationToken))
                 throw new UserMessageException(InfrastructureMessages.Get("StorageQuotaExceeded", Mb(bytes), Mb(status.AvailableBytes), Mb(status.QuotaBytes)));
         }
 
         public async Task ConfirmAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
         {
-            await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage""
-                   SET ""ReservedBytes"" = GREATEST(""ReservedBytes"" - {bytes}, 0),
-                       ""UsedBytes"" = ""UsedBytes"" + {bytes},
-                       ""FileCount"" = ""FileCount"" + 1,
-                       ""ModifiedDate"" = now()
-                 WHERE ""IdCompany"" = {idCompany}", cancellationToken);
+            await _companyStorageRepository.ConfirmAsync(idCompany, bytes, cancellationToken);
 
             await CheckWarningsAsync(idCompany, cancellationToken);
         }
 
         public async Task ReleaseAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
         {
-            await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage""
-                   SET ""ReservedBytes"" = GREATEST(""ReservedBytes"" - {bytes}, 0)
-                 WHERE ""IdCompany"" = {idCompany}", cancellationToken);
+            await _companyStorageRepository.ReleaseAsync(idCompany, bytes, cancellationToken);
         }
 
         public async Task FreeAsync(int idCompany, long bytes, int files = 1, CancellationToken cancellationToken = default)
         {
-            await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage""
-                   SET ""UsedBytes"" = GREATEST(""UsedBytes"" - {bytes}, 0),
-                       ""FileCount"" = GREATEST(""FileCount"" - {files}, 0),
-                       ""ModifiedDate"" = now()
-                 WHERE ""IdCompany"" = {idCompany}", cancellationToken);
+            await _companyStorageRepository.FreeAsync(idCompany, bytes, files, cancellationToken);
 
             await CheckWarningsAsync(idCompany, cancellationToken);
         }
@@ -167,10 +169,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 _logger.LogWarning("[Storage] Azienda {IdCompany}: riallineato lo spazio ({OldBytes} -> {NewBytes} byte, {OldFiles} -> {NewFiles} file, prenotati {Reserved}).",
                                    idCompany, row.UsedBytes, usedBytes, row.FileCount, fileCount, row.ReservedBytes);
 
-            await _db.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage""
-                   SET ""UsedBytes"" = {usedBytes}, ""FileCount"" = {fileCount}, ""ReservedBytes"" = 0, ""LastRecalc"" = now()
-                 WHERE ""IdCompany"" = {idCompany}", cancellationToken);
+            await _companyStorageRepository.RecalculateAsync(idCompany, usedBytes, fileCount, cancellationToken);
 
             await CheckWarningsAsync(idCompany, cancellationToken);
         }
@@ -182,7 +181,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private async Task CheckWarningsAsync(int idCompany, CancellationToken cancellationToken)
         {
             var status = await StatusAsync(idCompany, cancellationToken);
-            var row = await _db.CompanyStorage.AsTracking().FirstAsync(x => x.IdCompany == idCompany, cancellationToken);
+            var row = await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstAsync(cancellationToken);
 
             int livello = status.UsedPercent >= 100 ? 100 : status.UsedPercent >= status.WarningPercent ? status.WarningPercent : 0;
             if (livello == row.LastWarningPercent || (livello > 0 && livello < row.LastWarningPercent))
@@ -191,7 +190,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 if (livello < row.LastWarningPercent)
                 {
                     row.LastWarningPercent = livello;
-                    await _db.SaveChangesAsync(cancellationToken);
+                    await _companyStorageRepository.UpdateAsync(row);
                 }
                 return;
             }
@@ -199,12 +198,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             row.LastWarningPercent = livello;
             if (livello > 0)
                 row.LastWarningDate = DateTime.Now;
-            await _db.SaveChangesAsync(cancellationToken);
+            await _companyStorageRepository.UpdateAsync(row);
 
             if (livello == 0)
                 return;
 
-            var company = await _db.Company.AsNoTracking().Include(x => x.FinancialAdvisorNavigation).FirstOrDefaultAsync(x => x.Id == idCompany, cancellationToken);
+            var company = await _companyRepository.FindAll(x => x.Id == idCompany).Include(x => x.FinancialAdvisorNavigation).FirstOrDefaultAsync(cancellationToken);
             _logger.LogWarning("[Storage] Azienda {IdCompany} ({Company}): spazio al {Percent}% ({Used} di {Quota} MB).",
                                idCompany, company?.Descrizione, status.UsedPercent, Mb(status.UsedBytes), Mb(status.QuotaBytes));
 
@@ -212,10 +211,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 return;
 
             var destinatari = await EmailRuoloAsync(nameof(RoleCode.CompanyPowerAdmin),
-                                                    _db.UserCompany.Where(x => x.IdCompany == idCompany && !x.Disabled).Select(x => x.IdAspNetUsers), cancellationToken);
+                                                    _userCompanyRepository.FindAll(x => x.IdCompany == idCompany && !x.Disabled).Select(x => x.IdAspNetUsers), cancellationToken);
             if (company.FinancialAdvisorNavigation != null)
                 destinatari.AddRange(await EmailRuoloAsync(nameof(RoleCode.DealerPowerAdmin),
-                                                           _db.UserDealer.Where(x => x.IdDealer == company.FinancialAdvisorNavigation.IdDealer && !x.Disabled).Select(x => x.IdAspNetUsers), cancellationToken));
+                                                           _userDealerRepository.FindAll(x => x.IdDealer == company.FinancialAdvisorNavigation.IdDealer && !x.Disabled).Select(x => x.IdAspNetUsers), cancellationToken));
 
             var oggetto = InfrastructureMessages.Get("StorageWarningSubject", company.Descrizione, status.UsedPercent);
             var testo = InfrastructureMessages.Get("StorageWarningText", company.Descrizione, status.UsedPercent, Mb(status.UsedBytes), Mb(status.QuotaBytes), status.Pacchetto);
@@ -234,19 +233,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 
         private async Task<List<string>> EmailRuoloAsync(string ruolo, IQueryable<string> utenti, CancellationToken cancellationToken)
         {
-            var idRuolo = await _db.Roles.Where(r => r.Name == ruolo).Select(r => r.Id).FirstOrDefaultAsync(cancellationToken);
+            var idRuolo = await _aspNetRolesRepository.FindAll(r => r.Name == ruolo).Select(r => r.Id).FirstOrDefaultAsync(cancellationToken);
             if (idRuolo == null)
                 return new List<string>();
-            return await _db.Users.Where(u => utenti.Contains(u.Id)
-                                              && _db.UserRoles.Any(r => r.UserId == u.Id && r.RoleId == idRuolo)
-                                              && u.Email != null && u.Email != "")
-                                  .Select(u => u.Email!)
-                                  .ToListAsync(cancellationToken);
+            var conRuolo = _aspNetUserRolesRepository.FindAll(r => r.RoleId == idRuolo).Select(r => r.UserId);
+            return await _aspNetUsersRepository.FindAll(u => utenti.Contains(u.Id) && conRuolo.Contains(u.Id) && u.Email != null && u.Email != "")
+                                               .Select(u => u.Email!)
+                                               .ToListAsync(cancellationToken);
         }
 
         private async Task<int> SettingAsync(string key, int defaultValue, CancellationToken cancellationToken)
         {
-            var value = await _db.AppSetting.AsNoTracking().Where(x => x.Key == key).Select(x => x.Value).FirstOrDefaultAsync(cancellationToken);
+            var value = await _appSettingRepository.GetValueAsync(key, cancellationToken);
             return int.TryParse(value, out var n) && n > 0 ? n : defaultValue;
         }
 

@@ -29,7 +29,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
     {
         private const long MB = 1024L * 1024L;
 
-        private readonly PublicDbContext _db;
+        private readonly IStoragePlanRepository _storagePlanRepository;
+        private readonly ICompanyStorageRepository _companyStorageRepository;
+        private readonly IAppSettingRepository _appSettingRepository;
+        private readonly ICompanyRepository _companyRepository;
         private readonly IStorageQuotaService _storageQuotaService;
         private readonly IApplicationActivationAuthorizer _authorizer;
 
@@ -39,11 +42,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                               IOptions<JwtParameter> jwtParameter,
                               IHttpContextAccessor httpContextAccessor,
                               IConfiguration configuration,
-                              PublicDbContext db,
+                              IStoragePlanRepository storagePlanRepository,
+                              ICompanyStorageRepository companyStorageRepository,
+                              IAppSettingRepository appSettingRepository,
+                              ICompanyRepository companyRepository,
                               IStorageQuotaService storageQuotaService,
                               IApplicationActivationAuthorizer authorizer) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _storagePlanRepository = storagePlanRepository;
+            _companyStorageRepository = companyStorageRepository;
+            _appSettingRepository = appSettingRepository;
+            _companyRepository = companyRepository;
             _storageQuotaService = storageQuotaService;
             _authorizer = authorizer;
         }
@@ -60,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 {
                     Settings = await SettingsAsync(),
                     Plans = await PlansAsync(onlyActive: false),
-                    TotalUsedBytes = await _db.CompanyStorage.SumAsync(x => (long?)x.UsedBytes) ?? 0
+                    TotalUsedBytes = await _companyStorageRepository.FindAll(x => true).SumAsync(x => (long?)x.UsedBytes) ?? 0
                 };
             }, isSubProcess);
         }
@@ -90,20 +99,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                     throw new UserMessageException(InfrastructureMessages.Get("StoragePlanInvalid"));
 
                 var descrizione = dati.Descrizione.Trim();
-                if (await _db.StoragePlan.AnyAsync(x => x.Descrizione == descrizione && x.Id != dati.Id))
+                if (await _storagePlanRepository.FindAll(x => x.Descrizione == descrizione && x.Id != dati.Id).AnyAsync())
                     throw new UserMessageException(InfrastructureMessages.Get("StoragePlanDuplicate", descrizione));
 
                 StoragePlan plan;
                 if (dati.Id > 0)
                 {
-                    plan = await _db.StoragePlan.AsTracking().FirstOrDefaultAsync(x => x.Id == dati.Id)
+                    plan = await _storagePlanRepository.FindByIdAsync(dati.Id)
                            ?? throw new UserMessageException(InfrastructureMessages.Get("StoragePlanNotFound"));
                 }
                 else
-                {
                     plan = new StoragePlan { CreationDate = DateTime.Now };
-                    _db.StoragePlan.Add(plan);
-                }
 
                 // il predefinito resta sempre attivo; un pacchetto disattivato non puo' essere il predefinito
                 if (plan.Predefinito && (!dati.Predefinito || !dati.Active))
@@ -117,14 +123,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 plan.ModifiedDate = DateTime.Now;
                 plan.ChangeUser = CurrentUserId;
 
-                await using var transaction = await _db.Database.BeginTransactionAsync();
-                if (dati.Predefinito && !plan.Predefinito)
-                {
-                    await _db.StoragePlan.Where(x => x.Predefinito).ExecuteUpdateAsync(u => u.SetProperty(x => x.Predefinito, false));
-                    plan.Predefinito = true;
-                }
-                await _db.SaveChangesAsync();
-                await transaction.CommitAsync();
+                plan = await _storagePlanRepository.SaveAsync(plan, dati.Predefinito);
 
                 return new StoragePlanPutOutModel { Plan = (await PlansAsync(onlyActive: false)).First(x => x.Id == plan.Id) };
             }, isSubProcess);
@@ -135,25 +134,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             return await ExecuteAction(model, async () =>
             {
                 await SoloSuperUser();
-                var plan = await _db.StoragePlan.AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id)
+                var plan = await _storagePlanRepository.FindByIdAsync(model.Data.Id)
                            ?? throw new UserMessageException(InfrastructureMessages.Get("StoragePlanNotFound"));
                 if (plan.Predefinito)
                     throw new UserMessageException(InfrastructureMessages.Get("StoragePlanDefaultRequired"));
 
                 var retVal = new StoragePlanDeleteOutModel();
-                if (await _db.CompanyStorage.AnyAsync(x => x.IdStoragePlan == plan.Id))
+                if (await _companyStorageRepository.FindAll(x => x.IdStoragePlan == plan.Id).AnyAsync())
                 {
                     // usato da aziende: si disattiva (non piu' assegnabile)
                     plan.Active = false;
-                    plan.ModifiedDate = DateTime.Now;
+                    await _storagePlanRepository.UpdateAsync(plan);
                     retVal.Deleted = false;
                 }
                 else
                 {
-                    _db.StoragePlan.Remove(plan);
+                    await _storagePlanRepository.DeleteAsync(plan);
                     retVal.Deleted = true;
                 }
-                await _db.SaveChangesAsync();
                 return retVal;
             }, isSubProcess);
         }
@@ -207,11 +205,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 if ((dati.MaxFileMB.HasValue && dati.MaxFileMB <= 0) || (dati.WarningPercent.HasValue && (dati.WarningPercent <= 0 || dati.WarningPercent >= 100)))
                     throw new UserMessageException(InfrastructureMessages.Get("StorageSettingsInvalid"));
 
-                var plan = await _db.StoragePlan.AsNoTracking().FirstOrDefaultAsync(x => x.Id == dati.IdStoragePlan)
+                var plan = await _storagePlanRepository.FindByIdAsync(dati.IdStoragePlan)
                            ?? throw new UserMessageException(InfrastructureMessages.Get("StoragePlanNotFound"));
 
                 await _storageQuotaService.EnsureAsync(dati.IdCompany);
-                var row = await _db.CompanyStorage.AsTracking().FirstAsync(x => x.IdCompany == dati.IdCompany);
+                var row = await _companyStorageRepository.FindAll(x => x.IdCompany == dati.IdCompany).FirstAsync();
 
                 // un pacchetto disattivato non si assegna (resta solo a chi lo ha gia')
                 if (!plan.Active && row.IdStoragePlan != plan.Id)
@@ -220,9 +218,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 row.IdStoragePlan = plan.Id;
                 row.MaxFileMB = dati.MaxFileMB;
                 row.WarningPercent = dati.WarningPercent;
-                row.ModifiedDate = DateTime.Now;
-                row.ChangeUser = CurrentUserId;
-                await _db.SaveChangesAsync();
+                await _companyStorageRepository.UpdateAsync(row);
 
                 // un pacchetto piu' piccolo dello spazio gia' usato e' consentito: l'azienda risulta oltre quota
                 var retVal = new CompanyStoragePutOutModel { CompanyStorage = await ModelAsync(dati.IdCompany) };
@@ -238,15 +234,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private async Task<List<int>?> AziendeVisibili()
         {
             if (await _authorizer.IsSuperUserAsync())
-                return await _db.Company.Select(x => x.Id).ToListAsync();
+                return await _companyRepository.FindAll(x => true).Select(x => x.Id).ToListAsync();
 
             if ((await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.DealerPowerAdmin)) || await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.DealerAdmin)))
                 && int.TryParse(CurrentDealer, out var idDealer))
-                return await _db.Company.Where(x => x.FinancialAdvisorNavigation!.IdDealer == idDealer).Select(x => x.Id).ToListAsync();
+                return await _companyRepository.FindAll(x => x.FinancialAdvisorNavigation!.IdDealer == idDealer).Select(x => x.Id).ToListAsync();
 
             if ((await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.FinancialAdvisorPowerAdmin)) || await _authorizer.CurrentUserHasRoleAsync(nameof(RoleCode.FinancialAdvisorAdmin)))
                 && int.TryParse(CurrentFinancialAdvisor, out var idStudio))
-                return await _db.Company.Where(x => x.IdFinancialAdvisor == idStudio).Select(x => x.Id).ToListAsync();
+                return await _companyRepository.FindAll(x => x.IdFinancialAdvisor == idStudio).Select(x => x.Id).ToListAsync();
 
             return null;
         }
@@ -254,8 +250,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private async Task<CompanyStorageModel> ModelAsync(int idCompany)
         {
             var status = await _storageQuotaService.StatusAsync(idCompany);
-            var row = await _db.CompanyStorage.AsNoTracking().FirstAsync(x => x.IdCompany == idCompany);
-            var company = await _db.Company.AsNoTracking().Include(x => x.FinancialAdvisorNavigation).FirstAsync(x => x.Id == idCompany);
+            var row = await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstAsync();
+            var company = await _companyRepository.FindAll(x => x.Id == idCompany).Include(x => x.FinancialAdvisorNavigation).FirstAsync();
             return new CompanyStorageModel
             {
                 IdCompany = idCompany,
@@ -279,8 +275,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 
         private async Task<List<StoragePlanModel>> PlansAsync(bool onlyActive)
         {
-            var usati = await _db.CompanyStorage.GroupBy(x => x.IdStoragePlan).Select(g => new { g.Key, Count = g.Count() }).ToListAsync();
-            return (await _db.StoragePlan.AsNoTracking().Where(x => !onlyActive || x.Active).OrderBy(x => x.Ordine).ThenBy(x => x.QuotaMB).ToListAsync())
+            var usati = await _companyStorageRepository.FindAll(x => true).GroupBy(x => x.IdStoragePlan).Select(g => new { g.Key, Count = g.Count() }).ToListAsync();
+            return (await _storagePlanRepository.FindAll(x => !onlyActive || x.Active).OrderBy(x => x.Ordine).ThenBy(x => x.QuotaMB).ToListAsync())
                    .Select(x => new StoragePlanModel
                    {
                        Id = x.Id,
@@ -299,7 +295,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         {
             async Task<int> Valore(string key, int def)
             {
-                var v = await _db.AppSetting.AsNoTracking().Where(x => x.Key == key).Select(x => x.Value).FirstOrDefaultAsync();
+                var v = await _appSettingRepository.GetValueAsync(key);
                 return int.TryParse(v, out var n) && n > 0 ? n : def;
             }
             return new StorageSettingsModel
@@ -311,15 +307,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 
         private async Task SetSettingAsync(string key, int value)
         {
-            var row = await _db.AppSetting.AsTracking().FirstOrDefaultAsync(x => x.Key == key);
-            if (row == null)
-                _db.AppSetting.Add(new AppSetting { Key = key, Value = value.ToString(), ModifiedDate = DateTime.Now });
-            else
-            {
-                row.Value = value.ToString();
-                row.ModifiedDate = DateTime.Now;
-            }
-            await _db.SaveChangesAsync();
+            await _appSettingRepository.SetValueAsync(key, value.ToString());
         }
 
         private async Task SoloSuperUser()

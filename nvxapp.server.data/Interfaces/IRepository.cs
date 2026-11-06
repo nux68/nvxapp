@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System.Linq.Expressions;
 
 namespace nvxapp.server.data.Interfaces
@@ -24,6 +25,12 @@ namespace nvxapp.server.data.Interfaces
         //List<T> GetAll();
 
         Task SaveChange();
+
+        /// <summary>
+        /// Transazione sul contesto del repository: vale per tutti i repository dello stesso contesto nella stessa
+        /// richiesta (es. i repository di public condividono PublicDbContext, come UserManager).
+        /// </summary>
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
 
     }
 
