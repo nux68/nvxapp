@@ -34,7 +34,7 @@ The side menu is divided into expandable sections:
 
 After logging in, the first available application opens with its first subsection. Sections and subsections open and close one at a time. Next to the sections you see the counters of the things to do (for example the tickets assigned to you).
 
-## Users and roles
+## Users and roles {SuperUser, PowerAdmin, Admin, DealerPowerAdmin, DealerAdmin, FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin, CompanyPowerAdmin, CompanyAdmin}
 ### Roles
 - **CompanyPowerAdmin**: main administrator of the company; configures the applications and the users' menu.
 - **CompanyAdmin**: company administrator.
@@ -42,7 +42,7 @@ After logging in, the first available application opens with its first subsectio
 
 A user can have several roles in the same company (for example CompanyAdmin and User).
 
-### Managing the company users
+### Managing the company users {CompanyPowerAdmin}
 1. Open **Administration > General > Users**.
 2. Use the **+** button to add a user and enter email, user name and roles.
 3. With **Edit** you change roles and data; with **Impersonate** you enter the application as that user (see below).
@@ -54,10 +54,10 @@ Administrators can enter the application "as" another user to check what they se
 
 > Operations performed while impersonating a user are recorded with the user who logged in.
 
-## Users' menu
+## Users' menu {CompanyPowerAdmin}
 The CompanyPowerAdmin can hide from CompanyAdmins and Users the menu items they must not use: **Administration > Parameters > Users' menu**. System items (login, dashboard, user data) cannot be hidden.
 
-## Shared registries
+## Shared registries {CompanyPowerAdmin}
 ### Customers
 The company's customers are a single registry used by all applications (attendance jobs, CRM opportunities, customer file in the document management). They are managed in **Administration > Registry > Customers**.
 
@@ -77,5 +77,25 @@ From **Support** you download the PDF manuals: this one and those of the active 
 ## Background jobs
 Long operations (exports, reports, manuals) run in the background: their progress appears in the jobs bar at the top of the page. When a file is ready, click the download button; you can close the notification when you no longer need it.
 
-## Applications and storage
+## Dealer management {SuperUser}
+From the **Administration > SuperUser** section the SuperUser manages the whole installation:
+- **Dealers**: create and edit dealers; from here you can enter a dealer by impersonating one of its administrators;
+- **Users**: all the users of the application;
+- **Move company**: move a company from one financial advisor to another;
+- **Storage packages** and **Document storage**: available packages and the space assigned to companies.
+
+## Dealer: financial advisors and applications {SuperUser, DealerPowerAdmin, DealerAdmin}
+From the **Administration > Dealer** section:
+- **Dealer users**: the administrators of the dealer;
+- **Financial advisors**: create and edit them; from the advisor's card you enable applications for it, and from here you enter advisors and their companies;
+- **Document storage**: document management space of the dealer's companies.
+
+> The applications of a company (attendance, CRM, document management) can only be activated by the SuperUser and the dealer's DealerPowerAdmin, from the company card.
+
+## Financial advisor: companies {FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin}
+From the **Administration > Financial advisor** section:
+- **Advisor users**: the administrators of the financial advisor;
+- **Companies**: create the companies followed by the advisor and their administrators; with **Impersonate** you enter the company to work on its behalf.
+
+## Applications and storage {SuperUser, DealerPowerAdmin, DealerAdmin, CompanyPowerAdmin, CompanyAdmin}
 The applications of a company are activated by the dealer (or the SuperUser). The document management uses disk space in packages: usage and package are shown on the **Storage** page of the document management; when the space is about to run out the administrators receive a warning.

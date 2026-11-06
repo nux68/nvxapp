@@ -66,17 +66,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             var normal = document.Styles[StyleNames.Normal]!;
             normal.Font.Name = UserManualPdfFontResolver.FamilyName;
             normal.Font.Size = 10;
-            normal.ParagraphFormat.SpaceAfter = Unit.FromPoint(5);
-            normal.ParagraphFormat.LineSpacingRule = MigraDoc.DocumentObjectModel.LineSpacingRule.OnePtFive;
+            normal.ParagraphFormat.SpaceAfter = Unit.FromPoint(4);
 
             var h1 = document.Styles[StyleNames.Heading1]!;
             h1.Font.Size = 16; h1.Font.Bold = true; h1.Font.Color = Primario;
-            h1.ParagraphFormat.SpaceBefore = Unit.FromPoint(6); h1.ParagraphFormat.SpaceAfter = Unit.FromPoint(10);
-            h1.ParagraphFormat.PageBreakBefore = true; h1.ParagraphFormat.KeepWithNext = true;
+            // capitoli di seguito, senza pagina nuova: il titolo resta con il testo che lo segue
+            h1.ParagraphFormat.SpaceBefore = Unit.FromPoint(16); h1.ParagraphFormat.SpaceAfter = Unit.FromPoint(6);
+            h1.ParagraphFormat.KeepWithNext = true;
             h1.ParagraphFormat.OutlineLevel = OutlineLevel.Level1;
             var h2 = document.Styles[StyleNames.Heading2]!;
             h2.Font.Size = 12; h2.Font.Bold = true; h2.Font.Color = Primario;
-            h2.ParagraphFormat.SpaceBefore = Unit.FromPoint(12); h2.ParagraphFormat.SpaceAfter = Unit.FromPoint(4);
+            h2.ParagraphFormat.SpaceBefore = Unit.FromPoint(8); h2.ParagraphFormat.SpaceAfter = Unit.FromPoint(3);
             h2.ParagraphFormat.KeepWithNext = true;
             h2.ParagraphFormat.OutlineLevel = OutlineLevel.Level2;
 
@@ -84,45 +84,44 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             section.PageSetup = document.DefaultPageSetup.Clone();
             section.PageSetup.PageWidth = Unit.FromCentimeter(21.0);
             section.PageSetup.PageHeight = Unit.FromCentimeter(29.7);
-            section.PageSetup.TopMargin = Unit.FromCentimeter(2);
-            section.PageSetup.BottomMargin = Unit.FromCentimeter(2);
-            section.PageSetup.LeftMargin = Unit.FromCentimeter(2.2);
-            section.PageSetup.RightMargin = Unit.FromCentimeter(2.2);
-            section.PageSetup.DifferentFirstPageHeaderFooter = true;
+            section.PageSetup.TopMargin = Unit.FromCentimeter(1.6);
+            section.PageSetup.BottomMargin = Unit.FromCentimeter(1.8);
+            section.PageSetup.LeftMargin = Unit.FromCentimeter(1.8);
+            section.PageSetup.RightMargin = Unit.FromCentimeter(1.8);
 
             var pie = section.Footers.Primary.AddParagraph();
             pie.Format.Font.Size = 8;
             pie.Format.Font.Color = Tenue;
-            pie.Format.AddTabStop(Unit.FromCentimeter(16.6), TabAlignment.Right);
+            pie.Format.AddTabStop(Unit.FromCentimeter(17.4), TabAlignment.Right);
             pie.AddText(sito + " - " + manuale.Title);
             pie.AddTab();
             pie.AddText(testi.Pagina + " ");
             pie.AddPageField();
 
-            // copertina
-            var spazio = section.AddParagraph();
-            spazio.Format.SpaceBefore = Unit.FromCentimeter(7);
+            // intestazione nella prima pagina (niente copertina a pagina intera), poi indice e capitoli di seguito
             var titolo = section.AddParagraph(manuale.Title);
-            titolo.Format.Font.Size = 26; titolo.Format.Font.Bold = true; titolo.Format.Font.Color = Primario;
+            titolo.Format.Font.Size = 22; titolo.Format.Font.Bold = true; titolo.Format.Font.Color = Primario;
             if (!string.IsNullOrWhiteSpace(manuale.Subtitle))
             {
                 var sotto = section.AddParagraph(manuale.Subtitle!);
-                sotto.Format.Font.Size = 13; sotto.Format.Font.Color = Tenue; sotto.Format.SpaceBefore = Unit.FromPoint(8);
+                sotto.Format.Font.Size = 12; sotto.Format.Font.Color = Tenue; sotto.Format.SpaceBefore = Unit.FromPoint(4);
             }
             var data = section.AddParagraph(sito + " · " + testi.GeneratoIl);
-            data.Format.SpaceBefore = Unit.FromCentimeter(2); data.Format.Font.Color = Tenue;
+            data.Format.SpaceBefore = Unit.FromPoint(4); data.Format.SpaceAfter = Unit.FromPoint(10); data.Format.Font.Color = Tenue;
+            data.Format.Borders.Bottom.Width = 0.75; data.Format.Borders.Bottom.Color = Primario;
 
             // indice dei capitoli
             var capitoli = manuale.Blocks.Where(b => b.Type == UserManualBlockType.Chapter).ToList();
             if (capitoli.Count > 0)
             {
-                var indice = section.AddParagraph(testi.Indice, StyleNames.Heading1);
+                var indice = section.AddParagraph(testi.Indice, StyleNames.Heading2);
                 indice.Format.OutlineLevel = OutlineLevel.BodyText;
                 int n = 0;
                 foreach (var cap in capitoli)
                 {
                     var p = section.AddParagraph();
-                    p.Format.SpaceAfter = Unit.FromPoint(3);
+                    p.Format.SpaceAfter = Unit.FromPoint(1);
+                    p.Format.LeftIndent = Unit.FromCentimeter(0.4);
                     p.AddText($"{++n}. {cap.Text}");
                 }
             }

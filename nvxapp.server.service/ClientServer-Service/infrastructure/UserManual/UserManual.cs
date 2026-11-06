@@ -17,6 +17,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         1. passaggio numerato
         > nota evidenziata
         **Ruoli:** chi la usa        (riga di testo come le altre)
+     Capitoli e paragrafi per ruolo: elenco dei ruoli tra graffe in fondo al titolo, es.
+        ## Configurazione {CompanyPowerAdmin}
+        ### Approvare le richieste {CompanyPowerAdmin, CompanyAdmin}
+     il capitolo (fino al ## successivo) o il paragrafo (fino al ### o ## successivo) resta solo per chi ha almeno uno
+     di quei ruoli (quelli dell'utente con cui si sta lavorando, anche se impersonificato); senza graffe vale per tutti.
+     Cosi' il manuale descrive solo le funzioni che l'utente puo' usare.
     */
     public interface IUserManualProvider
     {
@@ -26,8 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         /// <summary>Applicativo che il manuale descrive: null = funzioni base (sempre disponibile).</summary>
         ApplicationType? Application { get; }
 
-        /// <summary>Manuale nella lingua corrente.</summary>
-        UserManualDocument Build();
+        /// <summary>Manuale nella lingua corrente, con i soli capitoli e paragrafi dei ruoli indicati.</summary>
+        UserManualDocument Build(IReadOnlyCollection<string> ruoli);
     }
 
     public class UserManualDocument
@@ -61,11 +67,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         public abstract string Code { get; }
         public abstract ApplicationType? Application { get; }
 
-        public UserManualDocument Build()
+        public UserManualDocument Build(IReadOnlyCollection<string> ruoli)
         {
             var lingua = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
             var testo = Leggi(lingua) ?? Leggi("it") ?? throw new InvalidOperationException($"Manuale {Code} mancante (Manuals/{Code}.it.md)");
-            return UserManualMarkdown.Parse(testo);
+            return UserManualMarkdown.Parse(testo, ruoli);
         }
 
         private string? Leggi(string lingua)
@@ -83,11 +89,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
 
     public static class UserManualMarkdown
     {
-        public static UserManualDocument Parse(string testo)
+        public static UserManualDocument Parse(string testo, IReadOnlyCollection<string>? ruoli = null)
         {
             var doc = new UserManualDocument();
             var paragrafo = new List<string>();
             int passo = 0;
+            // capitolo o paragrafo riservato ad altri ruoli: le righe fino al titolo successivo si saltano
+            bool capitoloEscluso = false, paragrafoEscluso = false;
+
+            // "Titolo {RuoloA, RuoloB}" -> titolo senza graffe e se l'utente lo puo' vedere (nessuna graffa = tutti)
+            (string Titolo, bool Ammesso) Titolo(string t)
+            {
+                t = t.Trim();
+                int g = t.LastIndexOf('{');
+                if (g < 0 || !t.EndsWith('}'))
+                    return (t, true);
+                var richiesti = t[(g + 1)..^1].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                bool ammesso = ruoli == null || richiesti.Length == 0 || richiesti.Any(r => ruoli.Contains(r, StringComparer.OrdinalIgnoreCase));
+                return (t[..g].TrimEnd(), ammesso);
+            }
 
             void Chiudi()
             {
@@ -103,6 +123,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 {
                     Chiudi();
                     passo = 0;
+                    continue;
+                }
+                if (riga.StartsWith("## "))
+                {
+                    var (t, ammesso) = Titolo(riga[3..]);
+                    capitoloEscluso = !ammesso;
+                    paragrafoEscluso = false;
+                    riga = "## " + t;
+                }
+                else if (riga.StartsWith("### "))
+                {
+                    var (t, ammesso) = Titolo(riga[4..]);
+                    paragrafoEscluso = !ammesso;
+                    riga = "### " + t;
+                }
+                if (capitoloEscluso || paragrafoEscluso)
+                {
+                    Chiudi();
                     continue;
                 }
                 if (riga.StartsWith("# "))
