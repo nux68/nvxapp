@@ -23,6 +23,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         public string Code { get; set; } = string.Empty;
         // nome del sito (SITE_NAME del client), nel pie' di pagina e in copertina
         public string? SiteName { get; set; }
+        // menu dell'utente per questo manuale (sezioni e voci che vede, titoli tradotti): il manuale si compone da qui
+        public List<UserManualMenuSection> Menu { get; set; } = new();
     }
 
     public class UserManualGenerateOutModel : ModelResult
@@ -78,7 +80,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 // solo le parti per i ruoli dell'utente con cui si lavora (anche impersonificato)
                 var utente = string.IsNullOrEmpty(CurrentUserId) ? null : await _userManager.FindByIdAsync(CurrentUserId);
                 var ruoli = utente == null ? new List<string>() : (await _userManager.GetRolesAsync(utente)).ToList();
-                var manuale = provider.Build(ruoli);
+                var manuale = provider.Build(ruoli, model.Data.Menu ?? new List<UserManualMenuSection>());
                 var sito = string.IsNullOrWhiteSpace(model.Data.SiteName) ? manuale.Title : model.Data.SiteName.Trim();
                 var jobId = Guid.NewGuid().ToString();
                 retVal.JobId = jobId;

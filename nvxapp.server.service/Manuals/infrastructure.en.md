@@ -1,101 +1,126 @@
 # Basic functions manual
-Access, menu, support, users, companies and shared registries
+Access, menu, users, companies, registries and support
 
 ## Introduction
-This manual describes the functions shared by the whole application, available whatever applications are activated for the company (attendance, CRM, document management). Each application has its own manual, downloadable from the **Support** section of the menu.
+This manual describes the functions shared by the whole application. It is built on **your menu**: one chapter for each section you see and one paragraph for each item, with a screenshot of the page. The applications active for your company (attendance, CRM, document management) each have their own manual, downloadable from the **Support** section.
 
 The application is organised on several levels:
 - **Dealer**: manages the financial advisors and activates the applications;
-- **Financial advisor**: manages the companies it follows;
+- **Financial advisor**: follows the companies;
 - **Company**: its administrators and employees use the active applications.
 
-> The menu items you see depend on your roles and on the applications active for your company: if a function described here does not appear, it is not meant for your role.
+### The menu
+The side menu is divided into expandable sections: **Access**, **Administration**, one section for each active application and **Support**. After logging in, the first available application opens. Sections and subsections open and close one at a time; next to the sections you see the counters of things to do (for example the tickets assigned to you).
 
-## Accessing the application
-### First access and login
-1. Open the application address: before logging in you see the public pages of the site.
-2. Choose **Login** and enter your user name (or email) and password.
-3. After logging in the **Dashboard** opens, with the assistant and the side menu.
+### Background jobs
+Long operations (exports, reports, manuals) run in the background: progress appears in the **jobs bar** at the top of the page. When a file is ready press its button to download it; you can close the notification when you no longer need it.
 
-If you forgot your password, use **Forgot password** on the login page: you will receive an email with a link to set a new one.
+### Impersonating a user {SuperUser, PowerAdmin, Admin, DealerPowerAdmin, DealerAdmin, FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin, CompanyPowerAdmin, CompanyAdmin}
+From the lists of users, dealers, financial advisors and companies the **Impersonate** button lets you enter the application "as" another user, to see what they see or to help them. The path of the impersonated users appears at the top: clicking a name takes you back to that user.
+> Operations performed while impersonating are recorded with the user who logged in.
 
-### User data and password change
-From the **Access** section of the menu open **User data** to check your details and change your password.
-
-### Logout
-Use **Logout** in the **Access** section. If you are impersonating another user, instead of Logout you see the path of the impersonated users (see below).
-
-## The menu
-The side menu is divided into expandable sections:
-- **Access**: dashboard, user data, logout;
-- **Administration**: shared functions (users, companies, registries, configuration);
-- one section for each **active application** (Attendance, CRM, Documents), with its subsections;
-- **Support**: tickets, documentation and manuals.
-
-After logging in, the first available application opens with its first subsection. Sections and subsections open and close one at a time. Next to the sections you see the counters of the things to do (for example the tickets assigned to you).
-
-## Users and roles {SuperUser, PowerAdmin, Admin, DealerPowerAdmin, DealerAdmin, FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin, CompanyPowerAdmin, CompanyAdmin}
-### Roles
-- **CompanyPowerAdmin**: main administrator of the company; configures the applications and the users' menu.
+### Company roles {CompanyPowerAdmin, CompanyAdmin}
+- **CompanyPowerAdmin**: main administrator; configures the applications and the users' menu.
 - **CompanyAdmin**: company administrator.
-- **User**: employee or collaborator using the applications.
+- **User**: employee or collaborator.
 
 A user can have several roles in the same company (for example CompanyAdmin and User).
 
-### Managing the company users {CompanyPowerAdmin}
-1. Open **Administration > General > Users**.
-2. Use the **+** button to add a user and enter email, user name and roles.
-3. With **Edit** you change roles and data; with **Impersonate** you enter the application as that user (see below).
+@@ /dashboard
+The home page after logging in. In the **Ask the assistant** box you can write (or dictate) what you want to do: the assistant opens the right page or performs the operation. Otherwise choose an item from the menu.
 
-In the list options you find **Show disabled** to also see deactivated users.
+@@ /user
+Your data: user name, email and language. Here you also change your **password**.
+1. Open the item and check your data.
+2. To change the password enter the current one and the new one, then confirm.
+> If you forgot your password use **Forgot password** on the login page: you will receive an email with a link to set a new one.
 
-### Impersonating a user
-Administrators can enter the application "as" another user to check what they see or to help them. The path of the impersonated users appears at the top: clicking a name takes you back to that user.
+@@ /companypoweradmin
+The page reserved to the company's CompanyPowerAdmin, with information about the company and the active applications.
 
-> Operations performed while impersonating a user are recorded with the user who logged in.
+@@ /companyadmin
+The CompanyAdmin page, with information about the company you administer.
 
-## Users' menu {CompanyPowerAdmin}
-The CompanyPowerAdmin can hide from CompanyAdmins and Users the menu items they must not use: **Administration > Parameters > Users' menu**. System items (login, dashboard, user data) cannot be hidden.
+@@ /usercompanylist
+The company users, with their roles.
+1. With **+** you add a user: email, user name and roles.
+2. With **Edit** you change roles and data; with **Impersonate** you enter the application as that user.
+3. In the list **Options** enable **Show disabled** to also see deactivated users and, if allowed, **Enable deletions**.
+> Deletion first shows a summary of what will be removed and asks you to type the user name to confirm.
 
-## Shared registries {CompanyPowerAdmin}
-### Customers
-The company's customers are a single registry used by all applications (attendance jobs, CRM opportunities, customer file in the document management). They are managed in **Administration > Registry > Customers**.
-
+@@ /customerlist
+The company's customers: a single registry used by all applications (attendance jobs, CRM opportunities, customer file in the document management).
 1. With **+** you create a customer: company name, type (customer, supplier or both), tax data, address and contacts.
-2. After the first save you can add the **contact persons** (one can be the main contact).
-3. A **deactivated** customer stays in the history but is no longer offered in selections; it is shown with **Show disabled**.
+2. After the first save add the **contact persons**; one can be the main contact.
+3. A **deactivated** customer stays in the history but is no longer offered in selections: you see it with **Show disabled**.
+> A customer used by an application cannot be deleted: the message tells you where it is used. In that case deactivate it.
 
-> A customer used by an application (jobs, opportunities, offers, documents) cannot be deleted: the message tells you where it is used. In that case deactivate it.
+@@ /companymenurestriction
+Here the CompanyPowerAdmin hides from CompanyAdmins and Users the menu items they must not use. System items (login, dashboard, user data) cannot be hidden. Hidden items also disappear from the manuals of those who do not see them.
 
-## Support
-### Tickets
-From **Support > Tickets** you open a support request, follow the answers and attach files. The counter next to the item shows the tickets assigned to you.
+@@ /superuser
+The SuperUser page, with general information about the installation.
 
-### Manuals
-From **Support** you download the PDF manuals: this one and those of the active applications. The PDF is prepared in a few seconds and appears in the jobs bar at the top of the page, with the button to download it.
+@@ /dealerlist
+The dealers. With **+** you create a new one with its first administrator; with **Edit** you change its data; with **Impersonate** you enter the dealer as its administrator.
 
-## Background jobs
-Long operations (exports, reports, manuals) run in the background: their progress appears in the jobs bar at the top of the page. When a file is ready, click the download button; you can close the notification when you no longer need it.
+@@ /userlist
+All the users of the application, with their links to dealers, financial advisors and companies. From here the SuperUser can delete a user with all their links.
 
-## Dealer management {SuperUser}
-From the **Administration > SuperUser** section the SuperUser manages the whole installation:
-- **Dealers**: create and edit dealers; from here you can enter a dealer by impersonating one of its administrators;
-- **Users**: all the users of the application;
-- **Move company**: move a company from one financial advisor to another;
-- **Storage packages** and **Document storage**: available packages and the space assigned to companies.
+@@ /companymove
+Moves a company from one financial advisor to another, with its users and data.
 
-## Dealer: financial advisors and applications {SuperUser, DealerPowerAdmin, DealerAdmin}
-From the **Administration > Dealer** section:
-- **Dealer users**: the administrators of the dealer;
-- **Financial advisors**: create and edit them; from the advisor's card you enable applications for it, and from here you enter advisors and their companies;
-- **Document storage**: document management space of the dealer's companies.
+@@ /storageplanlist
+The storage packages of the document management (for example 1, 5 and 20 GB), with the default package assigned to new companies.
 
+@@ /companystoragelist
+The document management space used by each company: package, used space and warnings. From here you assign a different package to a company.
+
+@@ /poweradmin
+The page of the installation PowerAdmin.
+
+@@ /admin
+The page of the installation administrators.
+
+@@ /dealerpoweradmin
+The DealerPowerAdmin page, with information about the dealer.
+
+@@ /dealeradmin
+The DealerAdmin page, with information about the dealer.
+
+@@ /userdealerlist
+The administrators of the dealer: add, edit, deactivate or impersonate.
+
+@@ /financialadvisorlist
+The financial advisors followed by the dealer.
+1. With **+** you create an advisor with its first administrator.
+2. In the advisor's card you enable the **applications** it can use.
+3. With **Impersonate** you enter the advisor to work on its companies.
 > The applications of a company (attendance, CRM, document management) can only be activated by the SuperUser and the dealer's DealerPowerAdmin, from the company card.
 
-## Financial advisor: companies {FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin}
-From the **Administration > Financial advisor** section:
-- **Advisor users**: the administrators of the financial advisor;
-- **Companies**: create the companies followed by the advisor and their administrators; with **Impersonate** you enter the company to work on its behalf.
+@@ /financialadvisorpoweradmin
+The FinancialAdvisorPowerAdmin page, with information about the advisor.
 
-## Applications and storage {SuperUser, DealerPowerAdmin, DealerAdmin, CompanyPowerAdmin, CompanyAdmin}
-The applications of a company are activated by the dealer (or the SuperUser). The document management uses disk space in packages: usage and package are shown on the **Storage** page of the document management; when the space is about to run out the administrators receive a warning.
+@@ /financialadvisoradmin
+The FinancialAdvisorAdmin page, with information about the advisor.
+
+@@ /userfinancialadvisorlist
+The administrators of the financial advisor: add, edit, deactivate or impersonate.
+
+@@ /companylist
+The companies followed by the advisor.
+1. With **+** you create a company with its first administrator: a guided procedure collects the basic data.
+2. With **Edit** you open the company card (data and active applications).
+3. With **Impersonate** you enter the company to work on its behalf.
+
+@@ /ticketlist
+Support requests (tickets). With **+** you open a new one choosing the request type, describe the problem and attach files if needed. In the detail you follow the answers, reply or close the ticket. The counter next to the item shows the tickets assigned to you.
+
+@@ /tickettypelist
+The ticket request types, with the support levels that handle them.
+
+@@ /aidocumentlist
+The documentation the AI assistant uses to answer tickets: uploaded documents linked to the request types.
+
+@@ /tickettypeaisetting
+For each request type choose whether and how the AI assistant proposes an answer to tickets.
