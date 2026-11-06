@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
@@ -11,20 +13,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
      DeletionService lo usa per ogni azienda (non dipende da CompanyApplication) e sempre DOPO i deleter
      degli applicativi, che hanno chiavi esterne verso queste tabelle.
      In multi-tenant lo schema tenant_<IdAzienda>_0 si elimina con gli altri: qui solo i conteggi.
+     Il contesto e' quello dello schema dell'azienda (factory, fuori dalla richiesta corrente): i repository comuni
+     si costruiscono su quel contesto.
     */
     public class CommonDataDeleter : IApplicationDataDeleter
     {
         private readonly TenancySettings _tenancySettings;
         private readonly IApplicationDbContextFactory _applicationDbContextFactory;
         private readonly ITenantProvisioningService _tenantProvisioningService;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CommonDataDeleter(TenancySettings tenancySettings,
                                  IApplicationDbContextFactory applicationDbContextFactory,
-                                 ITenantProvisioningService tenantProvisioningService)
+                                 ITenantProvisioningService tenantProvisioningService,
+                                 IServiceProvider serviceProvider,
+                                 IHttpContextAccessor httpContextAccessor)
         {
             _tenancySettings = tenancySettings;
             _applicationDbContextFactory = applicationDbContextFactory;
             _tenantProvisioningService = tenantProvisioningService;
+            _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public ApplicationType Application => ApplicationType.Common;
@@ -35,8 +45,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             if (context == null)
                 return new List<DeletionCountModel>();
 
-            var clienti = await context.Az_Cliente.CountAsync(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany, cancellationToken);
-            var dipendenti = await context.Dip_Anagrafica.CountAsync(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany, cancellationToken);
+            var clienti = await new Az_ClienteRepository(context, _serviceProvider, _httpContextAccessor)
+                                .FindAll(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).CountAsync(cancellationToken);
+            var dipendenti = await new Dip_AnagraficaCommonRepository(context, _serviceProvider, _httpContextAccessor)
+                                   .FindAll(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).CountAsync(cancellationToken);
             return new List<DeletionCountModel>
             {
                 new DeletionCountModel { Label = InfrastructureMessages.Get("DeletionCountCustomers"), Count = clienti },
@@ -54,7 +66,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 return;
 
             // clienti, contatti e dipendenti in cascata
-            await context.Az_Anagrafica.Where(x => x.IdCompany == idCompany).ExecuteDeleteAsync(cancellationToken);
+            await new Az_AnagraficaRepository(context, _serviceProvider, _httpContextAccessor)
+                      .FindAll(x => x.IdCompany == idCompany).ExecuteDeleteAsync(cancellationToken);
         }
 
         /*
@@ -69,8 +82,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 return;
 
             var oggi = DateTime.Today;
-            await context.Dip_Anagrafica
-                         .Where(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany && x.IdAspNetUsers == idAspNetUsers)
+            await new Dip_AnagraficaCommonRepository(context, _serviceProvider, _httpContextAccessor)
+                         .FindAll(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany && x.IdAspNetUsers == idAspNetUsers)
                          .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsers, (string?)null)
                                                    .SetProperty(x => x.Attivo, false)
                                                    .SetProperty(x => x.DataCessazione, x => x.DataCessazione ?? oggi)

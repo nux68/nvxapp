@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Interfaces;
@@ -297,6 +298,9 @@ namespace nvxapp.server.data.Infrastructure
 
             return entity;
         }
+
+        public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+            => DbContext.Database.BeginTransactionAsync(cancellationToken);
 
         public async Task SaveChange()
         {
