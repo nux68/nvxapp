@@ -1223,7 +1223,8 @@
       "richiestaGiustificativo": "Absence justification request",
       "richiestaTimbratura": "Clocking request",
       "richiestaRimborso": "Reimbursement request",
-      "mieNoteSpese": "My expense reports"
+      "mieNoteSpese": "My expense reports",
+      "manual": "Attendance manual"
     },
     "showcase": {
       "brand": {
@@ -1500,6 +1501,16 @@
           "dettaglioGiorno": "Day detail",
           "statoValore": "Status: {{stato}}",
           "nessunRisultato": "No calculated result"
+        }
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "attendance": {
+          "title": "Attendance management manual",
+          "description": "Clockings, requests, calendar, expense reports, approvals, month closing, payroll export and configuration."
         }
       }
     }

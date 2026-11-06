@@ -1223,7 +1223,8 @@
       "richiestaGiustificativo": "Richiesta giustificativo",
       "richiestaTimbratura": "Richiesta timbratura",
       "richiestaRimborso": "Richiesta rimborso",
-      "mieNoteSpese": "Le mie note spese"
+      "mieNoteSpese": "Le mie note spese",
+      "manual": "Manuale presenze"
     },
     "showcase": {
       "brand": {
@@ -1500,6 +1501,16 @@
           "dettaglioGiorno": "Dettaglio giorno",
           "statoValore": "Stato: {{stato}}",
           "nessunRisultato": "Nessun risultato calcolato"
+        }
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "attendance": {
+          "title": "Manuale della gestione presenze",
+          "description": "Timbrature, richieste, calendario, note spese, approvazioni, chiusura del mese, export per le paghe e configurazione."
         }
       }
     }
