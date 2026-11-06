@@ -13,7 +13,7 @@ The functions are in the **Attendance** section of the menu. The items depend on
 
 Shared functions (access, users, customers, support) are described in the **Basic functions manual**.
 
-## Employee
+## Employee {User}
 ### Clocking
 1. Open **Attendance > Clocking**.
 2. If the company requires it, choose the **activity** you are working on.
@@ -49,7 +49,7 @@ In **Attendance > Requests** you find all your requests with their status (pendi
 
 In **Expense reports > My expense reports** you follow their status. Until a report is approved you can change it (it goes back to pending approval) or cancel it; if it is already approved you can ask for it to be revoked. Approving the report approves all its expenses.
 
-## Manager and CompanyAdmin
+## Manager and CompanyAdmin {CompanyPowerAdmin, CompanyAdmin}
 ### Approving requests
 1. Open **Attendance > General > Requests**: you find the requests of the employees of the departments you approve.
 2. Open a request to see its details.
@@ -74,7 +74,7 @@ In **Attendance > General > Calendar** choose an employee and see their month wi
 ### Department users (CompanyAdmin)
 **Users** lists the employees of the departments you manage, and lets you open their card.
 
-## CompanyPowerAdmin: managing the month
+## CompanyPowerAdmin: managing the month {CompanyPowerAdmin}
 ### HR calendar
 **HR calendar** is the tool to correct the data of any employee:
 1. choose the employee and the month;
@@ -97,7 +97,7 @@ In **Attendance > General > Calendar** choose an employee and see their month wi
 ### Activity statistics and reports
 **Activity statistics** shows the hours worked per customer, job and activity in the period. The PDF reports (activities, holiday plan, reconciliation, expense reports) are also generated in the background and downloaded from the jobs bar.
 
-## CompanyPowerAdmin: configuration
+## CompanyPowerAdmin: configuration {CompanyPowerAdmin}
 ### First setup
 On first access the **wizard** prepares the company with ready-made reason codes, justifications, working hours and parameters. After the wizard, sites, departments and employees are completed.
 

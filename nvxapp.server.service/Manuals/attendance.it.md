@@ -13,7 +13,7 @@ Le funzioni si trovano nella sezione **Presenze** del menu. Le voci dipendono da
 
 Le funzioni comuni (accesso, utenti, clienti, assistenza) sono descritte nel **Manuale delle funzioni di base**.
 
-## Dipendente
+## Dipendente {User}
 ### Timbratura
 1. Apri **Presenze > Timbratura**.
 2. Se l'azienda lo richiede, scegli l'**attività** su cui lavori.
@@ -49,7 +49,7 @@ In **Presenze > Richieste** trovi tutte le tue richieste con lo stato (in attesa
 
 In **Nota spese > Le mie note spese** segui lo stato delle note. Finché una nota non è approvata la puoi modificare (torna in attesa di approvazione) o annullare; se è già approvata puoi chiederne la revoca. L'approvazione della nota approva tutte le sue spese.
 
-## Responsabile e CompanyAdmin
+## Responsabile e CompanyAdmin {CompanyPowerAdmin, CompanyAdmin}
 ### Approvare le richieste
 1. Apri **Presenze > Generale > Richieste**: trovi le richieste dei dipendenti dei reparti che approvi.
 2. Apri una richiesta per vederne il dettaglio.
@@ -74,7 +74,7 @@ In **Presenze > Generale > Calendario** scegli un dipendente e vedi il suo mese 
 ### Utenti del reparto (CompanyAdmin)
 **Utenti** elenca i dipendenti dei reparti che amministri, con la possibilità di aprirne la scheda.
 
-## CompanyPowerAdmin: gestione del mese
+## CompanyPowerAdmin: gestione del mese {CompanyPowerAdmin}
 ### Calendario HR
 **Calendario HR** è lo strumento per correggere i dati di qualsiasi dipendente:
 1. scegli il dipendente e il mese;
@@ -97,7 +97,7 @@ In **Presenze > Generale > Calendario** scegli un dipendente e vedi il suo mese 
 ### Statistiche attività e report
 **Statistiche attività** mostra le ore lavorate per cliente, commessa e attività nel periodo. I report in PDF (attività, piano ferie, quadratura, note spese) si generano anch'essi in background e si scaricano dalla barra dei lavori.
 
-## CompanyPowerAdmin: configurazione
+## CompanyPowerAdmin: configurazione {CompanyPowerAdmin}
 ### Prima configurazione
 Al primo accesso il **wizard** prepara l'azienda con causali, giustificativi, orari e parametri già pronti. Dopo il wizard si completano sedi, reparti e dipendenti.
 
