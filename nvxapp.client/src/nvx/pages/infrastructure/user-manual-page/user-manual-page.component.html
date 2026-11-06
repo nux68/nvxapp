@@ -1,0 +1,21 @@
+<app-page-toolbar [title]="title" [showFilter]="false" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-icon slot="start" name="book-outline" color="primary"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-note class="nvx-nota-disabled">{{ 'pages.userManual.note' | transloco }}</ion-note>
+      <br />
+      <ion-button fill="outline" shape="round" [disabled]="inPreparazione" (click)="genera()">
+        <ion-icon slot="start" name="document-text-outline"></ion-icon>
+        {{ 'pages.userManual.generate' | transloco }}
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

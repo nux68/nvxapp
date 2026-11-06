@@ -510,4 +510,29 @@
     <value>Solo gli amministratori dell'azienda possono modificare l'anagrafica dei clienti.</value>
     <comment>Az_ClientePut/Delete e Az_ClienteContattoPut/Delete per chi non e' CompanyPowerAdmin o CompanyAdmin</comment>
   </data>
+  <data name="UserManualNotFound" xml:space="preserve">
+    <value>Manuale non disponibile.</value>
+  </data>
+  <data name="UserManualNotActive" xml:space="preserve">
+    <value>Il manuale riguarda un applicativo non attivo per la tua azienda.</value>
+  </data>
+  <data name="UserManualStarted" xml:space="preserve">
+    <value>Preparazione del manuale in corso...</value>
+  </data>
+  <data name="UserManualReady" xml:space="preserve">
+    <value>Manuale pronto: clicca per scaricarlo.</value>
+  </data>
+  <data name="UserManualFailed" xml:space="preserve">
+    <value>Non è stato possibile preparare il manuale.</value>
+  </data>
+  <data name="UserManualPage" xml:space="preserve">
+    <value>Pagina</value>
+    <comment>pie' di pagina del PDF del manuale</comment>
+  </data>
+  <data name="UserManualGeneratedOn" xml:space="preserve">
+    <value>generato il {0}</value>
+  </data>
+  <data name="UserManualContents" xml:space="preserve">
+    <value>Indice</value>
+  </data>
 </root>

@@ -442,4 +442,29 @@
     <value>Only company administrators can change the customer registry.</value>
     <comment>Az_ClientePut/Delete e Az_ClienteContattoPut/Delete per chi non e' CompanyPowerAdmin o CompanyAdmin</comment>
   </data>
+  <data name="UserManualNotFound" xml:space="preserve">
+    <value>Manual not available.</value>
+  </data>
+  <data name="UserManualNotActive" xml:space="preserve">
+    <value>The manual is about an application that is not active for your company.</value>
+  </data>
+  <data name="UserManualStarted" xml:space="preserve">
+    <value>Preparing the manual...</value>
+  </data>
+  <data name="UserManualReady" xml:space="preserve">
+    <value>Manual ready: click to download it.</value>
+  </data>
+  <data name="UserManualFailed" xml:space="preserve">
+    <value>The manual could not be prepared.</value>
+  </data>
+  <data name="UserManualPage" xml:space="preserve">
+    <value>Page</value>
+    <comment>pie' di pagina del PDF del manuale</comment>
+  </data>
+  <data name="UserManualGeneratedOn" xml:space="preserve">
+    <value>generated on {0}</value>
+  </data>
+  <data name="UserManualContents" xml:space="preserve">
+    <value>Contents</value>
+  </data>
 </root>
