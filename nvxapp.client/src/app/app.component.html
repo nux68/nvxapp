@@ -13,7 +13,7 @@
         <!-- prima del login: solo le voci dello showcase (ShowcaseService); dopo il login i menu per ruolo -->
         @if (authService.Token == null) {
           <!-- sezioni che si aprono una alla volta, come dopo il login (all'inizio la prima) -->
-          <ion-accordion-group [value]="showcaseMenuAperto">
+          <ion-accordion-group class="nvx-menu-root" [value]="showcaseMenuAperto">
             @for (group of groupedShowcaseMenu; track group.menuHeader.title) {
               <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                 <ion-item slot="header">
@@ -38,7 +38,7 @@
             }
           </ion-accordion-group>
         } @else {
-        <ion-accordion-group [value]="selectedMenu" (ionChange)="sezioneCambiata($event)">
+        <ion-accordion-group class="nvx-menu-root" [value]="selectedMenu" (ionChange)="sezioneCambiata($event)">
 
           <!-- 1. Accesso (sezioni di Infrastructure dell'utente) -->
           @for (sezione of sezioniAccesso; track $index) {
