@@ -8,8 +8,10 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -25,7 +27,18 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_ConfigService : ServiceBase, ICrm_ConfigService
     {
-        private readonly CrmDbContext _db;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_CfgRepository _Crm_Cfg;
+        private readonly ICrm_ClienteDatiRepository _Crm_ClienteDati;
+        private readonly ICrm_LeadRepository _Crm_Lead;
+        private readonly ICrm_OffertaRigaRepository _Crm_OffertaRiga;
+        private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly ICrm_Par_FaseRepository _Crm_Par_Fase;
+        private readonly ICrm_Par_FonteRepository _Crm_Par_Fonte;
+        private readonly ICrm_Par_MotivoPerditaRepository _Crm_Par_MotivoPerdita;
+        private readonly ICrm_Par_ProdottoRepository _Crm_Par_Prodotto;
+        private readonly ICrm_Par_TagRepository _Crm_Par_Tag;
+        private readonly ICrm_Par_TipoAttivitaRepository _Crm_Par_TipoAttivita;
         private readonly ICrmUtility _utility;
 
         public Crm_ConfigService(IMapper mapper,
@@ -34,10 +47,32 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                  IOptions<JwtParameter> jwtParameter,
                                  IHttpContextAccessor httpContextAccessor,
                                  IConfiguration configuration,
-                                 CrmDbContext db,
+                                 ICrm_AttivitaRepository crm_AttivitaRepository,
+                                 ICrm_CfgRepository crm_CfgRepository,
+                                 ICrm_ClienteDatiRepository crm_ClienteDatiRepository,
+                                 ICrm_LeadRepository crm_LeadRepository,
+                                 ICrm_OffertaRigaRepository crm_OffertaRigaRepository,
+                                 ICrm_OpportunitaRepository crm_OpportunitaRepository,
+                                 ICrm_Par_FaseRepository crm_Par_FaseRepository,
+                                 ICrm_Par_FonteRepository crm_Par_FonteRepository,
+                                 ICrm_Par_MotivoPerditaRepository crm_Par_MotivoPerditaRepository,
+                                 ICrm_Par_ProdottoRepository crm_Par_ProdottoRepository,
+                                 ICrm_Par_TagRepository crm_Par_TagRepository,
+                                 ICrm_Par_TipoAttivitaRepository crm_Par_TipoAttivitaRepository,
                                  ICrmUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Crm_Cfg = crm_CfgRepository;
+            _Crm_ClienteDati = crm_ClienteDatiRepository;
+            _Crm_Lead = crm_LeadRepository;
+            _Crm_OffertaRiga = crm_OffertaRigaRepository;
+            _Crm_Opportunita = crm_OpportunitaRepository;
+            _Crm_Par_Fase = crm_Par_FaseRepository;
+            _Crm_Par_Fonte = crm_Par_FonteRepository;
+            _Crm_Par_MotivoPerdita = crm_Par_MotivoPerditaRepository;
+            _Crm_Par_Prodotto = crm_Par_ProdottoRepository;
+            _Crm_Par_Tag = crm_Par_TagRepository;
+            _Crm_Par_TipoAttivita = crm_Par_TipoAttivitaRepository;
             _utility = utility;
         }
 
@@ -52,12 +87,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 {
                     Permessi = new Crm_PermessiModel { PowerAdmin = ctx.PowerAdmin, Admin = ctx.Admin, VedeTutto = ctx.VedeTutto, IdUtente = ctx.IdUtente },
                     Cfg = CfgModel(cfg),
-                    Fasi = (await _db.Crm_Par_Fase.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
-                    TipiAttivita = (await _db.Crm_Par_TipoAttivita.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
-                    MotiviPerdita = (await _db.Crm_Par_MotivoPerdita.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
-                    Fonti = (await _db.Crm_Par_Fonte.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
-                    Prodotti = (await _db.Crm_Par_Prodotto.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync()).Select(Par).ToList(),
-                    Tag = (await _db.Crm_Par_Tag.AsNoTracking().Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync()).Select(Par).ToList(),
+                    Fasi = (await _Crm_Par_Fase.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
+                    TipiAttivita = (await _Crm_Par_TipoAttivita.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
+                    MotiviPerdita = (await _Crm_Par_MotivoPerdita.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
+                    Fonti = (await _Crm_Par_Fonte.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ToListAsync()).Select(Par).ToList(),
+                    Prodotti = (await _Crm_Par_Prodotto.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync()).Select(Par).ToList(),
+                    Tag = (await _Crm_Par_Tag.FindAll(_ => true).Where(x => x.IdAz_Anagrafica == az).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync()).Select(Par).ToList(),
                     Utenti = await _utility.UtentiAsync(ctx),
                 };
             }, isSubProcess);
@@ -69,7 +104,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             {
                 var ctx = await SoloPowerAdmin();
                 var d = model.Data.Cfg;
-                var cfg = await _db.Crm_Cfg.AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+                var cfg = await _Crm_Cfg.FindAll(_ => true).AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
                 cfg.Visibilita = d.Visibilita;
                 cfg.Valuta = string.IsNullOrWhiteSpace(d.Valuta) ? "EUR" : d.Valuta.Trim().ToUpperInvariant()[..Math.Min(3, d.Valuta.Trim().Length)];
                 cfg.MinutiPreavviso = Math.Clamp(d.MinutiPreavviso, 0, 7 * 24 * 60);
@@ -78,7 +113,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 cfg.OffertaNote = string.IsNullOrWhiteSpace(d.OffertaNote) ? null : d.OffertaNote.Trim();
                 cfg.ModifiedDate = DateTime.Now;
                 cfg.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.SaveChange();
                 return new Crm_CfgPutOutModel { Cfg = CfgModel(cfg) };
             }, isSubProcess);
         }
@@ -94,12 +129,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
 
                 Crm_ParBase row = d.Tabella switch
                 {
-                    Crm_ParTabella.Fase => await Riga(_db.Crm_Par_Fase, d.Id, ctx),
-                    Crm_ParTabella.TipoAttivita => await Riga(_db.Crm_Par_TipoAttivita, d.Id, ctx),
-                    Crm_ParTabella.MotivoPerdita => await Riga(_db.Crm_Par_MotivoPerdita, d.Id, ctx),
-                    Crm_ParTabella.Fonte => await Riga(_db.Crm_Par_Fonte, d.Id, ctx),
-                    Crm_ParTabella.Prodotto => await Riga(_db.Crm_Par_Prodotto, d.Id, ctx),
-                    Crm_ParTabella.Tag => await Riga(_db.Crm_Par_Tag, d.Id, ctx),
+                    Crm_ParTabella.Fase => await Riga(_Crm_Par_Fase, d.Id, ctx),
+                    Crm_ParTabella.TipoAttivita => await Riga(_Crm_Par_TipoAttivita, d.Id, ctx),
+                    Crm_ParTabella.MotivoPerdita => await Riga(_Crm_Par_MotivoPerdita, d.Id, ctx),
+                    Crm_ParTabella.Fonte => await Riga(_Crm_Par_Fonte, d.Id, ctx),
+                    Crm_ParTabella.Prodotto => await Riga(_Crm_Par_Prodotto, d.Id, ctx),
+                    Crm_ParTabella.Tag => await Riga(_Crm_Par_Tag, d.Id, ctx),
                     _ => throw new UserMessageException(CrmMessages.Get("NotAllowed"))
                 };
 
@@ -119,7 +154,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     case Crm_Par_Prodotto p: p.Codice = string.IsNullOrWhiteSpace(d.Codice) ? null : d.Codice.Trim(); p.Prezzo = d.Prezzo; p.Um = d.Um; p.AliquotaIva = Math.Clamp(d.AliquotaIva, 0, 100); break;
                     case Crm_Par_Tag g: g.Colore = d.Colore; break;
                 }
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.SaveChange();
                 return new Crm_ParPutOutModel { Par = Par(row) };
             }, isSubProcess);
         }
@@ -133,11 +168,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 int id = model.Data.Id;
                 bool usata = model.Data.Tabella switch
                 {
-                    Crm_ParTabella.Fase => await _db.Crm_Opportunita.AnyAsync(x => x.IdCrm_Par_Fase == id),
-                    Crm_ParTabella.TipoAttivita => await _db.Crm_Attivita.AnyAsync(x => x.IdCrm_Par_TipoAttivita == id),
-                    Crm_ParTabella.MotivoPerdita => await _db.Crm_Opportunita.AnyAsync(x => x.IdCrm_Par_MotivoPerdita == id),
-                    Crm_ParTabella.Fonte => await _db.Crm_ClienteDati.AnyAsync(x => x.IdCrm_Par_Fonte == id) || await _db.Crm_Lead.AnyAsync(x => x.IdCrm_Par_Fonte == id) || await _db.Crm_Opportunita.AnyAsync(x => x.IdCrm_Par_Fonte == id),
-                    Crm_ParTabella.Prodotto => await _db.Crm_OffertaRiga.AnyAsync(x => x.IdCrm_Par_Prodotto == id),
+                    Crm_ParTabella.Fase => await _Crm_Opportunita.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_Fase == id),
+                    Crm_ParTabella.TipoAttivita => await _Crm_Attivita.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_TipoAttivita == id),
+                    Crm_ParTabella.MotivoPerdita => await _Crm_Opportunita.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_MotivoPerdita == id),
+                    Crm_ParTabella.Fonte => await _Crm_ClienteDati.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_Fonte == id) || await _Crm_Lead.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_Fonte == id) || await _Crm_Opportunita.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_Fonte == id),
+                    Crm_ParTabella.Prodotto => await _Crm_OffertaRiga.FindAll(_ => true).AnyAsync(x => x.IdCrm_Par_Prodotto == id),
                     _ => false,
                 };
                 if (usata)
@@ -146,21 +181,21 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 switch (model.Data.Tabella)
                 {
                     case Crm_ParTabella.Fase:
-                        var fase = await Riga(_db.Crm_Par_Fase, id, ctx, false);
+                        var fase = await Riga(_Crm_Par_Fase, id, ctx, false);
                         await ControllaFasi(ctx, fase.Id, fase.Tipo);
-                        _db.Remove(fase);
+                        await _Crm_Par_Fase.DeleteAsync(fase);
                         break;
                     case Crm_ParTabella.TipoAttivita:
-                        if (await _db.Crm_Par_TipoAttivita.CountAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Id != id) == 0)
+                        if (await _Crm_Par_TipoAttivita.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Id != id) == 0)
                             throw new UserMessageException(CrmMessages.Get("LastActivityType"));
-                        _db.Remove(await Riga(_db.Crm_Par_TipoAttivita, id, ctx, false));
+                        await _Crm_Par_TipoAttivita.DeleteAsync(await Riga(_Crm_Par_TipoAttivita, id, ctx, false));
                         break;
-                    case Crm_ParTabella.MotivoPerdita: _db.Remove(await Riga(_db.Crm_Par_MotivoPerdita, id, ctx, false)); break;
-                    case Crm_ParTabella.Fonte: _db.Remove(await Riga(_db.Crm_Par_Fonte, id, ctx, false)); break;
-                    case Crm_ParTabella.Prodotto: _db.Remove(await Riga(_db.Crm_Par_Prodotto, id, ctx, false)); break;
-                    case Crm_ParTabella.Tag: _db.Remove(await Riga(_db.Crm_Par_Tag, id, ctx, false)); break;
+                    case Crm_ParTabella.MotivoPerdita: await _Crm_Par_MotivoPerdita.DeleteAsync(await Riga(_Crm_Par_MotivoPerdita, id, ctx, false)); break;
+                    case Crm_ParTabella.Fonte: await _Crm_Par_Fonte.DeleteAsync(await Riga(_Crm_Par_Fonte, id, ctx, false)); break;
+                    case Crm_ParTabella.Prodotto: await _Crm_Par_Prodotto.DeleteAsync(await Riga(_Crm_Par_Prodotto, id, ctx, false)); break;
+                    case Crm_ParTabella.Tag: await _Crm_Par_Tag.DeleteAsync(await Riga(_Crm_Par_Tag, id, ctx, false)); break;
                 }
-                await _db.SaveChangesAsync();
+                await _Crm_Attivita.SaveChange();
                 return new Crm_IdOutModel { Id = id };
             }, isSubProcess);
         }
@@ -181,17 +216,17 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var now = DateTime.Now;
                 var retVal = new Crm_RiassegnaOutModel();
                 if (d.Clienti)
-                    retVal.Clienti = await _db.Crm_ClienteDati.Where(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
+                    retVal.Clienti = await _Crm_ClienteDati.FindAll(x => x.Az_ClienteNavigation!.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
                                               .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, d.IdA).SetProperty(x => x.ModifiedDate, now));
                 if (d.Opportunita)
-                    retVal.Opportunita = await _db.Crm_Opportunita.Where(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
+                    retVal.Opportunita = await _Crm_Opportunita.FindAll(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
                                                   .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, d.IdA).SetProperty(x => x.ModifiedDate, now));
                 if (d.Lead)
-                    retVal.Lead = await _db.Crm_Lead.Where(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
+                    retVal.Lead = await _Crm_Lead.FindAll(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersResponsabile == d.IdDa)
                                            .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, d.IdA).SetProperty(x => x.ModifiedDate, now));
                 // le attivita' hanno sempre un assegnatario: senza destinatario restano a chi le aveva
                 if (d.AttivitaDaFare && d.IdA != null)
-                    retVal.Attivita = await _db.Crm_Attivita.Where(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersAssegnatario == d.IdDa && x.Stato == Crm_StatoAttivita.DaFare)
+                    retVal.Attivita = await _Crm_Attivita.FindAll(x => x.IdAz_Anagrafica == az && x.IdAspNetUsersAssegnatario == d.IdDa && x.Stato == Crm_StatoAttivita.DaFare)
                                                .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAssegnatario, d.IdA).SetProperty(x => x.ModifiedDate, now));
                 return retVal;
             }, isSubProcess);
@@ -206,21 +241,22 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             return ctx;
         }
 
-        private async Task<T> Riga<T>(DbSet<T> set, int id, CrmContesto ctx, bool nuovaSeZero = true) where T : Crm_ParBase, new()
+        // riga della tabella (nuova se id = 0) letta con il suo repository, tracciata per le modifiche
+        private async Task<T> Riga<T>(IRepository<T> repo, int id, CrmContesto ctx, bool nuovaSeZero = true) where T : Crm_ParBase, new()
         {
             if (id == 0 && nuovaSeZero)
             {
-                var nuova = new T { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now };
-                set.Add(nuova);
+                var nuova = new T { IdAz_Anagrafica = ctx.IdAz_Anagrafica };
+                await repo.CreateAsync(nuova, false);
                 return nuova;
             }
-            return await set.AsTracking().FirstOrDefaultAsync(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+            return await repo.FindAll(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AsTracking().FirstOrDefaultAsync()
                    ?? throw new UserMessageException(CrmMessages.Get("ParNotFound"));
         }
 
         private async Task ControllaFasi(CrmContesto ctx, int idEscluso, Crm_FaseTipo tipo)
         {
-            if (!await _db.Crm_Par_Fase.AnyAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Tipo == tipo && x.Id != idEscluso))
+            if (!await _Crm_Par_Fase.FindAll(_ => true).AnyAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attivo && x.Tipo == tipo && x.Id != idEscluso))
                 throw new UserMessageException(CrmMessages.Get("LastPhaseOfType"));
         }
 

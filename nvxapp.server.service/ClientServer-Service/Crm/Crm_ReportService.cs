@@ -10,6 +10,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -25,7 +26,6 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_ReportService : ServiceBase, ICrm_ReportService
     {
-        private readonly CrmDbContext _db;
         private readonly ICrmUtility _utility;
 
         public Crm_ReportService(IMapper mapper,
@@ -34,10 +34,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                  IOptions<JwtParameter> jwtParameter,
                                  IHttpContextAccessor httpContextAccessor,
                                  IConfiguration configuration,
-                                 CrmDbContext db,
                                  ICrmUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
             _utility = utility;
         }
 

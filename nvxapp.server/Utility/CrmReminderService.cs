@@ -3,6 +3,8 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Notification;
 using Serilog;
 using System.Globalization;
@@ -49,13 +51,13 @@ namespace nvxapp.server.Utility
         {
             using var scope = _scopeFactory.CreateScope();
             var sp = scope.ServiceProvider;
-            var publicDb = sp.GetRequiredService<PublicDbContext>();
+            var aziendeApp = sp.GetRequiredService<ICompanyApplicationRepository>();
+            var http = sp.GetRequiredService<IHttpContextAccessor>();
             var tenancy = sp.GetRequiredService<TenancySettings>();
             var factory = sp.GetRequiredService<IApplicationDbContextFactory>();
             var notifier = sp.GetRequiredService<IUserNotifier>();
 
-            var aziende = await publicDb.CompanyApplication.AsNoTracking()
-                                        .Where(x => x.ApplicationType == ApplicationType.Crm && x.Active)
+            var aziende = await aziendeApp.FindAll(x => x.ApplicationType == ApplicationType.Crm && x.Active)
                                         .Select(x => x.IdCompany).ToListAsync(cancellationToken);
             foreach (var idCompany in aziende)
             {
@@ -63,14 +65,15 @@ namespace nvxapp.server.Utility
                 {
                     var schema = tenancy.MultiTenant ? TenantSchemaName.For(idCompany, ApplicationType.Crm) : TenantSchemaName.Public;
                     await using var db = (CrmDbContext)factory.Create(ApplicationType.Crm, schema);
+                    var rep = new CrmRepositorySet(db, sp, http);
 
-                    var cfg = await db.Crm_Cfg.AsNoTracking().Where(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).FirstOrDefaultAsync(cancellationToken);
+                    var cfg = await rep.Crm_Cfg.FindAll(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).FirstOrDefaultAsync(cancellationToken);
                     if (cfg == null || cfg.MinutiPreavviso <= 0)
                         continue;
 
                     var adesso = DateTime.Now;
                     var limite = adesso.AddMinutes(cfg.MinutiPreavviso);
-                    var attivita = await db.Crm_Attivita.AsTracking()
+                    var attivita = await rep.Crm_Attivita.FindAll(_ => true).AsTracking()
                                            .Include(a => a.Az_ClienteNavigation)
                                            .Where(a => a.IdAz_Anagrafica == cfg.IdAz_Anagrafica && a.Stato == Crm_StatoAttivita.DaFare && !a.PromemoriaInviato
                                                        && a.Inizio <= limite && a.Inizio >= adesso.AddHours(-1))
@@ -90,7 +93,7 @@ namespace nvxapp.server.Utility
                         a.PromemoriaInviato = true;
                     }
                     if (attivita.Count > 0)
-                        await db.SaveChangesAsync(cancellationToken);
+                        await rep.Crm_Attivita.SaveChange();
                 }
                 catch (Exception ex)
                 {

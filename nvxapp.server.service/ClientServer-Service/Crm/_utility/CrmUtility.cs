@@ -6,6 +6,8 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
@@ -69,19 +71,46 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
     {
         private static readonly string[] RuoliAzienda = { nameof(RoleCode.CompanyPowerAdmin), nameof(RoleCode.CompanyAdmin), nameof(RoleCode.User) };
 
-        private readonly CrmDbContext _db;
-        private readonly PublicDbContext _publicDb;
+        private readonly ICrm_CfgRepository _Crm_Cfg;
+        private readonly ICrm_Par_FaseRepository _Crm_Par_Fase;
+        private readonly ICrm_Par_TipoAttivitaRepository _Crm_Par_TipoAttivita;
+        private readonly ICrm_Par_MotivoPerditaRepository _Crm_Par_MotivoPerdita;
+        private readonly ICrm_Par_FonteRepository _Crm_Par_Fonte;
+        private readonly ICrm_Az_ClienteReadRepository _Az_Cliente;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_ClienteDatiRepository _Crm_ClienteDati;
+        private readonly ICrm_LeadRepository _Crm_Lead;
+        private readonly ICrm_OffertaRepository _Crm_Offerta;
+        private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly IAspNetRolesRepository _AspNetRoles;
+        private readonly IAspNetUsersRepository _AspNetUsers;
+        private readonly IUserCompanyRepository _UserCompany;
+        private readonly IAspNetUserRolesRepository _AspNetUserRoles;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
 
         private CrmContesto? _contesto;
 
-        public CrmUtility(CrmDbContext db, PublicDbContext publicDb, ICommonCompanyUtility commonCompanyUtility,
+        public CrmUtility(ICrm_CfgRepository crm_CfgRepository, ICrm_Par_FaseRepository crm_Par_FaseRepository, ICrm_Par_TipoAttivitaRepository crm_Par_TipoAttivitaRepository, ICrm_Par_MotivoPerditaRepository crm_Par_MotivoPerditaRepository, ICrm_Par_FonteRepository crm_Par_FonteRepository, ICrm_Az_ClienteReadRepository az_ClienteRepository, ICrm_AttivitaRepository crm_AttivitaRepository, ICrm_ClienteDatiRepository crm_ClienteDatiRepository, ICrm_LeadRepository crm_LeadRepository, ICrm_OffertaRepository crm_OffertaRepository, ICrm_OpportunitaRepository crm_OpportunitaRepository, IAspNetRolesRepository aspNetRolesRepository, IAspNetUsersRepository aspNetUsersRepository, IUserCompanyRepository userCompanyRepository, IAspNetUserRolesRepository aspNetUserRolesRepository,
+                          ICommonCompanyUtility commonCompanyUtility,
                           IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
         {
-            _db = db;
-            _publicDb = publicDb;
+            _Crm_Cfg = crm_CfgRepository;
+            _Crm_Par_Fase = crm_Par_FaseRepository;
+            _Crm_Par_TipoAttivita = crm_Par_TipoAttivitaRepository;
+            _Crm_Par_MotivoPerdita = crm_Par_MotivoPerditaRepository;
+            _Crm_Par_Fonte = crm_Par_FonteRepository;
+            _Az_Cliente = az_ClienteRepository;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Crm_ClienteDati = crm_ClienteDatiRepository;
+            _Crm_Lead = crm_LeadRepository;
+            _Crm_Offerta = crm_OffertaRepository;
+            _Crm_Opportunita = crm_OpportunitaRepository;
+            _AspNetRoles = aspNetRolesRepository;
+            _AspNetUsers = aspNetUsersRepository;
+            _UserCompany = userCompanyRepository;
+            _AspNetUserRoles = aspNetUserRolesRepository;
             _commonCompanyUtility = commonCompanyUtility;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -108,7 +137,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             if (!powerAdmin && !admin && !utente)
                 throw new UserMessageException(CrmMessages.Get("NotAllowed"));
 
-            var cfg = await _db.Crm_Cfg.AsNoTracking().FirstAsync(x => x.IdAz_Anagrafica == az.Id);
+            var cfg = await _Crm_Cfg.FindAll(_ => true).FirstAsync(x => x.IdAz_Anagrafica == az.Id);
             _contesto = new CrmContesto
             {
                 IdCompany = idCompany,
@@ -123,22 +152,22 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             return _contesto;
         }
 
-        public Task<Crm_Cfg> CfgAsync(CrmContesto ctx) => _db.Crm_Cfg.AsNoTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+        public Task<Crm_Cfg> CfgAsync(CrmContesto ctx) => _Crm_Cfg.FindAll(_ => true).FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
 
         public IQueryable<Az_Cliente> ClientiVisibili(CrmContesto ctx)
         {
-            var q = _db.Az_Cliente.Where(c => c.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Az_Cliente.FindAll(c => c.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
             var me = ctx.IdUtente;
-            return q.Where(c => !_db.Crm_ClienteDati.Any(d => d.IdAz_Cliente == c.Id && d.IdAspNetUsersResponsabile != null && d.IdAspNetUsersResponsabile != me)
-                                || _db.Crm_Opportunita.Any(o => o.IdAz_Cliente == c.Id && o.IdAspNetUsersResponsabile == me)
-                                || _db.Crm_Attivita.Any(a => a.IdAz_Cliente == c.Id && a.IdAspNetUsersAssegnatario == me));
+            return q.Where(c => !_Crm_ClienteDati.FindAll(_ => true).Any(d => d.IdAz_Cliente == c.Id && d.IdAspNetUsersResponsabile != null && d.IdAspNetUsersResponsabile != me)
+                                || _Crm_Opportunita.FindAll(_ => true).Any(o => o.IdAz_Cliente == c.Id && o.IdAspNetUsersResponsabile == me)
+                                || _Crm_Attivita.FindAll(_ => true).Any(a => a.IdAz_Cliente == c.Id && a.IdAspNetUsersAssegnatario == me));
         }
 
         public IQueryable<Crm_Opportunita> OpportunitaVisibili(CrmContesto ctx)
         {
-            var q = _db.Crm_Opportunita.Where(o => o.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Crm_Opportunita.FindAll(o => o.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
             var me = ctx.IdUtente;
@@ -148,7 +177,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 
         public IQueryable<Crm_Attivita> AttivitaVisibili(CrmContesto ctx)
         {
-            var q = _db.Crm_Attivita.Where(a => a.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Crm_Attivita.FindAll(a => a.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
             var me = ctx.IdUtente;
@@ -161,7 +190,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 
         public IQueryable<Crm_Lead> LeadVisibili(CrmContesto ctx)
         {
-            var q = _db.Crm_Lead.Where(l => l.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Crm_Lead.FindAll(l => l.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
             var me = ctx.IdUtente;
@@ -170,7 +199,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 
         public IQueryable<Crm_Offerta> OfferteVisibili(CrmContesto ctx)
         {
-            var q = _db.Crm_Offerta.Where(o => o.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _Crm_Offerta.FindAll(o => o.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
             var clienti = ClientiVisibili(ctx).Select(c => c.Id);
@@ -183,11 +212,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 
         public async Task<List<Crm_UtenteModel>> UtentiAsync(CrmContesto ctx)
         {
-            var idRuoli = await _publicDb.Roles.Where(r => RuoliAzienda.Contains(r.Name!)).Select(r => r.Id).ToListAsync();
-            var ids = await _publicDb.UserCompany.Where(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
-                                     .Where(x => _publicDb.UserRoles.Any(r => r.UserId == x.IdAspNetUsers && idRuoli.Contains(r.RoleId)))
+            var idRuoli = await _AspNetRoles.FindAll(r => RuoliAzienda.Contains(r.Name!)).Select(r => r.Id).ToListAsync();
+            var ids = await _UserCompany.FindAll(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
+                                     .Where(x => _AspNetUserRoles.FindAll(_ => true).Any(r => r.UserId == x.IdAspNetUsers && idRuoli.Contains(r.RoleId)))
                                      .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
-            return await _publicDb.Users.Where(u => ids.Contains(u.Id))
+            return await _AspNetUsers.FindAll(u => ids.Contains(u.Id))
                                   .OrderBy(u => u.UserName)
                                   .Select(u => new Crm_UtenteModel { Id = u.Id, UserName = u.UserName ?? u.Id })
                                   .ToListAsync();
@@ -198,16 +227,16 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             var lista = ids.Where(x => !string.IsNullOrEmpty(x)).Select(x => x!).Distinct().ToList();
             if (lista.Count == 0)
                 return new Dictionary<string, string>();
-            return await _publicDb.Users.Where(u => lista.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.UserName ?? u.Id);
+            return await _AspNetUsers.FindAll(u => lista.Contains(u.Id)).ToDictionaryAsync(u => u.Id, u => u.UserName ?? u.Id);
         }
 
         public async Task EnsureDefaultsAsync(int idAz_Anagrafica)
         {
-            if (await _db.Crm_Cfg.AnyAsync(x => x.IdAz_Anagrafica == idAz_Anagrafica))
+            if (await _Crm_Cfg.FindAll(_ => true).AnyAsync(x => x.IdAz_Anagrafica == idAz_Anagrafica))
                 return;
 
             var now = DateTime.Now;
-            _db.Crm_Cfg.Add(new Crm_Cfg { IdAz_Anagrafica = idAz_Anagrafica, OffertaAnno = now.Year, CreationDate = now });
+            await _Crm_Cfg.CreateAsync(new Crm_Cfg { IdAz_Anagrafica = idAz_Anagrafica, OffertaAnno = now.Year, CreationDate = now }, false);
 
             int ordine = 0;
             foreach (var (chiave, prob, tipo) in new[]
@@ -216,7 +245,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
                          ("DefaultPhaseProposal", 50, Crm_FaseTipo.Aperta), ("DefaultPhaseNegotiation", 75, Crm_FaseTipo.Aperta),
                          ("DefaultPhaseWon", 100, Crm_FaseTipo.Vinta), ("DefaultPhaseLost", 0, Crm_FaseTipo.Persa),
                      })
-                _db.Crm_Par_Fase.Add(new Crm_Par_Fase { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Probabilita = prob, Tipo = tipo, Ordine = (ordine += 10), CreationDate = now });
+                await _Crm_Par_Fase.CreateAsync(new Crm_Par_Fase { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Probabilita = prob, Tipo = tipo, Ordine = (ordine += 10), CreationDate = now }, false);
 
             ordine = 0;
             foreach (var (chiave, icona, colore, durata) in new[]
@@ -224,24 +253,24 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
                          ("DefaultActivityCall", "call", "primary", 15), ("DefaultActivityEmail", "mail", "tertiary", 10),
                          ("DefaultActivityMeeting", "people", "success", 60), ("DefaultActivityTask", "checkbox", "warning", 30),
                      })
-                _db.Crm_Par_TipoAttivita.Add(new Crm_Par_TipoAttivita { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Icona = icona, Colore = colore, DurataMinuti = durata, Ordine = (ordine += 10), CreationDate = now });
+                await _Crm_Par_TipoAttivita.CreateAsync(new Crm_Par_TipoAttivita { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Icona = icona, Colore = colore, DurataMinuti = durata, Ordine = (ordine += 10), CreationDate = now }, false);
 
             ordine = 0;
             foreach (var chiave in new[] { "DefaultLossPrice", "DefaultLossCompetitor", "DefaultLossNoBudget", "DefaultLossNoAnswer", "DefaultLossOther" })
-                _db.Crm_Par_MotivoPerdita.Add(new Crm_Par_MotivoPerdita { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Ordine = (ordine += 10), CreationDate = now });
+                await _Crm_Par_MotivoPerdita.CreateAsync(new Crm_Par_MotivoPerdita { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Ordine = (ordine += 10), CreationDate = now }, false);
 
             ordine = 0;
             foreach (var chiave in new[] { "DefaultSourceWebsite", "DefaultSourceReferral", "DefaultSourceFair", "DefaultSourcePhone", "DefaultSourceOther" })
-                _db.Crm_Par_Fonte.Add(new Crm_Par_Fonte { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Ordine = (ordine += 10), CreationDate = now });
+                await _Crm_Par_Fonte.CreateAsync(new Crm_Par_Fonte { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = CrmMessages.Get(chiave), Ordine = (ordine += 10), CreationDate = now }, false);
 
             try
             {
-                await _db.SaveChangesAsync();
+                await _Crm_Cfg.SaveChange();
             }
             catch (DbUpdateException)
             {
-                // due richieste contemporanee: l'altra ha gia' creato i valori predefiniti
-                _db.ChangeTracker.Clear();
+                // due richieste contemporanee: l'altra ha gia' creato i valori predefiniti; questa si ripete
+                throw new UserMessageException(CrmMessages.Get("RetryLater"));
             }
         }
     }

@@ -12,6 +12,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
@@ -30,23 +31,47 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_ClienteService : ServiceBase, ICrm_ClienteService
     {
-        private readonly CrmDbContext _db;
+        private readonly ICrm_Az_ClienteContattoReadRepository _Az_ClienteContatto;
+        private readonly ICrm_ClienteDatiRepository _Crm_ClienteDati;
+        private readonly ICrm_ClienteTagRepository _Crm_ClienteTag;
+        private readonly ICrm_AllegatoRepository _Crm_Allegato;
+        private readonly ICrm_AttivitaRepository _Crm_Attivita;
+        private readonly ICrm_NotaRepository _Crm_Nota;
+        private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly ICrm_Par_FonteRepository _Crm_Par_Fonte;
+        private readonly ICrm_Par_TagRepository _Crm_Par_Tag;
         private readonly ICrmUtility _utility;
         private readonly IAz_ClienteRepository _clienteRepository;
         private readonly IAz_ClienteContattoRepository _contattoRepository;
 
         public Crm_ClienteService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
+                                  ICrm_Az_ClienteContattoReadRepository az_ClienteContattoRepository,
                                   IAspNetUsersRepository aspNetUsersRepository,
                                   IOptions<JwtParameter> jwtParameter,
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
-                                  CrmDbContext db,
+                                  ICrm_ClienteDatiRepository crm_ClienteDatiRepository,
+                                  ICrm_ClienteTagRepository crm_ClienteTagRepository,
+                                  ICrm_AllegatoRepository crm_AllegatoRepository,
+                                  ICrm_AttivitaRepository crm_AttivitaRepository,
+                                  ICrm_NotaRepository crm_NotaRepository,
+                                  ICrm_OpportunitaRepository crm_OpportunitaRepository,
+                                  ICrm_Par_FonteRepository crm_Par_FonteRepository,
+                                  ICrm_Par_TagRepository crm_Par_TagRepository,
                                   ICrmUtility utility,
                                   IAz_ClienteRepository clienteRepository,
                                   IAz_ClienteContattoRepository contattoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _Az_ClienteContatto = az_ClienteContattoRepository;
+            _Crm_ClienteDati = crm_ClienteDatiRepository;
+            _Crm_ClienteTag = crm_ClienteTagRepository;
+            _Crm_Allegato = crm_AllegatoRepository;
+            _Crm_Attivita = crm_AttivitaRepository;
+            _Crm_Nota = crm_NotaRepository;
+            _Crm_Opportunita = crm_OpportunitaRepository;
+            _Crm_Par_Fonte = crm_Par_FonteRepository;
+            _Crm_Par_Tag = crm_Par_TagRepository;
             _utility = utility;
             _clienteRepository = clienteRepository;
             _contattoRepository = contattoRepository;
@@ -67,17 +92,17 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             {
                 var ctx = await _utility.ContestoAsync();
                 var c = await _utility.ClienteAsync(ctx, model.Data.Id);
-                var dati = await _db.Crm_ClienteDati.AsNoTracking().FirstOrDefaultAsync(x => x.IdAz_Cliente == c.Id);
+                var dati = await _Crm_ClienteDati.FindAll(_ => true).FirstOrDefaultAsync(x => x.IdAz_Cliente == c.Id);
                 var cfg = await _utility.CfgAsync(ctx);
                 return new Crm_ClienteGetOutModel
                 {
-                    Cliente = Modello(c, dati, await _db.Crm_ClienteTag.Where(x => x.IdAz_Cliente == c.Id).Select(x => x.IdCrm_Par_Tag).ToListAsync()),
-                    Contatti = await CrmLists.ContattiAsync(_db, c.Id),
+                    Cliente = Modello(c, dati, await _Crm_ClienteTag.FindAll(x => x.IdAz_Cliente == c.Id).Select(x => x.IdCrm_Par_Tag).ToListAsync()),
+                    Contatti = await CrmLists.ContattiAsync(_Az_ClienteContatto, c.Id),
                     Opportunita = await CrmLists.OpportunitaAsync(_utility.OpportunitaVisibili(ctx).Where(o => o.IdAz_Cliente == c.Id), _utility),
                     Attivita = (await CrmLists.AttivitaAsync(_utility.AttivitaVisibili(ctx).Where(a => a.IdAz_Cliente == c.Id), _utility)).OrderByDescending(a => a.Inizio).ToList(),
                     Offerte = await CrmLists.OfferteAsync(_utility.OfferteVisibili(ctx).Where(o => o.IdAz_Cliente == c.Id), cfg),
-                    Note = await CrmLists.NoteAsync(_db.Crm_Nota.Where(n => n.IdAz_Cliente == c.Id), ctx, _utility),
-                    Allegati = await CrmLists.AllegatiAsync(_db.Crm_Allegato.Where(a => a.IdAz_Cliente == c.Id), _utility),
+                    Note = await CrmLists.NoteAsync(_Crm_Nota.FindAll(n => n.IdAz_Cliente == c.Id), ctx, _utility),
+                    Allegati = await CrmLists.AllegatiAsync(_Crm_Allegato.FindAll(a => a.IdAz_Cliente == c.Id), _utility),
                     Modificabile = true,
                 };
             }, isSubProcess);
@@ -98,7 +123,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 {
                     await _utility.ClienteAsync(ctx, d.Id); // visibile
                     cliente = (await _clienteRepository.FindByIdAsync(d.Id))!;
-                    dati = await _db.Crm_ClienteDati.AsTracking().FirstOrDefaultAsync(x => x.IdAz_Cliente == d.Id);
+                    dati = await _Crm_ClienteDati.FindAll(_ => true).AsTracking().FirstOrDefaultAsync(x => x.IdAz_Cliente == d.Id);
                 }
                 else
                     cliente = new Az_Cliente { IdAz_Anagrafica = ctx.IdAz_Anagrafica };
@@ -126,7 +151,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 if (dati == null)
                 {
                     dati = new Crm_ClienteDati { IdAz_Cliente = cliente.Id, CreationDate = DateTime.Now };
-                    _db.Crm_ClienteDati.Add(dati);
+                    await _Crm_ClienteDati.CreateAsync(dati, false);
                     // il commerciale che crea il cliente ne e' il responsabile
                     if (!ctx.Amministratore)
                         dati.IdAspNetUsersResponsabile = ctx.IdUtente;
@@ -148,7 +173,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     dati.IdAspNetUsersResponsabile = responsabile;
                 }
                 dati.Stato = d.Stato;
-                dati.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _db.Crm_Par_Fonte.AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
+                dati.IdCrm_Par_Fonte = d.IdCrm_Par_Fonte is int f && await _Crm_Par_Fonte.FindAll(_ => true).AnyAsync(x => x.Id == f && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica) ? f : null;
                 dati.Settore = Pulito(d.Settore);
                 dati.FatturatoStimato = d.FatturatoStimato;
                 dati.NumeroDipendenti = d.NumeroDipendenti;
@@ -162,14 +187,14 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 dati.ChangeUser = ctx.IdUtente;
 
                 // tag
-                var tagValidi = await _db.Crm_Par_Tag.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(x => x.Id).ToListAsync();
+                var tagValidi = await _Crm_Par_Tag.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(x => x.Id).ToListAsync();
                 var nuovi = d.Tag.Where(tagValidi.Contains).Distinct().ToList();
-                var attuali = await _db.Crm_ClienteTag.AsTracking().Where(x => x.IdAz_Cliente == cliente.Id).ToListAsync();
-                _db.Crm_ClienteTag.RemoveRange(attuali.Where(x => !nuovi.Contains(x.IdCrm_Par_Tag)));
+                var attuali = await _Crm_ClienteTag.FindAll(_ => true).AsTracking().Where(x => x.IdAz_Cliente == cliente.Id).ToListAsync();
+                await _Crm_ClienteTag.DeleteRangeAsync(attuali.Where(x => !nuovi.Contains(x.IdCrm_Par_Tag)));
                 foreach (var t in nuovi.Where(t => attuali.All(a => a.IdCrm_Par_Tag != t)))
-                    _db.Crm_ClienteTag.Add(new Crm_ClienteTag { IdAz_Cliente = cliente.Id, IdCrm_Par_Tag = t, CreationDate = DateTime.Now });
+                    await _Crm_ClienteTag.CreateAsync(new Crm_ClienteTag { IdAz_Cliente = cliente.Id, IdCrm_Par_Tag = t, CreationDate = DateTime.Now }, false);
 
-                await _db.SaveChangesAsync();
+                await _Crm_ClienteDati.SaveChange();
                 return new Crm_ClientePutOutModel { Cliente = Modello(cliente, dati, nuovi) };
             }, isSubProcess);
         }
@@ -231,7 +256,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         {
             var ctx = await _utility.ContestoAsync();
             var clienti = await ElencoAsync(ctx, filtri);
-            var tag = await _db.Crm_Par_Tag.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.Descrizione);
+            var tag = await _Crm_Par_Tag.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.Descrizione);
 
             using var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add(CrmMessages.Get("ExportCustomersSheet"));
@@ -280,12 +305,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 .Select(c => new
                 {
                     c.Id, c.Descrizione, c.Tipo, c.Attivo, c.Citta, c.Email, c.Telefono,
-                    Dati = _db.Crm_ClienteDati.Where(d => d.IdAz_Cliente == c.Id).Select(d => new { d.Stato, d.IdAspNetUsersResponsabile }).FirstOrDefault(),
-                    Tag = _db.Crm_ClienteTag.Where(t => t.IdAz_Cliente == c.Id).Select(t => t.IdCrm_Par_Tag).ToList(),
-                    Aperte = _db.Crm_Opportunita.Count(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta),
-                    Valore = _db.Crm_Opportunita.Where(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta).Sum(o => (decimal?)o.Valore) ?? 0,
-                    Ultima = _db.Crm_Attivita.Where(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.Fatta).Max(a => (DateTime?)a.Inizio),
-                    Prossima = _db.Crm_Attivita.Where(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.DaFare).Min(a => (DateTime?)a.Inizio),
+                    Dati = _Crm_ClienteDati.FindAll(d => d.IdAz_Cliente == c.Id).Select(d => new { d.Stato, d.IdAspNetUsersResponsabile }).FirstOrDefault(),
+                    Tag = _Crm_ClienteTag.FindAll(t => t.IdAz_Cliente == c.Id).Select(t => t.IdCrm_Par_Tag).ToList(),
+                    Aperte = _Crm_Opportunita.FindAll(_ => true).Count(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta),
+                    Valore = _Crm_Opportunita.FindAll(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta).Sum(o => (decimal?)o.Valore) ?? 0,
+                    Ultima = _Crm_Attivita.FindAll(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.Fatta).Max(a => (DateTime?)a.Inizio),
+                    Prossima = _Crm_Attivita.FindAll(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.DaFare).Min(a => (DateTime?)a.Inizio),
                 })
                 .ToListAsync();
 

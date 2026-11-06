@@ -10,6 +10,7 @@ using nvxapp.server.data.Entities.Tenant.Crm;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Crm;
 using nvxapp.server.service.ClientServer_Service.Crm._utility;
 using nvxapp.server.service.ClientServer_Service.Crm.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Email;
@@ -27,8 +28,14 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
     */
     public class Crm_OffertaService : ServiceBase, ICrm_OffertaService
     {
-        private readonly CrmDbContext _db;
-        private readonly PublicDbContext _publicDb;
+        private readonly ICrm_OffertaRepository _Crm_Offerta;
+        private readonly ICrm_OffertaRigaRepository _Crm_OffertaRiga;
+        private readonly ICrm_Az_ClienteReadRepository _Az_Cliente;
+        private readonly ICrm_Az_ClienteContattoReadRepository _Az_ClienteContatto;
+        private readonly ICrm_AllegatoRepository _Crm_Allegato;
+        private readonly ICrm_CfgRepository _Crm_Cfg;
+        private readonly ICrm_Par_ProdottoRepository _Crm_Par_Prodotto;
+        private readonly ICompanyRepository _Company;
         private readonly ICrmUtility _utility;
         private readonly IEmailService _email;
 
@@ -38,13 +45,25 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                   IOptions<JwtParameter> jwtParameter,
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
-                                  CrmDbContext db,
-                                  PublicDbContext publicDb,
+                                  ICrm_OffertaRepository crm_OffertaRepository,
+                                  ICrm_OffertaRigaRepository crm_OffertaRigaRepository,
+                                  ICrm_Az_ClienteReadRepository az_ClienteRepository,
+                                  ICrm_Az_ClienteContattoReadRepository az_ClienteContattoRepository,
+                                  ICrm_AllegatoRepository crm_AllegatoRepository,
+                                  ICrm_CfgRepository crm_CfgRepository,
+                                  ICrm_Par_ProdottoRepository crm_Par_ProdottoRepository,
+                                  ICompanyRepository companyRepository,
                                   ICrmUtility utility,
                                   IEmailService email) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
-            _publicDb = publicDb;
+            _Crm_Offerta = crm_OffertaRepository;
+            _Crm_OffertaRiga = crm_OffertaRigaRepository;
+            _Az_Cliente = az_ClienteRepository;
+            _Az_ClienteContatto = az_ClienteContattoRepository;
+            _Crm_Allegato = crm_AllegatoRepository;
+            _Crm_Cfg = crm_CfgRepository;
+            _Crm_Par_Prodotto = crm_Par_ProdottoRepository;
+            _Company = companyRepository;
             _utility = utility;
             _email = email;
         }
@@ -72,9 +91,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 return new Crm_OffertaGetOutModel
                 {
                     Offerta = Modello(o, await _utility.CfgAsync(ctx)),
-                    Contatti = await CrmLists.ContattiAsync(_db, o.IdAz_Cliente),
+                    Contatti = await CrmLists.ContattiAsync(_Az_ClienteContatto, o.IdAz_Cliente),
                     OpportunitaCliente = await CrmLists.OpportunitaAsync(_utility.OpportunitaVisibili(ctx).Where(x => x.IdAz_Cliente == o.IdAz_Cliente), _utility),
-                    Allegati = await CrmLists.AllegatiAsync(_db.Crm_Allegato.Where(a => a.IdCrm_Offerta == o.Id), _utility),
+                    Allegati = await CrmLists.AllegatiAsync(_Crm_Allegato.FindAll(a => a.IdCrm_Offerta == o.Id), _utility),
                 };
             }, isSubProcess);
         }
@@ -93,7 +112,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 if (d.IdCrm_Opportunita is int idOpp && !await _utility.OpportunitaVisibili(ctx).AnyAsync(x => x.Id == idOpp && x.IdAz_Cliente == d.IdAz_Cliente))
                     throw new UserMessageException(CrmMessages.Get("OpportunityNotFound"));
 
-                var cfg = await _db.Crm_Cfg.AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+                var cfg = await _Crm_Cfg.FindAll(_ => true).AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
                 Crm_Offerta o;
                 if (d.Id != 0)
                     o = await Visibile(ctx, d.Id, true);
@@ -108,7 +127,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     }
                     cfg.OffertaUltimoNumero++;
                     o = new Crm_Offerta { IdAz_Anagrafica = ctx.IdAz_Anagrafica, Anno = anno, Numero = cfg.OffertaUltimoNumero, CreationDate = DateTime.Now };
-                    _db.Crm_Offerta.Add(o);
+                    await _Crm_Offerta.CreateAsync(o, false);
                 }
 
                 o.Data = d.Data == default ? DateTime.Today : d.Data.Date;
@@ -117,7 +136,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     o.DataInvio = DateTime.Now;
                 o.Stato = d.Stato;
                 o.IdAz_Cliente = d.IdAz_Cliente;
-                o.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && await _db.Az_ClienteContatto.AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
+                o.IdAz_ClienteContatto = d.IdAz_ClienteContatto is int c && await _Az_ClienteContatto.FindAll(_ => true).AnyAsync(x => x.Id == c && x.IdAz_Cliente == d.IdAz_Cliente) ? c : null;
                 o.IdCrm_Opportunita = d.IdCrm_Opportunita;
                 o.Oggetto = string.IsNullOrWhiteSpace(d.Oggetto) ? null : d.Oggetto.Trim();
                 o.Note = string.IsNullOrWhiteSpace(d.Note) ? null : d.Note.Trim();
@@ -125,9 +144,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 o.ChangeUser = ctx.IdUtente;
 
                 // righe: si riscrivono tutte, con i totali ricalcolati
-                var prodotti = await _db.Crm_Par_Prodotto.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(x => x.Id).ToListAsync();
+                var prodotti = await _Crm_Par_Prodotto.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(x => x.Id).ToListAsync();
                 if (o.Id != 0)
-                    _db.Crm_OffertaRiga.RemoveRange(o.Righe);
+                    await _Crm_OffertaRiga.DeleteRangeAsync(o.Righe);
                 o.Righe = new List<Crm_OffertaRiga>();
                 int ordine = 0;
                 decimal imponibile = 0, iva = 0;
@@ -149,7 +168,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 o.Imponibile = imponibile;
                 o.Iva = iva;
                 o.Totale = imponibile + iva;
-                await _db.SaveChangesAsync();
+                await _Crm_Offerta.SaveChange();
                 return new Crm_OffertaPutOutModel { Offerta = Modello(o, cfg) };
             }, isSubProcess);
         }
@@ -162,10 +181,10 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 var o = await Visibile(ctx, model.Data.Id, true);
                 if (o.Stato != Crm_StatoOfferta.Bozza)
                     throw new UserMessageException(CrmMessages.Get("OfferNotDraft"));
-                if (await _db.Crm_Allegato.AnyAsync(a => a.IdCrm_Offerta == o.Id))
+                if (await _Crm_Allegato.FindAll(_ => true).AnyAsync(a => a.IdCrm_Offerta == o.Id))
                     throw new UserMessageException(CrmMessages.Get("OfferHasAttachments"));
-                _db.Crm_Offerta.Remove(o);
-                await _db.SaveChangesAsync();
+                await _Crm_Offerta.DeleteAsync(o);
+                await _Crm_Offerta.SaveChange();
                 return new Crm_IdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }
@@ -201,8 +220,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 o.DataInvio = DateTime.Now;
                 o.ModifiedDate = DateTime.Now;
                 o.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
-                o.Righe = await _db.Crm_OffertaRiga.AsNoTracking().Where(r => r.IdCrm_Offerta == o.Id).OrderBy(r => r.Ordine).ToListAsync();
+                await _Crm_Offerta.SaveChange();
+                o.Righe = await _Crm_OffertaRiga.FindAll(_ => true).Where(r => r.IdCrm_Offerta == o.Id).OrderBy(r => r.Ordine).ToListAsync();
                 return new Crm_OffertaPutOutModel { Offerta = Modello(o, await _utility.CfgAsync(ctx)) };
             }, isSubProcess);
         }
@@ -213,11 +232,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             var o = await Visibile(ctx, id, false);
             var cfg = await _utility.CfgAsync(ctx);
             var m = Modello(o, cfg);
-            var cliente = await _db.Az_Cliente.AsNoTracking().FirstAsync(c => c.Id == o.IdAz_Cliente);
+            var cliente = await _Az_Cliente.FindAll(_ => true).FirstAsync(c => c.Id == o.IdAz_Cliente);
             var contatto = o.IdAz_ClienteContatto is int c
-                ? await _db.Az_ClienteContatto.Where(x => x.Id == c).Select(x => ((x.Nome ?? "") + " " + (x.Cognome ?? "")).Trim()).FirstOrDefaultAsync()
+                ? await _Az_ClienteContatto.FindAll(x => x.Id == c).Select(x => ((x.Nome ?? "") + " " + (x.Cognome ?? "")).Trim()).FirstOrDefaultAsync()
                 : null;
-            var azienda = await _publicDb.Company.Where(x => x.Id == ctx.IdCompany).Select(x => x.Descrizione).FirstOrDefaultAsync() ?? string.Empty;
+            var azienda = await _Company.FindAll(x => x.Id == ctx.IdCompany).Select(x => x.Descrizione).FirstOrDefaultAsync() ?? string.Empty;
             return (CrmOffertaPdf.Crea(m, azienda, cliente, contatto, cfg.Valuta, cfg.OffertaNote), m.NumeroCompleto, azienda);
         }
 
