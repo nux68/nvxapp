@@ -44,6 +44,8 @@ export class RouteInfrastructureService {
       { path: 'admin', loadChildren: () => import('../../pages/infrastructure/admin-page/admin-page.module').then(m => m.AdminPageModule), canActivate: [RoleGuard4Admin] },
 
       { path: 'companypoweradmin', loadChildren: () => import('../../pages/infrastructure/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      // manuali utente in PDF (codice del manuale nell'url: /usermanual/infrastructure, /usermanual/crm...)
+      { path: 'usermanual/:code', loadChildren: () => import('../../pages/infrastructure/user-manual-page/user-manual-page.module').then(m => m.UserManualPageModule), canActivate: [authenticatedGuard] },
       // anagrafiche comuni (schema Common): clienti
       { path: 'customerlist', loadChildren: () => import('../../pages/infrastructure/customer-list-page/customer-list-page.module').then(m => m.CustomerListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'customeredit', loadChildren: () => import('../../pages/infrastructure/customer-edit-page/customer-edit-page.module').then(m => m.CustomerEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },

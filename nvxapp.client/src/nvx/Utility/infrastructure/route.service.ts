@@ -11,6 +11,9 @@ import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Accou
 import { ShowcaseService } from './showcase.service';
 import { ShowcaseInfrastructureService } from './showcase-infrastructure.service';
 import { ShowcaseAttendanceTrackingService } from './showcase-attendance-tracking.service';
+import { ShowcaseCrmService } from './showcase-crm.service';
+import { ShowcaseDocumentManagementService } from './showcase-document-management.service';
+import { ShowcaseAllFunctionService } from './showcase-all-function.service';
 
 
 @Injectable({
@@ -33,7 +36,8 @@ export class RouteService {
     const routesCrm = this.forApplication(this.routeCrmService.getRoutes(), ApplicationType.Crm)
       .concat(this.forFinancialAdvisorApplication(this.routeCrmService.getStudioRoutes(), ApplicationType.Crm));
     // showcase (pagine pubbliche prima del login): non dipende dagli applicativi attivi
-    const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService()).getRoutes();
+    const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService(),
+      new ShowcaseCrmService(), new ShowcaseDocumentManagementService(), new ShowcaseAllFunctionService()).getRoutes();
 
     return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2, routesDocumentManagement, routesCrm));
   }
