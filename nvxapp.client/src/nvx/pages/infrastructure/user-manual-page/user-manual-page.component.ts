@@ -2,11 +2,11 @@ import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { Subscription, filter } from 'rxjs';
+import { Subscription, filter, take } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserManualGenerateInModel, UserManualService } from '../../../ClientServer-Service/Infrastructure/UserManual/user-manual.service';
-import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { LongJobNotifierService, LongJobProgressUpdate } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { SITE_NAME } from '../../../Utility/infrastructure/site-name';
 
 /*
@@ -34,7 +34,10 @@ export class UserManualPageComponent implements OnDestroy {
               private longJobNotifierService: LongJobNotifierService,
               private transloco: TranslocoService) {
     // job del manuale terminato: si scarica il file e si toglie la notifica
-    this.sub = this.longJobNotifierService.jobFinished$.pipe(filter(j => !!this.jobId && j.jobId === this.jobId)).subscribe(job => {
+    this.sub = this.longJobNotifierService.jobFinished$.pipe(filter(j => !!this.jobId && j.jobId === this.jobId)).subscribe(job => this.scaricaJob(job));
+  }
+
+  private scaricaJob(job: LongJobProgressUpdate) {
       this.inPreparazione = false;
       this.jobId = null;
       if (!job.downloadUrl)
@@ -50,7 +53,6 @@ export class UserManualPageComponent implements OnDestroy {
         window.URL.revokeObjectURL(url);
         this.longJobNotifierService.dismissJob(job.jobId);
       });
-    });
   }
 
   get title(): string { return this.testo('title'); }
@@ -75,8 +77,15 @@ export class UserManualPageComponent implements OnDestroy {
     this.inPreparazione = true;
     this.service.Generate(request).subscribe({
       next: res => {
-        if (res.success && res.data?.jobId)
+        if (res.success && res.data?.jobId) {
           this.jobId = res.data.jobId;
+          // un manuale breve puo' essere gia' pronto prima della risposta (il server risponde dopo una breve attesa)
+          this.longJobNotifierService.activeJobs$.pipe(take(1)).subscribe(jobs => {
+            const pronto = jobs.find(j => j.jobId === this.jobId && j.isFinished);
+            if (pronto)
+              this.scaricaJob(pronto);
+          });
+        }
         else
           this.inPreparazione = false;
       },
