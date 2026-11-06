@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement._utility;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using Serilog;
@@ -53,14 +55,15 @@ namespace nvxapp.server.Utility
         {
             using var scope = _scopeFactory.CreateScope();
             var sp = scope.ServiceProvider;
-            var publicDb = sp.GetRequiredService<PublicDbContext>();
+            var companyApplicationRepository = sp.GetRequiredService<ICompanyApplicationRepository>();
+            var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
             var tenancy = sp.GetRequiredService<TenancySettings>();
             var factory = sp.GetRequiredService<IApplicationDbContextFactory>();
             var fileStorage = sp.GetRequiredService<IFileStorage>();
             var quota = sp.GetRequiredService<IStorageQuotaService>();
 
-            var aziende = await publicDb.CompanyApplication.AsNoTracking()
-                                        .Where(x => x.ApplicationType == ApplicationType.DocumentManagement && x.Active)
+            var aziende = await companyApplicationRepository
+                                        .FindAll(x => x.ApplicationType == ApplicationType.DocumentManagement && x.Active)
                                         .Select(x => x.IdCompany).ToListAsync(cancellationToken);
             int totale = 0;
             foreach (var idCompany in aziende)
@@ -68,19 +71,23 @@ namespace nvxapp.server.Utility
                 try
                 {
                     var schema = tenancy.MultiTenant ? TenantSchemaName.For(idCompany, ApplicationType.DocumentManagement) : TenantSchemaName.Public;
+                    // contesto dello schema dell'azienda (fuori da una richiesta): i dati passano dai repository creati su di esso
                     await using var db = (DocumentManagementDbContext)factory.Create(ApplicationType.DocumentManagement, schema);
+                    var cfgRepository = new Doc_CfgRepository(db, sp, httpContextAccessor);
+                    var documentoRepository = new Doc_DocumentoRepository(db, sp, httpContextAccessor);
+                    var versioneRepository = new Doc_VersioneRepository(db, sp, httpContextAccessor);
 
-                    var cfg = await db.Doc_Cfg.AsNoTracking().Where(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).FirstOrDefaultAsync(cancellationToken);
+                    var cfg = await cfgRepository.FindAll(x => x.Az_AnagraficaNavigation!.IdCompany == idCompany).FirstOrDefaultAsync(cancellationToken);
                     if (cfg == null || cfg.GiorniCestino <= 0)
                         continue;
 
                     var limite = DateTime.Now.AddDays(-cfg.GiorniCestino);
-                    var ids = await db.Doc_Documento.Where(x => x.IdAz_Anagrafica == cfg.IdAz_Anagrafica && x.NelCestino && x.DataCestino != null && x.DataCestino < limite)
+                    var ids = await documentoRepository.FindAll(x => x.IdAz_Anagrafica == cfg.IdAz_Anagrafica && x.NelCestino && x.DataCestino != null && x.DataCestino < limite)
                                       .Select(x => x.Id).ToListAsync(cancellationToken);
                     if (ids.Count == 0)
                         continue;
 
-                    totale += await DocumentFiles.EliminaDocumentiAsync(db, fileStorage, quota, idCompany, ids, cancellationToken);
+                    totale += await DocumentFiles.EliminaDocumentiAsync(documentoRepository, versioneRepository, fileStorage, quota, idCompany, ids, cancellationToken);
                 }
                 catch (Exception ex)
                 {

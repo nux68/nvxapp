@@ -7,7 +7,9 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.DocumentManagement;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
@@ -58,7 +60,13 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 
     public class DocumentManagementUtility : IDocumentManagementUtility
     {
-        private readonly DocumentManagementDbContext _db;
+        private readonly IDoc_CfgRepository _cfgRepository;
+        private readonly IDoc_Par_TipoRepository _tipoRepository;
+        private readonly IDoc_CartellaRepository _cartellaRepository;
+        private readonly IDoc_UtenteAbilitazioneRepository _abilitazioneRepository;
+        private readonly IDoc_DocumentoRepository _documentoRepository;
+        private readonly IDoc_LogRepository _logRepository;
+        private readonly IDoc_Dip_AnagraficaReadRepository _dipendenteReadRepository;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
         private readonly IApplicationActivationAuthorizer _authorizer;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -66,13 +74,25 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 
         private DocContesto? _contesto;
 
-        public DocumentManagementUtility(DocumentManagementDbContext db,
+        public DocumentManagementUtility(IDoc_CfgRepository cfgRepository,
+                                         IDoc_Par_TipoRepository tipoRepository,
+                                         IDoc_CartellaRepository cartellaRepository,
+                                         IDoc_UtenteAbilitazioneRepository abilitazioneRepository,
+                                         IDoc_DocumentoRepository documentoRepository,
+                                         IDoc_LogRepository logRepository,
+                                         IDoc_Dip_AnagraficaReadRepository dipendenteReadRepository,
                                          ICommonCompanyUtility commonCompanyUtility,
                                          IApplicationActivationAuthorizer authorizer,
                                          IHttpContextAccessor httpContextAccessor,
                                          UserManager<ApplicationUser> userManager)
         {
-            _db = db;
+            _cfgRepository = cfgRepository;
+            _tipoRepository = tipoRepository;
+            _cartellaRepository = cartellaRepository;
+            _abilitazioneRepository = abilitazioneRepository;
+            _documentoRepository = documentoRepository;
+            _logRepository = logRepository;
+            _dipendenteReadRepository = dipendenteReadRepository;
             _commonCompanyUtility = commonCompanyUtility;
             _authorizer = authorizer;
             _httpContextAccessor = httpContextAccessor;
@@ -94,7 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 
             var appUser = string.IsNullOrEmpty(idUtente) ? null : await _userManager.FindByIdAsync(idUtente);
             var ruoli = appUser == null ? new List<string>() : (await _userManager.GetRolesAsync(appUser)).ToList();
-            var abil = await _db.Doc_UtenteAbilitazione.AsNoTracking().FirstOrDefaultAsync(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente);
+            var abil = await _abilitazioneRepository.FindAll(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente).FirstOrDefaultAsync();
             bool powerAdmin = ruoli.Contains(nameof(RoleCode.CompanyPowerAdmin));
             bool admin = ruoli.Contains(nameof(RoleCode.CompanyAdmin));
             // il CompanyPowerAdmin e' sempre abilitato; il CompanyAdmin solo se abilitato esplicitamente
@@ -113,14 +133,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
                 CaricaPersonale = carica,
                 GestisceAbilitazioni = powerAdmin || await _authorizer.CanManageCompanyAsync(idCompany),
                 IdDip_Anagrafica = string.IsNullOrEmpty(idUtente) ? null
-                    : await _db.Dip_Anagrafica.AsNoTracking().Where(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente).Select(x => (int?)x.Id).FirstOrDefaultAsync()
+                    : await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == az.Id && x.IdAspNetUsers == idUtente).Select(x => (int?)x.Id).FirstOrDefaultAsync()
             };
             return _contesto;
         }
 
         public IQueryable<Doc_Documento> Visibili(DocContesto ctx)
         {
-            var q = _db.Doc_Documento.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var q = _documentoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             var idUtente = ctx.IdUtente;
             var idDip = ctx.IdDip_Anagrafica;
 
@@ -138,7 +158,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 
         public async Task LogAsync(DocContesto ctx, Doc_LogAzione azione, int? idDocumento, int? versione = null, string? dettaglio = null)
         {
-            _db.Doc_Log.Add(new Doc_Log
+            // il registro porta l'utente del contesto (i repository dell'utilita' non sono campi del servizio)
+            ((ICurrentUser)_logRepository).CurrentUserId = ctx.IdUtente;
+            await _logRepository.CreateAsync(new Doc_Log
             {
                 IdDoc_Documento = idDocumento,
                 Versione = versione,
@@ -151,16 +173,17 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
                 CreationDate = DateTime.Now,
                 ChangeUser = ctx.IdUtente
             });
-            await _db.SaveChangesAsync();
         }
 
         public async Task EnsureDefaultsAsync(int idAz_Anagrafica)
         {
-            if (await _db.Doc_Cfg.AnyAsync(x => x.IdAz_Anagrafica == idAz_Anagrafica))
+            if (await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == idAz_Anagrafica).AnyAsync())
                 return;
 
+            // tutto in un unico salvataggio (i repository condividono il contesto della richiesta): con due richieste
+            // contemporanee l'indice unico di Doc_Cfg ne fa fallire una sola, senza valori predefiniti doppi
             var now = DateTime.Now;
-            _db.Doc_Cfg.Add(new Doc_Cfg { IdAz_Anagrafica = idAz_Anagrafica, CreationDate = now });
+            await _cfgRepository.CreateAsync(new Doc_Cfg { IdAz_Anagrafica = idAz_Anagrafica, CreationDate = now }, false);
 
             // tipologie predefinite (codice, chiave del testo, categoria, anni di conservazione, scadenza, presa visione, competenza)
             var tipi = new (string Codice, string Chiave, Doc_Categoria Cat, int? Anni, bool Scad, bool Presa, bool Comp)[]
@@ -179,30 +202,30 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
             };
             int ordine = 0;
             foreach (var t in tipi)
-                _db.Doc_Par_Tipo.Add(new Doc_Par_Tipo
+                await _tipoRepository.CreateAsync(new Doc_Par_Tipo
                 {
                     IdAz_Anagrafica = idAz_Anagrafica, Codice = t.Codice, Descrizione = DocumentManagementMessages.Get(t.Chiave),
                     Categoria = t.Cat, AnniConservazione = t.Anni, HaScadenza = t.Scad, PresaVisioneRichiesta = t.Presa, HaCompetenza = t.Comp,
                     Ordine = (ordine += 10), Active = true, CreationDate = now
-                });
+                }, false);
 
             ordine = 0;
             foreach (var (chiave, visibile) in new[] { ("DefaultFolderPersonnel", false), ("DefaultFolderAdministration", false),
                                                       ("DefaultFolderCustomers", false), ("DefaultFolderNotices", true) })
-                _db.Doc_Cartella.Add(new Doc_Cartella
+                await _cartellaRepository.CreateAsync(new Doc_Cartella
                 {
                     IdAz_Anagrafica = idAz_Anagrafica, Descrizione = DocumentManagementMessages.Get(chiave),
                     Ordine = (ordine += 10), VisibileUtenti = visibile, DiSistema = true, CreationDate = now
-                });
+                }, false);
 
             try
             {
-                await _db.SaveChangesAsync();
+                await _cfgRepository.SaveChange();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                // due richieste contemporanee: l'altra ha gia' creato i valori predefiniti
-                _db.ChangeTracker.Clear();
+                // due richieste contemporanee: l'altra ha gia' creato i valori predefiniti; si scartano quelli non salvati
+                ex.Entries.FirstOrDefault()?.Context.ChangeTracker.Clear();
             }
         }
     }

@@ -11,6 +11,8 @@ using nvxapp.server.data.Entities.Tenant.DocumentManagement;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.Common;
+using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement._utility;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_ConfigService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -27,8 +29,17 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
     */
     public class Doc_ConfigService : ServiceBase, IDoc_ConfigService
     {
-        private readonly DocumentManagementDbContext _db;
-        private readonly PublicDbContext _publicDb;
+        private readonly IDoc_CfgRepository _cfgRepository;
+        private readonly IDoc_Par_TipoRepository _tipoRepository;
+        private readonly IDoc_CartellaRepository _cartellaRepository;
+        private readonly IDoc_UtenteAbilitazioneRepository _abilitazioneRepository;
+        private readonly IDoc_DocumentoRepository _documentoRepository;
+        private readonly IDoc_Dip_AnagraficaReadRepository _dipendenteReadRepository;
+        private readonly IDip_AnagraficaCommonRepository _dipendenteRepository;
+        private readonly IAspNetUsersRepository _usersRepository;
+        private readonly IAspNetRolesRepository _rolesRepository;
+        private readonly IAspNetUserRolesRepository _userRolesRepository;
+        private readonly IUserCompanyRepository _userCompanyRepository;
         private readonly IDocumentManagementUtility _utility;
 
         public Doc_ConfigService(IMapper mapper,
@@ -37,12 +48,29 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                                  IOptions<JwtParameter> jwtParameter,
                                  IHttpContextAccessor httpContextAccessor,
                                  IConfiguration configuration,
-                                 DocumentManagementDbContext db,
-                                 PublicDbContext publicDb,
+                                 IDoc_CfgRepository cfgRepository,
+                                 IDoc_Par_TipoRepository tipoRepository,
+                                 IDoc_CartellaRepository cartellaRepository,
+                                 IDoc_UtenteAbilitazioneRepository abilitazioneRepository,
+                                 IDoc_DocumentoRepository documentoRepository,
+                                 IDoc_Dip_AnagraficaReadRepository dipendenteReadRepository,
+                                 IDip_AnagraficaCommonRepository dipendenteRepository,
+                                 IAspNetRolesRepository rolesRepository,
+                                 IAspNetUserRolesRepository userRolesRepository,
+                                 IUserCompanyRepository userCompanyRepository,
                                  IDocumentManagementUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
-            _publicDb = publicDb;
+            _cfgRepository = cfgRepository;
+            _tipoRepository = tipoRepository;
+            _cartellaRepository = cartellaRepository;
+            _abilitazioneRepository = abilitazioneRepository;
+            _documentoRepository = documentoRepository;
+            _dipendenteReadRepository = dipendenteReadRepository;
+            _dipendenteRepository = dipendenteRepository;
+            _usersRepository = aspNetUsersRepository;
+            _rolesRepository = rolesRepository;
+            _userRolesRepository = userRolesRepository;
+            _userCompanyRepository = userCompanyRepository;
             _utility = utility;
         }
 
@@ -86,13 +114,13 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 if (dati.GiorniCestino < 0 || dati.VersioniDaConservare < 0)
                     throw new UserMessageException(DocumentManagementMessages.Get("CfgInvalid"));
 
-                var cfg = await _db.Doc_Cfg.AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+                var cfg = await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstAsync();
                 cfg.GiorniCestino = dati.GiorniCestino;
                 cfg.VersioniDaConservare = dati.VersioniDaConservare;
                 cfg.NotificheEmail = dati.NotificheEmail;
                 cfg.ModifiedDate = DateTime.Now;
                 cfg.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _cfgRepository.UpdateAsync(cfg);
                 return new Doc_CfgPutOutModel { Cfg = await CfgAsync(ctx) };
             }, isSubProcess);
         }
@@ -106,22 +134,21 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 var codice = (dati.Codice ?? string.Empty).Trim().ToUpperInvariant();
                 if (codice.Length == 0 || string.IsNullOrWhiteSpace(dati.Descrizione) || (dati.AnniConservazione.HasValue && dati.AnniConservazione <= 0))
                     throw new UserMessageException(DocumentManagementMessages.Get("TypeInvalid"));
-                if (await _db.Doc_Par_Tipo.AnyAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Codice == codice && x.Id != dati.Id))
+                if (await _tipoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Codice == codice && x.Id != dati.Id).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("TypeDuplicate", codice));
 
                 Doc_Par_Tipo tipo;
                 if (dati.Id > 0)
                 {
-                    tipo = await _db.Doc_Par_Tipo.AsTracking().FirstOrDefaultAsync(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                    tipo = await _tipoRepository.FindAll(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                            ?? throw new UserMessageException(DocumentManagementMessages.Get("TypeNotFound"));
                     // la categoria decide chi vede i documenti: non si cambia se la tipologia e' gia' usata
-                    if (tipo.Categoria != dati.Categoria && await _db.Doc_Documento.AnyAsync(x => x.IdDoc_Par_Tipo == tipo.Id))
+                    if (tipo.Categoria != dati.Categoria && await _documentoRepository.FindAll(x => x.IdDoc_Par_Tipo == tipo.Id).AnyAsync())
                         throw new UserMessageException(DocumentManagementMessages.Get("TypeCategoryInUse"));
                 }
                 else
                 {
                     tipo = new Doc_Par_Tipo { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now };
-                    _db.Doc_Par_Tipo.Add(tipo);
                 }
 
                 tipo.Codice = codice;
@@ -135,7 +162,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 tipo.Active = dati.Active;
                 tipo.ModifiedDate = DateTime.Now;
                 tipo.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                tipo = await _tipoRepository.UpsertAsync(tipo);
 
                 return new Doc_TipoPutOutModel { Tipo = (await TipiAsync(ctx)).First(x => x.Id == tipo.Id) };
             }, isSubProcess);
@@ -146,20 +173,20 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await SoloPowerAdmin();
-                var tipo = await _db.Doc_Par_Tipo.AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                var tipo = await _tipoRepository.FindAll(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                            ?? throw new UserMessageException(DocumentManagementMessages.Get("TypeNotFound"));
                 var retVal = new Doc_DeleteOutModel();
-                if (await _db.Doc_Documento.AnyAsync(x => x.IdDoc_Par_Tipo == tipo.Id))
+                if (await _documentoRepository.FindAll(x => x.IdDoc_Par_Tipo == tipo.Id).AnyAsync())
                 {
                     tipo.Active = false;
                     tipo.ModifiedDate = DateTime.Now;
+                    await _tipoRepository.UpdateAsync(tipo);
                 }
                 else
                 {
-                    _db.Doc_Par_Tipo.Remove(tipo);
+                    await _tipoRepository.DeleteAsync(tipo);
                     retVal.Deleted = true;
                 }
-                await _db.SaveChangesAsync();
                 return retVal;
             }, isSubProcess);
         }
@@ -176,19 +203,18 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 Doc_Cartella cartella;
                 if (dati.Id > 0)
                 {
-                    cartella = await _db.Doc_Cartella.AsTracking().FirstOrDefaultAsync(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                    cartella = await _cartellaRepository.FindAll(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                                ?? throw new UserMessageException(DocumentManagementMessages.Get("FolderNotFound"));
                 }
                 else
                 {
                     cartella = new Doc_Cartella { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now };
-                    _db.Doc_Cartella.Add(cartella);
                 }
 
                 // cartella padre dell'azienda e senza cicli
                 if (dati.IdDoc_Cartella.HasValue)
                 {
-                    var tutte = await _db.Doc_Cartella.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.IdDoc_Cartella);
+                    var tutte = await _cartellaRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToDictionaryAsync(x => x.Id, x => x.IdDoc_Cartella);
                     int? corrente = dati.IdDoc_Cartella;
                     while (corrente.HasValue)
                     {
@@ -204,7 +230,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 cartella.VisibileUtenti = dati.VisibileUtenti;
                 cartella.ModifiedDate = DateTime.Now;
                 cartella.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                cartella = await _cartellaRepository.UpsertAsync(cartella);
 
                 return new Doc_CartellaPutOutModel { Cartella = (await CartelleAsync(ctx)).First(x => x.Id == cartella.Id) };
             }, isSubProcess);
@@ -215,15 +241,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await SoloPowerAdmin();
-                var cartella = await _db.Doc_Cartella.AsTracking().FirstOrDefaultAsync(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                var cartella = await _cartellaRepository.FindAll(x => x.Id == model.Data.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                                ?? throw new UserMessageException(DocumentManagementMessages.Get("FolderNotFound"));
                 if (cartella.DiSistema)
                     throw new UserMessageException(DocumentManagementMessages.Get("FolderSystem"));
-                if (await _db.Doc_Cartella.AnyAsync(x => x.IdDoc_Cartella == cartella.Id) || await _db.Doc_Documento.AnyAsync(x => x.IdDoc_Cartella == cartella.Id))
+                if (await _cartellaRepository.FindAll(x => x.IdDoc_Cartella == cartella.Id).AnyAsync() || await _documentoRepository.FindAll(x => x.IdDoc_Cartella == cartella.Id).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("FolderNotEmpty"));
 
-                _db.Doc_Cartella.Remove(cartella);
-                await _db.SaveChangesAsync();
+                await _cartellaRepository.DeleteAsync(cartella);
                 return new Doc_DeleteOutModel { Deleted = true };
             }, isSubProcess);
         }
@@ -252,18 +277,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 if (ammesso.Fisso)
                     throw new UserMessageException(DocumentManagementMessages.Get("PermissionFixed"));
 
-                var row = await _db.Doc_UtenteAbilitazione.AsTracking().FirstOrDefaultAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers == dati.IdAspNetUsers);
-                if (row == null)
-                {
-                    row = new Doc_UtenteAbilitazione { IdAz_Anagrafica = ctx.IdAz_Anagrafica, IdAspNetUsers = dati.IdAspNetUsers, CreationDate = DateTime.Now };
-                    _db.Doc_UtenteAbilitazione.Add(row);
-                }
+                var row = await _abilitazioneRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers == dati.IdAspNetUsers).FirstOrDefaultAsync()
+                          ?? new Doc_UtenteAbilitazione { IdAz_Anagrafica = ctx.IdAz_Anagrafica, IdAspNetUsers = dati.IdAspNetUsers, CreationDate = DateTime.Now };
                 // chi carica vede anche
                 row.CaricaPersonale = dati.CaricaPersonale;
                 row.VedePersonale = dati.VedePersonale || dati.CaricaPersonale;
                 row.ModifiedDate = DateTime.Now;
                 row.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _abilitazioneRepository.UpsertAsync(row);
 
                 return new Doc_AbilitazionePutOutModel { Abilitazione = (await AbilitazioniAsync(ctx)).First(x => x.IdAspNetUsers == dati.IdAspNetUsers) };
             }, isSubProcess);
@@ -291,21 +312,20 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                     throw new UserMessageException(DocumentManagementMessages.Get("EmployeeNameRequired"));
                 if (cf != null && cf.Length != 16 && cf.Length != 11)
                     throw new UserMessageException(DocumentManagementMessages.Get("EmployeeTaxCodeInvalid"));
-                if (cf != null && await _db.Dip_Anagrafica.AnyAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.CodiceFiscale == cf && x.Id != dati.Id))
+                if (cf != null && await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.CodiceFiscale == cf && x.Id != dati.Id).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("EmployeeTaxCodeDuplicate", cf));
-                if (matricola != null && await _db.Dip_Anagrafica.AnyAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Matricola == matricola && x.Id != dati.Id))
+                if (matricola != null && await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Matricola == matricola && x.Id != dati.Id).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("EmployeeNumberDuplicate", matricola));
 
                 nvxapp.server.data.Entities.Tenant.Dip_Anagrafica dip;
                 if (dati.Id > 0)
                 {
-                    dip = await _db.Dip_Anagrafica.AsTracking().FirstOrDefaultAsync(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+                    dip = await _dipendenteRepository.FindAll(x => x.Id == dati.Id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                           ?? throw new UserMessageException(DocumentManagementMessages.Get("EmployeeNotFound"));
                 }
                 else
                 {
                     dip = new nvxapp.server.data.Entities.Tenant.Dip_Anagrafica { IdAz_Anagrafica = ctx.IdAz_Anagrafica, CreationDate = DateTime.Now };
-                    _db.Dip_Anagrafica.Add(dip);
                 }
                 dip.Cognome = cognome;
                 dip.Nome = nome;
@@ -316,7 +336,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 dip.Attivo = dati.Attivo;
                 dip.ModifiedDate = DateTime.Now;
                 dip.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                dip = await _dipendenteRepository.UpsertAsync(dip);
 
                 return new Doc_DipendentePutOutModel { Dipendente = (await DipendentiAsync(ctx)).First(x => x.Id == dip.Id) };
             }, isSubProcess);
@@ -326,9 +346,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
         private async Task<List<Doc_DipendenteModel>> DipendentiAsync(DocContesto ctx)
         {
-            var dipendenti = await _db.Dip_Anagrafica.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
+            var dipendenti = await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
             var idUtenti = dipendenti.Where(x => x.IdAspNetUsers != null).Select(x => x.IdAspNetUsers!).ToList();
-            var nomi = await _publicDb.Users.Where(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            var nomi = await _usersRepository.FindAll(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
             return dipendenti.Select(x => new Doc_DipendenteModel
                              {
                                  Id = x.Id, Nominativo = (x.Cognome + " " + x.Nome).Trim(), Cognome = x.Cognome, Nome = x.Nome,
@@ -348,21 +368,23 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         */
         private async Task AllineaUtentiAsync(DocContesto ctx)
         {
-            var idRuoloUser = await _publicDb.Roles.Where(r => r.Name == nameof(RoleCode.User)).Select(r => r.Id).FirstOrDefaultAsync();
+            var idRuoloUser = await _rolesRepository.FindAll(r => r.Name == nameof(RoleCode.User)).Select(r => r.Id).FirstOrDefaultAsync();
             if (idRuoloUser == null)
                 return;
-            var utenti = await _publicDb.UserCompany.Where(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
-                                        .Where(x => _publicDb.UserRoles.Any(r => r.UserId == x.IdAspNetUsers && r.RoleId == idRuoloUser))
+            var ruoliUser = _userRolesRepository.FindAll(r => r.RoleId == idRuoloUser);
+            var utenti = await _userCompanyRepository.FindAll(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
+                                        .Where(x => ruoliUser.Any(r => r.UserId == x.IdAspNetUsers))
                                         .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
-            var conAnagrafica = await _db.Dip_Anagrafica.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers != null)
+            var conAnagrafica = await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers != null)
                                          .Select(x => x.IdAspNetUsers!).ToListAsync();
             var mancanti = utenti.Except(conAnagrafica).ToList();
             if (mancanti.Count == 0)
                 return;
 
-            var nomi = await _publicDb.Users.Where(u => mancanti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            var nomi = await _usersRepository.FindAll(u => mancanti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
             foreach (var idUtente in mancanti)
-                _db.Dip_Anagrafica.Add(new nvxapp.server.data.Entities.Tenant.Dip_Anagrafica
+                // tabella comune: si scrive con il repository Common (un solo salvataggio per tutti)
+                await _dipendenteRepository.CreateAsync(new nvxapp.server.data.Entities.Tenant.Dip_Anagrafica
                 {
                     IdAz_Anagrafica = ctx.IdAz_Anagrafica,
                     IdAspNetUsers = idUtente,
@@ -370,29 +392,29 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                     Attivo = true,
                     CreationDate = DateTime.Now,
                     ChangeUser = ctx.IdUtente
-                });
+                }, false);
             try
             {
-                await _db.SaveChangesAsync();
+                await _dipendenteRepository.SaveChange();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
                 // creata nel frattempo da un'altra richiesta (es. le presenze): indice unico azienda/utente
-                _db.ChangeTracker.Clear();
+                ex.Entries.FirstOrDefault()?.Context.ChangeTracker.Clear();
             }
         }
 
         private async Task<Doc_CfgModel> CfgAsync(DocContesto ctx)
         {
-            var cfg = await _db.Doc_Cfg.AsNoTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            var cfg = await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstAsync();
             return new Doc_CfgModel { GiorniCestino = cfg.GiorniCestino, VersioniDaConservare = cfg.VersioniDaConservare, NotificheEmail = cfg.NotificheEmail };
         }
 
         private async Task<List<Doc_Par_TipoModel>> TipiAsync(DocContesto ctx)
         {
-            var conteggi = await _db.Doc_Documento.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+            var conteggi = await _documentoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
                                                   .GroupBy(x => x.IdDoc_Par_Tipo).Select(g => new { g.Key, Count = g.Count() }).ToListAsync();
-            return (await _db.Doc_Par_Tipo.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync())
+            return (await _tipoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync())
                    .Select(x => new Doc_Par_TipoModel
                    {
                        Id = x.Id, Codice = x.Codice, Descrizione = x.Descrizione, Categoria = x.Categoria, AnniConservazione = x.AnniConservazione,
@@ -404,9 +426,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
         private async Task<List<Doc_CartellaModel>> CartelleAsync(DocContesto ctx)
         {
-            var conteggi = await _db.Doc_Documento.Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdDoc_Cartella != null && !x.NelCestino)
+            var conteggi = await _documentoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdDoc_Cartella != null && !x.NelCestino)
                                                   .GroupBy(x => x.IdDoc_Cartella).Select(g => new { g.Key, Count = g.Count() }).ToListAsync();
-            var tutte = await _db.Doc_Cartella.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
+            var tutte = await _cartellaRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
             var perId = tutte.ToDictionary(x => x.Id);
 
             string Percorso(Doc_Cartella c)
@@ -432,14 +454,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
         private async Task<List<Doc_AbilitazioneModel>> AbilitazioniAsync(DocContesto ctx)
         {
-            var ruoli = await _publicDb.Roles.Where(r => r.Name == nameof(RoleCode.CompanyPowerAdmin) || r.Name == nameof(RoleCode.CompanyAdmin))
+            var ruoli = await _rolesRepository.FindAll(r => r.Name == nameof(RoleCode.CompanyPowerAdmin) || r.Name == nameof(RoleCode.CompanyAdmin))
                                              .Select(r => new { r.Id, r.Name }).ToListAsync();
             var idRuoli = ruoli.Select(r => r.Id).ToList();
-            var utenti = await _publicDb.UserCompany.Where(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
+            var utenti = await _userCompanyRepository.FindAll(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
                                                     .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
-            var conRuolo = await _publicDb.UserRoles.Where(x => utenti.Contains(x.UserId) && idRuoli.Contains(x.RoleId)).ToListAsync();
-            var nomi = await _publicDb.Users.Where(u => utenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
-            var abil = await _db.Doc_UtenteAbilitazione.AsNoTracking().Where(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
+            var conRuolo = await _userRolesRepository.FindAll(x => utenti.Contains(x.UserId) && idRuoli.Contains(x.RoleId)).ToListAsync();
+            var nomi = await _usersRepository.FindAll(u => utenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            var abil = await _abilitazioneRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
 
             var idPowerAdmin = ruoli.FirstOrDefault(r => r.Name == nameof(RoleCode.CompanyPowerAdmin))?.Id;
 

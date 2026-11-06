@@ -9,6 +9,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.DocumentManagement;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement._utility;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_DocumentoService.Models;
@@ -42,8 +43,16 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             ".xml", ".zip", ".eml", ".msg"
         };
 
-        private readonly DocumentManagementDbContext _db;
-        private readonly PublicDbContext _publicDb;
+        private readonly IDoc_DocumentoRepository _documentoRepository;
+        private readonly IDoc_VersioneRepository _versioneRepository;
+        private readonly IDoc_DestinatarioRepository _destinatarioRepository;
+        private readonly IDoc_LogRepository _logRepository;
+        private readonly IDoc_Par_TipoRepository _tipoRepository;
+        private readonly IDoc_CartellaRepository _cartellaRepository;
+        private readonly IDoc_CfgRepository _cfgRepository;
+        private readonly IDoc_Dip_AnagraficaReadRepository _dipendenteReadRepository;
+        private readonly IDoc_Az_ClienteReadRepository _clienteReadRepository;
+        private readonly IAspNetUsersRepository _usersRepository;
         private readonly IDocumentManagementUtility _utility;
         private readonly IFileStorage _fileStorage;
         private readonly IStorageQuotaService _quota;
@@ -55,15 +64,30 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                                     IOptions<JwtParameter> jwtParameter,
                                     IHttpContextAccessor httpContextAccessor,
                                     IConfiguration configuration,
-                                    DocumentManagementDbContext db,
-                                    PublicDbContext publicDb,
+                                    IDoc_DocumentoRepository documentoRepository,
+                                    IDoc_VersioneRepository versioneRepository,
+                                    IDoc_DestinatarioRepository destinatarioRepository,
+                                    IDoc_LogRepository logRepository,
+                                    IDoc_Par_TipoRepository tipoRepository,
+                                    IDoc_CartellaRepository cartellaRepository,
+                                    IDoc_CfgRepository cfgRepository,
+                                    IDoc_Dip_AnagraficaReadRepository dipendenteReadRepository,
+                                    IDoc_Az_ClienteReadRepository clienteReadRepository,
                                     IDocumentManagementUtility utility,
                                     IFileStorage fileStorage,
                                     IStorageQuotaService quota,
                                     IEmailService emailService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
-            _publicDb = publicDb;
+            _documentoRepository = documentoRepository;
+            _versioneRepository = versioneRepository;
+            _destinatarioRepository = destinatarioRepository;
+            _logRepository = logRepository;
+            _tipoRepository = tipoRepository;
+            _cartellaRepository = cartellaRepository;
+            _cfgRepository = cfgRepository;
+            _dipendenteReadRepository = dipendenteReadRepository;
+            _clienteReadRepository = clienteReadRepository;
+            _usersRepository = aspNetUsersRepository;
             _utility = utility;
             _fileStorage = fileStorage;
             _quota = quota;
@@ -165,14 +189,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                     };
                     Applica(doc, dati, tipo);
                     doc.Doc_Versione = new List<Doc_Versione> { caricato.Versione(1, dati.NoteVersione, ctx.IdUtente) };
-                    _db.Doc_Documento.Add(doc);
-                    await _db.SaveChangesAsync();
+                    // documento con la prima versione (stesso salvataggio)
+                    doc = await _documentoRepository.CreateAsync(doc);
 
                     await AggiornaDestinatarioDipendenteAsync(doc, tipo);
                     await _quota.ConfirmAsync(ctx.IdCompany, caricato.Dimensione);
                     caricato.Confermato = true;
 
-                    if (await _db.Doc_Versione.AnyAsync(v => v.Hash == caricato.Hash && v.IdDoc_Documento != doc.Id && v.Doc_DocumentoNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+                    if (await _versioneRepository.FindAll(v => v.Hash == caricato.Hash && v.IdDoc_Documento != doc.Id && v.Doc_DocumentoNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
                         retVal.Messages.Add(new Message(DocumentManagementMessages.Get("DuplicateFile"), MessageType.Warning));
 
                     await _utility.LogAsync(ctx, Doc_LogAzione.Caricamento, doc.Id, 1, caricato.NomeFile);
@@ -197,19 +221,20 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 var caricato = await CaricaFileAsync(ctx, file, nomeFile, contentType);
                 try
                 {
-                    int numero = (await _db.Doc_Versione.Where(v => v.IdDoc_Documento == doc.Id).MaxAsync(v => (int?)v.Numero) ?? 0) + 1;
-                    _db.Doc_Versione.Add(caricato.Versione(numero, null, ctx.IdUtente, doc.Id));
+                    int numero = (await _versioneRepository.FindAll(v => v.IdDoc_Documento == doc.Id).MaxAsync(v => (int?)v.Numero) ?? 0) + 1;
+                    // versione e documento nello stesso salvataggio (i repository condividono il contesto della richiesta)
+                    await _versioneRepository.CreateAsync(caricato.Versione(numero, null, ctx.IdUtente, doc.Id), false);
                     doc.VersioneCorrente = numero;
                     doc.Testo = caricato.Testo;
                     doc.ModifiedDate = DateTime.Now;
                     doc.ChangeUser = ctx.IdUtente;
-                    await _db.SaveChangesAsync();
+                    await _documentoRepository.UpdateAsync(doc);
 
                     await _quota.ConfirmAsync(ctx.IdCompany, caricato.Dimensione);
                     caricato.Confermato = true;
 
                     // la nuova versione va riletta: si azzerano le prese visione
-                    await _db.Doc_Destinatario.Where(r => r.IdDoc_Documento == doc.Id)
+                    await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id)
                              .ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPresaVisione, (DateTime?)null).SetProperty(r => r.DataPrimaApertura, (DateTime?)null));
 
                     await PotaVersioniAsync(ctx, doc.Id);
@@ -235,7 +260,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 Applica(doc, dati, tipo);
                 doc.ModifiedDate = DateTime.Now;
                 doc.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _documentoRepository.UpdateAsync(doc);
 
                 await AggiornaDestinatarioDipendenteAsync(doc, tipo);
                 await _utility.LogAsync(ctx, Doc_LogAzione.Modifica, doc.Id);
@@ -262,7 +287,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 doc.DataCestino = cestino ? DateTime.Now : null;
                 doc.ModifiedDate = DateTime.Now;
                 doc.ChangeUser = ctx.IdUtente;
-                await _db.SaveChangesAsync();
+                await _documentoRepository.UpdateAsync(doc);
                 await _utility.LogAsync(ctx, cestino ? Doc_LogAzione.Cestino : Doc_LogAzione.Ripristino, doc.Id);
                 return new Doc_DocumentoIdOutModel { Id = doc.Id };
             }, isSubProcess);
@@ -275,7 +300,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 var ctx = await _utility.ContestoAsync();
                 var doc = await DocumentoModificabileAsync(ctx, model.Data.Id, nelCestino: true);
                 await _utility.LogAsync(ctx, Doc_LogAzione.Eliminazione, doc.Id, null, doc.Titolo);
-                await DocumentFiles.EliminaDocumentiAsync(_db, _fileStorage, _quota, ctx.IdCompany, new List<int> { doc.Id });
+                await DocumentFiles.EliminaDocumentiAsync(_documentoRepository, _versioneRepository, _fileStorage, _quota, ctx.IdCompany, new List<int> { doc.Id });
                 return new Doc_DocumentoIdOutModel { Id = model.Data.Id };
             }, isSubProcess);
         }
@@ -295,7 +320,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 var ids = nelCestino.Where(x => x.Personale ? ctx.CaricaPersonale : ctx.AmministraArchivio).Select(x => x.Id).ToList();
                 foreach (var id in ids)
                     await _utility.LogAsync(ctx, Doc_LogAzione.Eliminazione, id, null, "cestino svuotato");
-                var eliminati = await DocumentFiles.EliminaDocumentiAsync(_db, _fileStorage, _quota, ctx.IdCompany, ids);
+                var eliminati = await DocumentFiles.EliminaDocumentiAsync(_documentoRepository, _versioneRepository, _fileStorage, _quota, ctx.IdCompany, ids);
                 return new Doc_SvuotaCestinoOutModel { Eliminati = eliminati };
             }, isSubProcess);
         }
@@ -309,11 +334,11 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             var doc = await _utility.Visibili(ctx).FirstOrDefaultAsync(x => x.Id == idDocumento)
                       ?? throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
             var numero = numeroVersione ?? doc.VersioneCorrente;
-            var versione = await _db.Doc_Versione.AsNoTracking().FirstOrDefaultAsync(v => v.IdDoc_Documento == doc.Id && v.Numero == numero)
+            var versione = await _versioneRepository.FindAll(v => v.IdDoc_Documento == doc.Id && v.Numero == numero).FirstOrDefaultAsync()
                            ?? throw new UserMessageException(DocumentManagementMessages.Get("VersionNotFound"));
 
             // versioni precedenti: solo chi puo' modificare il documento
-            if (numero != doc.VersioneCorrente && !PuoModificare(ctx, doc, await _db.Doc_Par_Tipo.AsNoTracking().FirstAsync(t => t.Id == doc.IdDoc_Par_Tipo)))
+            if (numero != doc.VersioneCorrente && !PuoModificare(ctx, doc, await _tipoRepository.FindAll(t => t.Id == doc.IdDoc_Par_Tipo).FirstAsync()))
                 throw new UserMessageException(DocumentManagementMessages.Get("NotAllowed"));
 
             var stream = await _fileStorage.OpenAsync(versione.StorageKey);
@@ -330,8 +355,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 var doc = await _utility.Visibili(ctx).FirstOrDefaultAsync(x => x.Id == model.Data.Id)
                           ?? throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
                 var idDip = ctx.IdDip_Anagrafica;
-                var aggiornati = await _db.Doc_Destinatario
-                    .Where(r => r.IdDoc_Documento == doc.Id && (r.IdAspNetUsers == ctx.IdUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.DataPresaVisione == null)
+                var aggiornati = await _destinatarioRepository
+                    .FindAll(r => r.IdDoc_Documento == doc.Id && (r.IdAspNetUsers == ctx.IdUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.DataPresaVisione == null)
                     .ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPresaVisione, DateTime.Now));
                 if (aggiornati == 0)
                     throw new UserMessageException(DocumentManagementMessages.Get("NotRecipient"));
@@ -345,12 +370,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await _utility.ContestoAsync();
-                var q = _db.Doc_Log.AsNoTracking().AsQueryable();
+                var q = _logRepository.FindAll(x => true);
                 if (model.Data.IdDoc_Documento.HasValue)
                 {
                     var doc = await _utility.Visibili(ctx).FirstOrDefaultAsync(x => x.Id == model.Data.IdDoc_Documento)
                               ?? throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
-                    if (!PuoModificare(ctx, doc, await _db.Doc_Par_Tipo.AsNoTracking().FirstAsync(t => t.Id == doc.IdDoc_Par_Tipo)))
+                    if (!PuoModificare(ctx, doc, await _tipoRepository.FindAll(t => t.Id == doc.IdDoc_Par_Tipo).FirstAsync()))
                         throw new UserMessageException(DocumentManagementMessages.Get("NotAllowed"));
                     q = q.Where(x => x.IdDoc_Documento == doc.Id);
                 }
@@ -359,7 +384,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                     // registro completo: CompanyPowerAdmin abilitato ai documenti del personale
                     if (!(ctx.PowerAdmin && ctx.VedePersonale))
                         throw new UserMessageException(DocumentManagementMessages.Get("NotAllowed"));
-                    var idDocAzienda = _db.Doc_Documento.Where(d => d.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(d => (int?)d.Id);
+                    var idDocAzienda = _documentoRepository.FindAll(d => d.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Select(d => (int?)d.Id);
                     q = q.Where(x => x.IdDoc_Documento == null || idDocAzienda.Contains(x.IdDoc_Documento));
                 }
 
@@ -412,7 +437,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         private async Task CompletaConservazione(List<Doc_DocumentoListModel> documenti)
         {
             var idTipi = documenti.Select(d => d.IdDoc_Par_Tipo).Distinct().ToList();
-            var anni = await _db.Doc_Par_Tipo.AsNoTracking().Where(t => idTipi.Contains(t.Id) && t.AnniConservazione != null)
+            var anni = await _tipoRepository.FindAll(t => idTipi.Contains(t.Id) && t.AnniConservazione != null)
                                 .ToDictionaryAsync(t => t.Id, t => t.AnniConservazione!.Value);
             foreach (var d in documenti)
                 if (anni.TryGetValue(d.IdDoc_Par_Tipo, out var a))
@@ -423,15 +448,15 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         {
             var doc = await _utility.Visibili(ctx).FirstOrDefaultAsync(x => x.Id == id)
                       ?? throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
-            var tipo = await _db.Doc_Par_Tipo.AsNoTracking().FirstAsync(t => t.Id == doc.IdDoc_Par_Tipo);
+            var tipo = await _tipoRepository.FindAll(t => t.Id == doc.IdDoc_Par_Tipo).FirstAsync();
             bool modificabile = PuoModificare(ctx, doc, tipo);
 
-            var riepilogo = await Proietta(_db.Doc_Documento.AsNoTracking().Where(x => x.Id == id), ctx).FirstAsync();
+            var riepilogo = await Proietta(_documentoRepository.FindAll(x => x.Id == id), ctx).FirstAsync();
             await CompletaConservazione(new List<Doc_DocumentoListModel> { riepilogo });
 
-            var versioni = await _db.Doc_Versione.AsNoTracking().Where(v => v.IdDoc_Documento == id).OrderByDescending(v => v.Numero).ToListAsync();
+            var versioni = await _versioneRepository.FindAll(v => v.IdDoc_Documento == id).OrderByDescending(v => v.Numero).ToListAsync();
             var autori = versioni.Select(v => v.IdAspNetUsersAutore).Where(x => x != null).Distinct().ToList();
-            var nomi = await _publicDb.Users.Where(u => autori.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+            var nomi = await _usersRepository.FindAll(u => autori.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
 
             var retVal = new Doc_DocumentoDettaglioModel
             {
@@ -457,10 +482,10 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             // destinatari e prese visione: chi puo' modificare
             if (modificabile)
             {
-                var dest = await _db.Doc_Destinatario.AsNoTracking().Where(r => r.IdDoc_Documento == id)
+                var dest = await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == id)
                                     .Select(r => new { r, Dip = r.Dip_AnagraficaNavigation }).ToListAsync();
                 var idUtenti = dest.Select(d => d.r.IdAspNetUsers).Where(x => x != null).Distinct().ToList();
-                var nomiDest = await _publicDb.Users.Where(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+                var nomiDest = await _usersRepository.FindAll(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
                 retVal.Destinatari = dest.Select(d => new Doc_DestinatarioModel
                 {
                     Id = d.r.Id,
@@ -480,12 +505,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         private async Task<Doc_Documento> DocumentoModificabileAsync(DocContesto ctx, int id, bool? nelCestino = false)
         {
             var visibile = await _utility.Visibili(ctx).AnyAsync(x => x.Id == id);
-            var doc = visibile ? await _db.Doc_Documento.AsTracking().FirstOrDefaultAsync(x => x.Id == id) : null;
+            var doc = visibile ? await _documentoRepository.FindAll(x => x.Id == id).FirstOrDefaultAsync() : null;
             if (doc == null)
                 throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
             if (nelCestino.HasValue && doc.NelCestino != nelCestino.Value)
                 throw new UserMessageException(DocumentManagementMessages.Get(doc.NelCestino ? "DocumentInTrash" : "DocumentNotInTrash"));
-            var tipo = await _db.Doc_Par_Tipo.AsNoTracking().FirstAsync(t => t.Id == doc.IdDoc_Par_Tipo);
+            var tipo = await _tipoRepository.FindAll(t => t.Id == doc.IdDoc_Par_Tipo).FirstAsync();
             if (!PuoModificare(ctx, doc, tipo))
                 throw new UserMessageException(DocumentManagementMessages.Get("NotAllowed"));
             return doc;
@@ -494,7 +519,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         // coerenza dei dati con la tipologia e permessi di scrittura per la categoria
         private async Task<Doc_Par_Tipo> ValidaAsync(DocContesto ctx, Doc_DocumentoEditModel dati, bool nuovo)
         {
-            var tipo = await _db.Doc_Par_Tipo.AsNoTracking().FirstOrDefaultAsync(t => t.Id == dati.IdDoc_Par_Tipo && t.IdAz_Anagrafica == ctx.IdAz_Anagrafica)
+            var tipo = await _tipoRepository.FindAll(t => t.Id == dati.IdDoc_Par_Tipo && t.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                        ?? throw new UserMessageException(DocumentManagementMessages.Get("TypeNotFound"));
             if (nuovo && !tipo.Active)
                 throw new UserMessageException(DocumentManagementMessages.Get("TypeInactive", tipo.Descrizione));
@@ -505,7 +530,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             {
                 if (!ctx.CaricaPersonale)
                     throw new UserMessageException(DocumentManagementMessages.Get("PersonnelNotAllowed"));
-                if (!dati.IdDip_Anagrafica.HasValue || !await _db.Dip_Anagrafica.AnyAsync(x => x.Id == dati.IdDip_Anagrafica && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+                if (!dati.IdDip_Anagrafica.HasValue || !await _dipendenteReadRepository.FindAll(x => x.Id == dati.IdDip_Anagrafica && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("EmployeeRequired"));
             }
             else
@@ -517,15 +542,15 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
 
             if (tipo.Categoria == Doc_Categoria.Cliente)
             {
-                if (!dati.IdAz_Cliente.HasValue || !await _db.Az_Cliente.AnyAsync(x => x.Id == dati.IdAz_Cliente && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+                if (!dati.IdAz_Cliente.HasValue || !await _clienteReadRepository.FindAll(x => x.Id == dati.IdAz_Cliente && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
                     throw new UserMessageException(DocumentManagementMessages.Get("CustomerRequired"));
             }
-            else if (dati.IdAz_Cliente.HasValue && !await _db.Az_Cliente.AnyAsync(x => x.Id == dati.IdAz_Cliente && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+            else if (dati.IdAz_Cliente.HasValue && !await _clienteReadRepository.FindAll(x => x.Id == dati.IdAz_Cliente && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
             {
                 throw new UserMessageException(DocumentManagementMessages.Get("CustomerRequired"));
             }
 
-            if (dati.IdDoc_Cartella.HasValue && !await _db.Doc_Cartella.AnyAsync(x => x.Id == dati.IdDoc_Cartella && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica))
+            if (dati.IdDoc_Cartella.HasValue && !await _cartellaRepository.FindAll(x => x.Id == dati.IdDoc_Cartella && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AnyAsync())
                 throw new UserMessageException(DocumentManagementMessages.Get("FolderNotFound"));
             if (dati.Mese.HasValue && (dati.Mese < 1 || dati.Mese > 12))
                 throw new UserMessageException(DocumentManagementMessages.Get("PeriodInvalid"));
@@ -553,12 +578,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         private async Task AggiornaDestinatarioDipendenteAsync(Doc_Documento doc, Doc_Par_Tipo tipo)
         {
             // destinatari "dipendente" non piu' validi (dipendente cambiato o tolto)
-            await _db.Doc_Destinatario.Where(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica != null && r.IdDip_Anagrafica != doc.IdDip_Anagrafica).ExecuteDeleteAsync();
-            if (!doc.IdDip_Anagrafica.HasValue || await _db.Doc_Destinatario.AnyAsync(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica == doc.IdDip_Anagrafica))
+            await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica != null && r.IdDip_Anagrafica != doc.IdDip_Anagrafica).ExecuteDeleteAsync();
+            if (!doc.IdDip_Anagrafica.HasValue || await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica == doc.IdDip_Anagrafica).AnyAsync())
                 return;
 
-            var idUtente = await _db.Dip_Anagrafica.Where(x => x.Id == doc.IdDip_Anagrafica).Select(x => x.IdAspNetUsers).FirstOrDefaultAsync();
-            _db.Doc_Destinatario.Add(new Doc_Destinatario
+            var idUtente = await _dipendenteReadRepository.FindAll(x => x.Id == doc.IdDip_Anagrafica).Select(x => x.IdAspNetUsers).FirstOrDefaultAsync();
+            await _destinatarioRepository.CreateAsync(new Doc_Destinatario
             {
                 IdDoc_Documento = doc.Id,
                 IdDip_Anagrafica = doc.IdDip_Anagrafica,
@@ -566,13 +591,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 PresaVisioneRichiesta = tipo.PresaVisioneRichiesta,
                 CreationDate = DateTime.Now
             });
-            await _db.SaveChangesAsync();
         }
 
         private async Task SegnaDestinatarioAsync(DocContesto ctx, int idDocumento, bool apertura, bool download)
         {
             var idDip = ctx.IdDip_Anagrafica;
-            var q = _db.Doc_Destinatario.Where(r => r.IdDoc_Documento == idDocumento && (r.IdAspNetUsers == ctx.IdUtente || (idDip != null && r.IdDip_Anagrafica == idDip)));
+            var q = _destinatarioRepository.FindAll(r => r.IdDoc_Documento == idDocumento && (r.IdAspNetUsers == ctx.IdUtente || (idDip != null && r.IdDip_Anagrafica == idDip)));
             var now = DateTime.Now;
             if (apertura)
                 await q.Where(r => r.DataPrimaApertura == null).ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPrimaApertura, now));
@@ -583,12 +607,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         // conserva solo le ultime N versioni (impostazione dell'azienda), tranne nei documenti con presa visione richiesta
         private async Task PotaVersioniAsync(DocContesto ctx, int idDocumento)
         {
-            var cfg = await _db.Doc_Cfg.AsNoTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
-            if (cfg.VersioniDaConservare <= 0 || await _db.Doc_Destinatario.AnyAsync(r => r.IdDoc_Documento == idDocumento && r.PresaVisioneRichiesta))
+            var cfg = await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstAsync();
+            if (cfg.VersioniDaConservare <= 0 || await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == idDocumento && r.PresaVisioneRichiesta).AnyAsync())
                 return;
-            var vecchie = await _db.Doc_Versione.AsNoTracking().Where(v => v.IdDoc_Documento == idDocumento)
+            var vecchie = await _versioneRepository.FindAll(v => v.IdDoc_Documento == idDocumento)
                                    .OrderByDescending(v => v.Numero).Skip(cfg.VersioniDaConservare).ToListAsync();
-            await DocumentFiles.EliminaVersioniAsync(_db, _fileStorage, _quota, ctx.IdCompany, vecchie);
+            await DocumentFiles.EliminaVersioniAsync(_versioneRepository, _fileStorage, _quota, ctx.IdCompany, vecchie);
         }
 
         // email al dipendente destinatario di un documento pubblicato (se l'email e' configurata e l'azienda lo prevede)
@@ -598,13 +622,13 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             {
                 if (doc.Stato != Doc_Stato.Pubblicato || !doc.IdDip_Anagrafica.HasValue || !_emailService.Configured)
                     return;
-                var cfg = await _db.Doc_Cfg.AsNoTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+                var cfg = await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstAsync();
                 if (!cfg.NotificheEmail)
                     return;
-                var dip = await _db.Dip_Anagrafica.AsNoTracking().FirstAsync(x => x.Id == doc.IdDip_Anagrafica);
+                var dip = await _dipendenteReadRepository.FindAll(x => x.Id == doc.IdDip_Anagrafica).FirstAsync();
                 var email = dip.Email;
                 if (string.IsNullOrWhiteSpace(email) && dip.IdAspNetUsers != null)
-                    email = await _publicDb.Users.Where(u => u.Id == dip.IdAspNetUsers).Select(u => u.Email).FirstOrDefaultAsync();
+                    email = await _usersRepository.FindAll(u => u.Id == dip.IdAspNetUsers).Select(u => u.Email).FirstOrDefaultAsync();
                 if (string.IsNullOrWhiteSpace(email))
                     return;
 
