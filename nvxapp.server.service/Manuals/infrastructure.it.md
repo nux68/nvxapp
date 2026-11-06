@@ -34,7 +34,7 @@ Il menu laterale è diviso in sezioni espandibili:
 
 Dopo il login si apre il primo applicativo disponibile con la sua prima sottosezione. Le sezioni e le sottosezioni si aprono e si chiudono una alla volta. Accanto alle sezioni compaiono i contatori delle cose da fare (per esempio i ticket assegnati a te).
 
-## Utenti e ruoli
+## Utenti e ruoli {SuperUser, PowerAdmin, Admin, DealerPowerAdmin, DealerAdmin, FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin, CompanyPowerAdmin, CompanyAdmin}
 ### I ruoli
 - **CompanyPowerAdmin**: amministratore principale dell'azienda; configura gli applicativi e il menu degli utenti.
 - **CompanyAdmin**: amministratore dell'azienda.
@@ -42,7 +42,7 @@ Dopo il login si apre il primo applicativo disponibile con la sua prima sottosez
 
 Un utente può avere più ruoli nella stessa azienda (per esempio CompanyAdmin e User).
 
-### Gestire gli utenti dell'azienda
+### Gestire gli utenti dell'azienda {CompanyPowerAdmin}
 1. Apri **Amministrazione > Generale > Utenti**.
 2. Usa il pulsante **+** per aggiungere un utente e indica email, nome utente e ruoli.
 3. Con **Modifica** cambi ruoli e dati; con **Impersona** entri nell'applicazione come quell'utente (vedi sotto).
@@ -54,10 +54,10 @@ Gli amministratori possono entrare nell'applicazione "come" un altro utente per 
 
 > Le operazioni fatte impersonando un utente restano tracciate con l'utente che ha fatto il login.
 
-## Menu degli utenti
+## Menu degli utenti {CompanyPowerAdmin}
 Il CompanyPowerAdmin può nascondere ai CompanyAdmin e agli User le voci di menu che non devono usare: **Amministrazione > Parametri > Menu utenti**. Le voci di sistema (login, dashboard, dati utente) non si possono nascondere.
 
-## Anagrafiche comuni
+## Anagrafiche comuni {CompanyPowerAdmin}
 ### Clienti
 I clienti dell'azienda sono un'anagrafica unica, usata da tutti gli applicativi (commesse delle presenze, opportunità del CRM, fascicolo del cliente nel documentale). Si gestiscono in **Amministrazione > Anagrafiche > Clienti**.
 
@@ -77,5 +77,25 @@ Da **Assistenza** scarichi i manuali in PDF: questo manuale e quelli degli appli
 ## Lavori in background
 Le operazioni lunghe (export, report, manuali) girano in background: l'avanzamento compare nella barra dei lavori in alto nella pagina. Quando un file è pronto, clicca sul pulsante di download; puoi chiudere la notifica quando non ti serve più.
 
-## Applicativi e spazio
+## Gestione dei centri {SuperUser}
+Dalla sezione **Amministrazione > SuperUser** il SuperUser gestisce l'intera installazione:
+- **Centri**: crea e modifica i centri; da qui puoi entrare in un centro impersonandone un amministratore;
+- **Utenti**: tutti gli utenti dell'applicazione;
+- **Sposta azienda**: sposta un'azienda da uno studio a un altro;
+- **Pacchetti di spazio** e **Spazio documenti**: pacchetti disponibili e spazio assegnato alle aziende.
+
+## Centro: studi e applicativi {SuperUser, DealerPowerAdmin, DealerAdmin}
+Dalla sezione **Amministrazione > Centro**:
+- **Utenti Centro**: gli amministratori del centro;
+- **Studi**: crea e modifica gli studi; dalla scheda dello studio abiliti gli applicativi allo studio e da qui entri negli studi e nelle loro aziende;
+- **Spazio documenti**: spazio del documentale delle aziende del centro.
+
+> Gli applicativi di un'azienda (presenze, CRM, documentale) li attivano solo il SuperUser e il DealerPowerAdmin del centro, dalla scheda dell'azienda.
+
+## Studio: aziende {FinancialAdvisorPowerAdmin, FinancialAdvisorAdmin}
+Dalla sezione **Amministrazione > Studio**:
+- **Utenti Studio**: gli amministratori dello studio;
+- **Aziende**: crea le aziende seguite dallo studio e i loro amministratori; con **Impersona** entri nell'azienda per lavorare al suo posto.
+
+## Applicativi e spazio {SuperUser, DealerPowerAdmin, DealerAdmin, CompanyPowerAdmin, CompanyAdmin}
 Gli applicativi di un'azienda li attiva il centro (o il SuperUser). Il documentale usa uno spazio su disco a pacchetti: l'uso e il pacchetto si vedono nella pagina **Spazio** del documentale; quando lo spazio sta per finire arriva un avviso agli amministratori.
