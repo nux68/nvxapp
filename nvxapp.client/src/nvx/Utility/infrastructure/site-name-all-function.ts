@@ -1,2 +1,2 @@
-// Nome del sito del ramo AllFunction: in Infrastructure non c'e' (null), il ramo lo valorizza. Vedi site-name.ts.
-export const SITE_NAME_ALL_FUNCTION: string | null = null;
+// Nome del sito dell'applicativo completo (ramo AllFunction): ha la precedenza su quelli dei rami. Vedi site-name.ts.
+export const SITE_NAME_ALL_FUNCTION: string | null = 'SiSignore';

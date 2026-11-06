@@ -1,0 +1,195 @@
+{
+  "allfunction": {
+    "showcase": {
+      "brand": {
+        "slogan": "Presenze, clienti e documenti della tua azienda in un'unica app."
+      },
+      "home": {
+        "etichetta": "Tutta l'azienda in cloud",
+        "titolo": "Presenze, vendite e documenti: un'unica app, un'unica anagrafica",
+        "sottotitolo": "Attiva gli applicativi che ti servono: gestione presenze, CRM e documentale lavorano insieme sugli stessi clienti e sugli stessi dipendenti, con un solo accesso.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "presenze": {
+            "title": "Presenze",
+            "text": "Timbrature, ferie, permessi, note spese e cartellini pronti per le paghe."
+          },
+          "crm": {
+            "title": "CRM",
+            "text": "Lead, opportunità, agenda e offerte in PDF per seguire ogni cliente."
+          },
+          "documentale": {
+            "title": "Documentale",
+            "text": "Archivio dell'azienda e documenti del personale, con presa visione e conservazione."
+          },
+          "insieme": {
+            "title": "Tutto collegato",
+            "text": "Un'unica anagrafica di clienti e dipendenti condivisa da tutti gli applicativi."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l'azienda",
+            "text": "In pochi minuti hai l'accesso e i dati di base già pronti."
+          },
+          "attiva": {
+            "title": "Attiva gli applicativi",
+            "text": "Scegli presenze, CRM, documentale o tutti: si attivano senza installare nulla."
+          },
+          "lavora": {
+            "title": "Lavora insieme",
+            "text": "Dipendenti, commerciali e amministrazione usano la stessa app, ognuno con i suoi permessi."
+          }
+        },
+        "chiusuraTitolo": "Inizia da un applicativo, aggiungi gli altri quando servono",
+        "chiusuraTesto": "I dati che inserisci restano: attivando un nuovo applicativo ritrovi subito clienti e dipendenti."
+      },
+      "features": {
+        "titolo": "Tutte le funzionalità",
+        "sottotitolo": "Tre applicativi integrati, una sola anagrafica e un solo accesso.",
+        "sezioni": {
+          "timbrature": {
+            "title": "Timbrature",
+            "text": "Entrata e uscita da smartphone o computer, anche a voce con l'assistente."
+          },
+          "richieste": {
+            "title": "Richieste e approvazioni",
+            "text": "Ferie, permessi e giustificativi arrivano al responsabile giusto."
+          },
+          "noteSpese": {
+            "title": "Note spese",
+            "text": "Rimborsi con scontrini allegati, approvati e pronti per le paghe."
+          },
+          "paghe": {
+            "title": "Export per le paghe",
+            "text": "Cartellini quadrati ed esportati nei formati del consulente."
+          },
+          "clienti": {
+            "title": "Clienti e contatti",
+            "text": "Un'anagrafica unica con persone di riferimento, stato e responsabile commerciale."
+          },
+          "pipeline": {
+            "title": "Pipeline",
+            "text": "Opportunità per fase, trascinabili, con valore pesato e storico."
+          },
+          "agenda": {
+            "title": "Agenda e promemoria",
+            "text": "Chiamate e appuntamenti con avviso prima dell'inizio."
+          },
+          "offerte": {
+            "title": "Offerte in PDF",
+            "text": "Righe, sconti e IVA, numerazione automatica e invio per email."
+          },
+          "archivio": {
+            "title": "Archivio dei documenti",
+            "text": "Cartelle, tipologie, versioni, ricerca nel testo e cestino."
+          },
+          "personale": {
+            "title": "Documenti del personale",
+            "text": "Cedolini e comunicazioni ai dipendenti, anche a più persone insieme, con presa visione."
+          },
+          "permessi": {
+            "title": "Permessi e riservatezza",
+            "text": "Ogni ruolo vede solo quello che gli compete; registro degli accessi ai documenti."
+          },
+          "assistente": {
+            "title": "Assistente e manuali",
+            "text": "Assistente AI, ticket di assistenza e manuali in PDF per ogni applicativo."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi semplici",
+        "sottotitolo": "Paghi solo gli applicativi che attivi.",
+        "piani": {
+          "prova": {
+            "nome": "Prova",
+            "periodo": "per 30 giorni",
+            "descrizione": "Tutti gli applicativi, senza impegno.",
+            "cta": "Inizia gratis"
+          },
+          "azienda": {
+            "nome": "Azienda",
+            "prezzo": "su misura",
+            "periodo": "al mese",
+            "descrizione": "Gli applicativi che ti servono, per tutti i tuoi utenti.",
+            "cta": "Registrati"
+          },
+          "studio": {
+            "nome": "Studio",
+            "prezzo": "Su richiesta",
+            "descrizione": "Per consulenti e studi che seguono più aziende.",
+            "cta": "Contattaci"
+          }
+        },
+        "caratteristiche": {
+          "tuttiGliApplicativi": "Presenze, CRM e documentale",
+          "fino10Utenti": "Fino a 10 utenti",
+          "datiPronti": "Parametri e tabelle già pronti",
+          "applicativiAScelta": "Applicativi a scelta",
+          "anagraficheComuni": "Clienti e dipendenti condivisi",
+          "spazioDocumenti": "Spazio documenti a pacchetti",
+          "assistenza": "Assistenza via ticket",
+          "piuAziende": "Più aziende in un solo accesso",
+          "documentiAiClienti": "Documenti ai clienti e ai loro dipendenti",
+          "exportPaghe": "Export per le paghe",
+          "assistenzaPrioritaria": "Assistenza prioritaria"
+        },
+        "nota": "Prezzi IVA esclusa. Puoi attivare o disattivare un applicativo in qualunque momento.",
+        "domande": {
+          "scelta": {
+            "domanda": "Devo attivare tutti gli applicativi?",
+            "risposta": "No: attivi solo quelli che ti servono e aggiungi gli altri quando vuoi."
+          },
+          "dati": {
+            "domanda": "I dati sono condivisi tra gli applicativi?",
+            "risposta": "Sì: clienti e dipendenti sono un'unica anagrafica, usata da tutti gli applicativi attivi."
+          },
+          "installare": {
+            "domanda": "Devo installare qualcosa?",
+            "risposta": "No, funziona dal browser e dallo smartphone."
+          },
+          "consulente": {
+            "domanda": "Il mio consulente può accedere?",
+            "risposta": "Sì, lo studio segue le tue aziende con il proprio accesso."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Software semplice per le aziende e per chi le segue.",
+        "paragrafo1": "Crediamo che presenze, clienti e documenti debbano stare nello stesso posto, senza doppie anagrafiche e senza fogli da riportare.",
+        "paragrafo2": "{{siteName}} nasce per aziende e studi che vogliono strumenti chiari, sempre aggiornati e accessibili da ovunque.",
+        "valori": {
+          "semplice": {
+            "title": "Semplice",
+            "text": "Ogni funzione si usa senza formazione."
+          },
+          "integrato": {
+            "title": "Integrato",
+            "text": "Gli applicativi condividono dati e accessi."
+          },
+          "vicino": {
+            "title": "Vicino",
+            "text": "Assistenza da persone che conoscono il tuo lavoro."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Prova gratis presenze, CRM e documentale.",
+        "vantaggi": {
+          "gratis": "30 giorni gratis",
+          "attiva": "Attivazione immediata",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Registrandoti accetti le condizioni del servizio.",
+        "inviata": "Richiesta inviata: controlla la tua email per confermare.",
+        "confermaTitolo": "Conferma dell'email",
+        "esito": "La tua azienda è pronta: puoi accedere."
+      }
+    }
+  }
+}

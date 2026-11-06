@@ -1,0 +1,195 @@
+{
+  "allfunction": {
+    "showcase": {
+      "brand": {
+        "slogan": "Attendance, customers and documents of your company in a single app."
+      },
+      "home": {
+        "etichetta": "Your whole company in the cloud",
+        "titolo": "Attendance, sales and documents: one app, one registry",
+        "sottotitolo": "Activate the applications you need: attendance, CRM and document management work together on the same customers and employees, with a single login.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "presenze": {
+            "title": "Attendance",
+            "text": "Clock-ins, holidays, leave, expense reports and timesheets ready for payroll."
+          },
+          "crm": {
+            "title": "CRM",
+            "text": "Leads, opportunities, agenda and PDF offers to follow every customer."
+          },
+          "documentale": {
+            "title": "Documents",
+            "text": "Company archive and personnel documents, with acknowledgement and retention."
+          },
+          "insieme": {
+            "title": "All connected",
+            "text": "A single registry of customers and employees shared by all applications."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register your company",
+            "text": "In a few minutes you have access and the basic data ready."
+          },
+          "attiva": {
+            "title": "Activate the applications",
+            "text": "Choose attendance, CRM, document management or all of them: no installation needed."
+          },
+          "lavora": {
+            "title": "Work together",
+            "text": "Employees, sales people and administration use the same app, each with their own permissions."
+          }
+        },
+        "chiusuraTitolo": "Start with one application, add the others when you need them",
+        "chiusuraTesto": "Your data stays: when you activate a new application you immediately find your customers and employees."
+      },
+      "features": {
+        "titolo": "All the features",
+        "sottotitolo": "Three integrated applications, one registry and one login.",
+        "sezioni": {
+          "timbrature": {
+            "title": "Clock-ins",
+            "text": "Clock in and out from smartphone or computer, also by voice with the assistant."
+          },
+          "richieste": {
+            "title": "Requests and approvals",
+            "text": "Holidays, leave and justifications reach the right manager."
+          },
+          "noteSpese": {
+            "title": "Expense reports",
+            "text": "Reimbursements with attached receipts, approved and ready for payroll."
+          },
+          "paghe": {
+            "title": "Payroll export",
+            "text": "Reconciled timesheets exported in the consultant's formats."
+          },
+          "clienti": {
+            "title": "Customers and contacts",
+            "text": "A single registry with contact persons, status and sales owner."
+          },
+          "pipeline": {
+            "title": "Pipeline",
+            "text": "Opportunities by phase, draggable, with weighted value and history."
+          },
+          "agenda": {
+            "title": "Agenda and reminders",
+            "text": "Calls and meetings with a notice before they start."
+          },
+          "offerte": {
+            "title": "PDF offers",
+            "text": "Lines, discounts and VAT, automatic numbering and email sending."
+          },
+          "archivio": {
+            "title": "Document archive",
+            "text": "Folders, types, versions, full-text search and recycle bin."
+          },
+          "personale": {
+            "title": "Personnel documents",
+            "text": "Payslips and notices to employees, also to many people at once, with acknowledgement."
+          },
+          "permessi": {
+            "title": "Permissions and privacy",
+            "text": "Each role sees only what it is meant to; document access log."
+          },
+          "assistente": {
+            "title": "Assistant and manuals",
+            "text": "AI assistant, support tickets and PDF manuals for every application."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Simple pricing",
+        "sottotitolo": "You only pay for the applications you activate.",
+        "piani": {
+          "prova": {
+            "nome": "Trial",
+            "periodo": "for 30 days",
+            "descrizione": "All applications, no commitment.",
+            "cta": "Start free"
+          },
+          "azienda": {
+            "nome": "Company",
+            "prezzo": "custom",
+            "periodo": "per month",
+            "descrizione": "The applications you need, for all your users.",
+            "cta": "Sign up"
+          },
+          "studio": {
+            "nome": "Firm",
+            "prezzo": "On request",
+            "descrizione": "For consultants and firms following several companies.",
+            "cta": "Contact us"
+          }
+        },
+        "caratteristiche": {
+          "tuttiGliApplicativi": "Attendance, CRM and documents",
+          "fino10Utenti": "Up to 10 users",
+          "datiPronti": "Parameters and tables ready",
+          "applicativiAScelta": "Applications of your choice",
+          "anagraficheComuni": "Shared customers and employees",
+          "spazioDocumenti": "Document storage in packages",
+          "assistenza": "Ticket support",
+          "piuAziende": "Several companies with one login",
+          "documentiAiClienti": "Documents to clients and their employees",
+          "exportPaghe": "Payroll export",
+          "assistenzaPrioritaria": "Priority support"
+        },
+        "nota": "Prices excluding VAT. You can activate or deactivate an application at any time.",
+        "domande": {
+          "scelta": {
+            "domanda": "Do I have to activate all the applications?",
+            "risposta": "No: you activate only the ones you need and add the others whenever you want."
+          },
+          "dati": {
+            "domanda": "Is data shared between applications?",
+            "risposta": "Yes: customers and employees are a single registry used by all active applications."
+          },
+          "installare": {
+            "domanda": "Do I need to install anything?",
+            "risposta": "No, it works from the browser and the smartphone."
+          },
+          "consulente": {
+            "domanda": "Can my consultant access it?",
+            "risposta": "Yes, the firm follows your companies with its own access."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "Simple software for companies and for those who follow them.",
+        "paragrafo1": "We believe attendance, customers and documents should live in the same place, with no duplicate registries and no sheets to copy.",
+        "paragrafo2": "{{siteName}} is made for companies and firms that want clear tools, always up to date and accessible from anywhere.",
+        "valori": {
+          "semplice": {
+            "title": "Simple",
+            "text": "Every function can be used without training."
+          },
+          "integrato": {
+            "title": "Integrated",
+            "text": "Applications share data and access."
+          },
+          "vicino": {
+            "title": "Close to you",
+            "text": "Support from people who know your work."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Try attendance, CRM and document management for free.",
+        "vantaggi": {
+          "gratis": "30 days free",
+          "attiva": "Immediate activation",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "By signing up you accept the terms of service.",
+        "inviata": "Request sent: check your email to confirm.",
+        "confermaTitolo": "Email confirmation",
+        "esito": "Your company is ready: you can log in."
+      }
+    }
+  }
+}
