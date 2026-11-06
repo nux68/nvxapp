@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using Serilog;
 
@@ -56,14 +57,16 @@ namespace nvxapp.server.Utility
         private async Task EseguiAsync(CancellationToken cancellationToken)
         {
             using var scope = _scopeFactory.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<PublicDbContext>();
+            var companyStorageRepository = scope.ServiceProvider.GetRequiredService<ICompanyStorageRepository>();
+            var companyApplicationRepository = scope.ServiceProvider.GetRequiredService<ICompanyApplicationRepository>();
+            var historyRepository = scope.ServiceProvider.GetRequiredService<ICompanyStorageHistoryRepository>();
             var quota = scope.ServiceProvider.GetRequiredService<IStorageQuotaService>();
             var providers = scope.ServiceProvider.GetServices<IStorageUsageProvider>().ToList();
 
-            var righe = await db.CompanyStorage.AsNoTracking().Select(x => x.IdCompany).ToListAsync(cancellationToken);
+            var righe = await companyStorageRepository.FindAll(x => true).Select(x => x.IdCompany).ToListAsync(cancellationToken);
             if (providers.Count > 0)
             {
-                var usati = await db.CompanyApplication.AsNoTracking().Select(x => new { x.IdCompany, x.ApplicationType }).ToListAsync(cancellationToken);
+                var usati = await companyApplicationRepository.FindAll(x => true).Select(x => new { x.IdCompany, x.ApplicationType }).ToListAsync(cancellationToken);
                 foreach (var idCompany in righe)
                 {
                     long bytes = 0; int files = 0;
@@ -78,19 +81,18 @@ namespace nvxapp.server.Utility
 
             // fotografia mensile
             var oggi = DateTime.Today;
-            var gia = await db.CompanyStorageHistory.Where(x => x.Anno == oggi.Year && x.Mese == oggi.Month).Select(x => x.IdCompany).ToListAsync(cancellationToken);
-            var daFotografare = await db.CompanyStorage.AsNoTracking()
-                                        .Where(x => !gia.Contains(x.IdCompany))
+            var gia = await historyRepository.FindAll(x => x.Anno == oggi.Year && x.Mese == oggi.Month).Select(x => x.IdCompany).ToListAsync(cancellationToken);
+            var daFotografare = await companyStorageRepository.FindAll(x => !gia.Contains(x.IdCompany))
                                         .Select(x => new { x.IdCompany, x.UsedBytes, x.FileCount, Pacchetto = x.StoragePlanNavigation!.Descrizione, x.StoragePlanNavigation.QuotaMB })
                                         .ToListAsync(cancellationToken);
             foreach (var r in daFotografare)
-                db.CompanyStorageHistory.Add(new CompanyStorageHistory
+                await historyRepository.CreateAsync(new CompanyStorageHistory
                 {
                     IdCompany = r.IdCompany, Anno = oggi.Year, Mese = oggi.Month, Pacchetto = r.Pacchetto, QuotaMB = r.QuotaMB,
-                    UsedBytes = r.UsedBytes, FileCount = r.FileCount, CreationDate = DateTime.Now
-                });
+                    UsedBytes = r.UsedBytes, FileCount = r.FileCount
+                }, SaveChanges: false);
             if (daFotografare.Count > 0)
-                await db.SaveChangesAsync(cancellationToken);
+                await historyRepository.SaveChange();
 
             Log.Information("Manutenzione dello spazio dei file: {Count} aziende riallineate, {Snapshot} fotografie mensili", righe.Count, daFotografare.Count);
         }
