@@ -35,7 +35,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
     public class ApplicationActivationAuthorizer : ServiceBase, IApplicationActivationAuthorizer
     {
-        private readonly PublicDbContext _db;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
         public ApplicationActivationAuthorizer(IMapper mapper,
                                                UserManager<ApplicationUser> userManager,
@@ -43,14 +46,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                                IOptions<JwtParameter> jwtParameter,
                                                IHttpContextAccessor httpContextAccessor,
                                                IConfiguration configuration,
-                                               PublicDbContext db) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                               ICompanyRepository companyRepository,
+                                               IFinancialAdvisorRepository financialAdvisorRepository,
+                                               IAspNetRolesRepository aspNetRolesRepository,
+                                               IAspNetUserRolesRepository aspNetUserRolesRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _companyRepository = companyRepository;
+            _financialAdvisorRepository = financialAdvisorRepository;
+            _aspNetRolesRepository = aspNetRolesRepository;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
         }
 
         public async Task<bool> CanManageCompanyAsync(int idCompany)
         {
-            var idDealer = await _db.Company.Where(x => x.Id == idCompany)
+            var idDealer = await _companyRepository.FindAll(x => x.Id == idCompany)
                                             .Select(x => (int?)x.FinancialAdvisorNavigation!.IdDealer)
                                             .FirstOrDefaultAsync();
             return await CanManageDealerAsync(idDealer);
@@ -58,7 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
         public async Task<bool> CanManageFinancialAdvisorAsync(int idFinancialAdvisor)
         {
-            var idDealer = await _db.FinancialAdvisor.Where(x => x.Id == idFinancialAdvisor)
+            var idDealer = await _financialAdvisorRepository.FindAll(x => x.Id == idFinancialAdvisor)
                                                      .Select(x => (int?)x.IdDealer)
                                                      .FirstOrDefaultAsync();
             return await CanManageDealerAsync(idDealer);
@@ -82,8 +91,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         {
             if (string.IsNullOrEmpty(idAspNetUsers))
                 return false;
-            var idRole = await _db.Roles.Where(r => r.Name == role).Select(r => r.Id).FirstOrDefaultAsync();
-            return idRole != null && await _db.UserRoles.AnyAsync(x => x.RoleId == idRole && x.UserId == idAspNetUsers);
+            var idRole = await _aspNetRolesRepository.FindAll(r => r.Name == role).Select(r => r.Id).FirstOrDefaultAsync();
+            return idRole != null && await _aspNetUserRolesRepository.FindAll(x => x.RoleId == idRole && x.UserId == idAspNetUsers).AnyAsync();
         }
     }
 }

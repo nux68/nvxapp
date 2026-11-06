@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
@@ -48,7 +49,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         private static readonly string[] RuoliPowerAdmin =
             { nameof(RoleCode.PowerAdmin), nameof(RoleCode.DealerPowerAdmin), nameof(RoleCode.FinancialAdvisorPowerAdmin), nameof(RoleCode.CompanyPowerAdmin) };
 
-        private readonly PublicDbContext _db;
+        private readonly Tabelle _tab;
+        private readonly IDeletionLogRepository _deletionLogRepository;
         private readonly ITenantProvisioningService _tenantProvisioningService;
         private readonly TenancySettings _tenancySettings;
         private readonly IEnumerable<IApplicationDataDeleter> _applicationDataDeleters;
@@ -61,13 +63,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                                IHttpContextAccessor httpContextAccessor,
                                IConfiguration configuration,
 
-                               PublicDbContext db,
+                               ITicketRepository ticketRepository,
+                               ICompanyRegistrationRequestRepository companyRegistrationRequestRepository,
+                               IUserCompanyRepository userCompanyRepository,
+                               IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
+                               IUserDealerRepository userDealerRepository,
+                               ICompanyRepository companyRepository,
+                               IFinancialAdvisorRepository financialAdvisorRepository,
+                               IDealerRepository dealerRepository,
+                               IDocumentRepository documentRepository,
+                               ICompanyApplicationRepository companyApplicationRepository,
+                               IAspNetRolesRepository aspNetRolesRepository,
+                               IAspNetUserRolesRepository aspNetUserRolesRepository,
+                               IDeletionLogRepository deletionLogRepository,
                                ITenantProvisioningService tenantProvisioningService,
                                TenancySettings tenancySettings,
                                IEnumerable<IApplicationDataDeleter> applicationDataDeleters,
                                IFileStorage fileStorage) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _db = db;
+            _tab = new Tabelle(ticketRepository, companyRegistrationRequestRepository, userCompanyRepository, userFinancialAdvisorRepository, userDealerRepository, companyRepository, financialAdvisorRepository, dealerRepository, documentRepository, companyApplicationRepository, aspNetUsersRepository, aspNetRolesRepository, aspNetUserRolesRepository);
+            _deletionLogRepository = deletionLogRepository;
             _tenantProvisioningService = tenantProvisioningService;
             _tenancySettings = tenancySettings;
             _applicationDataDeleters = applicationDataDeleters;
@@ -122,7 +137,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                             await deleter.DeleteCompanyDataAsync(idCompany);
 
                 // 2. public e schemi degli applicativi, tutto o niente
-                await using (var transaction = await _db.Database.BeginTransactionAsync())
+                // transazione sul contesto di public condiviso da repository e UserManager
+                await using (var transaction = await _deletionLogRepository.BeginTransactionAsync())
                 {
                     foreach (var idCompany in piano.Aziende)
                         await _tenantProvisioningService.DropCompanySchemasAsync(idCompany);
@@ -132,14 +148,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 
                     // ticket in carico agli utenti eliminati: restano al loro livello, senza assegnatario
                     var utentiEliminati = piano.UtentiDaEliminare.ToList();
-                    await _db.Ticket.Where(x => x.CurrentIdAspNetUsers != null && utentiEliminati.Contains(x.CurrentIdAspNetUsers))
+                    await _tab.Ticket.Where(x => x.CurrentIdAspNetUsers != null && utentiEliminati.Contains(x.CurrentIdAspNetUsers))
                                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.CurrentIdAspNetUsers, (string?)null));
 
-                    await _db.CompanyRegistrationRequest.Where(x => x.IdCompany != null && piano.Aziende.Contains(x.IdCompany.Value)).ExecuteDeleteAsync();
+                    await _tab.CompanyRegistrationRequest.Where(x => x.IdCompany != null && piano.Aziende.Contains(x.IdCompany.Value)).ExecuteDeleteAsync();
 
-                    await _db.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id)).ExecuteDeleteAsync();
-                    await _db.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).ExecuteDeleteAsync();
-                    await _db.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).ExecuteDeleteAsync();
 
                     // utenti rimasti senza collegamenti (ruoli, claims e login di Identity in cascata)
                     foreach (var idAspNetUsers in utentiEliminati)
@@ -152,9 +168,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                     }
 
                     // nodi dal basso verso l'alto (applicativi attivi, restrizioni di menu, documenti e impostazioni AI in cascata)
-                    await _db.Company.Where(x => piano.Aziende.Contains(x.Id)).ExecuteDeleteAsync();
-                    await _db.FinancialAdvisor.Where(x => piano.Studi.Contains(x.Id)).ExecuteDeleteAsync();
-                    await _db.Dealer.Where(x => piano.Centri.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.Company.Where(x => piano.Aziende.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.FinancialAdvisor.Where(x => piano.Studi.Contains(x.Id)).ExecuteDeleteAsync();
+                    await _tab.Dealer.Where(x => piano.Centri.Contains(x.Id)).ExecuteDeleteAsync();
 
                     await Registra(piano, retVal.Counts);
 
@@ -180,6 +196,58 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 
                 return retVal;
             }, isSubProcess);
+        }
+
+        /*
+         Tabelle di public lette e modificate dall'eliminazione, tutte dai repository (stesso PublicDbContext della
+         richiesta, quindi dentro la stessa transazione): letture senza tracking e ExecuteUpdate/ExecuteDelete.
+        */
+        private sealed class Tabelle
+        {
+            private readonly ITicketRepository _ticketRepository;
+            private readonly ICompanyRegistrationRequestRepository _companyRegistrationRequestRepository;
+            private readonly IUserCompanyRepository _userCompanyRepository;
+            private readonly IUserFinancialAdvisorRepository _userFinancialAdvisorRepository;
+            private readonly IUserDealerRepository _userDealerRepository;
+            private readonly ICompanyRepository _companyRepository;
+            private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
+            private readonly IDealerRepository _dealerRepository;
+            private readonly IDocumentRepository _documentRepository;
+            private readonly ICompanyApplicationRepository _companyApplicationRepository;
+            private readonly IAspNetUsersRepository _aspNetUsersRepository;
+            private readonly IAspNetRolesRepository _aspNetRolesRepository;
+            private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
+
+            public Tabelle(ITicketRepository ticketRepository, ICompanyRegistrationRequestRepository companyRegistrationRequestRepository, IUserCompanyRepository userCompanyRepository, IUserFinancialAdvisorRepository userFinancialAdvisorRepository, IUserDealerRepository userDealerRepository, ICompanyRepository companyRepository, IFinancialAdvisorRepository financialAdvisorRepository, IDealerRepository dealerRepository, IDocumentRepository documentRepository, ICompanyApplicationRepository companyApplicationRepository, IAspNetUsersRepository aspNetUsersRepository, IAspNetRolesRepository aspNetRolesRepository, IAspNetUserRolesRepository aspNetUserRolesRepository)
+            {
+                _ticketRepository = ticketRepository;
+                _companyRegistrationRequestRepository = companyRegistrationRequestRepository;
+                _userCompanyRepository = userCompanyRepository;
+                _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
+                _userDealerRepository = userDealerRepository;
+                _companyRepository = companyRepository;
+                _financialAdvisorRepository = financialAdvisorRepository;
+                _dealerRepository = dealerRepository;
+                _documentRepository = documentRepository;
+                _companyApplicationRepository = companyApplicationRepository;
+                _aspNetUsersRepository = aspNetUsersRepository;
+                _aspNetRolesRepository = aspNetRolesRepository;
+                _aspNetUserRolesRepository = aspNetUserRolesRepository;
+            }
+
+            public IQueryable<Ticket> Ticket => _ticketRepository.FindAll(x => true);
+            public IQueryable<CompanyRegistrationRequest> CompanyRegistrationRequest => _companyRegistrationRequestRepository.FindAll(x => true);
+            public IQueryable<UserCompany> UserCompany => _userCompanyRepository.FindAll(x => true);
+            public IQueryable<UserFinancialAdvisor> UserFinancialAdvisor => _userFinancialAdvisorRepository.FindAll(x => true);
+            public IQueryable<UserDealer> UserDealer => _userDealerRepository.FindAll(x => true);
+            public IQueryable<Company> Company => _companyRepository.FindAll(x => true);
+            public IQueryable<FinancialAdvisor> FinancialAdvisor => _financialAdvisorRepository.FindAll(x => true);
+            public IQueryable<Dealer> Dealer => _dealerRepository.FindAll(x => true);
+            public IQueryable<Document> Document => _documentRepository.FindAll(x => true);
+            public IQueryable<nvxapp.server.data.Entities.Public.CompanyApplication> CompanyApplication => _companyApplicationRepository.FindAll(x => true);
+            public IQueryable<ApplicationUser> Users => _aspNetUsersRepository.FindAll(x => true);
+            public IQueryable<ApplicationRole> Roles => _aspNetRolesRepository.FindAll(x => true);
+            public IQueryable<IdentityUserRole<string>> UserRoles => _aspNetUserRolesRepository.FindAll(x => true);
         }
 
         // ---------------------------------------------------------------------------
@@ -222,16 +290,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             {
                 case DeletionNodeType.Dealer:
                 {
-                    var dealer = await _db.Dealer.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var dealer = await _tab.Dealer.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
                     if (!ctx.SuperUser) throw NonConsentito();
                     piano.Descrizione = dealer.Descrizione ?? string.Empty;
                     piano.Centri.Add(dealer.Id);
-                    piano.Studi.AddRange(await _db.FinancialAdvisor.Where(x => x.IdDealer == dealer.Id).Select(x => x.Id).ToListAsync());
+                    piano.Studi.AddRange(await _tab.FinancialAdvisor.Where(x => x.IdDealer == dealer.Id).Select(x => x.Id).ToListAsync());
                     break;
                 }
                 case DeletionNodeType.FinancialAdvisor:
                 {
-                    var studio = await _db.FinancialAdvisor.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var studio = await _tab.FinancialAdvisor.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
                     if (!ctx.SuperUser && !ctx.PowerAdminDi(TicketLevel.Dealer, studio.IdDealer)) throw NonConsentito();
                     piano.Descrizione = studio.Descrizione ?? string.Empty;
                     piano.Studi.Add(studio.Id);
@@ -239,7 +307,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 }
                 case DeletionNodeType.Company:
                 {
-                    var azienda = await _db.Company.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var azienda = await _tab.Company.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
                     if (!ctx.SuperUser && !ctx.PowerAdminDi(TicketLevel.FinancialAdvisor, azienda.IdFinancialAdvisor)) throw NonConsentito();
                     piano.Descrizione = azienda.Descrizione ?? string.Empty;
                     piano.Aziende.Add(azienda.Id);
@@ -247,7 +315,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 }
                 case DeletionNodeType.UserDealer:
                 {
-                    var link = await _db.UserDealer.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var link = await _tab.UserDealer.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
                     if (!ctx.SuperUser && !ctx.PowerAdminDi(TicketLevel.Dealer, link.IdDealer)) throw NonConsentito();
                     piano.CollegamentiCentro.Add(link.Id);
                     piano.IdUtente = link.IdAspNetUsers;
@@ -255,8 +323,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 }
                 case DeletionNodeType.UserFinancialAdvisor:
                 {
-                    var link = await _db.UserFinancialAdvisor.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
-                    var idDealer = await _db.FinancialAdvisor.Where(x => x.Id == link.IdFinancialAdvisor).Select(x => x.IdDealer).FirstOrDefaultAsync();
+                    var link = await _tab.UserFinancialAdvisor.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var idDealer = await _tab.FinancialAdvisor.Where(x => x.Id == link.IdFinancialAdvisor).Select(x => x.IdDealer).FirstOrDefaultAsync();
                     if (!ctx.SuperUser && !ctx.PowerAdminDi(TicketLevel.FinancialAdvisor, link.IdFinancialAdvisor) && !ctx.PowerAdminDi(TicketLevel.Dealer, idDealer))
                         throw NonConsentito();
                     piano.CollegamentiStudio.Add(link.Id);
@@ -265,8 +333,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 }
                 case DeletionNodeType.UserCompany:
                 {
-                    var link = await _db.UserCompany.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
-                    var idFinancialAdvisor = await _db.Company.Where(x => x.Id == link.IdCompany).Select(x => x.IdFinancialAdvisor).FirstOrDefaultAsync();
+                    var link = await _tab.UserCompany.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id) ?? throw NonTrovato();
+                    var idFinancialAdvisor = await _tab.Company.Where(x => x.Id == link.IdCompany).Select(x => x.IdFinancialAdvisor).FirstOrDefaultAsync();
                     if (!ctx.SuperUser && !ctx.PowerAdminDi(TicketLevel.Company, link.IdCompany) && !ctx.PowerAdminDi(TicketLevel.FinancialAdvisor, idFinancialAdvisor))
                         throw NonConsentito();
                     piano.CollegamentiAzienda.Add(link.Id);
@@ -277,12 +345,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 {
                     if (!ctx.SuperUser) throw NonConsentito();
                     var idUtente = piano.Target.IdAspNetUsers ?? string.Empty;
-                    if (await _db.Users.AsNoTracking().AnyAsync(x => x.Id == idUtente) == false) throw NonTrovato();
+                    if (await _tab.Users.AsNoTracking().AnyAsync(x => x.Id == idUtente) == false) throw NonTrovato();
                     piano.IdUtente = idUtente;
                     piano.UtentiDaEliminare.Add(idUtente);
-                    piano.CollegamentiCentro.AddRange(await _db.UserDealer.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
-                    piano.CollegamentiStudio.AddRange(await _db.UserFinancialAdvisor.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
-                    piano.CollegamentiAzienda.AddRange(await _db.UserCompany.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
+                    piano.CollegamentiCentro.AddRange(await _tab.UserDealer.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
+                    piano.CollegamentiStudio.AddRange(await _tab.UserFinancialAdvisor.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
+                    piano.CollegamentiAzienda.AddRange(await _tab.UserCompany.Where(x => x.IdAspNetUsers == idUtente).Select(x => x.Id).ToListAsync());
                     break;
                 }
                 default:
@@ -292,17 +360,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             piano.IdNodo = piano.Target.NodeType == DeletionNodeType.User ? null : id;
 
             // il ramo sotto i nodi e i collegamenti dei loro utenti
-            piano.Aziende.AddRange(await _db.Company.Where(x => piano.Studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
-            piano.CollegamentiCentro.AddRange(await _db.UserDealer.Where(x => piano.Centri.Contains(x.IdDealer)).Select(x => x.Id).ToListAsync());
-            piano.CollegamentiStudio.AddRange(await _db.UserFinancialAdvisor.Where(x => piano.Studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
-            piano.CollegamentiAzienda.AddRange(await _db.UserCompany.Where(x => piano.Aziende.Contains(x.IdCompany)).Select(x => x.Id).ToListAsync());
+            piano.Aziende.AddRange(await _tab.Company.Where(x => piano.Studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
+            piano.CollegamentiCentro.AddRange(await _tab.UserDealer.Where(x => piano.Centri.Contains(x.IdDealer)).Select(x => x.Id).ToListAsync());
+            piano.CollegamentiStudio.AddRange(await _tab.UserFinancialAdvisor.Where(x => piano.Studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
+            piano.CollegamentiAzienda.AddRange(await _tab.UserCompany.Where(x => piano.Aziende.Contains(x.IdCompany)).Select(x => x.Id).ToListAsync());
 
             await UtentiCoinvolti(piano, ctx);
 
             // nome da digitare: per un utente il nome utente
             if (piano.IdUtente != null && piano.Target.NodeType is DeletionNodeType.UserDealer or DeletionNodeType.UserFinancialAdvisor
                                                                    or DeletionNodeType.UserCompany or DeletionNodeType.User)
-                piano.Descrizione = await _db.Users.Where(x => x.Id == piano.IdUtente).Select(x => x.UserName).FirstOrDefaultAsync() ?? piano.IdUtente;
+                piano.Descrizione = await _tab.Users.Where(x => x.Id == piano.IdUtente).Select(x => x.UserName).FirstOrDefaultAsync() ?? piano.IdUtente;
 
             // un amministratore principale non si toglie ne' si elimina da solo
             if (piano.Blocco == null && piano.IdUtente != null && piano.Target.NodeType is DeletionNodeType.UserDealer
@@ -324,9 +392,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         // utenti dei collegamenti eliminati: eliminati se non restano collegati altrove, altrimenti restano
         private async Task UtentiCoinvolti(Piano piano, ContestoUtente ctx)
         {
-            var linkCentro = await _db.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToListAsync();
-            var linkStudio = await _db.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToListAsync();
-            var linkAzienda = await _db.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id))
+            var linkCentro = await _tab.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToListAsync();
+            var linkStudio = await _tab.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToListAsync();
+            var linkAzienda = await _tab.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id))
                                                    .Select(x => new { x.IdAspNetUsers, x.IdCompany }).ToListAsync();
 
             var utenti = linkCentro.Concat(linkStudio).Concat(linkAzienda.Select(x => x.IdAspNetUsers))
@@ -335,9 +403,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             foreach (var utente in utenti)
             {
                 bool altriCollegamenti =
-                    await _db.UserDealer.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiCentro.Contains(x.Id)) ||
-                    await _db.UserFinancialAdvisor.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiStudio.Contains(x.Id)) ||
-                    await _db.UserCompany.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiAzienda.Contains(x.Id));
+                    await _tab.UserDealer.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiCentro.Contains(x.Id)) ||
+                    await _tab.UserFinancialAdvisor.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiStudio.Contains(x.Id)) ||
+                    await _tab.UserCompany.AnyAsync(x => x.IdAspNetUsers == utente && !piano.CollegamentiAzienda.Contains(x.Id));
 
                 if (!altriCollegamenti || piano.UtentiDaEliminare.Contains(utente))
                     piano.UtentiDaEliminare.Add(utente);
@@ -386,24 +454,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 return tolto && !restaAltro;
             }
 
-            foreach (var idDealer in await _db.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).Select(x => x.IdDealer).Distinct().ToListAsync())
+            foreach (var idDealer in await _tab.UserDealer.Where(x => piano.CollegamentiCentro.Contains(x.Id)).Select(x => x.IdDealer).Distinct().ToListAsync())
             {
                 if (piano.Centri.Contains(idDealer)) continue;
-                if (await UltimoPowerAdmin(_db.UserDealer.AsNoTracking().Where(x => x.IdDealer == idDealer), piano.CollegamentiCentro,
+                if (await UltimoPowerAdmin(_tab.UserDealer.AsNoTracking().Where(x => x.IdDealer == idDealer), piano.CollegamentiCentro,
                                            nameof(RoleCode.DealerPowerAdmin), x => x.IdAspNetUsers, x => x.Id, x => !x.Disabled))
                 { piano.Blocco = InfrastructureMessages.Get("DeletionLastPowerAdmin"); return; }
             }
-            foreach (var idStudio in await _db.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).Select(x => x.IdFinancialAdvisor).Distinct().ToListAsync())
+            foreach (var idStudio in await _tab.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).Select(x => x.IdFinancialAdvisor).Distinct().ToListAsync())
             {
                 if (piano.Studi.Contains(idStudio)) continue;
-                if (await UltimoPowerAdmin(_db.UserFinancialAdvisor.AsNoTracking().Where(x => x.IdFinancialAdvisor == idStudio), piano.CollegamentiStudio,
+                if (await UltimoPowerAdmin(_tab.UserFinancialAdvisor.AsNoTracking().Where(x => x.IdFinancialAdvisor == idStudio), piano.CollegamentiStudio,
                                            nameof(RoleCode.FinancialAdvisorPowerAdmin), x => x.IdAspNetUsers, x => x.Id, x => !x.Disabled))
                 { piano.Blocco = InfrastructureMessages.Get("DeletionLastPowerAdmin"); return; }
             }
-            foreach (var idAzienda in await _db.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id)).Select(x => x.IdCompany).Distinct().ToListAsync())
+            foreach (var idAzienda in await _tab.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id)).Select(x => x.IdCompany).Distinct().ToListAsync())
             {
                 if (piano.Aziende.Contains(idAzienda)) continue;
-                if (await UltimoPowerAdmin(_db.UserCompany.AsNoTracking().Where(x => x.IdCompany == idAzienda), piano.CollegamentiAzienda,
+                if (await UltimoPowerAdmin(_tab.UserCompany.AsNoTracking().Where(x => x.IdCompany == idAzienda), piano.CollegamentiAzienda,
                                            nameof(RoleCode.CompanyPowerAdmin), x => x.IdAspNetUsers, x => x.Id, x => !x.Disabled))
                 { piano.Blocco = InfrastructureMessages.Get("DeletionLastPowerAdmin"); return; }
             }
@@ -416,7 +484,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         private IQueryable<Ticket> TicketDaEliminare(Piano piano)
         {
             var utenti = piano.UtentiDaEliminare.ToList();
-            return _db.Ticket.Where(x => (x.IdDealer != null && piano.Centri.Contains(x.IdDealer.Value)) ||
+            return _tab.Ticket.Where(x => (x.IdDealer != null && piano.Centri.Contains(x.IdDealer.Value)) ||
                                          (x.IdFinancialAdvisor != null && piano.Studi.Contains(x.IdFinancialAdvisor.Value)) ||
                                          (x.IdCompany != null && piano.Aziende.Contains(x.IdCompany.Value)) ||
                                          utenti.Contains(x.IdAspNetUsersOpener));
@@ -435,8 +503,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             Aggiungi("DeletionCountTickets", await TicketDaEliminare(piano).CountAsync());
 
             var utenti = piano.UtentiDaEliminare.ToList();
-            Aggiungi("DeletionCountTicketsReleased", await _db.Ticket.CountAsync(x => x.CurrentIdAspNetUsers != null && utenti.Contains(x.CurrentIdAspNetUsers)));
-            Aggiungi("DeletionCountDocuments", await _db.Document.CountAsync(x => (x.IdDealer != null && piano.Centri.Contains(x.IdDealer.Value)) ||
+            Aggiungi("DeletionCountTicketsReleased", await _tab.Ticket.CountAsync(x => x.CurrentIdAspNetUsers != null && utenti.Contains(x.CurrentIdAspNetUsers)));
+            Aggiungi("DeletionCountDocuments", await _tab.Document.CountAsync(x => (x.IdDealer != null && piano.Centri.Contains(x.IdDealer.Value)) ||
                                                                                   (x.IdFinancialAdvisor != null && piano.Studi.Contains(x.IdFinancialAdvisor.Value)) ||
                                                                                   (x.IdCompany != null && piano.Aziende.Contains(x.IdCompany.Value))));
 
@@ -461,7 +529,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         // comuni (Common, sempre presente) per ULTIMO: gli applicativi hanno chiavi esterne verso le sue tabelle
         private async Task<List<IApplicationDataDeleter>> DeleterAzienda(int idCompany)
         {
-            var applicativi = await _db.CompanyApplication.Where(x => x.IdCompany == idCompany).Select(x => x.ApplicationType).ToListAsync();
+            var applicativi = await _tab.CompanyApplication.Where(x => x.IdCompany == idCompany).Select(x => x.ApplicationType).ToListAsync();
             applicativi.Add(ApplicationType.Common);
             return _applicationDataDeleters.Where(d => applicativi.Contains(d.Application))
                                            .OrderBy(d => d.Application == ApplicationType.Common ? 1 : 0)
@@ -471,7 +539,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
         private async Task Registra(Piano piano, List<DeletionCountModel> conteggi)
         {
             var nomeLogin = await NomeUtente(UserIdFirstConnection);
-            _db.DeletionLog.Add(new DeletionLog
+            // registro di controllo: autore della modifica e' l'utente del login (anche durante un'impersonificazione),
+            // non l'utente impersonificato che il repository userebbe di norma
+            ((ICurrentUser)_deletionLogRepository).CurrentUserId = UserIdFirstConnection;
+            await _deletionLogRepository.CreateAsync(new DeletionLog
             {
                 NodeType = piano.Target.NodeType,
                 NodeId = piano.IdNodo,
@@ -480,11 +551,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                 IdAspNetUsers = UserIdFirstConnection ?? string.Empty,
                 UserName = nomeLogin,
                 Data = DateTime.Now,
-                CreationDate = DateTime.Now,
-                ChangeUser = UserIdFirstConnection,
                 Riepilogo = JsonSerializer.Serialize(conteggi.ToDictionary(x => x.Label, x => x.Count))
             });
-            await _db.SaveChangesAsync();
         }
 
         // ---------------------------------------------------------------------------
@@ -537,15 +605,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 
         private async Task<HashSet<string>> UtentiConRuolo(string ruolo, List<string> utenti)
         {
-            var idRuolo = await _db.Roles.Where(r => r.Name == ruolo).Select(r => r.Id).FirstOrDefaultAsync();
+            var idRuolo = await _tab.Roles.Where(r => r.Name == ruolo).Select(r => r.Id).FirstOrDefaultAsync();
             if (idRuolo == null || utenti.Count == 0) return new HashSet<string>();
-            return (await _db.UserRoles.Where(x => x.RoleId == idRuolo && utenti.Contains(x.UserId)).Select(x => x.UserId).ToListAsync()).ToHashSet();
+            return (await _tab.UserRoles.Where(x => x.RoleId == idRuolo && utenti.Contains(x.UserId)).Select(x => x.UserId).ToListAsync()).ToHashSet();
         }
 
         private async Task<string> NomeUtente(string? idAspNetUsers) =>
             string.IsNullOrEmpty(idAspNetUsers)
                 ? string.Empty
-                : await _db.Users.Where(x => x.Id == idAspNetUsers).Select(x => x.UserName).FirstOrDefaultAsync() ?? idAspNetUsers;
+                : await _tab.Users.Where(x => x.Id == idAspNetUsers).Select(x => x.UserName).FirstOrDefaultAsync() ?? idAspNetUsers;
 
         private static UserMessageException NonTrovato() => new UserMessageException(InfrastructureMessages.Get("DeletionNodeNotFound"));
         private static UserMessageException NonConsentito() => new UserMessageException(InfrastructureMessages.Get("DeletionNotAllowed"));
