@@ -10,7 +10,8 @@
       "settings": "Settings",
       "log": "Access log",
       "storage": "Storage",
-      "mine": "My documents"
+      "mine": "My documents",
+      "manual": "Document management manual"
     },
     "buttons": {
       "download": "Download",
@@ -177,6 +178,226 @@
         "over": "Out of space",
         "warning": "Almost full",
         "note": "Beyond 100% no documents can be uploaded. Ask the centre for a larger plan."
+      }
+    },
+    "multiSend": {
+      "fab": "Send to several employees",
+      "title": "Send to several employees",
+      "send": "Send",
+      "close": "Close",
+      "note": "The same file becomes a personnel document for each chosen employee, with acknowledgement if the type requires it. Each employee sees only their own.",
+      "employees": "Chosen employees: {{n}}",
+      "search": "Search by name, tax code, employee number or user",
+      "selectAll": "Select all (those shown)",
+      "onlyWithAccount": "Only with account",
+      "noEmployees": "No employees to show.",
+      "employeesRequired": "Choose at least one employee.",
+      "document": "Document",
+      "typeRequired": "Choose the type.",
+      "acknowledgementNote": "This type requires acknowledgement: each employee will have to confirm it.",
+      "chooseFile": "Choose the file",
+      "noFile": "No file chosen",
+      "fileRequired": "Choose the file to send.",
+      "sending": "Sending...",
+      "result": "Documents created: {{creati}} of {{totale}}. Not created:"
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Your company and employee documents, organised and safe, in the cloud."
+      },
+      "home": {
+        "etichetta": "Cloud document management",
+        "titolo": "Payslips, contracts and company documents in a single archive",
+        "sottotitolo": "Upload documents once: each employee sees only their own and confirms they have read them, the office finds everything in seconds.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "archivio": {
+            "title": "Company archive",
+            "text": "Folders and types for compliance certificates, registry extracts, contracts and every company document."
+          },
+          "personale": {
+            "title": "Personnel documents",
+            "text": "Payslips, tax statements and contracts delivered to the single employee, reserved to authorised users."
+          },
+          "presaVisione": {
+            "title": "Read confirmation",
+            "text": "The employee confirms they have read it: date and time are recorded."
+          },
+          "ricerca": {
+            "title": "Full-text search",
+            "text": "Find a document even by a word contained in the file."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register the company",
+            "text": "The document management is ready with default types and folders."
+          },
+          "carica": {
+            "title": "Upload documents",
+            "text": "One document at a time or the same one to several employees at once."
+          },
+          "consegna": {
+            "title": "Deliver and check",
+            "text": "Employees find them in the app and confirm they have read them."
+          }
+        },
+        "chiusuraTitolo": "No more emails with attachments",
+        "chiusuraTesto": "Register your company and try the document management with your employees."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything you need to archive, deliver and find company and personnel documents.",
+        "sezioni": {
+          "cartelle": {
+            "title": "Folders",
+            "text": "A folder tree to organise the archive; folders visible to employees for company-wide notices."
+          },
+          "tipologie": {
+            "title": "Types",
+            "text": "Payslip, tax statement, contract...: each type knows whether it has a period, an expiry, a read confirmation and a retention."
+          },
+          "personale": {
+            "title": "Personnel documents",
+            "text": "Reserved: seen by the employee concerned and by those authorised for personnel documents."
+          },
+          "invioMultiplo": {
+            "title": "Send to several employees",
+            "text": "The same document to several employees chosen from the list, each with their own copy and read confirmation."
+          },
+          "presaVisione": {
+            "title": "Read confirmation",
+            "text": "Employee read confirmation with date and time; the office sees who has not read yet."
+          },
+          "versioni": {
+            "title": "Versions",
+            "text": "New versions of the same document without losing the previous ones."
+          },
+          "ricerca": {
+            "title": "Search",
+            "text": "By title, type, employee, customer, year and text contained in the files."
+          },
+          "scadenze": {
+            "title": "Expiry and retention",
+            "text": "Expiring documents and documents beyond the retention period are flagged in the lists."
+          },
+          "abilitazioni": {
+            "title": "Permissions",
+            "text": "The CompanyPowerAdmin decides which administrators see and upload personnel documents."
+          },
+          "registro": {
+            "title": "Access log",
+            "text": "Who uploaded, opened, downloaded or deleted each document."
+          },
+          "cestino": {
+            "title": "Trash",
+            "text": "Deleted documents stay in the trash for the chosen days and can be restored."
+          },
+          "spazio": {
+            "title": "Storage",
+            "text": "Storage packages and a warning before it runs out."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "You pay for the employees and the storage you use: all features always included.",
+        "piani": {
+          "prova": {
+            "nome": "Trial",
+            "periodo": "for 30 days",
+            "descrizione": "To try it with your employees.",
+            "cta": "Start the trial"
+          },
+          "azienda": {
+            "nome": "Company",
+            "periodo": "per employee per month",
+            "descrizione": "For small and medium businesses.",
+            "cta": "Choose Company"
+          },
+          "studio": {
+            "nome": "Firm",
+            "prezzo": "Tailored",
+            "descrizione": "For payroll consultants and firms.",
+            "cta": "Contact us"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "All features",
+          "spazio1": "1 GB of storage",
+          "spazio5": "5 GB of storage",
+          "spazio20": "Packages up to 20 GB",
+          "tipologiePronte": "Ready-made types and folders",
+          "presaVisione": "Employee read confirmation",
+          "assistenzaEmailTelefono": "Email and phone support",
+          "piuAziende": "Several client companies",
+          "invioMultiplo": "Send to several employees",
+          "assistenzaPrioritaria": "Priority support"
+        },
+        "nota": "Prices excluding VAT. No commitment: cancel whenever you want.",
+        "domande": {
+          "sicurezza": {
+            "domanda": "Who can see the employees’ payslips?",
+            "risposta": "Only the employee concerned and the administrators authorised for personnel documents; every access is logged."
+          },
+          "cedolini": {
+            "domanda": "Can I deliver the same document to several employees?",
+            "risposta": "Yes: choose it once and select the employees from the list; each receives their own copy."
+          },
+          "spazio": {
+            "domanda": "What happens if the storage runs out?",
+            "risposta": "Administrators get a warning before it runs out; at the limit new uploads stop until you move to a larger package."
+          },
+          "senzaAccount": {
+            "domanda": "What about employees without an account?",
+            "risposta": "They stay in the registry and their documents are archived; they see them once they get access to the app."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "We have been working for years with payroll consultants, HR offices and companies.",
+        "paragrafo1": "We know how much time is lost emailing payslips, looking for a contract or proving that a notice has been read.",
+        "paragrafo2": "{{siteName}} gathers documents in a single organised archive: those who must see them find them, the others do not.",
+        "valori": {
+          "riservato": {
+            "title": "Confidential",
+            "text": "Personnel documents are seen only by those entitled to."
+          },
+          "semplice": {
+            "title": "Simple",
+            "text": "For the employee it is enough to open the app and read."
+          },
+          "tracciato": {
+            "title": "Tracked",
+            "text": "Uploads, openings and read confirmations are recorded."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company account: the document management is ready at once, with default types and folders.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "attivo": "Document management ready",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We have sent you an email with the link to activate the account: open it and the document management will be ready.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready. These are the users created: log in with the password you chose."
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "documents": {
+          "title": "Document management manual",
+          "description": "Archive, upload, sending to several employees, versions, trash, read confirmation, types, folders, permissions, settings, access log and storage."
+        }
       }
     }
   }

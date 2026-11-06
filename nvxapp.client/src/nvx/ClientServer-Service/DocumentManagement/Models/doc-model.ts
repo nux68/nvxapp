@@ -113,6 +113,16 @@ export class DocDocumentoEditModel {
   public noteVersione: string | null = null;
 }
 
+// invio multiplo: lo stesso file come documento del personale a piu' dipendenti (un documento per dipendente)
+export class DocDocumentoUploadMultiploModel {
+  public documento = new DocDocumentoEditModel();
+  public idDip_Anagrafica: number[] = [];
+}
+export class DocDocumentoUploadMultiploOutModel extends ModelResult {
+  public creati = 0;
+  public errori: string[] = [];
+}
+
 export class DocVersioneModel {
   public id = 0;
   public numero = 0;

@@ -10,7 +10,7 @@ import {
   DocCfgPutInModel, DocCfgPutOutModel, DocClienteListOutModel, DocDeleteOutModel, DocDipendentePutInModel, DocDipendentePutOutModel,
   DocDocumentoEditModel, DocDocumentoGetOutModel, DocDocumentoListInModel, DocDocumentoListOutModel, DocDocumentoPutInModel,
   DocDocumentoPutOutModel, DocEmptyInModel, DocIdInModel, DocIdOutModel, DocLogListInModel, DocLogListOutModel, DocSetupGetOutModel,
-  DocSvuotaCestinoOutModel, DocTipoPutInModel, DocTipoPutOutModel
+  DocSvuotaCestinoOutModel, DocTipoPutInModel, DocTipoPutOutModel, DocDocumentoUploadMultiploModel, DocDocumentoUploadMultiploOutModel
 } from './Models/doc-model';
 
 /*
@@ -58,6 +58,14 @@ export class DocumentManagementService {
     form.append('data', JSON.stringify(data));
     form.append('file', file, file.name);
     return this.http.post<GenericResult<DocDocumentoPutOutModel>>(environment.remoteData.apiUri + 'Doc_Documento/Doc_DocumentoUpload', form);
+  }
+
+  // invio multiplo ai dipendenti scelti: un documento del personale per ciascuno
+  UploadMultiplo(data: DocDocumentoUploadMultiploModel, file: File): Observable<GenericResult<DocDocumentoUploadMultiploOutModel>> {
+    const form = new FormData();
+    form.append('data', JSON.stringify(data));
+    form.append('file', file, file.name);
+    return this.http.post<GenericResult<DocDocumentoUploadMultiploOutModel>>(environment.remoteData.apiUri + 'Doc_Documento/Doc_DocumentoUploadMultiplo', form);
   }
 
   NewVersion(id: number, file: File): Observable<GenericResult<DocDocumentoPutOutModel>> {

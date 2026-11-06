@@ -10,7 +10,8 @@
       "settings": "Impostazioni",
       "log": "Registro accessi",
       "storage": "Spazio",
-      "mine": "I miei documenti"
+      "mine": "I miei documenti",
+      "manual": "Manuale documentale"
     },
     "buttons": {
       "download": "Scarica",
@@ -177,6 +178,226 @@
         "over": "Spazio esaurito",
         "warning": "Quasi pieno",
         "note": "Oltre il 100% non si caricano documenti. Per un pacchetto più grande rivolgersi al centro."
+      }
+    },
+    "multiSend": {
+      "fab": "Invia a più dipendenti",
+      "title": "Invio a più dipendenti",
+      "send": "Invia",
+      "close": "Chiudi",
+      "note": "Lo stesso file diventa un documento del personale per ciascun dipendente scelto, con la sua presa visione se la tipologia la richiede. Ogni dipendente vede solo il proprio.",
+      "employees": "Dipendenti scelti: {{n}}",
+      "search": "Cerca per nominativo, codice fiscale, matricola o utente",
+      "selectAll": "Seleziona tutti (quelli mostrati)",
+      "onlyWithAccount": "Solo con account",
+      "noEmployees": "Nessun dipendente da mostrare.",
+      "employeesRequired": "Scegli almeno un dipendente.",
+      "document": "Documento",
+      "typeRequired": "Scegli la tipologia.",
+      "acknowledgementNote": "Questa tipologia richiede la presa visione: ogni dipendente dovrà confermarla.",
+      "chooseFile": "Scegli il file",
+      "noFile": "Nessun file scelto",
+      "fileRequired": "Scegli il file da inviare.",
+      "sending": "Invio in corso...",
+      "result": "Documenti creati: {{creati}} su {{totale}}. Non riusciti:"
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "I documenti della tua azienda e dei tuoi dipendenti, ordinati e al sicuro, in cloud."
+      },
+      "home": {
+        "etichetta": "Documentale in cloud",
+        "titolo": "Cedolini, contratti e documenti aziendali in un unico archivio",
+        "sottotitolo": "Carica i documenti una volta: ogni dipendente vede solo i propri e conferma la presa visione, l'amministrazione ritrova tutto in pochi secondi.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "archivio": {
+            "title": "Archivio aziendale",
+            "text": "Cartelle e tipologie per DURC, visure, contratti e tutti i documenti dell’azienda."
+          },
+          "personale": {
+            "title": "Documenti del personale",
+            "text": "Cedolini, CU e contratti consegnati al singolo dipendente, riservati a chi è abilitato."
+          },
+          "presaVisione": {
+            "title": "Presa visione",
+            "text": "Il dipendente conferma di aver letto: data e ora restano registrate."
+          },
+          "ricerca": {
+            "title": "Ricerca nel testo",
+            "text": "Trovi un documento anche per una parola contenuta nel file."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l’azienda",
+            "text": "Il documentale è pronto con tipologie e cartelle predefinite."
+          },
+          "carica": {
+            "title": "Carica i documenti",
+            "text": "Un documento alla volta o lo stesso a più dipendenti in un colpo solo."
+          },
+          "consegna": {
+            "title": "Consegna e controlla",
+            "text": "I dipendenti li trovano in app e ne confermano la presa visione."
+          }
+        },
+        "chiusuraTitolo": "Basta email con gli allegati",
+        "chiusuraTesto": "Registra la tua azienda e prova il documentale con i tuoi dipendenti."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve per archiviare, consegnare e ritrovare i documenti dell’azienda e del personale.",
+        "sezioni": {
+          "cartelle": {
+            "title": "Cartelle",
+            "text": "Un albero di cartelle per ordinare l’archivio; quelle visibili ai dipendenti per le comunicazioni a tutti."
+          },
+          "tipologie": {
+            "title": "Tipologie",
+            "text": "Cedolino, CU, contratto, DURC...: ogni tipologia sa se ha competenza, scadenza, presa visione e conservazione."
+          },
+          "personale": {
+            "title": "Documenti del personale",
+            "text": "Riservati: li vede il dipendente interessato e chi ha l’abilitazione ai documenti del personale."
+          },
+          "invioMultiplo": {
+            "title": "Invio a più dipendenti",
+            "text": "Lo stesso documento a più dipendenti scelti dall’elenco, ognuno con la sua copia e la sua presa visione."
+          },
+          "presaVisione": {
+            "title": "Presa visione",
+            "text": "Conferma di lettura del dipendente, con data e ora; l’amministrazione vede chi non ha ancora letto."
+          },
+          "versioni": {
+            "title": "Versioni",
+            "text": "Nuove versioni dello stesso documento senza perdere le precedenti."
+          },
+          "ricerca": {
+            "title": "Ricerca",
+            "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file."
+          },
+          "scadenze": {
+            "title": "Scadenze e conservazione",
+            "text": "Documenti in scadenza e oltre il periodo di conservazione segnalati negli elenchi."
+          },
+          "abilitazioni": {
+            "title": "Abilitazioni",
+            "text": "Il CompanyPowerAdmin decide quali amministratori vedono e caricano i documenti del personale."
+          },
+          "registro": {
+            "title": "Registro accessi",
+            "text": "Chi ha caricato, aperto, scaricato o eliminato ogni documento."
+          },
+          "cestino": {
+            "title": "Cestino",
+            "text": "I documenti eliminati restano nel cestino per i giorni scelti e si possono ripristinare."
+          },
+          "spazio": {
+            "title": "Spazio",
+            "text": "Pacchetti di spazio e avviso prima che finisca."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Paghi per i dipendenti e lo spazio che usi: tutte le funzioni sono sempre incluse.",
+        "piani": {
+          "prova": {
+            "nome": "Prova",
+            "periodo": "per 30 giorni",
+            "descrizione": "Per provare con i tuoi dipendenti.",
+            "cta": "Inizia la prova"
+          },
+          "azienda": {
+            "nome": "Azienda",
+            "periodo": "per dipendente al mese",
+            "descrizione": "Per piccole e medie imprese.",
+            "cta": "Scegli Azienda"
+          },
+          "studio": {
+            "nome": "Studio",
+            "prezzo": "Su misura",
+            "descrizione": "Per consulenti del lavoro e studi paghe.",
+            "cta": "Contattaci"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "Tutte le funzioni",
+          "spazio1": "1 GB di spazio",
+          "spazio5": "5 GB di spazio",
+          "spazio20": "Pacchetti fino a 20 GB",
+          "tipologiePronte": "Tipologie e cartelle pronte",
+          "presaVisione": "Presa visione dei dipendenti",
+          "assistenzaEmailTelefono": "Assistenza via email e telefono",
+          "piuAziende": "Più aziende clienti",
+          "invioMultiplo": "Invio a più dipendenti",
+          "assistenzaPrioritaria": "Assistenza prioritaria"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "sicurezza": {
+            "domanda": "Chi vede i cedolini dei dipendenti?",
+            "risposta": "Solo il dipendente interessato e gli amministratori abilitati ai documenti del personale; ogni accesso è registrato."
+          },
+          "cedolini": {
+            "domanda": "Posso consegnare lo stesso documento a più dipendenti?",
+            "risposta": "Sì: lo scegli una volta e selezioni i dipendenti dall’elenco; ognuno riceve la sua copia."
+          },
+          "spazio": {
+            "domanda": "Cosa succede se finisce lo spazio?",
+            "risposta": "Gli amministratori ricevono un avviso prima che finisca; al limite i nuovi caricamenti si fermano finché non si passa a un pacchetto più grande."
+          },
+          "senzaAccount": {
+            "domanda": "E i dipendenti senza account?",
+            "risposta": "Restano in anagrafica e i loro documenti sono archiviati; li vedono quando ricevono l’accesso all’app."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a consulenti del lavoro, uffici del personale e aziende.",
+        "paragrafo1": "Sappiamo quanto tempo si perde a inviare cedolini via email, a cercare un contratto o a dimostrare che una comunicazione è stata letta.",
+        "paragrafo2": "{{siteName}} raccoglie i documenti in un unico archivio ordinato: chi deve vederli li trova, gli altri no.",
+        "valori": {
+          "riservato": {
+            "title": "Riservato",
+            "text": "I documenti del personale li vede solo chi ne ha diritto."
+          },
+          "semplice": {
+            "title": "Semplice",
+            "text": "Per il dipendente basta aprire l’app e leggere."
+          },
+          "tracciato": {
+            "title": "Tracciato",
+            "text": "Caricamenti, aperture e prese visione restano registrati."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l’account della tua azienda: il documentale è subito pronto, con tipologie e cartelle predefinite.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "attivo": "Documentale già pronto",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l’informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e il documentale sarà subito pronto.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
+    }
+  },
+  "pages": {
+    "userManual": {
+      "manuals": {
+        "documents": {
+          "title": "Manuale del documentale",
+          "description": "Archivio, caricamento, invio a più dipendenti, versioni, cestino, presa visione, tipologie, cartelle, abilitazioni, impostazioni, registro accessi e spazio."
+        }
       }
     }
   }
