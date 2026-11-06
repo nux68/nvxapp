@@ -6,6 +6,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- testi dei manuali utente (Manuals/<codice>.<lingua>.md), letti da UserManualMarkdownProvider; WithCulture=false: il suffisso .it/.en non e' una cultura dei satelliti -->
+  <ItemGroup>
+    <EmbeddedResource Include="Manuals\**\*.md" WithCulture="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <!-- tipi ASP.NET Core (Identity, Http, SignalR) dal framework, al posto dei pacchetti legacy 2.x -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

@@ -110,7 +110,9 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.aiDocuments', roles: RUOLI_DOCUMENTAZIONE_AI, component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.ticketTypeAiSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
+      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.ticketTypeAiSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' },
+      // manuali in PDF: quello delle funzioni base qui, quelli degli applicativi nei loro rami (Pages4Support), dopo questa voce
+      { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true }
     ];
   }
 

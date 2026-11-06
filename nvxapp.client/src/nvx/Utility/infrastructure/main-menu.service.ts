@@ -168,9 +168,15 @@ export class MainMenuService implements iMainMenuService {
 
   }
 
-  // sezione "Assistenza" (ticket, tipi di richiesta, documentazione e risposte AI): solo Infrastructure
+  // sezione "Assistenza": voci di Infrastructure (ticket, documentazione, manuale delle funzioni base) e voci dei rami
+  // applicativi (es. il loro manuale), queste solo con l'applicativo attivo
   public get Pages4Support(): MainMenuItem[] {
-    return this.mainMenuInfrastructureService.Pages4Support;
+    return [
+      ...this.mainMenuInfrastructureService.Pages4Support,
+      ...this.forApplication((this.mainMenuAttendanceTrackingService as iMainMenuService).Pages4Support ?? [], ApplicationType.AttendanceTracking),
+      ...this.forApplication((this.mainMenuCrmService as iMainMenuService).Pages4Support ?? [], ApplicationType.Crm),
+      ...this.forApplication((this.mainMenuDocumentManagementService as iMainMenuService).Pages4Support ?? [], ApplicationType.DocumentManagement),
+    ];
   }
 
   public get GetMode(): WorkingMode {
@@ -337,6 +343,8 @@ export interface iMainMenuService {
   get Pages4FinancialAdvisorAdmin(): MainMenuItem[];
   get Pages4CompanyAdmin(): MainMenuItem[];
   get Pages4User(): MainMenuItem[];
+  // voci della sezione "Assistenza" del ramo (es. il manuale dell'applicativo); facoltative
+  readonly Pages4Support?: MainMenuItem[];
   
 }
 
