@@ -159,10 +159,15 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             var q = _Az_Cliente.FindAll(c => c.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
             if (ctx.VedeTutto)
                 return q;
+            // sottoquery dai repository in variabili locali: EF le incorpora nella query (una chiamata a FindAll
+            // scritta dentro la lambda non si traduce in SQL)
             var me = ctx.IdUtente;
-            return q.Where(c => !_Crm_ClienteDati.FindAll(_ => true).Any(d => d.IdAz_Cliente == c.Id && d.IdAspNetUsersResponsabile != null && d.IdAspNetUsersResponsabile != me)
-                                || _Crm_Opportunita.FindAll(_ => true).Any(o => o.IdAz_Cliente == c.Id && o.IdAspNetUsersResponsabile == me)
-                                || _Crm_Attivita.FindAll(_ => true).Any(a => a.IdAz_Cliente == c.Id && a.IdAspNetUsersAssegnatario == me));
+            var dati = _Crm_ClienteDati.FindAll(_ => true);
+            var opportunita = _Crm_Opportunita.FindAll(_ => true);
+            var attivita = _Crm_Attivita.FindAll(_ => true);
+            return q.Where(c => !dati.Any(d => d.IdAz_Cliente == c.Id && d.IdAspNetUsersResponsabile != null && d.IdAspNetUsersResponsabile != me)
+                                || opportunita.Any(o => o.IdAz_Cliente == c.Id && o.IdAspNetUsersResponsabile == me)
+                                || attivita.Any(a => a.IdAz_Cliente == c.Id && a.IdAspNetUsersAssegnatario == me));
         }
 
         public IQueryable<Crm_Opportunita> OpportunitaVisibili(CrmContesto ctx)
@@ -213,8 +218,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         public async Task<List<Crm_UtenteModel>> UtentiAsync(CrmContesto ctx)
         {
             var idRuoli = await _AspNetRoles.FindAll(r => RuoliAzienda.Contains(r.Name!)).Select(r => r.Id).ToListAsync();
+            // sottoquery dai repository in variabili locali: EF le incorpora nella query (una chiamata a FindAll
+            // scritta dentro la lambda non si traduce in SQL)
+            var ruoliUtenti = _AspNetUserRoles.FindAll(_ => true);
             var ids = await _UserCompany.FindAll(x => x.IdCompany == ctx.IdCompany && !x.Disabled)
-                                     .Where(x => _AspNetUserRoles.FindAll(_ => true).Any(r => r.UserId == x.IdAspNetUsers && idRuoli.Contains(r.RoleId)))
+                                     .Where(x => ruoliUtenti.Any(r => r.UserId == x.IdAspNetUsers && idRuoli.Contains(r.RoleId)))
                                      .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
             return await _AspNetUsers.FindAll(u => ids.Contains(u.Id))
                                   .OrderBy(u => u.UserName)
