@@ -13,7 +13,7 @@ The pages are in the **Documents** section of the menu, subsection **Documents**
 
 > Personnel documents are confidential: only the employee concerned and the authorised administrators can see them. Every opening, download and change is recorded in the access log.
 
-## For the employee: my documents
+## For the employee: my documents {User}
 ### Viewing documents
 1. Open **Documents > Documents > My documents**.
 2. The list shows the documents concerning you, most recent first; a dot next to the title marks the ones you have not opened yet.
@@ -29,7 +29,7 @@ Some types (for example payslips, contracts, notices) require you to confirm you
 
 > If the document changes (new version), the confirmation stays linked to what you read: ask the office if in doubt.
 
-## Document archive
+## Document archive {CompanyPowerAdmin, CompanyAdmin}
 ### Searching documents
 Open **Documents > Documents > Archive**. Filters let you search by folder, type, category, employee, customer, year and **text**: the search looks at title, description and the text contained in the files (PDF, text documents...).
 
@@ -63,7 +63,7 @@ With **Trash** the document leaves the archive but can still be recovered.
 
 Documents in the trash for longer than the days set in the settings are deleted automatically at night.
 
-## Employees
+## Employees {CompanyPowerAdmin, CompanyAdmin}
 The **Documents > Documents > Employees** page lists the employees to whom personnel documents are delivered. It is visible only to those authorised for personnel documents.
 - Employees with the **key icon** (highlighted) have an account and use the app: they are the company users with the User role and appear here automatically.
 - The others are **registry only**: their documents are archived, but they cannot view them in the app until they get access.
@@ -81,7 +81,7 @@ For each chosen employee a personnel document is created with their own copy of 
 
 > Storage is checked before sending for all the copies: if it is not enough, nothing is uploaded.
 
-## Configuration (CompanyPowerAdmin)
+## Configuration (CompanyPowerAdmin) {CompanyPowerAdmin}
 ### Types
 **Documents > Documents > Types**. Each type has a code, a description and a **category**:
 - **Personnel**: documents of an employee, confidential;
@@ -105,5 +105,5 @@ For each type choose the **retention years** (empty = no limit), whether it has 
 ### Access log
 **Documents > Documents > Access log** shows who uploaded, opened, downloaded, changed, trashed, restored or deleted each document, with date and time.
 
-## Storage
+## Storage {CompanyPowerAdmin, CompanyAdmin}
 **Documents > Documents > Storage** shows the space used and the company package, the number of files, the maximum size of a file and the warning threshold. When usage passes the threshold the administrators receive a warning; above 100% no new documents can be uploaded. For a larger package contact the dealer.
