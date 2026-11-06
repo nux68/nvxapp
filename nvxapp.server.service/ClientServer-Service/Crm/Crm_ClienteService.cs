@@ -300,17 +300,23 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         private async Task<List<Crm_ClienteListModel>> ElencoAsync(CrmContesto ctx, Crm_ClienteListInModel f)
         {
             var now = DateTime.Now;
+            // sottoquery dai repository in variabili locali: EF le incorpora nella query (una chiamata a FindAll
+            // scritta dentro la lambda non si traduce in SQL)
             var q = _utility.ClientiVisibili(ctx);
+            var dati = _Crm_ClienteDati.FindAll(_ => true);
+            var tag = _Crm_ClienteTag.FindAll(_ => true);
+            var opportunitaAperte = _Crm_Opportunita.FindAll(o => o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta);
+            var attivita = _Crm_Attivita.FindAll(_ => true);
             var righe = await q.AsNoTracking()
                 .Select(c => new
                 {
                     c.Id, c.Descrizione, c.Tipo, c.Attivo, c.Citta, c.Email, c.Telefono,
-                    Dati = _Crm_ClienteDati.FindAll(d => d.IdAz_Cliente == c.Id).Select(d => new { d.Stato, d.IdAspNetUsersResponsabile }).FirstOrDefault(),
-                    Tag = _Crm_ClienteTag.FindAll(t => t.IdAz_Cliente == c.Id).Select(t => t.IdCrm_Par_Tag).ToList(),
-                    Aperte = _Crm_Opportunita.FindAll(_ => true).Count(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta),
-                    Valore = _Crm_Opportunita.FindAll(o => o.IdAz_Cliente == c.Id && o.Crm_Par_FaseNavigation!.Tipo == Crm_FaseTipo.Aperta).Sum(o => (decimal?)o.Valore) ?? 0,
-                    Ultima = _Crm_Attivita.FindAll(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.Fatta).Max(a => (DateTime?)a.Inizio),
-                    Prossima = _Crm_Attivita.FindAll(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.DaFare).Min(a => (DateTime?)a.Inizio),
+                    Dati = dati.Where(d => d.IdAz_Cliente == c.Id).Select(d => new { d.Stato, d.IdAspNetUsersResponsabile }).FirstOrDefault(),
+                    Tag = tag.Where(t => t.IdAz_Cliente == c.Id).Select(t => t.IdCrm_Par_Tag).ToList(),
+                    Aperte = opportunitaAperte.Count(o => o.IdAz_Cliente == c.Id),
+                    Valore = opportunitaAperte.Where(o => o.IdAz_Cliente == c.Id).Sum(o => (decimal?)o.Valore) ?? 0,
+                    Ultima = attivita.Where(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.Fatta).Max(a => (DateTime?)a.Inizio),
+                    Prossima = attivita.Where(a => a.IdAz_Cliente == c.Id && a.Stato == Crm_StatoAttivita.DaFare).Min(a => (DateTime?)a.Inizio),
                 })
                 .ToListAsync();
 
