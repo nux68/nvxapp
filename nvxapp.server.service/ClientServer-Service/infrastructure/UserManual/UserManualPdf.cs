@@ -137,6 +137,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                     case UserManualBlockType.Section:
                         section.AddParagraph(b.Text, StyleNames.Heading2);
                         break;
+                    case UserManualBlockType.Subsection:
+                        var sotto = section.AddParagraph();
+                        sotto.Format.SpaceBefore = Unit.FromPoint(4);
+                        sotto.Format.KeepWithNext = true;
+                        sotto.AddFormattedText(b.Text, TextFormat.Bold);
+                        break;
+                    case UserManualBlockType.Image when b.Data != null:
+                        // schermata della pagina, larghezza utile, con un bordo sottile; resta con il titolo che la precede
+                        var cornice = section.AddParagraph();
+                        cornice.Format.SpaceBefore = Unit.FromPoint(2);
+                        cornice.Format.SpaceAfter = Unit.FromPoint(6);
+                        cornice.Format.Alignment = ParagraphAlignment.Center;
+                        var img = cornice.AddImage("base64:" + Convert.ToBase64String(b.Data));
+                        img.LockAspectRatio = true;
+                        img.Width = Unit.FromCentimeter(15.5);
+                        img.LineFormat.Color = new Color(0xBF, 0xBF, 0xBF);
+                        img.LineFormat.Width = 0.5;
+                        break;
                     case UserManualBlockType.Paragraph:
                         Testo(section.AddParagraph(), b.Text);
                         break;

@@ -6,7 +6,11 @@ import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { ModelResult } from '../../ModelsBase/model-result';
 
-export class UserManualGenerateInModel { public code = ''; public siteName: string | null = null; }
+// menu dell'utente per il manuale: sezioni (titoli tradotti) e voci che vede adesso
+export class UserManualMenuItem { public titolo = ''; public url = ''; }
+export class UserManualMenuSection { public titolo = ''; public voci: UserManualMenuItem[] = []; }
+
+export class UserManualGenerateInModel { public code = ''; public siteName: string | null = null; public menu: UserManualMenuSection[] = []; }
 export class UserManualGenerateOutModel extends ModelResult { public jobId = ''; }
 
 // Manuali utente in PDF: il server li prepara con un job, il download compare nella barra dei job della pagina
