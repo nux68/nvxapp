@@ -34,11 +34,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 COPY --from=build /app .
 # libgssapi-krb5-2: Npgsql la cerca alla prima connessione (senza scrive "Cannot load library libgssapi_krb5.so.2")
-# cartella dei log su file (volume nel compose); l'app gira con l'utente non root "app" dell'immagine
+# cartelle dei log e dei file dei documenti (volumi nel compose) di proprieta' dell'utente non root "app" dell'immagine:
+# un volume nuovo prende il proprietario dalla cartella dell'immagine; un volume gia' creato come root (immagini
+# precedenti) va sistemato una volta: docker exec -u 0 <container> chown -R 1654:1654 /app/Files
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libgssapi-krb5-2 \
     && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /app/Logs && chown -R $APP_UID /app/Logs
+    && mkdir -p /app/Logs /app/Files && chown -R $APP_UID /app/Logs /app/Files
 USER $APP_UID
 
 # la porta la apre l'app (RunTime:Port); ASPNETCORE_HTTP_PORTS dell'immagine e' svuotata per non avere due configurazioni
