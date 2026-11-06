@@ -775,14 +775,15 @@
     "userManual": {
       "title": "Manual",
       "description": "PDF user manual.",
-      "note": "The PDF is prepared in a few seconds: when ready it appears at the top, in the jobs bar, with the download button.",
-      "generate": "Prepare the PDF again",
+      "note": "The manual describes the functions available to your role. Press Download: the PDF is prepared in a few seconds and downloads automatically.",
       "manuals": {
         "infrastructure": {
           "title": "Basic functions manual",
           "description": "Access, menu, users and roles, impersonation, customers and shared registries, support and background jobs."
         }
-      }
+      },
+      "preparing": "Preparing the PDF: the download will start automatically.",
+      "download": "Download"
     }
   },
   "components": {
