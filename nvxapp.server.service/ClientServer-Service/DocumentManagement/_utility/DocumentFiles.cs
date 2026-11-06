@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant.DocumentManagement;
-using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using Serilog;
 
@@ -13,14 +13,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
     public static class DocumentFiles
     {
         /// <summary>Elimina le versioni indicate (file e righe) e libera lo spazio.</summary>
-        public static async Task EliminaVersioniAsync(DocumentManagementDbContext db, IFileStorage fileStorage, IStorageQuotaService quota,
+        public static async Task EliminaVersioniAsync(IDoc_VersioneRepository versioneRepository, IFileStorage fileStorage, IStorageQuotaService quota,
                                                       int idCompany, List<Doc_Versione> versioni, CancellationToken cancellationToken = default)
         {
             if (versioni.Count == 0)
                 return;
 
             var ids = versioni.Select(v => v.Id).ToList();
-            await db.Doc_Versione.Where(v => ids.Contains(v.Id)).ExecuteDeleteAsync(cancellationToken);
+            await versioneRepository.FindAll(v => ids.Contains(v.Id)).ExecuteDeleteAsync(cancellationToken);
             await quota.FreeAsync(idCompany, versioni.Sum(v => v.Dimensione), versioni.Count, cancellationToken);
 
             // i file dopo il database: un file rimasto e' solo spazio sprecato, un file mancante sarebbe un documento rotto
@@ -32,15 +32,15 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
         }
 
         /// <summary>Elimina definitivamente i documenti (con tutte le versioni) e libera lo spazio.</summary>
-        public static async Task<int> EliminaDocumentiAsync(DocumentManagementDbContext db, IFileStorage fileStorage, IStorageQuotaService quota,
+        public static async Task<int> EliminaDocumentiAsync(IDoc_DocumentoRepository documentoRepository, IDoc_VersioneRepository versioneRepository, IFileStorage fileStorage, IStorageQuotaService quota,
                                                             int idCompany, List<int> idDocumenti, CancellationToken cancellationToken = default)
         {
             if (idDocumenti.Count == 0)
                 return 0;
 
-            var versioni = await db.Doc_Versione.AsNoTracking().Where(v => idDocumenti.Contains(v.IdDoc_Documento)).ToListAsync(cancellationToken);
-            await EliminaVersioniAsync(db, fileStorage, quota, idCompany, versioni, cancellationToken);
-            return await db.Doc_Documento.Where(d => idDocumenti.Contains(d.Id)).ExecuteDeleteAsync(cancellationToken);
+            var versioni = await versioneRepository.FindAll(v => idDocumenti.Contains(v.IdDoc_Documento)).ToListAsync(cancellationToken);
+            await EliminaVersioniAsync(versioneRepository, fileStorage, quota, idCompany, versioni, cancellationToken);
+            return await documentoRepository.FindAll(d => idDocumenti.Contains(d.Id)).ExecuteDeleteAsync(cancellationToken);
         }
     }
 }
