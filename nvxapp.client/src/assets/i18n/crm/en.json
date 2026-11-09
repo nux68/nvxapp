@@ -148,7 +148,12 @@
         "title": "Customer card",
         "registry": "Registry and sales data",
         "fiscal": "Tax data and contacts",
-        "newNote": "Save the customer to add contacts, opportunities, activities, offers, notes and attachments."
+        "newNote": "Save the customer to add contacts, opportunities, activities, offers, notes and attachments.",
+        "fabAdd": "Add to customer",
+        "addContatto": "Contact",
+        "addOpportunita": "Opportunity",
+        "addAttivita": "Activity",
+        "addOfferta": "Offer"
       },
       "leadList": {
         "title": "Leads",

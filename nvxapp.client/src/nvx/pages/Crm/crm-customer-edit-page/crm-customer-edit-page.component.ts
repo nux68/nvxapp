@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController, ModalController, AlertController } from '@ionic/angular';
+import { NavController, ModalController, AlertController, ActionSheetController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
@@ -33,6 +33,8 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
   public readonly tipi = [0, 1, 2];
   private id = 0;
   private nuovo = false;
+  // pagina visibile: il "+" del FAB si registra solo mentre la pagina e' attiva (il caricamento e' asincrono)
+  private attiva = false;
   public readonly dataOra = crmDataOra;
   public readonly data = crmData;
 
@@ -53,6 +55,8 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
               public setupService: CrmSetupService,
               private modalCtrl: ModalController,
               private collectionDialogService: CollectionDialogService,
+              private actionSheetCtrl: ActionSheetController,
+              public fabMenuService: FabMenuService,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
     const t = (k: string) => this.transloco.translate(k);
@@ -128,8 +132,44 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
     const request = new GenericRequest<M.CrmIdInModel>(M.CrmIdInModel);
     request.data.id = this.id;
     return this.service.ClienteGet(request).pipe(
-      map(res => { this.scheda = res.success ? res.data : null; return this.scheda?.cliente ?? null; }),
+      map(res => { this.scheda = res.success ? res.data : null; this.aggiornaFab(); return this.scheda?.cliente ?? null; }),
       catchError(() => of(null)));
+  }
+
+  override ionViewWillEnter() {
+    this.attiva = true;
+    this.aggiornaFab();
+    super.ionViewWillEnter();
+  }
+
+  ionViewWillLeave() {
+    this.attiva = false;
+    this.fabMenuService.fabMenuItem = [];
+  }
+
+  // "+" nel FAB solo per un cliente gia' salvato (contatti, opportunita', attivita' e offerte richiedono il cliente)
+  private aggiornaFab() {
+    if (!this.attiva)
+      return;
+    this.fabMenuService.fabMenuItem = this.scheda
+      ? [new FabMenuItem(this.transloco.translate('crm.pages.customerEdit.fabAdd'), 'add-circle-outline', () => { this.scegliInserimento(); })]
+      : [];
+  }
+
+  /** Pulsante "+": action sheet con il tipo di elemento da aggiungere al cliente. */
+  async scegliInserimento() {
+    const t = (k: string) => this.transloco.translate(k);
+    const sheet = await this.actionSheetCtrl.create({
+      header: t('crm.pages.customerEdit.fabAdd'),
+      buttons: [
+        { text: t('crm.pages.customerEdit.addContatto'), icon: 'person-outline', handler: () => { this.contatto(null); } },
+        { text: t('crm.pages.customerEdit.addOpportunita'), icon: 'git-network-outline', handler: () => { this.nuova('/crmopportunityedit'); } },
+        { text: t('crm.pages.customerEdit.addAttivita'), icon: 'calendar-outline', handler: () => { this.nuova('/crmactivityedit'); } },
+        { text: t('crm.pages.customerEdit.addOfferta'), icon: 'document-text-outline', handler: () => { this.nuova('/crmofferedit'); } },
+        { text: t('common.buttons.cancel'), role: 'cancel' }
+      ]
+    });
+    await sheet.present();
   }
 
   ricarica() {

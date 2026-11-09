@@ -84,19 +84,15 @@
       @if (scheda) {
         @switch (sezione) {
           @case ('contatti') {
-            <ion-button size="small" fill="outline" shape="round" (click)="contatto(null)"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
             <nvx-list [items]="scheda.contatti" [columns]="colContatti" [actions]="azContatti" icon="person-outline" [highlight]="principale"></nvx-list>
           }
           @case ('opportunita') {
-            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmopportunityedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
             <nvx-list [items]="scheda.opportunita" [columns]="colOpportunita" [actions]="azOpportunita" icon="git-network-outline"></nvx-list>
           }
           @case ('attivita') {
-            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmactivityedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
             <nvx-list [items]="scheda.attivita" [columns]="colAttivita" [actions]="azAttivita" icon="calendar-outline"></nvx-list>
           }
           @case ('offerte') {
-            <ion-button size="small" fill="outline" shape="round" (click)="nuova('/crmofferedit')"><ion-icon slot="start" name="add-circle-outline"></ion-icon>{{ 'crm.common.add' | transloco }}</ion-button>
             <nvx-list [items]="scheda.offerte" [columns]="colOfferte" [actions]="azOfferte" icon="document-text-outline"></nvx-list>
           }
           @case ('note') { <crm-notes [note]="scheda.note" [idAz_Cliente]="scheda.cliente.id" (changed)="ricarica()"></crm-notes> }
