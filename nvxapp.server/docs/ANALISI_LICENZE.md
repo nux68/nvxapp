@@ -3,7 +3,7 @@
 Branch: **Infrastructure_Dev** (funzione base: entità, risoluzione listino, abbonamenti, gateway di pagamento e l'aggancio all'attivazione applicativi stanno nell'infrastruttura, poi si mergiano verso gli altri rami).
 Le tabelle, il contesto `public` e il legame con `CompanyApplication`/`FinancialAdvisorApplication` sono lavoro di Infrastructure_Dev e vanno fatti *prima* che i singoli rami aggancino l'inibizione delle proprie funzioni (§8).
 
-Stato: **analisi iniziale, nessuna decisione presa, niente implementato.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
+Stato: **analisi iniziale, niente implementato. Decisa (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
 
 > Data: 06/11/2026. Le funzioni da inibire a licenza scaduta (punto 9 della richiesta) **non sono ancora pianificate**: qui si predispone solo il "gancio", non il comportamento di ogni funzione.
 
@@ -152,11 +152,36 @@ Autorizzazione: riusare/estendere `IApplicationActivationAuthorizer` (SuperUser 
 
 ### 4.3 Licenze dello studio disponibili sulle aziende (punto 12)
 
+Requisito: uno studio può acquistare una licenza che si **propaga alle sue aziende**. Un'azienda figlia di uno studio che **non** ha attivato la licenza può comunque attivarla **in autonomia**.
+
 Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSoggetto=FinancialAdvisor`):
-- se **attivo**, quando lo studio sottoscrive un piano, le **Company dello studio** ereditano la disponibilità della/e funzione/i coperta/e, senza dover sottoscrivere a loro volta;
+- se **attivo**, quando lo studio sottoscrive un piano, **tutte le Company dello studio** risultano coperte per la/e funzione/i del piano, senza dover sottoscrivere a loro volta;
 - se **spento**, l'abbonamento dello studio vale solo per le funzioni "lato studio" (`FinancialAdvisorApplication`) e ogni azienda si sottoscrive da sé.
 
-Da decidere (§13): se l'ereditarietà sia **a tetto** (lo studio paga un plafond / N aziende) o **piena** (tutte le aziende dello studio coperte). La risoluzione "la Company è coperta?" (§8) deve controllare, nell'ordine: abbonamento proprio della Company → abbonamento dello studio con `DisponibileSuCompany`.
+**Decisioni (09/11/2026):**
+1. **Posti illimitati, copertura piena e automatica**: il piano dello studio copre **tutte** le sue aziende, comprese quelle create dopo la sottoscrizione. Non si assegnano posti alle singole aziende e non serve una tabella di assegnazione: la copertura si ricava da `Company.IdFinancialAdvisor`.
+2. **Prezzo fisso**: il piano dello studio ha un prezzo unico (`PrezzoMensile`/`PrezzoAnnuale` del `Lic_Piano`), indipendente dal numero di aziende.
+3. **Upgrade autonomo**: un'azienda coperta dallo studio può comprarsi da sola un piano **superiore** (listino Company). Vale il piano più alto tra i due (confronto per `Lic_Piano.Ordine`).
+
+**Copertura di un'azienda** (regola del `ILicenseGuard`, §8.1), per ogni `Ambito`:
+1. abbonamento **proprio** della Company attivo (anche `Cumulativo`);
+2. abbonamento dello **studio** attivo, su un listino con `DisponibileSuCompany` (anche `Cumulativo`);
+3. se valgono entrambi → si applica il **piano più alto**;
+4. nessuno dei due → non coperta: l'azienda vede il listino **Company** e può sottoscrivere in autonomia.
+
+**Casi limite:**
+
+| Caso | Comportamento |
+|---|---|
+| Lo studio non ha la licenza (o ha `DisponibileSuCompany` spento) | Ogni azienda sottoscrive da sé dal listino Company, come un'azienda senza studio |
+| L'azienda ha già una licenza propria e poi lo studio sottoscrive | L'azienda è coperta dallo studio da subito. Se il suo piano proprio è **uguale o inferiore**, le si propone di togliere il rinnovo automatico (per non pagare due volte) e la licenza propria resta valida fino alla scadenza. Se è **superiore**, la tiene (punto 3) |
+| Lo studio non rinnova o la licenza scade | Le aziende ricevono un avviso. Dopo l'eventuale periodo di grace (§13) perdono la copertura dello studio e possono sottoscrivere in autonomia. Chi ha una licenza propria attiva resta coperto da quella |
+| Un'azienda lascia lo studio (cambio di `IdFinancialAdvisor`, es. `CompanyMove`) | Perde la copertura del vecchio studio ed eredita quella del nuovo, se c'è |
+
+**Cosa vede chi entra in "Gestione licenze":**
+- **studio**: per ogni funzione piano, scadenza e stato. Con `DisponibileSuCompany` vede la nota "copre tutte le aziende dello studio" e l'elenco (in sola lettura) delle aziende coperte, con evidenza di quelle che hanno un piano proprio superiore;
+- **azienda coperta dallo studio**: "Coperta dallo studio *nome dello studio* – piano *piano*, fino al *scadenza*" in sola lettura, con l'azione **Passa a un piano superiore** (a proprie spese, listino Company, mostrati solo i piani con `Ordine` più alto);
+- **azienda non coperta**: stato "Non attiva" e **Sottoscrivi** dal listino Company.
 
 ---
 
@@ -238,7 +263,7 @@ Servizio `ILicenseGuard` (Infrastructure):
 Task<LicenseState> StateAsync(int idCompany, ApplicationType ambito);
 // LicenseState: Licensed / Grace / Expired / NotSubscribed
 ```
-Risolve nell'ordine: abbonamento proprio della Company → abbonamento dello studio con `DisponibileSuCompany` (§4.3) → nessuno. Tiene conto di `DataScadenza` e di un eventuale periodo di **grace** (giorni dopo la scadenza in cui si avvisa ma non si blocca).
+Risolve con la regola del §4.3: abbonamento proprio della Company e abbonamento dello studio con `DisponibileSuCompany`. Se valgono entrambi vince il piano più alto. Se non ce n'è nessuno, la funzione non è coperta. Tiene conto di `DataScadenza` e di un eventuale periodo di **grace** (giorni dopo la scadenza in cui si avvisa ma non si blocca).
 
 ### 8.2 Dove si applica (tre livelli, da attivare quando si pianifica)
 
@@ -316,7 +341,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 **Attivazione e licenze**
 5. La sottoscrizione **attiva automaticamente** l'applicativo, o resta la doppia azione (SuperUser/Dealer attiva + licenza copre)?
 6. Periodo di **grace** dopo la scadenza (giorni in cui si avvisa ma non si blocca)? Durata?
-7. Ereditarietà studio→aziende (punto 12): **piena** (tutte le aziende) o **a tetto** (N aziende/plafond)?
+7. ~~Ereditarietà studio→aziende (punto 12): **piena** o **a tetto**?~~ **Deciso il 09/11/2026 (§4.3)**: copertura piena e automatica di tutte le aziende dello studio, prezzo fisso, upgrade autonomo dell'azienda a un piano superiore.
 
 **Registrazione e pagamenti**
 8. La registrazione pubblica di uno **Studio** è voluta, o la scelta serve solo a instradare la licenza? (punto 1)
