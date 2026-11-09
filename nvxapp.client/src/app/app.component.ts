@@ -248,13 +248,25 @@ export class AppComponent implements OnInit {
         aperta: primo?.menuHeader.title ?? ''
       };
     }).filter(a => a.sezioni.length > 0);
+
+    // "Assistenza" in fondo, come gli applicativi: dentro le sottosezioni "Assistenza" e "Configurazione"
+    // (gruppi di Pages4Support, gia' filtrati per ruolo in getGroupedSupport)
+    if (this.groupedSupportMenu.length > 0)
+      this.sezioniApplicativi = [...this.sezioniApplicativi, {
+        chiave: 'support',
+        titolo: 'menu.support',
+        sezioni: [{ gruppi: this.groupedSupportMenu, mostra: () => true }],
+        aperta: this.groupedSupportMenu[0].menuHeader.title
+      }];
   }
 
   // dopo il login si apre solo il primo applicativo disponibile (mai "Amministrazione"), con la sua prima sottosezione
   // aperta (SezioneApplicativo.aperta); senza applicativi (es. SuperUser o centro, anche impersonificati) si apre
   // "Amministrazione", altrimenti le loro voci (utenti, studi...) resterebbero nascoste in un menu tutto chiuso
   private primaSezioneAperta(): string {
-    return (this.sezioniApplicativi.find(a => a.chiave !== 'admin') ?? this.sezioniApplicativi[0])?.chiave ?? '';
+    // "Assistenza" non si apre da sola
+    const sezioni = this.sezioniApplicativi.filter(a => a.chiave !== 'support');
+    return (sezioni.find(a => a.chiave !== 'admin') ?? sezioni[0])?.chiave ?? '';
   }
 
   // Sezioni aperte o chiuse a mano: i valori legati al menu le seguono, altrimenti dopo un'impersonificazione il
@@ -279,11 +291,6 @@ export class AppComponent implements OnInit {
   // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente o badge della voce), 0 = nessuno
   public menuBadge(p: MainMenuItem): number {
     return p.component === 'TicketListPageComponent' ? this.ticketNotifierService.inCarico() : (p.badge?.() ?? 0);
-  }
-
-  // somma dei contatori delle voci di una sezione, mostrata accanto all'intestazione (es. "Assistenza")
-  public groupBadge(group: GroupMainMenuItem): number {
-    return group.menuItem.reduce((totale, p) => totale + this.menuBadge(p), 0);
   }
 
   public showPage4SuperUser(component: string): boolean {
