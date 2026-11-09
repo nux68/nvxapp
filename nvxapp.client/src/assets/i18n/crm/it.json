@@ -2,7 +2,7 @@
   "crm": {
     "menu": {
       "section": "CRM",
-      "settingsSection": "Configurazione CRM",
+      "settingsSection": "Configurazione",
       "customers": "Clienti",
       "leads": "Lead",
       "pipeline": "Pipeline",
