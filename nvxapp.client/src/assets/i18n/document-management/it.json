@@ -2,6 +2,7 @@
   "documents": {
     "menu": {
       "section": "Documenti",
+      "settingsSection": "Configurazione documentale",
       "archive": "Archivio",
       "employees": "Dipendenti",
       "types": "Tipologie",

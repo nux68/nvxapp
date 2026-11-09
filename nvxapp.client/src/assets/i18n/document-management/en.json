@@ -2,6 +2,7 @@
   "documents": {
     "menu": {
       "section": "Documents",
+      "settingsSection": "Document management settings",
       "archive": "Archive",
       "employees": "Employees",
       "types": "Types",
