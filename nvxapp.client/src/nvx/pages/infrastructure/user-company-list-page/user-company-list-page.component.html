@@ -8,6 +8,12 @@
 
   <ion-card>
     <ion-card-content>
+      <!-- utenti attivi e limite della licenza (ANALISI_LICENZE.md §5.1) -->
+      @if (limiteUtenti != null && userCompanyList) {
+        <p [class.nvx-nota-disabled]="utentiAttivi < limiteUtenti" [style.color]="utentiAttivi >= limiteUtenti ? 'var(--ion-color-warning-shade)' : null">
+          {{ 'pages.userCompanyList.activeUsersOfLimit' | transloco: { attivi: utentiAttivi, limite: limiteUtenti } }}
+        </p>
+      }
       <!-- opzioni della lista (Mostra disabilitati, Abilita cancellazioni) -->
       <nvx-list-options
         [showDisabledLabel]="'pages.userCompanyList.showDisabled' | transloco"

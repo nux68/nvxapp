@@ -28,6 +28,43 @@ export class UserDataModel  {
   // voci di menu nascoste ai ruoli dell'azienda (configurate dal CompanyPowerAdmin)
   public menuRestrictions: MenuRestrictionModel[] = [];
 
+  // licenze dell'azienda (o dello studio) dell'utente (ANALISI_LICENZE.md §8.1.1, §8.1.2)
+  public license: UserLicenseModel | null = null;
+
+}
+
+// stato delle licenze per menu e pulsanti; il server ricontrolla sempre
+export class UserLicenseModel {
+  // false = sistema licenze non attivo: tutto come Pro, utenti illimitati
+  public enabled: boolean = false;
+  public function: UserLicenseFunctionModel[] = [];
+  public activeUsers: number = 0;
+  // limite utenti del soggetto; null = illimitati
+  public userLimit: number | null = null;
+  public canAddUser: boolean = true;
+}
+
+export class UserLicenseFunctionModel {
+  public application!: ApplicationType;
+  // null = nessuna licenza valida
+  public livello: LivelloLicenza | null = null;
+  public stato: StatoLicenza = StatoLicenza.NotSubscribed;
+  public maxUtenti: number | null = null;
+  public dataScadenza: string | null = null;
+}
+
+// livelli di licenza (stessi valori dell'enum LivelloLicenza del server)
+export enum LivelloLicenza {
+  Free = 1,
+  Standard = 2,
+  Pro = 3,
+}
+
+export enum StatoLicenza {
+  NotSubscribed = 0,
+  Licensed = 1,
+  Grace = 2,
+  Expired = 3,
 }
 
 // voce di menu (url) nascosta a un ruolo dell'azienda

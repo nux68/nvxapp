@@ -21,6 +21,7 @@ import { filter, take } from 'rxjs';
 import { DialogName } from '../../../Utility/infrastructure/dialog-redefinition';
 import { AddUserCompanyComponent } from '../../../shared/components/infrastructure/add-user-company/add-user-company.component';
 import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -64,7 +65,8 @@ export class UserCompanyListPageComponent {
               private longJobNotifierService: LongJobNotifierService,
               private transloco: TranslocoService,
               private deletionDialogService: DeletionDialogService,
-              private authService: AuthService
+              private authService: AuthService,
+              private collectionDialogService: CollectionDialogService
             
             ) 
 {
@@ -112,11 +114,29 @@ export class UserCompanyListPageComponent {
   }
 
 
+  // utenti attivi (non disabilitati) e limite della licenza dell'azienda (null = illimitati o licenze non attive)
+  get utentiAttivi(): number {
+    return (this.userCompanyList ?? []).filter(x => !x.disabled).length;
+  }
+
+  get limiteUtenti(): number | null {
+    const license = this.authService.License;
+    return license && license.enabled ? license.userLimit : null;
+  }
+
   /**
    * Pulsante "+": se un applicativo fornisce l'importazione da file (es. gestione presenze) si sceglie da un
    * action sheet tra inserimento di un utente e importazione; altrimenti si apre subito l'inserimento.
    */
   async scegliInserimento() {
+    // limite utenti della licenza (ANALISI_LICENZE.md §5.1): il server ricontrolla; qui si evita di compilare per niente
+    const limite = this.limiteUtenti;
+    if (limite != null && this.utentiAttivi >= limite) {
+      if (await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('pages.userCompanyList.userLimitReached', { limite })))
+        this.navCtrl.navigateForward('/licensemanagement');
+      return;
+    }
+
     const importDialog = await this.mainMenuService.RedefineDialog(DialogName.ImportUserCompany, null);
     if (!importDialog) {
       this.openAddUserCompany();
