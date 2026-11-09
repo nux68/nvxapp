@@ -3,7 +3,7 @@
 Branch: **Infrastructure_Dev** (funzione base: entità, risoluzione listino, abbonamenti, gateway di pagamento e l'aggancio all'attivazione applicativi stanno nell'infrastruttura, poi si mergiano verso gli altri rami).
 Le tabelle, il contesto `public` e il legame con `CompanyApplication`/`FinancialAdvisorApplication` sono lavoro di Infrastructure_Dev e vanno fatti *prima* che i singoli rami aggancino l'inibizione delle proprie funzioni (§8).
 
-Stato: **analisi iniziale, niente implementato. Decisa (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
+Stato: **analisi iniziale, niente implementato. Decise (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3) e i tre livelli fissi di licenza Free/Standard/Pro con i metodi vero/falso sul livello (§5, §8.1); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
 
 > Data: 06/11/2026. Le funzioni da inibire a licenza scaduta (punto 9 della richiesta) **non sono ancora pianificate**: qui si predispone solo il "gancio", non il comportamento di ogni funzione.
 
@@ -94,11 +94,14 @@ Tutte le tabelle stanno nello schema `public` (`PublicDbContext`, come `Company`
 - `DisponibileSuCompany` *(bool, solo se `TipoSoggetto=FinancialAdvisor`)*: le licenze del listino valgono anche per le aziende dello studio (punto 12 – §4.3);
 - unicità logica: una sola riga attiva per (`IdDealer`, `TipoSoggetto`, `Ambito`).
 
-**`Lic_Piano`** – i livelli dentro un listino (Free/Standard/Pro…, punto 3):
-- `IdListino`, `Codice` (libero), `Descrizione`, `Ordine`;
-- `PrezzoMensile`, `PrezzoAnnuale` (punto 4; un prezzo a 0 = piano gratuito, es. Free);
+**`Lic_Piano`** – i livelli dentro un listino (punto 3). **Deciso il 09/11/2026: tre livelli fissi per listino** (§5):
+- `IdListino`, `Livello` (enum `LivelloLicenza`: `Free=1`, `Standard=2`, `Pro=3`), `Codice` e `Descrizione` (etichette modificabili da chi gestisce il listino), `Ordine` (solo ordine di visualizzazione);
+- unicità: un solo piano attivo per (`IdListino`, `Livello`);
+- `PrezzoMensile`, `PrezzoAnnuale` (punto 4): `Free` ha sempre prezzo 0, `Standard` e `Pro` hanno i prezzi decisi da chi gestisce il listino;
 - `Attivo`;
-- *(predisposizione, non da compilare ora)* collegamento alle **capability/limiti** del piano (quali funzioni/limiti dà) → tabella figlia `Lic_PianoFunzione` o un `IdStoragePlan`/quote, da definire quando si pianifica il punto 9.
+- *(predisposizione, non da compilare ora)* collegamento alle **capability/limiti** del piano (quali funzioni/limiti dà) → tabella figlia `Lic_PianoFunzione` o un `IdStoragePlan`/quote, da definire quando si pianifica il punto 9. Fino ad allora le funzioni distinguono i livelli solo con i metodi vero/falso del §8.1.
+
+> **Perché `Livello` e non `Ordine` per il confronto:** `Ordine` vale solo dentro un listino, mentre lo studio usa un listino FinancialAdvisor e l'azienda un listino Company (e il Cumulativo un listino a parte). `Livello` è la stessa scala per tutti i listini, quindi due coperture si confrontano sempre.
 
 > **Perché prezzo come due colonne e non righe mensile/annuale:** l'abbonamento sceglie la periodicità (§3.2); tenere i due prezzi sul piano evita di duplicare il piano. Se in futuro servono più periodicità (trimestrale…) si passa a una figlia `Lic_PianoPrezzo (Periodicita, Prezzo)`. Da decidere (§13).
 
@@ -161,12 +164,12 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
 **Decisioni (09/11/2026):**
 1. **Posti illimitati, copertura piena e automatica**: il piano dello studio copre **tutte** le sue aziende, comprese quelle create dopo la sottoscrizione. Non si assegnano posti alle singole aziende e non serve una tabella di assegnazione: la copertura si ricava da `Company.IdFinancialAdvisor`.
 2. **Prezzo fisso**: il piano dello studio ha un prezzo unico (`PrezzoMensile`/`PrezzoAnnuale` del `Lic_Piano`), indipendente dal numero di aziende.
-3. **Upgrade autonomo**: un'azienda coperta dallo studio può comprarsi da sola un piano **superiore** (listino Company). Vale il piano più alto tra i due (confronto per `Lic_Piano.Ordine`).
+3. **Upgrade autonomo**: un'azienda coperta dallo studio può comprarsi da sola un piano **superiore** (listino Company). Vale il piano più alto tra i due (confronto per `Lic_Piano.Livello`, §3.1).
 
 **Copertura di un'azienda** (regola del `ILicenseGuard`, §8.1), per ogni `Ambito`:
 1. abbonamento **proprio** della Company attivo (anche `Cumulativo`);
 2. abbonamento dello **studio** attivo, su un listino con `DisponibileSuCompany` (anche `Cumulativo`);
-3. se valgono entrambi → si applica il **piano più alto**;
+3. se valgono entrambi → si applica il **piano più alto** (`Livello` massimo; un Cumulativo copre ogni funzione al proprio `Livello`);
 4. nessuno dei due → non coperta: l'azienda vede il listino **Company** e può sottoscrivere in autonomia.
 
 **Casi limite:**
@@ -180,7 +183,7 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
 
 **Cosa vede chi entra in "Gestione licenze":**
 - **studio**: per ogni funzione piano, scadenza e stato. Con `DisponibileSuCompany` vede la nota "copre tutte le aziende dello studio" e l'elenco (in sola lettura) delle aziende coperte, con evidenza di quelle che hanno un piano proprio superiore;
-- **azienda coperta dallo studio**: "Coperta dallo studio *nome dello studio* – piano *piano*, fino al *scadenza*" in sola lettura, con l'azione **Passa a un piano superiore** (a proprie spese, listino Company, mostrati solo i piani con `Ordine` più alto);
+- **azienda coperta dallo studio**: "Coperta dallo studio *nome dello studio* – piano *piano*, fino al *scadenza*" in sola lettura, con l'azione **Passa a un piano superiore** (a proprie spese, listino Company, mostrati solo i piani con `Livello` più alto);
 - **azienda non coperta**: stato "Non attiva" e **Sottoscrivi** dal listino Company.
 
 ---
@@ -189,7 +192,12 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
 
 - **Livelli di soggetto** (punto 2): per ora `Company` e `FinancialAdvisor`. L'enum `TipoSoggetto` è aperto: aggiungere `Dealer` in futuro non rompe il modello.
 - **Ambiti** (punto 5): un listino per **Presenze**, uno per **CRM**, uno per **Documentale**, uno **Cumulativo**. Da decidere (§13) se il Cumulativo è un `Ambito` a sé con prezzo proprio, oppure uno "sconto bundle" calcolato sui singoli: la proposta è **`Ambito` a sé** (più semplice, prezzo esplicito, nessuna regola di sconto da mantenere).
-- **Livelli/piani** (punto 3): N per listino, per ora 3 (es. Free/Standard/Pro). Modificabili da chi gestisce il listino; il `Codice` è libero, non un enum, così si aggiungono/rinominano senza migration.
+- **Livelli/piani** (punto 3). **Deciso il 09/11/2026: tre livelli fissi per ogni listino**, uno gratuito e due a pagamento:
+  - **Free** – 0 €;
+  - **Standard** – prezzo *x*;
+  - **Pro** – prezzo *y*.
+
+  Chi gestisce il listino modifica prezzi ed etichette (`Codice`/`Descrizione`), non il numero dei livelli. **Cosa distingue i livelli non è ancora definito** e si deciderà strada facendo: per questo il sistema espone metodi che rispondono vero/falso sul livello di licenza (§8.1), e ogni funzione deciderà con quelli cosa concedere a Free, Standard o Pro.
 - **Periodicità** (punto 4): `Mensile`/`Annuale`, scelta alla sottoscrizione; prezzo annuale indipendente (consente lo sconto annuale senza calcoli).
 
 Esempio (listino globale SuperUser, TipoSoggetto=Company, Ambito=Presenze):
@@ -265,6 +273,26 @@ Task<LicenseState> StateAsync(int idCompany, ApplicationType ambito);
 ```
 Risolve con la regola del §4.3: abbonamento proprio della Company e abbonamento dello studio con `DisponibileSuCompany`. Se valgono entrambi vince il piano più alto. Se non ce n'è nessuno, la funzione non è coperta. Tiene conto di `DataScadenza` e di un eventuale periodo di **grace** (giorni dopo la scadenza in cui si avvisa ma non si blocca).
 
+### 8.1.1 Metodi vero/falso sul livello di licenza (deciso il 09/11/2026)
+
+Poiché cosa distingue Free, Standard e Pro non è ancora definito (§5), `ILicenseGuard` espone metodi che rispondono **solo vero/falso** sul livello. Le funzioni li usano dove serve una differenza tra livelli, senza conoscere abbonamenti, listini o studio:
+
+```
+Task<LivelloLicenza?> LevelAsync(int idCompany, ApplicationType ambito);   // null = nessuna licenza valida
+
+Task<bool> IsLicensedAsync(int idCompany, ApplicationType ambito);   // qualsiasi livello valido, anche Free
+Task<bool> IsFreeAsync(int idCompany, ApplicationType ambito);       // livello effettivo esattamente Free
+Task<bool> IsStandardAsync(int idCompany, ApplicationType ambito);   // livello effettivo esattamente Standard
+Task<bool> IsProAsync(int idCompany, ApplicationType ambito);        // livello effettivo esattamente Pro
+Task<bool> HasAtLeastAsync(int idCompany, ApplicationType ambito, LivelloLicenza minimo);   // es. Standard o superiore
+```
+
+- Il **livello effettivo** è quello risolto dalla regola del §4.3 (proprio, dello studio o Cumulativo, vince il più alto). Una licenza **scaduta** oltre la grace vale come nessuna licenza: tutti i metodi rispondono `false` e `LevelAsync` risponde `null`. Durante la grace i metodi rispondono come se fosse valida.
+- `HasAtLeastAsync` è il metodo da preferire nelle funzioni ("questa cosa richiede almeno Standard"): resta corretto anche se un domani un livello superiore sostituisce o si aggiunge a quelli attuali. `IsFree`/`IsStandard`/`IsPro` servono per i casi in cui conta il livello esatto (es. messaggi o pulsanti "passa a Pro").
+- Le stesse firme esistono per lo **studio** (sovraccarichi con `idFinancialAdvisor`) per le funzioni lato studio (`FinancialAdvisorApplication`).
+- **Frontend**: il livello effettivo per ambito viene caricato in `UserLoad` insieme agli applicativi attivi; `AuthService` espone gli equivalenti sincroni (`licenseLevel(app)`, `isLicensed(app)`, `isFree(app)`, `isStandard(app)`, `isPro(app)`, `hasLicenseAtLeast(app, livello)`) per menu e pulsanti. Il server ricontrolla sempre con `ILicenseGuard`: il frontend serve solo a mostrare o nascondere.
+- Finché il sistema licenze non è attivo (prima della Fase 4 o con abbonamenti non ancora migrati) i metodi devono avere un **comportamento neutro configurabile** (proposta: rispondere come `Pro`), così aggiungere un controllo a una funzione non blocca nessuno prima del tempo.
+
 ### 8.2 Dove si applica (tre livelli, da attivare quando si pianifica)
 
 1. **Attivazione applicativi** (`CompanyApplicationService`): un abbonamento scaduto porta `CompanyApplication.Active` a bloccato (o un sotto-stato "sospeso per licenza"), riusando il meccanismo che **già** blocca l'accesso agli applicativi non attivi (`TenantSchemaAccessor`). È il blocco più "forte" e gratis: la funzione sparisce come un applicativo spento.
@@ -336,7 +364,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 1. Prezzo come due colonne (Mensile/Annuale) sul piano, o tabella figlia per più periodicità? (proposta: due colonne)
 2. Cumulativo come `Ambito` con prezzo proprio o come bundle/sconto sui singoli? (proposta: `Ambito` a sé)
 3. Valuta unica (EUR) o multi-valuta? (proposta: EUR)
-4. I piani portano già **limiti/capability** (es. quote), o solo prezzo/accesso in v1? (proposta: solo accesso in v1, capability predisposte)
+4. ~~I piani portano già **limiti/capability** (es. quote), o solo prezzo/accesso in v1?~~ **Deciso il 09/11/2026 (§5, §8.1.1)**: tre livelli fissi Free (0 €) / Standard (*x*) / Pro (*y*). Cosa distingue i livelli si deciderà strada facendo; intanto si predispongono i metodi vero/falso sul livello di licenza.
 
 **Attivazione e licenze**
 5. La sottoscrizione **attiva automaticamente** l'applicativo, o resta la doppia azione (SuperUser/Dealer attiva + licenza copre)?
@@ -357,7 +385,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 ## 14. Fasi di implementazione (bozza, dopo le decisioni §13)
 
 **Fase 0 – Modello (Infrastructure_Dev)**
-- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, stati; flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
+- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, `LivelloLicenza`, stati; flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
 
 **Fase 1 – Listini (SuperUser/Dealer)**
 - Servizi + controller di gestione listini e piani; `ILicenseCatalogResolver` (§4.1); pagina Angular listini (sul modello `/storageplanlist`); autorizzazioni.
@@ -369,7 +397,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 - `IPaymentGateway` + Stripe/PayPal; webhook idempotenti; configurazione secret; coerenza col server di prova (debug di default).
 
 **Fase 4 – Inibizione (quando pianificata)**
-- `ILicenseGuard`; aggancio a `CompanyApplicationService`/`TenantSchemaAccessor`; attributo `[RequiresLicense]`; stato licenza in `AuthService`/menu; messaggi utente dedicati.
+- `ILicenseGuard` con i metodi vero/falso sul livello (§8.1.1) e gli equivalenti in `AuthService`; aggancio a `CompanyApplicationService`/`TenantSchemaAccessor`; attributo `[RequiresLicense]`; stato licenza in `AuthService`/menu; messaggi utente dedicati.
 
 **Fase 5 – Registrazione per tipo soggetto (punto 1)**
 - Selettore in `register-page`; `TipoSoggetto` in `CompanyRegistrationRequest`; instradamento Studio/Azienda in `RegistrationService`.
