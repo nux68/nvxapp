@@ -44,9 +44,25 @@ export class UserNavigationService {
       this.authService.setActiveApplications(userData.activeApplications);
       this.authService.setFinancialAdvisorApplications(userData.financialAdvisorApplications);
       this.authService.setMenuRestrictions(userData.menuRestrictions);
+      this.authService.setLicense(userData.license);
     }
 
     
+  }
+
+  // rilegge dal server lo stato delle licenze dell'utente corrente (es. dopo una sottoscrizione o un rinnovo)
+  public RefreshLicense(): void {
+    const corrente = this._userCronology?.[this._userCronology.length - 1];
+    if (!corrente?.userData?.id)
+      return;
+    const request = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+    request.data.id = corrente.userData.id;
+    this.accountService.UserLoad(request).subscribe(usl => {
+      if (usl.success && usl.data?.userData) {
+        corrente.userData.license = usl.data.userData.license;
+        this.authService.setLicense(usl.data.userData.license);
+      }
+    });
   }
 
   // l'utente del login (il primo della cronologia) e' SuperUser, anche mentre ne impersona un altro
@@ -76,6 +92,8 @@ export class UserNavigationService {
           this.authService.setFinancialAdvisorApplications(usl.data.userData.financialAdvisorApplications);
           this._userCronology[this._userCronology.length - 1].userData.menuRestrictions = usl.data.userData.menuRestrictions;
           this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
+          this._userCronology[this._userCronology.length - 1].userData.license = usl.data.userData.license;
+          this.authService.setLicense(usl.data.userData.license);
 
           if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
             this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
@@ -119,6 +137,8 @@ export class UserNavigationService {
             this.authService.setFinancialAdvisorApplications(usl.data.userData.financialAdvisorApplications);
             this._userCronology[idx].userData.menuRestrictions = usl.data.userData.menuRestrictions;
             this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
+            this._userCronology[idx].userData.license = usl.data.userData.license;
+            this.authService.setLicense(usl.data.userData.license);
 
             if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
               this.navCtrl.navigateForward(gotoBackPage);

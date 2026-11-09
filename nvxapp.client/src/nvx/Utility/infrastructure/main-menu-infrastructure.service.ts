@@ -6,6 +6,10 @@ import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-me
 const RUOLI_DOCUMENTAZIONE_AI = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin',
                                  'CompanyPowerAdmin', 'CompanyAdmin'];
 
+// licenze: chi vede lo stato delle licenze del proprio soggetto (sottoscrive solo il PowerAdmin) e chi vede i listini
+const RUOLI_LICENZE_SOGGETTO = ['FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin', 'CompanyPowerAdmin', 'CompanyAdmin'];
+const RUOLI_LISTINI_LICENZE = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin'];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -109,6 +113,9 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.support', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
+      // licenze (ANALISI_LICENZE.md §10): stato e sottoscrizione per azienda e studio; listini per SuperUser e centro
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.licenseManagement', roles: RUOLI_LICENZE_SOGGETTO, component: "LicenseManagementPageComponent", url: '/licensemanagement', icon: 'ribbon' },
+      { menuType: MenuType.MenuItem,   zorder: 310, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },
       // manuali in PDF: quello delle funzioni base qui, quelli degli applicativi nei loro rami (Pages4Support), dopo questa voce
       { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true },
       // "Configurazione" dell'assistenza (gruppo 1, dopo la sezione Assistenza e i manuali), come quelle di CRM e documentale

@@ -17,6 +17,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisor
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
@@ -54,6 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IFinancialAdvisorApplicationService _financialAdvisorApplicationService;
         private readonly IFinancialAdvisorApplicationRepository _financialAdvisorApplicationRepository;
         private readonly IEnumerable<IUserCompanyListExtension> _userCompanyListExtensions;
+        private readonly ILicenseGuard _licenseGuard;
 
 
         public AccountService(IMapper mapper,
@@ -83,6 +85,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IEnumerable<IUserCompanyListExtension> userCompanyListExtensions,
                               IFinancialAdvisorApplicationService financialAdvisorApplicationService,
                               IFinancialAdvisorApplicationRepository financialAdvisorApplicationRepository,
+                              ILicenseGuard licenseGuard,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -106,6 +109,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userCompanyListExtensions = userCompanyListExtensions;
             _financialAdvisorApplicationService = financialAdvisorApplicationService;
             _financialAdvisorApplicationRepository = financialAdvisorApplicationRepository;
+            _licenseGuard = licenseGuard;
             _hubContext = hubContext;
         }
 
@@ -304,6 +308,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                     .Select(x => new CompanyMenuRestrictionModel { Url = x.Url, Role = x.Role })
                                     .ToList();
                             }
+
+                            // licenze: dell'azienda per i suoi utenti, dello studio per gli utenti dello studio
+                            retVal.UserData.License = await UserLicenseAsync(
+                                int.TryParse(company, out var idCompanyLic) ? idCompanyLic : null,
+                                company.Length == 0 && int.TryParse(financialAdvisor, out var idStudioLic) ? idStudioLic : null);
 
 
                             var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Name != null && roles.Contains(x.Name)).ToList();
@@ -1075,7 +1084,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
                     if (model.Data.UserCompanyEdit.Disabled != null)
+                    {
+                        // riabilitare un utente conta come aggiungerlo: limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                        if (userCompany.Disabled && !model.Data.UserCompanyEdit.Disabled.Value)
+                            await VerificaLimiteUtentiAzienda(userCompany.IdCompany);
                         userCompany.Disabled = model.Data.UserCompanyEdit.Disabled.Value;
+                    }
 
                     await _userCompanyRepository.UpdateAsync(userCompany);
 
@@ -1111,7 +1125,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     int IdCompany;
                     int.TryParse(this.CurrentCompany, out IdCompany);
 
-
+                    // limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                    await VerificaLimiteUtentiAzienda(IdCompany);
 
                     //DealerPowerAdmin
                     string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
@@ -1542,7 +1557,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
 
                     if (model.Data.UserFinancialAdvisorEdit.Disabled != null)
+                    {
+                        if (userFinancialAdvisor.Disabled && !model.Data.UserFinancialAdvisorEdit.Disabled.Value)
+                            await VerificaLimiteUtentiStudio(userFinancialAdvisor.IdFinancialAdvisor);
                         userFinancialAdvisor.Disabled = model.Data.UserFinancialAdvisorEdit.Disabled.Value;
+                    }
 
                     await _userFinancialAdvisorRepository.UpdateAsync(userFinancialAdvisor);
                 }
@@ -1552,7 +1571,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     int IdFinancialAdvisor;
                     int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
 
-
+                    // limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                    await VerificaLimiteUtentiStudio(IdFinancialAdvisor);
 
                     //FinancialAdvisorPowerAdmin
                     string password = model.Data.UserFinancialAdvisorEdit.Pw != null ? model.Data.UserFinancialAdvisorEdit.Pw : "1234";
@@ -1595,7 +1615,55 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             }, isSubProcess);
         }
 
+        // stato delle licenze per il client (ANALISI_LICENZE.md §8.1.1, §8.1.2); il server ricontrolla sempre con ILicenseGuard
+        private async Task<UserLicenseModel> UserLicenseAsync(int? idCompany, int? idFinancialAdvisor)
+        {
+            var retVal = new UserLicenseModel { Enabled = await _licenseGuard.EnabledAsync() };
+            if (idCompany == null && idFinancialAdvisor == null)
+                return retVal;
 
+            foreach (var ambito in LicenseGuard.Funzioni)
+            {
+                var c = idCompany != null
+                        ? await _licenseGuard.CoverageAsync(idCompany.Value, ambito)
+                        : await _licenseGuard.StudioCoverageAsync(idFinancialAdvisor!.Value, ambito);
+                retVal.Function.Add(new UserLicenseFunctionModel
+                {
+                    Application = (ApplicationType)(int)ambito,
+                    Livello = (int?)c.Livello,
+                    Stato = (int)c.Stato,
+                    MaxUtenti = c.MaxUtenti,
+                    DataScadenza = c.DataScadenza
+                });
+            }
+
+            if (idCompany != null)
+            {
+                retVal.ActiveUsers = await _licenseGuard.ActiveUsersAsync(idCompany.Value);
+                retVal.UserLimit = await _licenseGuard.CompanyUserLimitAsync(idCompany.Value);
+                retVal.CanAddUser = await _licenseGuard.CanAddUserAsync(idCompany.Value);
+            }
+            else
+            {
+                retVal.ActiveUsers = await _licenseGuard.StudioActiveUsersAsync(idFinancialAdvisor!.Value);
+                retVal.UserLimit = await _licenseGuard.StudioUserLimitAsync(idFinancialAdvisor.Value);
+                retVal.CanAddUser = await _licenseGuard.StudioCanAddUserAsync(idFinancialAdvisor.Value);
+            }
+            return retVal;
+        }
+
+        // limite utenti della licenza (ANALISI_LICENZE.md §5.1): gli utenti gia' attivi restano, si bloccano solo i nuovi
+        private async Task VerificaLimiteUtentiAzienda(int idCompany)
+        {
+            if (idCompany > 0 && !await _licenseGuard.CanAddUserAsync(idCompany))
+                throw new UserMessageException(InfrastructureMessages.Get("LicenseUserLimitReached", await _licenseGuard.CompanyUserLimitAsync(idCompany)));
+        }
+
+        private async Task VerificaLimiteUtentiStudio(int idFinancialAdvisor)
+        {
+            if (idFinancialAdvisor > 0 && !await _licenseGuard.StudioCanAddUserAsync(idFinancialAdvisor))
+                throw new UserMessageException(InfrastructureMessages.Get("LicenseUserLimitReached", await _licenseGuard.StudioUserLimitAsync(idFinancialAdvisor)));
+        }
     }
 
     public interface IAccountService : IServiceBase

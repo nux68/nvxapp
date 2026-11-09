@@ -40,12 +40,37 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         // voci di menu nascoste ai ruoli dell'azienda dell'utente
         public List<CompanyMenuRestrictionModel> MenuRestrictions { get; set; }
 
+        // licenze dell'azienda (o dello studio) dell'utente, per menu e pulsanti (ANALISI_LICENZE.md §8.1.1, §8.1.2)
+        public UserLicenseModel License { get; set; } = new UserLicenseModel();
+
         public UserDataModel()
         {
             Roles = new List<AspNetRolesModel>();
             ActiveApplications = new List<ApplicationType>();
             MenuRestrictions = new List<CompanyMenuRestrictionModel>();
         }
+    }
+
+    public class UserLicenseModel
+    {
+        // false = sistema licenze non attivo: tutto come Pro, utenti illimitati
+        public bool Enabled { get; set; }
+        public List<UserLicenseFunctionModel> Function { get; set; } = new List<UserLicenseFunctionModel>();
+        public int ActiveUsers { get; set; }
+        // limite utenti del soggetto (il piu' alto tra le funzioni coperte); null = illimitati
+        public int? UserLimit { get; set; }
+        public bool CanAddUser { get; set; } = true;
+    }
+
+    public class UserLicenseFunctionModel
+    {
+        public ApplicationType Application { get; set; }
+        // 1 Free, 2 Standard, 3 Pro; null = nessuna licenza valida
+        public int? Livello { get; set; }
+        // 0 NotSubscribed, 1 Licensed, 2 Grace, 3 Expired
+        public int Stato { get; set; }
+        public int? MaxUtenti { get; set; }
+        public DateTime? DataScadenza { get; set; }
     }
 
 }

@@ -1,0 +1,167 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  @if (status) {
+
+    <!-- soggetto, utenti, avvisi generali -->
+    <ion-card>
+      <ion-card-content>
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ status.soggetto }}</ion-label>
+        </ion-item>
+        @if (status.studio && !isStudio) {
+          <p class="nvx-nota-disabled">{{ 'pages.licenseManagement.studio' | transloco: { studio: status.studio } }}</p>
+        }
+        <p>{{ utenti() }}</p>
+        @if (!status.attive) {
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseManagement.systemNotActive' | transloco }}</ion-note>
+        }
+        @if (status.debugPagamenti) {
+          <br /><ion-note color="warning">{{ 'pages.license.debugPayments' | transloco }}</ion-note>
+        }
+        @if (messaggio) {
+          <br /><ion-note color="success">{{ messaggio }}</ion-note>
+        }
+        @if (!status.canManage) {
+          <br /><ion-note class="nvx-nota-disabled">{{ 'pages.licenseManagement.readOnly' | transloco }}</ion-note>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    <!-- una scheda per funzione -->
+    @for (f of status.funzione; track f.ambito) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.license.function' + f.ambito | transloco }}</ion-label>
+            <ion-badge slot="end" [color]="coloreStato(f)">{{ descrizioneStato(f) }}</ion-badge>
+          </ion-item>
+
+          @if (f.dataScadenza) {
+            <p>{{ (f.stato === Stato.Grace ? 'pages.licenseManagement.inGraceUntil' : 'pages.licenseManagement.validUntil') | transloco: { data: (f.dataScadenza | date:'dd/MM/yyyy') } }}</p>
+          }
+          <p class="nvx-nota-disabled">
+            {{ f.maxUtenti == null ? ('pages.licenseManagement.functionUsersUnlimited' | transloco) : ('pages.licenseManagement.functionUsers' | transloco: { max: f.maxUtenti }) }}
+          </p>
+          @if (status.attive && f.oltreLimite) {
+            <ion-note color="warning">{{ 'pages.licenseManagement.overLimit' | transloco }}</ion-note>
+          }
+
+          <ng-container *ngTemplateOutlet="abbonamenti; context: { ambito: f.ambito }"></ng-container>
+
+          @if (status.canManage && offertaDi(f.ambito)) {
+            <ion-button size="small" fill="outline" shape="round" (click)="sottoscrivi(f.ambito)">
+              <ion-icon slot="start" name="cart-outline"></ion-icon>
+              {{ (f.livello == null ? 'pages.licenseManagement.subscribe' : 'pages.licenseManagement.upgrade') | transloco }}
+            </ion-button>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- cumulativo: tutte le funzioni -->
+    @if (abbonamentiDi(cumulativo).length > 0 || (status.canManage && offertaDi(cumulativo))) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.license.function' + cumulativo | transloco }}</ion-label>
+          </ion-item>
+          <p class="nvx-nota-disabled">{{ 'pages.licenseManagement.bundleNote' | transloco }}</p>
+
+          <ng-container *ngTemplateOutlet="abbonamenti; context: { ambito: cumulativo }"></ng-container>
+
+          @if (status.canManage && offertaDi(cumulativo)) {
+            <ion-button size="small" fill="outline" shape="round" (click)="sottoscrivi(cumulativo)">
+              <ion-icon slot="start" name="cart-outline"></ion-icon>
+              {{ 'pages.licenseManagement.subscribe' | transloco }}
+            </ion-button>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- studio: aziende coperte -->
+    @if (isStudio && status.aziendaCoperta.length > 0) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.licenseManagement.coveredCompanies' | transloco }}</ion-label>
+          </ion-item>
+          <p class="nvx-nota-disabled">{{ 'pages.licenseManagement.coveredCompaniesNote' | transloco }}</p>
+          @for (a of status.aziendaCoperta; track a.idCompany) {
+            <ion-item lines="none">
+              <ion-label>
+                {{ a.azienda }}
+                @if (a.ambitoSuperiore.length > 0) {
+                  <p>{{ 'pages.licenseManagement.ownHigherPlan' | transloco: { funzioni: funzioniSuperiori(a.ambitoSuperiore) } }}</p>
+                }
+              </ion-label>
+            </ion-item>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- storico pagamenti -->
+    @if (status.pagamento.length > 0) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.licenseManagement.payments' | transloco }}</ion-label>
+          </ion-item>
+          @for (p of status.pagamento; track p.id) {
+            <ion-item lines="none">
+              <ion-label>
+                {{ p.data | date:'dd/MM/yyyy' }} – {{ 'pages.license.function' + p.ambito | transloco }} {{ 'pages.license.level' + p.livello | transloco }}
+                <p>
+                  {{ p.importo | number:'1.2-2' }} {{ p.valuta }} ·
+                  {{ 'pages.licenseManagement.period' | transloco: { dal: (p.dataInizioCoperta | date:'dd/MM/yyyy'), al: (p.dataFineCoperta | date:'dd/MM/yyyy') } }} ·
+                  {{ 'pages.license.method' + p.metodo | transloco }} ·
+                  {{ 'pages.license.paymentState' + p.stato | transloco }}
+                </p>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+  }
+
+  <!-- licenze sottoscritte per una funzione -->
+  <ng-template #abbonamenti let-ambito="ambito">
+    @for (a of abbonamentiDi(ambito); track a.id) {
+      <ion-item lines="none" class="nvx-license-subscription">
+        <ion-label class="ion-text-wrap">
+          <h3>{{ a.descrizionePiano || ('pages.license.level' + a.livello | transloco) }} · {{ 'pages.license.period' + a.periodicita | transloco }}</h3>
+          <p>
+            {{ a.prezzo | number:'1.2-2' }} {{ a.valuta }} ·
+            {{ 'pages.licenseManagement.period' | transloco: { dal: (a.dataInizio | date:'dd/MM/yyyy'), al: (a.dataScadenza | date:'dd/MM/yyyy') } }} ·
+            {{ 'pages.license.subscriptionState' + a.stato | transloco }}
+            @if (a.inGrace) { · <ion-text color="warning">{{ 'pages.licenseManagement.inGrace' | transloco }}</ion-text> }
+            @if (a.inScadenza) { · <ion-text color="warning">{{ 'pages.licenseManagement.expiring' | transloco }}</ion-text> }
+            @if (a.disponibileSuCompany) { · {{ 'pages.licenseManagement.sharedWithCompanies' | transloco }} }
+          </p>
+        </ion-label>
+        @if (rinnovabile(a)) {
+          <ion-button slot="end" size="small" fill="outline" shape="round" (click)="rinnova(a)">
+            <ion-icon slot="start" name="refresh-outline"></ion-icon>
+            {{ 'pages.licenseManagement.renew' | transloco }}
+          </ion-button>
+        }
+      </ion-item>
+      @if (status?.canManage && a.stato === StatoAbbonamento.Attivo) {
+        <ion-item lines="none">
+          <ion-toggle [checked]="a.rinnovoAutomatico" (ionChange)="rinnovoAutomatico(a, $event.detail.checked)" justify="start">
+            {{ 'pages.licenseManagement.autoRenew' | transloco }}
+          </ion-toggle>
+        </ion-item>
+      }
+    }
+  </ng-template>
+
+</ion-content>
