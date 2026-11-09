@@ -862,15 +862,6 @@
         "domandaApprova": "Approve the timesheet for {{periodo}}? The days of the month will no longer be editable.",
         "domandaRiapri": "Reopen the timesheet for {{periodo}}? The days become editable and recalculable again."
       },
-      "dipSelectorModal": {
-        "selezionaDipendente": "Select employee",
-        "selezionaDipendenti": "Select employees",
-        "cercaPlaceholder": "Search by surname, first name...",
-        "selezionaTutti": "Select all",
-        "deselezionaTutti": "Deselect all",
-        "selezionati": "{{count}} selected",
-        "nessunDipendente": "No employees found"
-      },
       "editDipGgCausaliDialog": {
         "title": "Pay code",
         "causale": "Pay code",

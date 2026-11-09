@@ -41,7 +41,6 @@ import { EditDipGGTimbraturaDialogComponent } from './components/GestionePresenz
 import { EditDipGGGiustificativiDialogComponent } from './components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 import { ImportoEuroPipe } from './pipe/GestionePresenze/importo-euro.pipe';
 import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
-import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
 import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contatore-to-long-text.pipe';
 import { CartellinoQuadraturaComponent } from './components/GestionePresenze/cartellino-quadratura/cartellino-quadratura.component';
 import { EditDipRapportoAutovettureDialogComponent } from './components/GestionePresenze/edit-dip-rapporto-autovetture-dialog/edit-dip-rapporto-autovetture-dialog.component';
@@ -56,7 +55,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     SeletionParCompetenzaDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
-    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
+    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
     EditDipGGGiustificativiDialogComponent, EditParExportCauCausaliComponentComponent,
     CartellinoQuadraturaComponent,
     EditDipRapportoAutovettureDialogComponent, RimborsoKmDialogComponent,
@@ -85,7 +84,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, SeletionParCompetenzaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
-    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
+    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
     EditDipGGGiustificativiDialogComponent, CartellinoQuadraturaComponent,
     EditDipRapportoAutovettureDialogComponent, RimborsoKmDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ImportoEuroPipe,

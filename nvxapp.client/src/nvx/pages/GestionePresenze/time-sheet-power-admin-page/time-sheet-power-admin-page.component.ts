@@ -38,8 +38,7 @@ import { EditDipGGGiustificativiDialogComponent } from '../../../shared/componen
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
-import { Az_SediRepartoUserModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/Models/az-reparto-user-model';
+import { DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 import { TimeSheetExportService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/time-sheet-export.service';
 import { TimeSheet_ExportPdf_4Admin_InModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/Models/time-sheet-export-model';
 
@@ -213,13 +212,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       component: DipSelectorModalComponent,
       componentProps: {
         mode: 'multi',
-        userList: this.allUsersId.map(id => ({ idAspNetUsers: id }) as Az_SediRepartoUserModel),
+        items: this.sharedParameterGestionePresenzeService.DipSelectorItems(this.allUsersId),
         preselected: this.currUserId ? [this.currUserId] : []
       }
     });
     await modal.present();
 
-    const { data, role } = await modal.onWillDismiss<DipSelectorResult>();
+    const { data, role } = await modal.onWillDismiss<DipSelectorResult<string>>();
     if (role !== 'confirm' || !data || data.selected.length === 0)
       return;
 

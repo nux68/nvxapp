@@ -19,6 +19,7 @@ import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/D
 import { AzCfgService } from '../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
 import { Az_Cfg_Get_InModel, Az_Cfg_GetAll_InModel, Az_CfgModel } from '../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 import { RoleCode } from '../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { DipSelectorItem } from './components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { AzSediRepartoService } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { AzSediService } from '../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
@@ -283,6 +284,15 @@ export class SharedParameterGestionePresenzeService {
         return false;
       }
       return anagrafica.roleCode.some(userRole => roles.includes(userRole));
+    });
+  }
+
+  /** Elenco per il dialog standard di selezione dipendenti (Infrastructure): id = idAspNetUsers, dati dall'anagrafica dei dipendenti. */
+  public DipSelectorItems(idAspNetUsers: string[]): DipSelectorItem[] {
+    const anagrafica = this.Dip_Anagrafica_OnRoles([RoleCode.User]);
+    return (idAspNetUsers ?? []).map(id => {
+      const dip = anagrafica.find(a => a.idAspNetUsers === id);
+      return { id, cognome: dip?.cognome ?? '', nome: dip?.nome ?? '', dettaglio: dip?.userName ?? id, matricola: dip?.matricola ?? '' };
     });
   }
 
