@@ -12,7 +12,7 @@ import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { ModalController } from '@ionic/angular';
-import { DipSelectorModalComponent, DipSelectorResult } from '../dip-selector-modal/dip-selector-modal.component';
+import { DipSelectorModalComponent, DipSelectorResult } from '../../infrastructure/dip-selector-modal/dip-selector-modal.component';
 
 @Component({
   selector: 'app-sedi-reparto-user-navigation',
@@ -458,14 +458,14 @@ export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
       component: DipSelectorModalComponent,
       componentProps: {
         mode: this.singleSelectUser ? 'single' : 'multi',
-        userList: this.az_SediRepartoUserList,
+        items: this.sharedParameterGestionePresenzeService.DipSelectorItems((this.az_SediRepartoUserList ?? []).map(u => u.idAspNetUsers)),
         preselected
       }
     });
 
     await modal.present();
 
-    const { data, role } = await modal.onWillDismiss<DipSelectorResult>();
+    const { data, role } = await modal.onWillDismiss<DipSelectorResult<string>>();
     if (role === 'confirm' && data) {
       this.selectedUserId = data.selected;
       this.onUserChange();
