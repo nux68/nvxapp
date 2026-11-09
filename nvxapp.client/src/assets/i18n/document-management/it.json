@@ -113,6 +113,7 @@
         "titleRequired": "Indica il titolo.",
         "statusNote": "In bozza il documento non è visibile al dipendente.",
         "employeeChoose": "Scegli il dipendente",
+        "employeesSelected": "{{n}} dipendenti selezionati",
         "employeeRequired": "Scegli almeno un dipendente.",
         "employeeMultiNote": "La tipologia è a invio multiplo: puoi scegliere più dipendenti e verrà creato un documento per ciascuno con lo stesso file.",
         "multiResult": "Creati {{creati}} documenti su {{totale}}. Alcuni non sono riusciti:",

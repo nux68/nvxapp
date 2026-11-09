@@ -113,6 +113,7 @@
         "titleRequired": "Enter the title.",
         "statusNote": "A draft document is not visible to the employee.",
         "employeeChoose": "Choose the employee",
+        "employeesSelected": "{{n}} employees selected",
         "employeeRequired": "Choose at least one employee.",
         "employeeMultiNote": "This type uses multiple send: you can choose several employees and one document per employee will be created with the same file.",
         "multiResult": "Created {{creati}} of {{totale}} documents. Some failed:",

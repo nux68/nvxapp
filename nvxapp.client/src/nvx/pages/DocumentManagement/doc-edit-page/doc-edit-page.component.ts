@@ -58,8 +58,10 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   get PresaVisioneDaFare(): boolean { const r = this.dettaglio?.riepilogo; return !!r && r.presaVisioneRichiesta && !r.dataPresaVisione; }
   // scelta multipla del dipendente: solo per un documento nuovo con tipologia Personale a invio multiplo
   get Multiplo(): boolean { return this.Nuovo && this.Tipo?.categoria === DocCategoria.Personale && this.Tipo?.tipoInvio === DocTipoInvio.Multiplo; }
-  // nomi dei dipendenti scelti, per il riepilogo nella pagina
+  // riepilogo nella pagina: il nome del dipendente scelto; con l'invio multiplo e piu' dipendenti solo quanti sono
   get dipendentiLabel(): string {
+    if (this.Multiplo && this.dipendentiSelezionati.length > 1)
+      return this.transloco.translate('documents.pages.edit.employeesSelected', { n: this.dipendentiSelezionati.length });
     return this.dipendentiSelezionati
       .map(id => this.dipendenti.find(d => d.id === id)?.nominativo)
       .filter(n => !!n).join(', ');
