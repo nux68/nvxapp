@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, map, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
@@ -8,7 +8,8 @@ import { UserInterfaceService } from '../../../Utility/infrastructure/user-inter
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DocumentManagementService } from '../../../ClientServer-Service/DocumentManagement/document-management.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
-import { DocCartellaModel, DocCategoria, DocClienteModel, DocDettaglioModel, DocDipendenteModel, DocDocumentoEditModel, DocDocumentoPutInModel, DocEmptyInModel, DocIdInModel, DocPermessiModel, DocTipoModel, docDateInput, docSize } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
+import { DocCartellaModel, DocCategoria, DocClienteModel, DocDettaglioModel, DocDipendenteModel, DocDocumentoEditModel, DocDocumentoPutInModel, DocDocumentoUploadMultiploModel, DocEmptyInModel, DocIdInModel, DocPermessiModel, DocTipoInvio, DocTipoModel, docDateInput, docSize } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
+import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 
 /*
  Documento: nuovo (dati + file) o esistente (dati, versioni, destinatari e prese visione, cestino).
@@ -34,11 +35,18 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   public readonly size = docSize;
   public readonly Categoria = DocCategoria;
 
+  // dipendenti scelti per un documento del personale (uno o piu' se la tipologia e' a invio multiplo)
+  public dipendentiSelezionati: number[] = [];
+  // esito dell'invio multiplo (documenti creati ed eventuali errori)
+  private multiploErrori: string[] = [];
+  private multiploCreati = 0;
+
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private service: DocumentManagementService,
               private collectionDialogService: CollectionDialogService,
+              private modalCtrl: ModalController,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -48,6 +56,14 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   get Tipo(): DocTipoModel | undefined { return this.tipi.find(t => t.id === this._editForm?.get('idDoc_Par_Tipo')?.value); }
   get SolaLettura(): boolean { return !this.Nuovo && !(this.dettaglio?.modificabile ?? false); }
   get PresaVisioneDaFare(): boolean { const r = this.dettaglio?.riepilogo; return !!r && r.presaVisioneRichiesta && !r.dataPresaVisione; }
+  // scelta multipla del dipendente: solo per un documento nuovo con tipologia Personale a invio multiplo
+  get Multiplo(): boolean { return this.Nuovo && this.Tipo?.categoria === DocCategoria.Personale && this.Tipo?.tipoInvio === DocTipoInvio.Multiplo; }
+  // nomi dei dipendenti scelti, per il riepilogo nella pagina
+  get dipendentiLabel(): string {
+    return this.dipendentiSelezionati
+      .map(id => this.dipendenti.find(d => d.id === id)?.nominativo)
+      .filter(n => !!n).join(', ');
+  }
 
   get EditForm(): FormGroup {
     return this.fb.group({
@@ -96,6 +112,7 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
     const nuovo = new DocDocumentoEditModel();
     nuovo.idDoc_Cartella = state?.idDoc_Cartella ?? null;
     nuovo.idDip_Anagrafica = state?.idDip_Anagrafica ?? null;
+    this.dipendentiSelezionati = nuovo.idDip_Anagrafica ? [nuovo.idDip_Anagrafica] : [];
     return of(nuovo);
   };
 
@@ -105,6 +122,7 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
     d.dataDocumento = docDateInput(d.dataDocumento);
     d.dataScadenza = docDateInput(d.dataScadenza);
     this._editModel = d;
+    this.dipendentiSelezionati = d.idDip_Anagrafica ? [d.idDip_Anagrafica] : [];
     if (this._editForm) {
       this._editForm.patchValue(d);
       if (!dettaglio.modificabile) this._editForm.disable(); else this._editForm.enable();
@@ -120,11 +138,30 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
       dataDocumento: editModel.dataDocumento || null,
       dataScadenza: editModel.dataScadenza || null,
     };
+    const personale = this.Tipo?.categoria === DocCategoria.Personale;
     if (this.Nuovo) {
       if (!this.file) {
         this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('documents.pages.edit.fileRequired'));
         return of(false);
       }
+      if (personale && this.dipendentiSelezionati.length === 0) {
+        this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('documents.pages.edit.employeeRequired'));
+        return of(false);
+      }
+      // invio multiplo: un documento del personale per ogni dipendente scelto (stesso file)
+      if (personale && this.Multiplo) {
+        const multi = new DocDocumentoUploadMultiploModel();
+        multi.documento = { ...dati, idDip_Anagrafica: null };
+        multi.idDip_Anagrafica = [...this.dipendentiSelezionati];
+        return this.service.UploadMultiplo(multi, this.file).pipe(
+          map(res => {
+            if (res.success && res.data) { this.multiploCreati = res.data.creati; this.multiploErrori = res.data.errori; }
+            return res.success;
+          }),
+          catchError(() => of(false)));
+      }
+      // invio singolo
+      dati.idDip_Anagrafica = personale ? (this.dipendentiSelezionati[0] ?? null) : dati.idDip_Anagrafica;
       return this.service.Upload(dati, this.file).pipe(map(res => res.success), catchError(() => of(false)));
     }
     const request = new GenericRequest<DocDocumentoPutInModel>(DocDocumentoPutInModel);
@@ -139,8 +176,43 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   };
 
   override AfterSave(saved: boolean): void {
-    if (saved && this.Nuovo)
-      this.navCtrl.back();
+    if (!saved || !this.Nuovo)
+      return;
+    // invio multiplo con errori: resto sulla pagina e mostro quanti documenti sono stati creati e cosa non e' riuscito
+    if (this.multiploErrori.length) {
+      const msg = this.transloco.translate('documents.pages.edit.multiResult', { creati: this.multiploCreati, totale: this.dipendentiSelezionati.length })
+                  + '\n' + this.multiploErrori.join('\n');
+      this.collectionDialogService.ConfirmCancelDialog(msg);
+      this.multiploErrori = [];
+      return;
+    }
+    this.navCtrl.back();
+  }
+
+  // scelta del dipendente con il dialog standard: singola o multipla secondo il tipo di invio della tipologia
+  async selezionaDipendenti() {
+    if (this.SolaLettura)
+      return;
+    const multiplo = this.Multiplo;
+    // elenco per il dialog: seconda riga codice fiscale (o nome utente), piu' la matricola
+    const items: DipSelectorItem[] = this.dipendenti.map(d => ({
+      id: d.id,
+      cognome: d.cognome ?? d.nominativo,
+      nome: d.nome ?? '',
+      dettaglio: d.codiceFiscale ?? d.userName,
+      matricola: d.matricola,
+    }));
+    const modal = await this.modalCtrl.create({
+      component: DipSelectorModalComponent,
+      componentProps: { mode: multiplo ? 'multi' : 'single', items, preselected: [...this.dipendentiSelezionati] }
+    });
+    await modal.present();
+    const { data, role } = await modal.onDidDismiss<DipSelectorResult<number>>();
+    if (role === 'confirm' && data) {
+      this.dipendentiSelezionati = data.selected;
+      // per l'invio singolo il campo del documento porta l'unico dipendente scelto
+      this._editForm.patchValue({ idDip_Anagrafica: data.selected[0] ?? null });
+    }
   }
 
   // titolo proposto dal nome del file

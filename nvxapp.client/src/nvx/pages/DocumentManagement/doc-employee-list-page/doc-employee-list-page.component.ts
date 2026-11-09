@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
@@ -8,7 +8,6 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { DocumentManagementService } from '../../../ClientServer-Service/DocumentManagement/document-management.service';
 import { DocDipendenteModel, DocEmptyInModel, DocIdInModel } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
-import { DocMultiSendDialogComponent } from './doc-multi-send-dialog/doc-multi-send-dialog.component';
 
 // Dipendenti (destinatari dei documenti del personale), anche senza account: chi carica i documenti del personale
 @Component({
@@ -39,7 +38,6 @@ export class DocEmployeeListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private service: DocumentManagementService,
               private collectionDialogService: CollectionDialogService,
-              private modalCtrl: ModalController,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('documents.pages.employeeList.title');
     const t = (k: string) => this.transloco.translate(k);
@@ -61,10 +59,9 @@ export class DocEmployeeListPageComponent {
     this.load();
   }
 
-  // nuovo dipendente e invio multiplo: solo chi carica i documenti del personale (lo verifica anche il server)
+  // nuovo dipendente: solo chi carica i documenti del personale (lo verifica anche il server)
   private aggiornaFab() {
     this.fabMenuService.fabMenuItem = this.caricaPersonale ? [
-      new FabMenuItem(this.transloco.translate('documents.multiSend.fab'), 'send-outline', () => this.invioMultiplo()),
       new FabMenuItem(this.transloco.translate('documents.pages.employeeList.new'), 'add-circle-outline', () =>
         this.navCtrl.navigateForward('/docemployeeedit', { state: { item: new DocDipendenteModel(), setup: this.setup } })),
     ] : [];
@@ -72,16 +69,6 @@ export class DocEmployeeListPageComponent {
 
   public get caricaPersonale(): boolean {
     return !!this.setup?.permessi?.caricaPersonale;
-  }
-
-  // invio di un documento a piu' dipendenti (un documento del personale per ciascuno)
-  async invioMultiplo() {
-    const modal = await this.modalCtrl.create({
-      component: DocMultiSendDialogComponent,
-      componentProps: { dipendenti: this.items ?? [], tipi: this.setup?.tipi ?? [] }
-    });
-    await modal.present();
-    await modal.onDidDismiss();
   }
 
   ionViewWillLeave() {

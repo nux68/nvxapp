@@ -26,7 +26,7 @@ Filters let you search by folder, type, category, employee, customer and year, o
 
 To upload a new document:
 1. Press **Upload document**.
-2. Choose the type: the right fields appear for the category (the employee for personnel, the customer for customer documents).
+2. Choose the type: the right fields appear for the category (the employee for personnel, the customer for customer documents). For personnel press the **Employee** row: the list of employees opens, with search by surname, first name, tax code or employee number. If the type has **Staff multiple send** you can choose more than one (with **Select all**): one document is created for each with the same file, and at the end you see how many were created and why the others failed.
 3. Fill in the data: title, description, date, period and expiry if required, folder.
 4. Choose the status: **Draft** is not yet visible to the employee, **Published** makes it visible, **Archived** keeps it without highlighting it.
 5. Upload the file and confirm.
@@ -50,13 +50,7 @@ Here you find the list of the employees to whom personnel documents are delivere
 
 With **New employee** you add an employee without an account (surname, first name, tax code, employee number, email for notices); with **Edit** you update the data or set the end date. The list options also show deactivated employees.
 
-To deliver the same document to several employees (for example a notice or a regulation):
-1. Press **Send to several employees**.
-2. Choose the employees: search them by name, tax code, employee number or user; **Select all** applies to those shown; you can limit the list to those with an account.
-3. Choose a personnel type and fill in title, description, date, period or expiry if required, status.
-4. Upload the file and press **Send**.
-
-For each chosen employee a personnel document is created with their own copy of the file, their read confirmation (if the type requires it) and their entry in the log. At the end you see how many documents were created; if it was not possible for some, the list explains why.
+To deliver the same document to several employees (for example a notice or a regulation) use a type with **Staff multiple send** and upload the document from the archive: when choosing the employee you can select more than one.
 
 > Storage is checked before sending for all the copies: if it is not enough, nothing is uploaded.
 
@@ -66,7 +60,7 @@ Types define how the documents in the archive behave. Each type has a code, a de
 - **Company**: company archive, for administrators;
 - **Customer**: file of a customer of the shared registry.
 
-For each type choose the **retention years** (empty = no limit), whether it has an **expiry**, whether it requires a **read confirmation** and whether it has a **period** (month/year, for example payslips).
+For each type choose the **retention years** (empty = no limit), whether it has an **expiry**, whether it requires a **read confirmation** and whether it has a **period** (month/year, for example payslips). For personnel types, **Staff multiple send** lets you choose several employees at once when uploading a document (one document each, same file).
 
 At the first activation the most common types are ready (payslip, tax statement, contract, medical certificate, training, notice, tax payment form, compliance certificate, registry extract, customer contract, generic). A type used by documents cannot be deleted: it is deactivated.
 

@@ -10,11 +10,6 @@
       @if (!abilitato) {
         <ion-note color="warning">{{ 'documents.pages.employeeList.notEnabled' | transloco }}</ion-note>
       }
-      @if (caricaPersonale) {
-        <ion-button size="small" fill="outline" shape="round" (click)="invioMultiplo()">
-          <ion-icon slot="start" name="send-outline"></ion-icon>{{ 'documents.multiSend.fab' | transloco }}
-        </ion-button>
-      }
       <!-- opzioni della lista: Mostra disabilitati e la spiegazione delle icone -->
       <nvx-list-options
         [showDisabledLabel]="'documents.pages.employeeList.showDisabled' | transloco"

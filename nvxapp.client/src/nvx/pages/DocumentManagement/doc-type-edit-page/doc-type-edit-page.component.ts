@@ -35,6 +35,7 @@ export class DocTypeEditPageComponent extends BasePageConfirmCancelComponent<Doc
       codice: [null, [Validators.required, Validators.maxLength(20)]],
       descrizione: [null, [Validators.required, Validators.maxLength(100)]],
       categoria: [1, [Validators.required]],
+      tipoInvio: [0],
       anniConservazione: [null, [Validators.min(1)]],
       haScadenza: [false],
       presaVisioneRichiesta: [false],

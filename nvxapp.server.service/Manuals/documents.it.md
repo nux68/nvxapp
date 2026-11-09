@@ -26,7 +26,7 @@ I filtri permettono di cercare per cartella, tipologia, categoria, dipendente, c
 
 Per caricare un nuovo documento:
 1. Premi **Carica documento**.
-2. Scegli la tipologia: compaiono i campi giusti per la categoria (il dipendente per il personale, il cliente per i documenti del cliente).
+2. Scegli la tipologia: compaiono i campi giusti per la categoria (il dipendente per il personale, il cliente per i documenti del cliente). Per il personale premi la riga **Dipendente**: si apre l'elenco dei dipendenti con la ricerca per cognome, nome, codice fiscale o matricola. Se la tipologia ha **Personale invio multiplo** puoi sceglierne più di uno (con **Seleziona tutti**): viene creato un documento per ciascuno con lo stesso file, e al termine vedi quanti sono stati creati e il motivo di quelli non riusciti.
 3. Compila i dati: titolo, descrizione, data, competenza e scadenza se previste, cartella.
 4. Scegli lo stato: **Bozza** non è ancora visibile al dipendente, **Pubblicato** lo rende visibile, **Archiviato** lo conserva senza metterlo in evidenza.
 5. Carica il file e conferma.
@@ -50,13 +50,7 @@ Qui trovi l'elenco dei dipendenti a cui consegnare i documenti del personale e i
 
 Con **Nuovo dipendente** aggiungi un dipendente senza account (cognome, nome, codice fiscale, matricola, email per gli avvisi); con **Modifica** aggiorni i dati o indichi la data di cessazione. Le opzioni dell'elenco permettono di mostrare anche i dipendenti disattivati.
 
-Per consegnare lo stesso documento a più dipendenti (per esempio una comunicazione o un regolamento):
-1. Premi **Invia a più dipendenti**.
-2. Scegli i dipendenti: cercali per nominativo, codice fiscale, matricola o utente; **Seleziona tutti** vale per quelli mostrati; puoi limitare l'elenco a quelli con account.
-3. Scegli una tipologia del personale e compila titolo, descrizione, data, competenza o scadenza se previste, stato.
-4. Carica il file e premi **Invia**.
-
-Per ogni dipendente scelto si crea un documento del personale con la sua copia del file, la sua presa visione (se la tipologia la richiede) e la sua voce nel registro. Al termine vedi quanti documenti sono stati creati; se per qualcuno non è stato possibile, l'elenco ne spiega il motivo.
+Per consegnare lo stesso documento a più dipendenti (per esempio una comunicazione o un regolamento) usa una tipologia con **Personale invio multiplo** e carica il documento dall'archivio: nella scelta del dipendente potrai selezionarne più di uno.
 
 > Lo spazio viene controllato prima dell'invio per tutte le copie: se non basta, non si carica nulla.
 
@@ -66,7 +60,7 @@ Le tipologie definiscono come si comportano i documenti dell'archivio. Ogni tipo
 - **Azienda**: archivio aziendale, per gli amministratori;
 - **Cliente**: fascicolo di un cliente dell'anagrafica comune.
 
-Per ogni tipologia scegli gli **anni di conservazione** (vuoto = senza limite), se ha una **scadenza**, se richiede la **presa visione** e se ha una **competenza** (mese/anno, per esempio i cedolini).
+Per ogni tipologia scegli gli **anni di conservazione** (vuoto = senza limite), se ha una **scadenza**, se richiede la **presa visione** e se ha una **competenza** (mese/anno, per esempio i cedolini). Per le tipologie del personale, **Personale invio multiplo** permette di scegliere più dipendenti insieme quando si carica un documento (un documento per ciascuno, stesso file).
 
 Alla prima attivazione sono già pronte le tipologie più comuni (cedolino, CU, contratto, certificato medico, formazione, comunicazione, F24, DURC, visura, contratto cliente, generico). Una tipologia usata da documenti non si elimina: si disattiva.
 

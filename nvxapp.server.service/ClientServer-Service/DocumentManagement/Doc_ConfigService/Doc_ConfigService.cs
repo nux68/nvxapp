@@ -154,6 +154,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 tipo.Codice = codice;
                 tipo.Descrizione = dati.Descrizione.Trim();
                 tipo.Categoria = dati.Categoria;
+                // il tipo di invio ha senso solo per il personale: per le altre categorie resta Singolo
+                tipo.TipoInvio = dati.Categoria == Doc_Categoria.Personale ? dati.TipoInvio : Doc_TipoInvio.Singolo;
                 tipo.AnniConservazione = dati.AnniConservazione;
                 tipo.HaScadenza = dati.HaScadenza;
                 tipo.PresaVisioneRichiesta = dati.PresaVisioneRichiesta;
@@ -417,7 +419,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
             return (await _tipoRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).OrderBy(x => x.Ordine).ThenBy(x => x.Descrizione).ToListAsync())
                    .Select(x => new Doc_Par_TipoModel
                    {
-                       Id = x.Id, Codice = x.Codice, Descrizione = x.Descrizione, Categoria = x.Categoria, AnniConservazione = x.AnniConservazione,
+                       Id = x.Id, Codice = x.Codice, Descrizione = x.Descrizione, Categoria = x.Categoria, TipoInvio = x.TipoInvio, AnniConservazione = x.AnniConservazione,
                        HaScadenza = x.HaScadenza, PresaVisioneRichiesta = x.PresaVisioneRichiesta, HaCompetenza = x.HaCompetenza,
                        Ordine = x.Ordine, Active = x.Active, Documenti = conteggi.FirstOrDefault(c => c.Key == x.Id)?.Count ?? 0
                    })

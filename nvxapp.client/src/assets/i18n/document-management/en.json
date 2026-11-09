@@ -51,6 +51,8 @@
       "size": "Size",
       "folder": "Folder",
       "employee": "Employee",
+      "employees": "Employees",
+      "multiSend": "Staff multiple send",
       "year": "Year",
       "month": "Month",
       "customer": "Customer",
@@ -110,6 +112,10 @@
         "typeRequired": "Choose the type.",
         "titleRequired": "Enter the title.",
         "statusNote": "A draft document is not visible to the employee.",
+        "employeeChoose": "Choose the employee",
+        "employeeRequired": "Choose at least one employee.",
+        "employeeMultiNote": "This type uses multiple send: you can choose several employees and one document per employee will be created with the same file.",
+        "multiResult": "Created {{creati}} of {{totale}} documents. Some failed:",
         "versions": "Versions",
         "recipients": "Recipients",
         "opened": "Opened",
@@ -132,6 +138,7 @@
         "title": "Document type",
         "info": "Type",
         "categoryNote": "Personnel: visible to the employee and to those enabled for personnel documents. Company and Customer: to administrators.",
+        "multiSendNote": "If on, when uploading a document you can choose several employees at once: one document is created for each, with the same file. If off, you choose a single employee.",
         "retentionNote": "After this period documents are only flagged, never deleted automatically. Empty = no limit."
       },
       "folderList": {
@@ -180,27 +187,6 @@
         "warning": "Almost full",
         "note": "Beyond 100% no documents can be uploaded. Ask the centre for a larger plan."
       }
-    },
-    "multiSend": {
-      "fab": "Send to several employees",
-      "title": "Send to several employees",
-      "send": "Send",
-      "close": "Close",
-      "note": "The same file becomes a personnel document for each chosen employee, with acknowledgement if the type requires it. Each employee sees only their own.",
-      "employees": "Chosen employees: {{n}}",
-      "search": "Search by name, tax code, employee number or user",
-      "selectAll": "Select all (those shown)",
-      "onlyWithAccount": "Only with account",
-      "noEmployees": "No employees to show.",
-      "employeesRequired": "Choose at least one employee.",
-      "document": "Document",
-      "typeRequired": "Choose the type.",
-      "acknowledgementNote": "This type requires acknowledgement: each employee will have to confirm it.",
-      "chooseFile": "Choose the file",
-      "noFile": "No file chosen",
-      "fileRequired": "Choose the file to send.",
-      "sending": "Sending...",
-      "result": "Documents created: {{creati}} of {{totale}}. Not created:"
     },
     "showcase": {
       "brand": {

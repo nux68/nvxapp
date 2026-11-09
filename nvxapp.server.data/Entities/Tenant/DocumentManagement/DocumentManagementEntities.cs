@@ -27,6 +27,13 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
         Archiviato = 2,
     }
 
+    // come si sceglie il dipendente quando si carica un documento di una tipologia Personale
+    public enum Doc_TipoInvio
+    {
+        Singolo = 0,     // un dipendente per volta (un documento)
+        Multiplo = 1,    // piu' dipendenti insieme (un documento per dipendente, stesso file)
+    }
+
     public enum Doc_Origine
     {
         Azienda = 0,
@@ -79,6 +86,9 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
         public string Descrizione { get; set; } = string.Empty;
 
         public Doc_Categoria Categoria { get; set; }
+
+        // solo per categoria Personale: scelta del dipendente singola o multipla al caricamento (Doc_edit)
+        public Doc_TipoInvio TipoInvio { get; set; }
 
         // anni di conservazione (null = senza limite): oltre si segnala, mai eliminazione automatica
         public int? AnniConservazione { get; set; }

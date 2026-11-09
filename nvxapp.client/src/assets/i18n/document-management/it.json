@@ -51,6 +51,8 @@
       "size": "Dimensione",
       "folder": "Cartella",
       "employee": "Dipendente",
+      "employees": "Dipendenti",
+      "multiSend": "Personale invio multiplo",
       "year": "Anno",
       "month": "Mese",
       "customer": "Cliente",
@@ -110,6 +112,10 @@
         "typeRequired": "Scegli la tipologia.",
         "titleRequired": "Indica il titolo.",
         "statusNote": "In bozza il documento non è visibile al dipendente.",
+        "employeeChoose": "Scegli il dipendente",
+        "employeeRequired": "Scegli almeno un dipendente.",
+        "employeeMultiNote": "La tipologia è a invio multiplo: puoi scegliere più dipendenti e verrà creato un documento per ciascuno con lo stesso file.",
+        "multiResult": "Creati {{creati}} documenti su {{totale}}. Alcuni non sono riusciti:",
         "versions": "Versioni",
         "recipients": "Destinatari",
         "opened": "Aperto",
@@ -132,6 +138,7 @@
         "title": "Tipologia di documento",
         "info": "Tipologia",
         "categoryNote": "Personale: visibile al dipendente e a chi è abilitato ai documenti del personale. Azienda e Cliente: agli amministratori.",
+        "multiSendNote": "Se attivo, quando si carica un documento si possono scegliere più dipendenti insieme: viene creato un documento per ciascuno con lo stesso file. Se spento si sceglie un solo dipendente.",
         "retentionNote": "Oltre questo periodo i documenti vengono solo segnalati, mai eliminati in automatico. Vuoto = senza limite."
       },
       "folderList": {
@@ -180,27 +187,6 @@
         "warning": "Quasi pieno",
         "note": "Oltre il 100% non si caricano documenti. Per un pacchetto più grande rivolgersi al centro."
       }
-    },
-    "multiSend": {
-      "fab": "Invia a più dipendenti",
-      "title": "Invio a più dipendenti",
-      "send": "Invia",
-      "close": "Chiudi",
-      "note": "Lo stesso file diventa un documento del personale per ciascun dipendente scelto, con la sua presa visione se la tipologia la richiede. Ogni dipendente vede solo il proprio.",
-      "employees": "Dipendenti scelti: {{n}}",
-      "search": "Cerca per nominativo, codice fiscale, matricola o utente",
-      "selectAll": "Seleziona tutti (quelli mostrati)",
-      "onlyWithAccount": "Solo con account",
-      "noEmployees": "Nessun dipendente da mostrare.",
-      "employeesRequired": "Scegli almeno un dipendente.",
-      "document": "Documento",
-      "typeRequired": "Scegli la tipologia.",
-      "acknowledgementNote": "Questa tipologia richiede la presa visione: ogni dipendente dovrà confermarla.",
-      "chooseFile": "Scegli il file",
-      "noFile": "Nessun file scelto",
-      "fileRequired": "Scegli il file da inviare.",
-      "sending": "Invio in corso...",
-      "result": "Documenti creati: {{creati}} su {{totale}}. Non riusciti:"
     },
     "showcase": {
       "brand": {
