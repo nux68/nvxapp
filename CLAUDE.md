@@ -23,3 +23,5 @@ non effettuare mai commit verso origin, tutte le mod. fatte devono rimenere loca
 Con "Applicativo completo" si intende il merge  di Infrastructure,AttendanceTracking,CRM,DocumentManagement nel branch AllFunction_Dev e AllFunction
 quando richiesto, produci quasta sequenza di merge
    
+
+Se richiedo modifiche che sono da fare su un brach differente da quello corrente, ci si sposte perchè devono essere fatte nel brach di pertinenza
