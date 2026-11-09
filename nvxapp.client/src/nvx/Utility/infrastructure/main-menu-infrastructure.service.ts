@@ -109,10 +109,12 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.support', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.aiDocuments', roles: RUOLI_DOCUMENTAZIONE_AI, component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.ticketTypeAiSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' },
       // manuali in PDF: quello delle funzioni base qui, quelli degli applicativi nei loro rami (Pages4Support), dopo questa voce
-      { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true }
+      { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true },
+      // "Configurazione" dell'assistenza (gruppo 1, dopo la sezione Assistenza e i manuali), come quelle di CRM e documentale
+      { menuType: MenuType.MenuHeader, zorder: 950, group: 1, title: 'menu.supportSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 960, group: 1, title: 'menu.aiDocuments', roles: RUOLI_DOCUMENTAZIONE_AI, component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
+      { menuType: MenuType.MenuItem,   zorder: 970, group: 1, title: 'menu.ticketTypeAiSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
     ];
   }
 
