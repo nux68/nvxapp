@@ -46,6 +46,12 @@ namespace nvxapp.server.data.Infrastructure
         // registro delle cancellazioni fisiche (centri, studi, aziende, utenti)
         public DbSet<DeletionLog> DeletionLog { get; set; }
 
+        // licenze d'uso degli applicativi (ANALISI_LICENZE.md)
+        public DbSet<Lic_Listino> Lic_Listino { get; set; }
+        public DbSet<Lic_Piano> Lic_Piano { get; set; }
+        public DbSet<Lic_Abbonamento> Lic_Abbonamento { get; set; }
+        public DbSet<Lic_Pagamento> Lic_Pagamento { get; set; }
+
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
         {
@@ -62,6 +68,108 @@ namespace nvxapp.server.data.Infrastructure
             Gen_Ticket(modelBuilder);
             Gen_Document(modelBuilder);
             Gen_DeletionLog(modelBuilder);
+            Gen_License(modelBuilder);
+        }
+
+        /*
+         Licenze d'uso (ANALISI_LICENZE.md).
+         Impostazioni (AppSetting):
+            - Licenze_Attive          : "true" = le regole delle licenze si applicano; altrimenti ILicenseGuard risponde
+                                        in modo neutro (come Pro, utenti illimitati) e nessuno viene bloccato (§8.1.1)
+            - Licenze_MaxUtenti_*     : utenti predefiniti dei piani dei nuovi listini (Free 10, Standard 50, Pro illimitati) (§5.1)
+            - Licenze_GraceGiorni     : giorni dopo la scadenza in cui la licenza vale ancora (si avvisa ma non si blocca)
+            - Licenze_AvvisoGiorni    : giorni prima della scadenza in cui parte l'avviso
+         Cancellazioni: gli abbonamenti spariscono con l'azienda o lo studio, i listini con il centro; i pagamenti restano.
+        */
+        public const string Key_LicenzeAttive = "Licenze_Attive";
+        public const string Key_LicenzeMaxUtentiFree = "Licenze_MaxUtenti_Free";
+        public const string Key_LicenzeMaxUtentiStandard = "Licenze_MaxUtenti_Standard";
+        public const string Key_LicenzeMaxUtentiPro = "Licenze_MaxUtenti_Pro";
+        public const string Key_LicenzeGraceGiorni = "Licenze_GraceGiorni";
+        public const string Key_LicenzeAvvisoGiorni = "Licenze_AvvisoGiorni";
+
+        private void Gen_License(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Lic_Listino>(entity =>
+            {
+                entity.ToTable("Lic_Listino", Schema);
+                entity.HasKey(e => e.Id);
+                // un solo listino attivo per (centro, tipo soggetto, ambito); il globale ha IdDealer null
+                entity.HasIndex(e => new { e.TipoSoggetto, e.Ambito }).IsUnique().HasFilter("\"Attivo\" AND \"IdDealer\" IS NULL")
+                      .HasDatabaseName("IX_Lic_Listino_Globale_Attivo");
+                entity.HasIndex(e => new { e.IdDealer, e.TipoSoggetto, e.Ambito }).IsUnique().HasFilter("\"Attivo\" AND \"IdDealer\" IS NOT NULL")
+                      .HasDatabaseName("IX_Lic_Listino_Dealer_Attivo");
+                entity.HasOne(e => e.DealerNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdDealer)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Lic_Piano>(entity =>
+            {
+                entity.ToTable("Lic_Piano", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdListino, e.Livello }).IsUnique();
+                entity.Property(e => e.PrezzoMensile).HasPrecision(10, 2);
+                entity.Property(e => e.PrezzoAnnuale).HasPrecision(10, 2);
+                entity.HasOne(e => e.ListinoNavigation)
+                      .WithMany(l => l.Lic_Piano)
+                      .HasForeignKey(e => e.IdListino)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Lic_Abbonamento>(entity =>
+            {
+                // soggetto: esattamente uno tra azienda e studio
+                entity.ToTable("Lic_Abbonamento", Schema, t => t.HasCheckConstraint("CK_Lic_Abbonamento_Soggetto",
+                    "(\"IdCompany\" IS NULL) <> (\"IdFinancialAdvisor\" IS NULL)"));
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.PrezzoBloccato).HasPrecision(10, 2);
+                entity.HasIndex(e => new { e.IdCompany, e.Ambito });
+                entity.HasIndex(e => new { e.IdFinancialAdvisor, e.Ambito });
+                entity.HasIndex(e => e.DataScadenza);
+                entity.HasIndex(e => e.RiferimentoGateway).IsUnique().HasFilter("\"RiferimentoGateway\" IS NOT NULL");
+                entity.HasOne(e => e.CompanyNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdCompany)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.FinancialAdvisorNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdFinancialAdvisor)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.ListinoNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdListino)
+                      .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.PianoNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdPiano)
+                      .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<Lic_Pagamento>(entity =>
+            {
+                entity.ToTable("Lic_Pagamento", Schema);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Importo).HasPrecision(10, 2);
+                entity.HasIndex(e => e.IdAbbonamento);
+                entity.HasIndex(e => e.IdCompany);
+                entity.HasIndex(e => e.IdFinancialAdvisor);
+                // callback del provider idempotenti (§7.3)
+                entity.HasIndex(e => e.RiferimentoGateway).IsUnique().HasFilter("\"RiferimentoGateway\" IS NOT NULL");
+                entity.HasOne(e => e.AbbonamentoNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdAbbonamento)
+                      .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<AppSetting>().HasData(
+                new AppSetting { Key = Key_LicenzeAttive, Value = "false" },
+                new AppSetting { Key = Key_LicenzeMaxUtentiFree, Value = "10" },
+                new AppSetting { Key = Key_LicenzeMaxUtentiStandard, Value = "50" },
+                new AppSetting { Key = Key_LicenzeMaxUtentiPro, Value = "" },
+                new AppSetting { Key = Key_LicenzeGraceGiorni, Value = "7" },
+                new AppSetting { Key = Key_LicenzeAvvisoGiorni, Value = "10" });
         }
 
         private void Gen_DeletionLog(ModelBuilder modelBuilder)

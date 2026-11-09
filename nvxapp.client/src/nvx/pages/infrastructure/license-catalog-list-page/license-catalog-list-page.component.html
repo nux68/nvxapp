@@ -1,0 +1,25 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+      <p class="nvx-nota-disabled">{{ 'pages.licenseCatalogList.note' | transloco }}</p>
+      <nvx-list
+        [items]="listini"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="pricetag-outline"
+        [searchText]="searchText"
+        [rowDisabled]="isDisabled"
+        [disabledToggleLabel]="'pages.licenseCatalogList.showDisabled' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

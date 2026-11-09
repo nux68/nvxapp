@@ -1,0 +1,81 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      @if (offerta) {
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.license.function' + offerta.ambito | transloco }}</ion-label>
+        </ion-item>
+
+        @if (attuale) {
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.changeNote' | transloco: { piano: attuale.descrizionePiano ?? '' } }}</ion-note>
+        }
+
+        <form [formGroup]="_editForm">
+
+          <ion-item>
+            <ion-select formControlName="livello" [label]="'pages.licenseSubscribe.plan' | transloco" labelPlacement="floating" interface="popover">
+              @for (p of offerta.piano; track p.livello) {
+                <ion-select-option [value]="p.livello">
+                  {{ p.descrizione || p.codice }} – {{ p.maxUtenti == null ? ('pages.licenseSubscribe.unlimitedUsers' | transloco) : ('pages.licenseSubscribe.users' | transloco: { max: p.maxUtenti }) }}
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-select formControlName="periodicita" [label]="'pages.licenseSubscribe.period' | transloco" labelPlacement="floating" interface="popover">
+              @for (per of periodicita; track per) {
+                <ion-select-option [value]="per">{{ 'pages.license.period' + per | transloco }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item lines="none">
+            <ion-label>
+              <h2>{{ 'pages.licenseSubscribe.price' | transloco }}: {{ prezzo | number:'1.2-2' }} {{ offerta.valuta }}</h2>
+              @if (prezzo === 0) {
+                <p>{{ 'pages.licenseSubscribe.freeNote' | transloco }}</p>
+              }
+            </ion-label>
+          </ion-item>
+
+          @if (prezzo > 0) {
+            @if (metodi.length > 0) {
+              <ion-item>
+                <ion-select formControlName="metodo" [label]="'pages.licenseSubscribe.method' | transloco" labelPlacement="floating" interface="popover">
+                  @for (m of metodi; track m) {
+                    <ion-select-option [value]="m">{{ 'pages.license.method' + m | transloco }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            } @else {
+              <ion-note color="danger">{{ 'pages.licenseSubscribe.noPaymentMethod' | transloco }}</ion-note>
+            }
+          }
+
+          <ion-item>
+            <ion-toggle formControlName="rinnovoAutomatico" justify="start">{{ 'pages.licenseManagement.autoRenew' | transloco }}</ion-toggle>
+          </ion-item>
+
+          @if (debugPagamenti && prezzo > 0) {
+            <ion-note color="warning">{{ 'pages.license.debugPayments' | transloco }}</ion-note>
+          }
+
+        </form>
+      } @else {
+        <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.noOffer' | transloco }}</ion-note>
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
