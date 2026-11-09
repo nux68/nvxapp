@@ -3,7 +3,7 @@
 Branch: **Infrastructure_Dev** (funzione base: entità, risoluzione listino, abbonamenti, gateway di pagamento e l'aggancio all'attivazione applicativi stanno nell'infrastruttura, poi si mergiano verso gli altri rami).
 Le tabelle, il contesto `public` e il legame con `CompanyApplication`/`FinancialAdvisorApplication` sono lavoro di Infrastructure_Dev e vanno fatti *prima* che i singoli rami aggancino l'inibizione delle proprie funzioni (§8).
 
-Stato: **analisi iniziale, niente implementato. Decise (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3) e i tre livelli fissi di licenza Free/Standard/Pro con i metodi vero/falso sul livello (§5, §8.1); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
+Stato: **analisi iniziale, niente implementato. Decise (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3) e i tre livelli fissi di licenza Free/Standard/Pro con limite utenti parametrico 10/50/illimitati e i metodi vero/falso sul livello e sul limite (§5, §5.1, §8.1); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
 
 > Data: 06/11/2026. Le funzioni da inibire a licenza scaduta (punto 9 della richiesta) **non sono ancora pianificate**: qui si predispone solo il "gancio", non il comportamento di ogni funzione.
 
@@ -98,6 +98,7 @@ Tutte le tabelle stanno nello schema `public` (`PublicDbContext`, come `Company`
 - `IdListino`, `Livello` (enum `LivelloLicenza`: `Free=1`, `Standard=2`, `Pro=3`), `Codice` e `Descrizione` (etichette modificabili da chi gestisce il listino), `Ordine` (solo ordine di visualizzazione);
 - unicità: un solo piano attivo per (`IdListino`, `Livello`);
 - `PrezzoMensile`, `PrezzoAnnuale` (punto 4): `Free` ha sempre prezzo 0, `Standard` e `Pro` hanno i prezzi decisi da chi gestisce il listino;
+- `MaxUtenti` *(int nullable, `null` = illimitati)*: numero massimo di utenti attivi coperti dal piano (§5.1). Parametrico, modificabile per ogni piano da chi gestisce il listino;
 - `Attivo`;
 - *(predisposizione, non da compilare ora)* collegamento alle **capability/limiti** del piano (quali funzioni/limiti dà) → tabella figlia `Lic_PianoFunzione` o un `IdStoragePlan`/quote, da definire quando si pianifica il punto 9. Fino ad allora le funzioni distinguono i livelli solo con i metodi vero/falso del §8.1.
 
@@ -110,6 +111,7 @@ Tutte le tabelle stanno nello schema `public` (`PublicDbContext`, come `Company`
 **`Lic_Abbonamento`** – una licenza sottoscritta da un soggetto:
 - soggetto: **`IdCompany` *oppure* `IdFinancialAdvisor`** (uno dei due, coerente con `Lic_Piano→Lic_Listino.TipoSoggetto`);
 - `IdPiano`, `Periodicita` (`Mensile`/`Annuale`), `PrezzoBloccato` (il prezzo al momento della sottoscrizione, per non cambiarlo se il listino cambia);
+- `MaxUtentiBloccato` (il `MaxUtenti` del piano al momento della sottoscrizione o dell'ultimo rinnovo, §5.1);
 - `DataInizio`, `DataScadenza`, `Stato` (`Attivo`/`InScadenza`/`Scaduto`/`Sospeso`/`Annullato`);
 - `RinnovoAutomatico` (bool);
 - tracce: `IdListino` e snapshot di origine (per sapere da quale listino/Dealer è nato).
@@ -197,7 +199,38 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
   - **Standard** – prezzo *x*;
   - **Pro** – prezzo *y*.
 
-  Chi gestisce il listino modifica prezzi ed etichette (`Codice`/`Descrizione`), non il numero dei livelli. **Cosa distingue i livelli non è ancora definito** e si deciderà strada facendo: per questo il sistema espone metodi che rispondono vero/falso sul livello di licenza (§8.1), e ogni funzione deciderà con quelli cosa concedere a Free, Standard o Pro.
+  Chi gestisce il listino modifica prezzi, limite utenti ed etichette (`Codice`/`Descrizione`), non il numero dei livelli. Il primo elemento che distingue i livelli è il **limite utenti** (§5.1). **Le altre differenze tra i livelli non sono ancora definite** e si decideranno strada facendo: per questo il sistema espone metodi che rispondono vero/falso sul livello di licenza (§8.1.1), e ogni funzione deciderà con quelli cosa concedere a Free, Standard o Pro.
+
+### 5.1 Limite utenti per livello (deciso il 09/11/2026)
+
+| Livello | Utenti attivi (valore predefinito) |
+|---|---|
+| Free | 10 |
+| Standard | 50 |
+| Pro | illimitati |
+
+**I valori sono parametrici:**
+- **Valori predefiniti** in `AppSetting` (tabella chiave/valore già esistente): `Licenze.MaxUtenti.Free` = `10`, `Licenze.MaxUtenti.Standard` = `50`, `Licenze.MaxUtenti.Pro` = vuoto (illimitati). Si usano quando si crea un nuovo listino, compreso il popolamento iniziale dei listini globali. Cambiarli non tocca i listini già esistenti.
+- **Valore effettivo** su ogni piano (`Lic_Piano.MaxUtenti`). SuperUser e Dealer abilitati lo modificano per i propri listini come i prezzi; `null` = illimitati.
+- **Valore garantito al cliente**: `Lic_Abbonamento.MaxUtentiBloccato`, fotografato alla sottoscrizione e a ogni rinnovo. Se chi gestisce il listino abbassa il limite, il cliente mantiene il vecchio limite fino al rinnovo. Se lo alza, il nuovo limite vale subito: il servizio aggiorna `MaxUtentiBloccato` degli abbonamenti attivi quando il nuovo valore è più alto.
+
+**Cosa si conta:**
+- **Azienda**: gli utenti dell'azienda **non disabilitati** (`UserCompany.Disabled = false`). Gli utenti appartengono all'azienda, non al singolo applicativo (non esiste un'abilitazione degli utenti per applicativo), quindi il conteggio è unico per l'azienda.
+- **Studio** (funzioni lato studio): gli utenti dello studio non disabilitati (`UserFinancialAdvisor.Disabled = false`).
+- **Copertura dello studio sulle aziende** (§4.3): il limite del piano dello studio vale **per ogni azienda** (ogni azienda coperta può avere fino a `MaxUtenti` utenti), non come totale sommato su tutte le aziende. Resta coerente con la copertura "a posti illimitati" delle aziende.
+
+**Limite di un'azienda con più funzioni:** ogni funzione ha il proprio livello e quindi il proprio limite (es. Presenze Free = 10, CRM Pro = illimitati). Poiché gli utenti sono unici per l'azienda:
+- **creare o riabilitare un utente** è consentito se il nuovo totale non supera il **limite più alto** tra le funzioni coperte dell'azienda. Così chi paga Pro su una funzione non viene bloccato da un Free su un'altra;
+- una funzione il cui limite è **inferiore** al numero di utenti attivi risulta **"oltre il limite"**: lo si mostra in "Gestione licenze" con l'invito a passare al livello superiore. Cosa restringere in quella funzione si deciderà strada facendo, usando il metodo `IsWithinUserLimitAsync` (§8.1.2);
+- un'azienda **senza alcuna licenza valida** usa come limite il valore predefinito Free di `AppSetting`.
+
+**Superamento del limite** (downgrade, scadenza della copertura dello studio, abbassamento del limite al rinnovo):
+- gli utenti già attivi **non vengono mai disabilitati automaticamente**;
+- non si possono creare né riabilitare utenti finché il totale non torna sotto il limite. L'utente vede un messaggio dedicato ("Raggiunto il limite di N utenti del piano *piano*: passa a un piano superiore o disabilita un utente"), non un errore generico.
+
+**Dove si applica il controllo:**
+- backend: `AccountService.UserCompanyPut` (nuovo utente e passaggio di `Disabled` da `true` a `false`) e il corrispondente metodo per gli utenti dello studio. Gli utenti amministratori creati insieme all'azienda (`CompanyPut`) non vengono bloccati, perché l'azienda nuova parte da zero utenti;
+- frontend: contatore "utenti attivi / limite" (es. "12 / 50") nell'elenco utenti dell'azienda e in "Gestione licenze"; il pulsante "Nuovo utente" è disabilitato al raggiungimento del limite, con il link alla pagina licenze. Il server ricontrolla sempre.
 - **Periodicità** (punto 4): `Mensile`/`Annuale`, scelta alla sottoscrizione; prezzo annuale indipendente (consente lo sconto annuale senza calcoli).
 
 Esempio (listino globale SuperUser, TipoSoggetto=Company, Ambito=Presenze):
@@ -293,6 +326,22 @@ Task<bool> HasAtLeastAsync(int idCompany, ApplicationType ambito, LivelloLicenza
 - **Frontend**: il livello effettivo per ambito viene caricato in `UserLoad` insieme agli applicativi attivi; `AuthService` espone gli equivalenti sincroni (`licenseLevel(app)`, `isLicensed(app)`, `isFree(app)`, `isStandard(app)`, `isPro(app)`, `hasLicenseAtLeast(app, livello)`) per menu e pulsanti. Il server ricontrolla sempre con `ILicenseGuard`: il frontend serve solo a mostrare o nascondere.
 - Finché il sistema licenze non è attivo (prima della Fase 4 o con abbonamenti non ancora migrati) i metodi devono avere un **comportamento neutro configurabile** (proposta: rispondere come `Pro`), così aggiungere un controllo a una funzione non blocca nessuno prima del tempo.
 
+### 8.1.2 Metodi sul limite utenti (deciso il 09/11/2026)
+
+Sempre in `ILicenseGuard`, con le regole del §5.1:
+
+```
+Task<int?> MaxUsersAsync(int idCompany, ApplicationType ambito);   // limite della funzione; null = illimitati
+Task<int>  ActiveUsersAsync(int idCompany);                        // utenti non disabilitati dell'azienda
+Task<bool> IsWithinUserLimitAsync(int idCompany, ApplicationType ambito);   // utenti attivi <= limite della funzione
+Task<bool> CanAddUserAsync(int idCompany);                         // un utente in più resta entro il limite più alto dell'azienda
+```
+
+- Sovraccarichi con `idFinancialAdvisor` per gli utenti dello studio.
+- `CanAddUserAsync` è il metodo usato da `UserCompanyPut`; `IsWithinUserLimitAsync` è a disposizione delle funzioni per decidere, strada facendo, cosa restringere quando una funzione è oltre il limite.
+- Frontend: `UserLoad` porta anche utenti attivi e limite per funzione; `AuthService` espone `maxUsers(app)`, `isWithinUserLimit(app)` e `canAddUser()`.
+- Con il comportamento neutro (sistema licenze non ancora attivo) i metodi rispondono come illimitati.
+
 ### 8.2 Dove si applica (tre livelli, da attivare quando si pianifica)
 
 1. **Attivazione applicativi** (`CompanyApplicationService`): un abbonamento scaduto porta `CompanyApplication.Active` a bloccato (o un sotto-stato "sospeso per licenza"), riusando il meccanismo che **già** blocca l'accesso agli applicativi non attivi (`TenantSchemaAccessor`). È il blocco più "forte" e gratis: la funzione sparisce come un applicativo spento.
@@ -364,7 +413,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 1. Prezzo come due colonne (Mensile/Annuale) sul piano, o tabella figlia per più periodicità? (proposta: due colonne)
 2. Cumulativo come `Ambito` con prezzo proprio o come bundle/sconto sui singoli? (proposta: `Ambito` a sé)
 3. Valuta unica (EUR) o multi-valuta? (proposta: EUR)
-4. ~~I piani portano già **limiti/capability** (es. quote), o solo prezzo/accesso in v1?~~ **Deciso il 09/11/2026 (§5, §8.1.1)**: tre livelli fissi Free (0 €) / Standard (*x*) / Pro (*y*). Cosa distingue i livelli si deciderà strada facendo; intanto si predispongono i metodi vero/falso sul livello di licenza.
+4. ~~I piani portano già **limiti/capability** (es. quote), o solo prezzo/accesso in v1?~~ **Deciso il 09/11/2026 (§5, §5.1, §8.1.1, §8.1.2)**: tre livelli fissi Free (0 €) / Standard (*x*) / Pro (*y*), con limite utenti parametrico Free 10 / Standard 50 / Pro illimitati. Le altre differenze tra i livelli si decideranno strada facendo; intanto si predispongono i metodi vero/falso sul livello di licenza e sul limite utenti.
 
 **Attivazione e licenze**
 5. La sottoscrizione **attiva automaticamente** l'applicativo, o resta la doppia azione (SuperUser/Dealer attiva + licenza copre)?
@@ -385,7 +434,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 ## 14. Fasi di implementazione (bozza, dopo le decisioni §13)
 
 **Fase 0 – Modello (Infrastructure_Dev)**
-- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, `LivelloLicenza`, stati; flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
+- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, `LivelloLicenza`, stati; `Lic_Piano.MaxUtenti`, `Lic_Abbonamento.MaxUtentiBloccato`, chiavi `AppSetting` `Licenze.MaxUtenti.*` con i valori predefiniti (§5.1); flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
 
 **Fase 1 – Listini (SuperUser/Dealer)**
 - Servizi + controller di gestione listini e piani; `ILicenseCatalogResolver` (§4.1); pagina Angular listini (sul modello `/storageplanlist`); autorizzazioni.
@@ -397,7 +446,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 - `IPaymentGateway` + Stripe/PayPal; webhook idempotenti; configurazione secret; coerenza col server di prova (debug di default).
 
 **Fase 4 – Inibizione (quando pianificata)**
-- `ILicenseGuard` con i metodi vero/falso sul livello (§8.1.1) e gli equivalenti in `AuthService`; aggancio a `CompanyApplicationService`/`TenantSchemaAccessor`; attributo `[RequiresLicense]`; stato licenza in `AuthService`/menu; messaggi utente dedicati.
+- `ILicenseGuard` con i metodi vero/falso sul livello (§8.1.1) e sul limite utenti (§8.1.2) e gli equivalenti in `AuthService`; controllo del limite in `AccountService.UserCompanyPut` e contatore utenti nelle pagine; aggancio a `CompanyApplicationService`/`TenantSchemaAccessor`; attributo `[RequiresLicense]`; stato licenza in `AuthService`/menu; messaggi utente dedicati.
 
 **Fase 5 – Registrazione per tipo soggetto (punto 1)**
 - Selettore in `register-page`; `TipoSoggetto` in `CompanyRegistrationRequest`; instradamento Studio/Azienda in `RegistrationService`.
