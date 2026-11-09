@@ -30,6 +30,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
 
      Schermate: nvxapp.server.service/Manuals/img/<indirizzo>.jpg (indirizzo senza "/" iniziale, "/" interni -> "_"),
      incorporate; si rigenerano con lo script nvxapp.server/Tools/ManualScreenshots (vedi il suo README).
+
+     GUIDA (file fisso che completa il manuale): nvxapp.server.service/Manuals/<codice>.guide.<lingua>.md, facoltativa
+     (manca la lingua -> italiano), con la stessa sintassi del testo base. Si unisce cosi':
+        capitoli prima del primo @@      dopo l'introduzione del testo base (es. "Primi passi", "Concetti")
+        @@ /indirizzo                    dopo la descrizione base della funzione (es. "### Campi", "### Esempio",
+                                         "### Attenzione"); solo se la funzione e' nel menu dell'utente
+        capitoli dopo i blocchi @@       dopo l'appendice del testo base (es. "Glossario", "Risoluzione dei problemi")
+     Sintassi in piu' (valida anche nel testo base):
+        | Campo | Descrizione |          tabella: righe consecutive che iniziano con "|"; la prima e' l'intestazione,
+        |---|---|                        la riga di soli trattini si ignora
+        => /crmpipeline /crmofferlist    "Vedi anche": funzioni collegate, mostrate con il loro titolo solo se sono nel
+                                         menu dell'utente (le altre si omettono)
+
+     Arricchimenti automatici (dal menu dell'utente, senza testi da scrivere): per ogni capitolo l'elenco delle sue
+     funzioni, per ogni funzione dove si trova nel menu, in fondo l'indice alfabetico delle funzioni.
     */
     public interface IUserManualProvider
     {
@@ -73,6 +88,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         Note = 6,
         Image = 7,
         Subsection = 8,
+        Table = 9,      // Rows: la prima riga e' l'intestazione
+        Path = 10,      // dove si trova la funzione nel menu (generato)
+        SeeAlso = 11,   // funzioni collegate: nel testo gli indirizzi, nel documento composto i titoli
     }
 
     public class UserManualBlock
@@ -83,6 +101,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
         public int Number { get; set; }
         // immagine (Image)
         public byte[]? Data { get; set; }
+        // righe della tabella (Table), la prima e' l'intestazione
+        public List<string[]>? Rows { get; set; }
     }
 
     /// <summary>Provider che legge testi e schermate dalle risorse incorporate dell'assembly (di solito questo).</summary>
@@ -97,7 +117,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             var testo = Leggi($".Manuals.{Code}.{lingua}.md") ?? Leggi($".Manuals.{Code}.it.md")
                         ?? throw new InvalidOperationException($"Manuale {Code} mancante (Manuals/{Code}.it.md)");
             var parti = UserManualMarkdown.Parse(testo, ruoli);
-            return UserManualMarkdown.Componi(parti, menu, url => Immagine(url));
+            // guida fissa che completa il manuale (facoltativa)
+            var testoGuida = Leggi($".Manuals.{Code}.guide.{lingua}.md") ?? Leggi($".Manuals.{Code}.guide.it.md");
+            var guida = testoGuida == null ? null : UserManualMarkdown.Parse(testoGuida, ruoli);
+            return UserManualMarkdown.Componi(parti, guida, menu, url => Immagine(url));
         }
 
         // schermata della pagina: Manuals/img/<indirizzo>.jpg (o .png)
@@ -153,6 +176,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             var paragrafo = new List<string>();
             int passo = 0;
             bool capitoloEscluso = false, paragrafoEscluso = false;
+            // tabella in costruzione (righe consecutive che iniziano con "|")
+            UserManualBlock? tabella = null;
 
             (string Titolo, bool Ammesso) Titolo(string t)
             {
@@ -179,8 +204,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 {
                     Chiudi();
                     passo = 0;
+                    tabella = null;
                     continue;
                 }
+                if (!riga.StartsWith('|'))
+                    tabella = null;
                 if (riga.StartsWith("@@"))
                 {
                     // descrizione di una funzione del menu
@@ -221,6 +249,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                     Chiudi();
                     continue;
                 }
+                if (riga.StartsWith('|'))
+                {
+                    // riga di tabella; quella di soli trattini (separatore dell'intestazione) si ignora
+                    Chiudi();
+                    var celle = riga.Trim('|').Split('|').Select(c => c.Trim()).ToArray();
+                    if (celle.All(c => c.Length > 0 && c.All(ch => ch == '-' || ch == ':')))
+                        continue;
+                    if (tabella == null)
+                    {
+                        tabella = new UserManualBlock { Type = UserManualBlockType.Table, Rows = new List<string[]>() };
+                        corrente.Add(tabella);
+                    }
+                    tabella.Rows!.Add(celle);
+                    continue;
+                }
+                if (riga.StartsWith("=>"))
+                {
+                    // "Vedi anche": indirizzi delle funzioni collegate, risolti con i titoli del menu in Componi
+                    Chiudi();
+                    corrente.Add(new UserManualBlock { Type = UserManualBlockType.SeeAlso, Text = riga[2..].Trim() });
+                    continue;
+                }
                 if (parti.Introduzione.Count == 0 && parti.Subtitle == null && parti.Title.Length > 0 && corrente == parti.Introduzione
                     && paragrafo.Count == 0 && !riga.StartsWith('#') && !riga.StartsWith("- ") && !riga.StartsWith('>'))
                 {
@@ -256,31 +306,92 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
 
         /// <summary>Manuale composto: introduzione, un capitolo per sezione del menu (una voce = un paragrafo con schermata e descrizione), appendice.</summary>
         public static UserManualDocument Componi(UserManualParti parti, IReadOnlyList<UserManualMenuSection> menu, Func<string, byte[]?> immagine)
+            => Componi(parti, null, menu, immagine);
+
+        /// <summary>
+        /// Manuale composto dal testo base e dalla guida fissa (facoltativa): introduzione (base + guida), un capitolo per
+        /// sezione del menu con l'elenco delle sue funzioni, per ogni voce dove si trova nel menu, schermata, descrizione base
+        /// e approfondimenti della guida, poi appendice (base + guida) e indice alfabetico delle funzioni.
+        /// </summary>
+        public static UserManualDocument Componi(UserManualParti parti, UserManualParti? guida, IReadOnlyList<UserManualMenuSection> menu, Func<string, byte[]?> immagine)
         {
             var doc = new UserManualDocument { Title = parti.Title, Subtitle = parti.Subtitle };
-            doc.Blocks.AddRange(parti.Introduzione);
 
-            foreach (var sezione in menu)
+            // voci del menu da descrivere, per sezione (senza doppioni e senza le pagine di servizio)
+            var sezioni = menu.Select(sezione => (sezione.Titolo, Voci: sezione.Voci
+                                  .Where(v => !string.IsNullOrWhiteSpace(v.Url) && !Esclusi.Any(e => v.Url.StartsWith(e, StringComparison.OrdinalIgnoreCase)))
+                                  .GroupBy(v => v.Url, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToList()))
+                              .Where(s => s.Voci.Count > 0).ToList();
+            // titolo di ogni funzione presente nel menu dell'utente, per i "Vedi anche"
+            var titoli = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var (titoloSezione, voci) in sezioni)
+                foreach (var v in voci)
+                    titoli.TryAdd(v.Url, v.Titolo);
+
+            void Aggiungi(IEnumerable<UserManualBlock> blocchi)
             {
-                var voci = sezione.Voci.Where(v => !string.IsNullOrWhiteSpace(v.Url) && !Esclusi.Any(e => v.Url.StartsWith(e, StringComparison.OrdinalIgnoreCase)))
-                                       .GroupBy(v => v.Url, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToList();
-                if (voci.Count == 0)
-                    continue;
-                doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Chapter, Text = sezione.Titolo });
-                foreach (var voce in voci)
+                foreach (var b in blocchi)
                 {
-                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Section, Text = voce.Titolo });
-                    var img = immagine(voce.Url);
-                    if (img != null)
-                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Image, Data = img });
-                    if (parti.Funzioni.TryGetValue(voce.Url, out var testo) && testo.Count > 0)
-                        doc.Blocks.AddRange(testo);
-                    else
-                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = InfrastructureMessages.Get("UserManualNoDescription", voce.Titolo, sezione.Titolo) });
+                    if (b.Type != UserManualBlockType.SeeAlso)
+                    {
+                        doc.Blocks.Add(b);
+                        continue;
+                    }
+                    // solo le funzioni collegate che l'utente vede, con il loro titolo
+                    var collegate = b.Text.Split(new[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(u => titoli.TryGetValue(u, out var t) ? t : null)
+                                          .Where(t => t != null).Distinct().ToList();
+                    if (collegate.Count > 0)
+                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.SeeAlso, Text = InfrastructureMessages.Get("UserManualSeeAlso", string.Join(", ", collegate)) });
                 }
             }
 
-            doc.Blocks.AddRange(parti.Appendice);
+            Aggiungi(parti.Introduzione);
+            if (guida != null)
+                Aggiungi(guida.Introduzione);
+
+            foreach (var (titoloSezione, voci) in sezioni)
+            {
+                doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Chapter, Text = titoloSezione });
+                if (voci.Count > 1)
+                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = InfrastructureMessages.Get("UserManualInChapter", string.Join(", ", voci.Select(v => v.Titolo))) });
+                foreach (var voce in voci)
+                {
+                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Section, Text = voce.Titolo });
+                    doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Path, Text = InfrastructureMessages.Get("UserManualPath", titoloSezione + " › " + voce.Titolo) });
+                    var img = immagine(voce.Url);
+                    if (img != null)
+                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Image, Data = img });
+                    bool descritta = false;
+                    if (parti.Funzioni.TryGetValue(voce.Url, out var testo) && testo.Count > 0)
+                    {
+                        Aggiungi(testo);
+                        descritta = true;
+                    }
+                    if (guida != null && guida.Funzioni.TryGetValue(voce.Url, out var approfondimento) && approfondimento.Count > 0)
+                    {
+                        Aggiungi(approfondimento);
+                        descritta = true;
+                    }
+                    if (!descritta)
+                        doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Paragraph, Text = InfrastructureMessages.Get("UserManualNoDescription", voce.Titolo, titoloSezione) });
+                }
+            }
+
+            Aggiungi(parti.Appendice);
+            if (guida != null)
+                Aggiungi(guida.Appendice);
+
+            // indice alfabetico delle funzioni descritte, con la sezione del menu in cui si trovano
+            var indice = sezioni.SelectMany(s => s.Voci.Select(v => new[] { v.Titolo, s.Titolo }))
+                                .OrderBy(r => r[0], StringComparer.CurrentCultureIgnoreCase).ToList();
+            if (indice.Count > 0)
+            {
+                doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Chapter, Text = InfrastructureMessages.Get("UserManualFunctionIndex") });
+                var righe = new List<string[]> { new[] { InfrastructureMessages.Get("UserManualIndexFunction"), InfrastructureMessages.Get("UserManualIndexSection") } };
+                righe.AddRange(indice);
+                doc.Blocks.Add(new UserManualBlock { Type = UserManualBlockType.Table, Rows = righe });
+            }
             return doc;
         }
     }
