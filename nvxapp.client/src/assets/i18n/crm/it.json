@@ -148,7 +148,12 @@
         "title": "Scheda cliente",
         "registry": "Anagrafica e dati commerciali",
         "fiscal": "Dati fiscali e recapiti",
-        "newNote": "Salva il cliente per aggiungere contatti, opportunità, attività, offerte, note e allegati."
+        "newNote": "Salva il cliente per aggiungere contatti, opportunità, attività, offerte, note e allegati.",
+        "fabAdd": "Aggiungi al cliente",
+        "addContatto": "Contatto",
+        "addOpportunita": "Opportunità",
+        "addAttivita": "Attività",
+        "addOfferta": "Offerta"
       },
       "leadList": {
         "title": "Lead",
