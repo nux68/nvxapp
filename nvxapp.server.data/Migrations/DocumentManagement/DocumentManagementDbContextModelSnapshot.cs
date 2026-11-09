@@ -650,6 +650,9 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
                     b.Property<bool>("PresaVisioneRichiesta")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("TipoInvio")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Anagrafica", "Codice")

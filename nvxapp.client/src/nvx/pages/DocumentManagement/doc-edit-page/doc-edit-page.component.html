@@ -36,11 +36,17 @@
         }
 
         @if (Tipo?.categoria === Categoria.Personale) {
-          <ion-item>
-            <ion-select formControlName="idDip_Anagrafica" [label]="'documents.fields.employee' | transloco" labelPlacement="floating">
-              @for (d of dipendenti; track d.id) { <ion-select-option [value]="d.id">{{ d.nominativo }}{{ d.codiceFiscale ? ' – ' + d.codiceFiscale : '' }}</ion-select-option> }
-            </ion-select>
+          <ion-item button [disabled]="SolaLettura" (click)="selezionaDipendenti()" detail="false">
+            <ion-icon slot="start" name="people-outline" color="primary"></ion-icon>
+            <ion-label class="ion-text-wrap">
+              <p>{{ (Multiplo ? 'documents.fields.employees' : 'documents.fields.employee') | transloco }}</p>
+              <h3>{{ dipendentiLabel || ('documents.pages.edit.employeeChoose' | transloco) }}</h3>
+            </ion-label>
+            @if (!SolaLettura) { <ion-icon slot="end" name="chevron-forward-outline"></ion-icon> }
           </ion-item>
+          @if (Multiplo) {
+            <ion-note class="nvx-nota-disabled">{{ 'documents.pages.edit.employeeMultiNote' | transloco }}</ion-note>
+          }
         }
         @if (Tipo?.categoria === Categoria.Cliente) {
           <ion-item>

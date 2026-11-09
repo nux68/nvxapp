@@ -27,6 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
         public Doc_Categoria Categoria { get; set; }
+        public Doc_TipoInvio TipoInvio { get; set; }
         public int? AnniConservazione { get; set; }
         public bool HaScadenza { get; set; }
         public bool PresaVisioneRichiesta { get; set; }

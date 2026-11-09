@@ -1,8 +1,10 @@
 import { ModelResult } from '../../ModelsBase/model-result';
 
-// stessi valori degli enum del server (Doc_Categoria, Doc_Stato, Doc_LogAzione)
+// stessi valori degli enum del server (Doc_Categoria, Doc_Stato, Doc_LogAzione, Doc_TipoInvio)
 export enum DocCategoria { Personale = 0, Azienda = 1, Cliente = 2 }
 export enum DocStato { Bozza = 0, Pubblicato = 1, Archiviato = 2 }
+// scelta del dipendente al caricamento di un documento del personale (solo categoria Personale)
+export enum DocTipoInvio { Singolo = 0, Multiplo = 1 }
 
 export class DocPermessiModel {
   public powerAdmin = false;
@@ -24,6 +26,7 @@ export class DocTipoModel {
   public codice = '';
   public descrizione = '';
   public categoria: DocCategoria = DocCategoria.Azienda;
+  public tipoInvio: DocTipoInvio = DocTipoInvio.Singolo;
   public anniConservazione: number | null = null;
   public haScadenza = false;
   public presaVisioneRichiesta = false;
