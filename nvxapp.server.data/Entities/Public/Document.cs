@@ -10,7 +10,7 @@ namespace nvxapp.server.data.Entities.Public
     }
 
     /*
-     Documento caricato a un livello della gerarchia (vedi nvxapp.server/docs/ANALISI_DOCUMENTAZIONE_AI.md).
+     Documento caricato a un livello della gerarchia (vedi nvxapp.server/docs/ANALISI_DOCUMENTAZIONE_AI.md [branch DocumentManagement]).
         - Section          : a cosa serve il documento
         - Level            : SuperUser, Dealer, FinancialAdvisor o Company
         - IdDealer / IdFinancialAdvisor / IdCompany: nodo proprietario, solo quello del livello
