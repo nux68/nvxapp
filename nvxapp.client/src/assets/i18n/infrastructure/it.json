@@ -788,6 +788,15 @@
     }
   },
   "components": {
+    "dipSelectorModal": {
+      "selezionaDipendente": "Seleziona dipendente",
+      "selezionaDipendenti": "Seleziona dipendenti",
+      "cercaPlaceholder": "Cerca per cognome, nome...",
+      "selezionaTutti": "Seleziona tutti",
+      "deselezionaTutti": "Deseleziona tutti",
+      "selezionati": "{{count}} selezionati",
+      "nessunDipendente": "Nessun dipendente trovato"
+    },
     "addCompany": {
       "title": "Inserimento nuova azienda",
       "description": "Descrizione",

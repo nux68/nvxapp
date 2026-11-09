@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToggle, IonToolbar } from '@ionic/angular';
+import { IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonList, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToggle, IonToolbar } from '@ionic/angular';
 import { GenericFilterPipe } from './pipe/infrastructure/generic-filter.pipe';
 import { BreadcrumbsImpersonateComponent } from './components/infrastructure/breadcrumbs-impersonate/breadcrumbs-impersonate.component';
 import { PageToolbarComponent } from './components/infrastructure/page-toolbar/page-toolbar.component';
@@ -19,6 +19,7 @@ import { NvxListOptionsComponent } from './components/infrastructure/nvx-list-op
 import { TicketAttachComponent } from './components/infrastructure/ticket-attach/ticket-attach.component';
 import { TicketActionDialogComponent } from './components/infrastructure/ticket-action-dialog/ticket-action-dialog.component';
 import { DeletionDialogComponent } from './components/infrastructure/deletion-dialog/deletion-dialog.component';
+import { DipSelectorModalComponent } from './components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 
 
 @NgModule({
@@ -26,14 +27,14 @@ import { DeletionDialogComponent } from './components/infrastructure/deletion-di
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToggle, IonToolbar,
+    IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonList, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTextarea, IonTitle, IonToggle, IonToolbar,
     GenericFilterPipe,
     HoverPopupComponent, HoverPopupDirective,
     NvxListComponent, NvxListCellDirective, NvxListMobileDirective, NvxListOptionsComponent,
     TranslocoPipe,
     NvxDatetimeLocaleDirective
   ],
-  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective, NvxListOptionsComponent, TranslocoPipe, NvxDatetimeLocaleDirective/*, FabMenuComponent*/]
+  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent, DipSelectorModalComponent/*, FabMenuComponent*/],
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent, DipSelectorModalComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective, NvxListOptionsComponent, TranslocoPipe, NvxDatetimeLocaleDirective/*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }

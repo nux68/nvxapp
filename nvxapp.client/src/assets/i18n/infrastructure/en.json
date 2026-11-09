@@ -788,6 +788,15 @@
     }
   },
   "components": {
+    "dipSelectorModal": {
+      "selezionaDipendente": "Select employee",
+      "selezionaDipendenti": "Select employees",
+      "cercaPlaceholder": "Search by surname, first name...",
+      "selezionaTutti": "Select all",
+      "deselezionaTutti": "Deselect all",
+      "selezionati": "{{count}} selected",
+      "nessunDipendente": "No employees found"
+    },
     "addCompany": {
       "title": "New company",
       "description": "Description",

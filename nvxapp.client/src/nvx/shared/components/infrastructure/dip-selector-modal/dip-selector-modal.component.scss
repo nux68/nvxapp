@@ -1,0 +1,23 @@
+.nvx-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.nvx-item-selected {
+  --background: var(--ion-color-primary-tint);
+}
+
+.nvx-selected-count {
+  font-size: 13px;
+  color: var(--ion-color-medium);
+  padding-right: 12px;
+}
