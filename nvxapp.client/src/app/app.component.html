@@ -45,8 +45,8 @@
             <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
           }
 
-          <!-- 2. "Amministrazione" (voci comuni di Infrastructure) e una sezione per applicativo attivo: dentro, le sottosezioni
-                  dei ruoli, che si aprono e si chiudono una alla volta come le sezioni -->
+          <!-- 2. "Amministrazione" (voci comuni di Infrastructure), una sezione per applicativo attivo e, in fondo, "Assistenza":
+                  dentro, le sottosezioni (dei ruoli, o "Assistenza"/"Configurazione"), che si aprono e si chiudono una alla volta -->
           @for (app of sezioniApplicativi; track app.chiave) {
             <ion-accordion value="{{app.chiave}}" toggleIcon="chevron-down" toggleIconSlot="end" class="nvx-menu-application">
               <ion-item slot="header">
@@ -61,34 +61,6 @@
                     <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
                   }
                 </ion-accordion-group>
-              </div>
-            </ion-accordion>
-          }
-
-          <!-- 3. Assistenza, in fondo: per tutti gli utenti collegati (voci filtrate per ruolo in getGroupedSupport) -->
-          @for (group of groupedSupportMenu; track group.menuHeader.title) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                <!-- contatori delle voci (es. ticket in carico): visibili anche a sezione chiusa -->
-                @if (groupBadge(group) > 0) {
-                  <ion-badge slot="end" color="danger">{{ groupBadge(group) }}</ion-badge>
-                }
-              </ion-item>
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-                  @for (p of group.menuItem; track p) {
-                    <ion-menu-toggle auto-hide="false">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                        <ion-label>{{ p.title | transloco }}</ion-label>
-                        @if (menuBadge(p) > 0) {
-                          <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                        }
-                      </ion-item>
-                    </ion-menu-toggle>
-                  }
-                </ion-list>
               </div>
             </ion-accordion>
           }
