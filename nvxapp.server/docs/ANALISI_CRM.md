@@ -301,3 +301,58 @@ Implementata il 04/11/2026 (commit 846a9400 e seguenti su CRM_Dev; in Infrastruc
 - [ ] presenze: da opportunità vinta a commessa (`ICommessaCreator`, `IdCommessaPresenze`)
 - [ ] documentale: fascicolo del cliente in lettura nella scheda cliente
 - [ ] AI avanzata (riepilogo cliente, prossima azione, bozza email)
+
+---
+
+## 11. Guida all'uso (come si usa il CRM)
+
+Spiegazione pratica del funzionamento, dal punto di vista di chi lo usa. Il dettaglio pagina per pagina è nel manuale utente (`nvxapp.server.service/Manuals/crm.it.md`).
+
+### 11.1 A cosa serve
+
+Il CRM tiene traccia di **chi sono i clienti (o potenziali clienti), cosa si sta trattando con loro e cosa bisogna fare dopo**. Ruota tutto attorno a cinque oggetti:
+
+| Oggetto | Cos'è | Esempio |
+|---|---|---|
+| **Lead** | contatto non ancora qualificato | "Mario Rossi, ha lasciato il biglietto in fiera" |
+| **Cliente** | azienda con cui si ha (o si vuole avere) un rapporto; è l'anagrafica clienti **comune**, la stessa di presenze e documentale | "Rossi Srl" |
+| **Opportunità** | una trattativa con un cliente, con valore e probabilità | "Fornitura software, 15.000 €, 60%" |
+| **Attività** | cosa fare / fatta: telefonata, email, appuntamento | "Richiamare Rossi giovedì alle 10" |
+| **Offerta** | il preventivo con righe e prezzi, PDF e invio per email | "Offerta 2026/014" |
+
+### 11.2 Il flusso tipico
+
+```
+Lead ──(Converti)──► Cliente ──► Opportunità ──► Offerta ──► Vinta / Persa
+                        │            │
+                        └── Attività (chiamate, appuntamenti…) lungo tutto il percorso
+```
+
+1. **Entra un contatto nuovo** (sito, fiera, passaparola): **Lead** → **+** → **Nuovo lead** (nome, azienda, email, telefono, fonte). Lo si contatta e si registra un'attività ("chiamata fatta").
+2. **Il contatto è interessato**: dal lead → **Converti**. Diventa un **Cliente**, la persona diventa un suo **Contatto** e si può creare subito un'**Opportunità**. Se il cliente è già noto si salta il lead: **Clienti** → **+** → **Nuovo cliente**.
+3. **Si lavora la trattativa**:
+   - dalla **scheda cliente**, con il **+** del FAB si sceglie (menu dal basso) cosa aggiungere: Contatto, Opportunità, Attività, Offerta, già collegati al cliente;
+   - nella **Pipeline** le opportunità sono in colonne per fase: quando la trattativa avanza si trascina la scheda nella colonna successiva (se va in "persa" viene chiesto il motivo).
+4. **Si fa il preventivo**: **Offerta** → righe (scegliendo un prodotto si compilano prezzo e IVA) → **Conferma** (riceve il numero) → **PDF** per scaricarla, **Invia** per mandarla per email (diventa "Inviata"). Poi si aggiorna lo stato: Accettata / Rifiutata.
+5. **Si chiude**: l'opportunità va in una fase "vinta" o "persa". Lo storico registra ogni passaggio ed è la base dei **Report**.
+
+### 11.3 Uso quotidiano del commerciale
+
+La pagina principale è l'**Agenda**: Oggi, **Scadute** (numero in rosso), Prossime, Fatte.
+
+- Finita una chiamata: **Fatta** e si scrive l'esito ("richiamare a fine mese").
+- Si crea subito l'attività successiva.
+- Prima di ogni attività arriva un promemoria a comparsa (predefinito 30 minuti prima), se si è collegati all'applicazione.
+
+### 11.4 Prima di iniziare (amministratore)
+
+1. **Impostazioni CRM**: visibilità (ogni commerciale vede solo i suoi clienti / tutti), valuta, preavviso promemoria, prefisso e condizioni delle offerte.
+2. **Tabelle CRM** (create con valori predefiniti, da adattare): **fasi** della pipeline con la probabilità, **tipi di attività**, **prodotti** con prezzi e IVA, **fonti**, **motivi di perdita**, **etichette**.
+3. **Ruoli**: *User* = commerciale; *CompanyAdmin* = vede tutto, assegna i clienti, report; *CompanyPowerAdmin* = anche la configurazione.
+
+### 11.5 Prova veloce (10 minuti)
+
+1. Creare un lead di prova e convertirlo in cliente creando anche l'opportunità.
+2. Dalla scheda cliente aggiungere (con il **+**) un'attività per domani e un'offerta.
+3. Andare nella pipeline e spostare l'opportunità di fase.
+4. Controllare come cambiano Agenda e Report.
