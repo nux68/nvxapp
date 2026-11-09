@@ -47,8 +47,10 @@ The **Consent to marketing communications** box records the customer's consent w
 
 ### The customer card
 - **Details**: registry and sales data (saved with **Confirm**).
-- **Contacts**: the contact persons; **Add** opens the window with surname, first name, role, phone, mobile, email, notes and the "Main contact" box (only one per customer).
-- **Opportunities**, **Activities**, **Offers**: the customer's items, with **Add** to create one already linked.
+- **Contacts**: the contact persons; a new contact is added with **+** › **Contact**: the window opens with surname, first name, role, phone, mobile, email, notes and the "Main contact" box (only one per customer).
+- **Opportunities**, **Activities**, **Offers**: the customer's items.
+
+To add something to a saved customer press **+** and choose from the menu that opens from the bottom: **Contact**, **Opportunity**, **Activity** or **Offer**; the item is created already linked to the customer.
 - **Notes** and **Attachments**: as described in the introduction.
 
 > Customers are not deleted from the CRM: they are deactivated (**Active** field). Permanent deletion is done from Administration and is blocked, with a message, if the customer is used by opportunities, offers, activities or attachments.

@@ -47,8 +47,10 @@ La casella **Consenso alle comunicazioni commerciali** registra il consenso del 
 
 ### La scheda cliente
 - **Dati**: anagrafica e dati commerciali (si salvano con **Conferma**).
-- **Contatti**: le persone di riferimento; **Aggiungi** apre la finestra con cognome, nome, ruolo, telefono, cellulare, email, note e la casella "Contatto principale" (uno solo per cliente).
-- **Opportunità**, **Attività**, **Offerte**: le voci del cliente, con **Aggiungi** per crearne una già collegata.
+- **Contatti**: le persone di riferimento; un nuovo contatto si aggiunge con **+** › **Contatto**: si apre la finestra con cognome, nome, ruolo, telefono, cellulare, email, note e la casella "Contatto principale" (uno solo per cliente).
+- **Opportunità**, **Attività**, **Offerte**: le voci del cliente.
+
+Per aggiungere qualcosa a un cliente già salvato premi **+** e scegli dal menu che si apre dal basso: **Contatto**, **Opportunità**, **Attività** o **Offerta**; la voce nasce già collegata al cliente.
 - **Note** e **Allegati**: come descritto nell'introduzione.
 
 > I clienti non si cancellano dal CRM: si disattivano (campo **Attivo**). La cancellazione definitiva si fa da Amministrazione ed è bloccata, con un messaggio, se il cliente è usato da opportunità, offerte, attività o allegati.
