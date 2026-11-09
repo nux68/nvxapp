@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Pacchetto di spazio per i file delle aziende (ANALISI_DOCUMENTALE.md §5.3): lo spazio di un'azienda e'
+     Pacchetto di spazio per i file delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): lo spazio di un'azienda e'
      sempre quello del suo pacchetto (niente quote scritte a mano). Uno solo e' il predefinito, assegnato
      all'azienda quando non ne ha uno. Un pacchetto usato da aziende non si elimina: si disattiva.
      Li gestisce solo il SuperUser.

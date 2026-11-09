@@ -5,7 +5,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicket.Mo
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicket
 {
     /*
-     Cosa serve alla risposta AI di un ticket che arriva al livello "level" (ANALISI_DOCUMENTAZIONE_AI.md §4.3, §6):
+     Cosa serve alla risposta AI di un ticket che arriva al livello "level" (ANALISI_DOCUMENTAZIONE_AI.md [branch DocumentManagement] §4.3, §6):
        - impostazione effettiva del tipo: riga del nodo, altrimenti default del livello, altrimenti AI disattivata
        - documenti attivi della sezione TicketAi:
            Dev              -> documenti del SuperUser

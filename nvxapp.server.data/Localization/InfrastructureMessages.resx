@@ -539,4 +539,25 @@
     <value>Si apre dalla voce «{0}» della sezione {1} del menu.</value>
     <comment>funzione del menu senza descrizione nel manuale</comment>
   </data>
+  <data name="UserManualPath" xml:space="preserve">
+    <value>Nel menu: {0}</value>
+    <comment>percorso della funzione nel menu (sezione › voce)</comment>
+  </data>
+  <data name="UserManualInChapter" xml:space="preserve">
+    <value>In questo capitolo: {0}.</value>
+    <comment>elenco delle funzioni del capitolo</comment>
+  </data>
+  <data name="UserManualSeeAlso" xml:space="preserve">
+    <value>**Vedi anche:** {0}</value>
+    <comment>funzioni collegate</comment>
+  </data>
+  <data name="UserManualFunctionIndex" xml:space="preserve">
+    <value>Indice delle funzioni</value>
+  </data>
+  <data name="UserManualIndexFunction" xml:space="preserve">
+    <value>Funzione</value>
+  </data>
+  <data name="UserManualIndexSection" xml:space="preserve">
+    <value>Sezione del menu</value>
+  </data>
 </root>

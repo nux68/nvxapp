@@ -471,4 +471,22 @@
     <value>It opens from the "{0}" item in the {1} section of the menu.</value>
     <comment>funzione del menu senza descrizione nel manuale</comment>
   </data>
+  <data name="UserManualPath" xml:space="preserve">
+    <value>In the menu: {0}</value>
+  </data>
+  <data name="UserManualInChapter" xml:space="preserve">
+    <value>In this chapter: {0}.</value>
+  </data>
+  <data name="UserManualSeeAlso" xml:space="preserve">
+    <value>**See also:** {0}</value>
+  </data>
+  <data name="UserManualFunctionIndex" xml:space="preserve">
+    <value>Index of functions</value>
+  </data>
+  <data name="UserManualIndexFunction" xml:space="preserve">
+    <value>Function</value>
+  </data>
+  <data name="UserManualIndexSection" xml:space="preserve">
+    <value>Menu section</value>
+  </data>
 </root>

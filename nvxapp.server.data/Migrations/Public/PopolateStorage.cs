@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace nvxapp.server.data.Migrations.Public
 {
     /*
-     Pacchetti di spazio iniziali (ANALISI_DOCUMENTALE.md §5.3): 1, 5 e 20 GB, predefinito 1 GB.
+     Pacchetti di spazio iniziali (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): 1, 5 e 20 GB, predefinito 1 GB.
      Inseriti senza Id: li assegna la sequenza identity.
     */
     public static class PopolateStorage
