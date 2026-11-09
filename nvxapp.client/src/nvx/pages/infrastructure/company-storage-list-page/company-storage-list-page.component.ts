@@ -9,7 +9,7 @@ import { StorageService } from '../../../ClientServer-Service/Infrastructure/Sto
 import { CompanyStorageListInModel, CompanyStorageModel, StoragePlanModel, bytesToMB } from '../../../ClientServer-Service/Infrastructure/Storage/Models/storage-model';
 
 /*
- Spazio dei documenti delle aziende (ANALISI_DOCUMENTALE.md §5.3): SuperUser (tutte), centro (le sue), studio (le sue,
+ Spazio dei documenti delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): SuperUser (tutte), centro (le sue), studio (le sue,
  in sola lettura). Cambiano pacchetto e limiti solo il SuperUser e il DealerPowerAdmin del centro (canManage dal server).
  Le aziende oltre la soglia di avviso o oltre quota sono evidenziate.
 */

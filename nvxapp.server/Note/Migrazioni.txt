@@ -15,7 +15,7 @@ in un contesto dedicato. Gli applicativi sono l'enum ApplicationType
     3 Crm                   -> CrmDbContext                 (ramo CRM)
     4 DocumentManagement    -> DocumentManagementDbContext  (ramo DocumentManagement)
 
-COMMON (dati comuni dell'azienda, vedi nvxapp.server/docs/ANALISI_CRM.md §2)
+COMMON (dati comuni dell'azienda, vedi nvxapp.server/docs/ANALISI_CRM.md [branch CRM] §2)
     Tabelle condivise tra gli applicativi: Az_Anagrafica (una riga per azienda), Az_Cliente, Az_ClienteContatto,
     Dip_Anagrafica (utente facoltativo). Le entita' comuni sono partial: un ramo puo' aggiungere navigazioni
     verso le proprie tabelle, che CommonDbContext ignora.

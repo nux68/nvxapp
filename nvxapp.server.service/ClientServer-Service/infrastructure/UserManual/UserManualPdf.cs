@@ -224,6 +224,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                         nota.Format.SpaceAfter = Unit.FromPoint(8);
                         Testo(nota, b.Text);
                         break;
+                    case UserManualBlockType.Path:
+                        // dove si trova la funzione nel menu: riga piccola e tenue sotto il titolo
+                        var percorso = section.AddParagraph();
+                        percorso.Format.Font.Size = 8.5;
+                        percorso.Format.Font.Color = Tenue;
+                        percorso.Format.Font.Italic = true;
+                        percorso.Format.SpaceAfter = Unit.FromPoint(4);
+                        percorso.Format.KeepWithNext = true;
+                        percorso.AddText(b.Text);
+                        break;
+                    case UserManualBlockType.SeeAlso:
+                        // funzioni collegate: riga con filetto a sinistra
+                        var vedi = section.AddParagraph();
+                        vedi.Format.SpaceBefore = Unit.FromPoint(4);
+                        vedi.Format.SpaceAfter = Unit.FromPoint(8);
+                        vedi.Format.LeftIndent = Unit.FromCentimeter(0.3);
+                        vedi.Format.Borders.Left.Width = 2;
+                        vedi.Format.Borders.Left.Color = Primario;
+                        vedi.Format.Borders.DistanceFromLeft = Unit.FromPoint(5);
+                        vedi.Format.Font.Size = 9;
+                        Testo(vedi, b.Text);
+                        break;
+                    case UserManualBlockType.Table when b.Rows is { Count: > 0 }:
+                        Tabella(section, b.Rows);
+                        break;
                 }
             }
 
@@ -232,6 +257,40 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             using var ms = new MemoryStream();
             renderer.PdfDocument.Save(ms, false);
             return ms.ToArray();
+        }
+
+        // tabella (es. i campi di una pagina): intestazione colorata e ripetuta a ogni pagina, bordi sottili;
+        // con due colonne la prima e' piu' stretta (nome / descrizione)
+        private static void Tabella(Section section, List<string[]> righe)
+        {
+            int colonne = righe.Max(r => r.Length);
+            var tabella = section.AddTable();
+            tabella.Borders.Width = 0.5;
+            tabella.Borders.Color = new Color(0xC8, 0xD2, 0xDE);
+            tabella.Format.Font.Size = 9;
+            tabella.LeftPadding = Unit.FromPoint(4);
+            tabella.RightPadding = Unit.FromPoint(4);
+            for (int c = 0; c < colonne; c++)
+            {
+                double larghezza = colonne == 2 ? LarghezzaUtile * (c == 0 ? 0.32 : 0.68) : LarghezzaUtile / colonne;
+                tabella.AddColumn(Unit.FromCentimeter(larghezza));
+            }
+            for (int r = 0; r < righe.Count; r++)
+            {
+                var riga = tabella.AddRow();
+                riga.TopPadding = Unit.FromPoint(2);
+                riga.BottomPadding = Unit.FromPoint(2);
+                if (r == 0)
+                {
+                    riga.HeadingFormat = true;
+                    riga.Shading.Color = SfondoNota;
+                    riga.Format.Font.Bold = true;
+                    riga.Format.Font.Color = Primario;
+                }
+                for (int c = 0; c < colonne; c++)
+                    Testo(riga.Cells[c].AddParagraph(), c < righe[r].Length ? righe[r][c] : string.Empty);
+            }
+            section.AddParagraph().Format.SpaceAfter = Unit.FromPoint(4);
         }
 
         // diagramma di flusso di una procedura: un riquadro numerato per ogni passo, collegati da frecce
