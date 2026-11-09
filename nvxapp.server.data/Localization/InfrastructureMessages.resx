@@ -560,4 +560,116 @@
   <data name="UserManualIndexSection" xml:space="preserve">
     <value>Sezione del menu</value>
   </data>
+  <data name="LicenseUserLimitReached" xml:space="preserve">
+    <value>Raggiunto il limite di {0} utenti attivi della licenza: passa a un piano superiore o disabilita un utente.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseNotAllowed" xml:space="preserve">
+    <value>Operazione non consentita sulle licenze.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseSettingsInvalid" xml:space="preserve">
+    <value>Impostazioni delle licenze non valide: utenti maggiori di zero (vuoto = illimitati), giorni tra 0 e 365.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCatalogNotFound" xml:space="preserve">
+    <value>Listino non trovato.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCatalogInvalid" xml:space="preserve">
+    <value>Listino non valido: indicare descrizione, tipo di soggetto, funzione e i tre piani Free, Standard e Pro.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePlanInvalid" xml:space="preserve">
+    <value>Piano {0} non valido: codice obbligatorio (max 20 caratteri), prezzi non negativi, utenti maggiori di zero (vuoto = illimitati).</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseFreeNotZero" xml:space="preserve">
+    <value>Il piano Free deve avere prezzo 0.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCatalogInUse" xml:space="preserve">
+    <value>Il listino ha licenze sottoscritte: tipo di soggetto e funzione non si possono cambiare.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCatalogDuplicate" xml:space="preserve">
+    <value>Esiste già un listino attivo per lo stesso proprietario, tipo di soggetto e funzione.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseNoCatalog" xml:space="preserve">
+    <value>Nessun listino disponibile per questa funzione.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePlanNotAvailable" xml:space="preserve">
+    <value>Il piano scelto non è disponibile.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentPending" xml:space="preserve">
+    <value>C'è già un pagamento in attesa per questa funzione.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAlreadySubscribed" xml:space="preserve">
+    <value>Questa licenza è già attiva: usa Rinnova.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCoveredByStudio" xml:space="preserve">
+    <value>La funzione è già coperta dallo studio a un livello uguale o superiore.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentNotConfigured" xml:space="preserve">
+    <value>Il metodo di pagamento scelto non è disponibile.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentFailed" xml:space="preserve">
+    <value>Pagamento non riuscito. {0}</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseNotRenewable" xml:space="preserve">
+    <value>Questa licenza non si può rinnovare.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseSubscriptionNotFound" xml:space="preserve">
+    <value>Licenza non trovata.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseSubscribeInvalid" xml:space="preserve">
+    <value>Dati della sottoscrizione non validi.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseSubscribed" xml:space="preserve">
+    <value>Licenza attivata.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseSubscribedDebug" xml:space="preserve">
+    <value>Licenza attivata in modalità debug: nessun pagamento reale è stato eseguito.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseRenewed" xml:space="preserve">
+    <value>Licenza rinnovata fino al {0}.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseWarningSubject" xml:space="preserve">
+    <value>{0}: licenza in scadenza</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseWarningText" xml:space="preserve">
+    <value>La licenza {1} ({2}) di {0} scade il {3}. Rinnovala da Assistenza &gt; Gestione licenze.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_2" xml:space="preserve">
+    <value>Presenze</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_3" xml:space="preserve">
+    <value>CRM</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_4" xml:space="preserve">
+    <value>Documentale</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_100" xml:space="preserve">
+    <value>Cumulativo (tutte le funzioni)</value>
+    <comment>licenze</comment>
+  </data>
 </root>

@@ -1,0 +1,124 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
+
+    <ion-card>
+      <ion-card-content>
+
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.licenseCatalogEdit.info' | transloco }}</ion-label>
+        </ion-item>
+
+        @if (!canEdit) {
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.readOnly' | transloco }}</ion-note>
+        }
+
+        @if (isSuperUser) {
+          <ion-item>
+            <ion-select formControlName="idDealer" [label]="'pages.licenseCatalogEdit.owner' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'pages.licenseCatalogList.global' | transloco }}</ion-select-option>
+              @for (d of dealer; track d.idDealer) {
+                <ion-select-option [value]="d.idDealer">{{ d.descrizione }}{{ d.puoGestireListini ? '' : ' (' + ('pages.licenseCatalogEdit.dealerNotEnabled' | transloco) + ')' }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        }
+
+        <ion-item>
+          <ion-select formControlName="tipoSoggetto" [label]="'pages.licenseCatalogEdit.subject' | transloco" labelPlacement="floating" interface="popover">
+            @for (t of tipiSoggetto; track t) {
+              <ion-select-option [value]="t">{{ 'pages.license.subject' + t | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-select formControlName="ambito" [label]="'pages.licenseCatalogEdit.function' | transloco" labelPlacement="floating" interface="popover">
+            @for (a of ambiti; track a) {
+              <ion-select-option [value]="a">{{ 'pages.license.function' + a | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (abbonamenti > 0) {
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.inUseNote' | transloco: { count: abbonamenti } }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-input type="text" formControlName="descrizione" [label]="'pages.licenseCatalogEdit.description' | transloco" labelPlacement="floating" maxlength="100"></ion-input>
+        </ion-item>
+        @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+          <ion-note color="danger">{{ 'common.validation.descriptionRequired' | transloco }}</ion-note>
+        }
+
+        @if (isFinancialAdvisor) {
+          <ion-item>
+            <ion-toggle formControlName="disponibileSuCompany" justify="start">{{ 'pages.licenseCatalogEdit.availableOnCompanies' | transloco }}</ion-toggle>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.availableOnCompaniesNote' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-toggle formControlName="attivo" justify="start">{{ 'pages.licenseCatalogEdit.active' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.activeNote' | transloco }}</ion-note>
+
+      </ion-card-content>
+    </ion-card>
+
+    @for (l of livelli; track l.key) {
+      <ion-card [formGroupName]="l.key">
+        <ion-card-content>
+
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.license.level' + l.livello | transloco }}</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="text" formControlName="codice" [label]="'pages.licenseCatalogEdit.planCode' | transloco" labelPlacement="floating" maxlength="20"></ion-input>
+          </ion-item>
+          @if (_editForm.get(l.key + '.codice')?.invalid && _editForm.get(l.key + '.codice')?.touched) {
+            <ion-note color="danger">{{ 'pages.licenseCatalogEdit.planCodeRequired' | transloco }}</ion-note>
+          }
+
+          <ion-item>
+            <ion-input type="text" formControlName="descrizione" [label]="'pages.licenseCatalogEdit.planDescription' | transloco" labelPlacement="floating" maxlength="100"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="number" formControlName="prezzoMensile" [label]="'pages.licenseCatalogEdit.monthlyPrice' | transloco" labelPlacement="floating" min="0" step="0.01"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-input type="number" formControlName="prezzoAnnuale" [label]="'pages.licenseCatalogEdit.yearlyPrice' | transloco" labelPlacement="floating" min="0" step="0.01"></ion-input>
+          </ion-item>
+          @if (l.key === 'free') {
+            <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.freeNote' | transloco }}</ion-note>
+          }
+          @if ((_editForm.get(l.key + '.prezzoMensile')?.invalid || _editForm.get(l.key + '.prezzoAnnuale')?.invalid) && _editForm.get(l.key + '.prezzoMensile')?.touched) {
+            <ion-note color="danger">{{ 'pages.licenseCatalogEdit.priceInvalid' | transloco }}</ion-note>
+          }
+
+          <ion-item>
+            <ion-input type="number" formControlName="maxUtenti" [label]="'pages.licenseCatalogEdit.maxUsers' | transloco" labelPlacement="floating" min="1"></ion-input>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.maxUsersNote' | transloco }}</ion-note>
+
+          @if (l.key !== 'free') {
+            <ion-item>
+              <ion-toggle formControlName="attivo" justify="start">{{ 'pages.licenseCatalogEdit.planActive' | transloco }}</ion-toggle>
+            </ion-item>
+          }
+
+        </ion-card-content>
+      </ion-card>
+    }
+
+  </form>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

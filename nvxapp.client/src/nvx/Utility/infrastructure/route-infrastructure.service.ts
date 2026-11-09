@@ -91,6 +91,13 @@ export class RouteInfrastructureService {
       { path: 'storagesettings', loadChildren: () => import('../../pages/infrastructure/storage-settings-page/storage-settings-page.module').then(m => m.StorageSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'companystoragelist', loadChildren: () => import('../../pages/infrastructure/company-storage-list-page/company-storage-list-page.module').then(m => m.CompanyStorageListPageModule), canActivate: [authenticatedGuard] },
       { path: 'companystorageedit', loadChildren: () => import('../../pages/infrastructure/company-storage-edit-page/company-storage-edit-page.module').then(m => m.CompanyStorageEditPageModule), canActivate: [authenticatedGuard] },
+      // licenze (ANALISI_LICENZE.md): impostazioni (SuperUser); listini (SuperUser, centro) e licenze dell'azienda o dello studio
+      // (i ruoli li controlla il server)
+      { path: 'licensesettings', loadChildren: () => import('../../pages/infrastructure/license-settings-page/license-settings-page.module').then(m => m.LicenseSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
+      { path: 'licensecataloglist', loadChildren: () => import('../../pages/infrastructure/license-catalog-list-page/license-catalog-list-page.module').then(m => m.LicenseCatalogListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'licensecatalogedit', loadChildren: () => import('../../pages/infrastructure/license-catalog-edit-page/license-catalog-edit-page.module').then(m => m.LicenseCatalogEditPageModule), canActivate: [authenticatedGuard] },
+      { path: 'licensemanagement', loadChildren: () => import('../../pages/infrastructure/license-management-page/license-management-page.module').then(m => m.LicenseManagementPageModule), canActivate: [authenticatedGuard] },
+      { path: 'licensesubscribe', loadChildren: () => import('../../pages/infrastructure/license-subscribe-page/license-subscribe-page.module').then(m => m.LicenseSubscribePageModule), canActivate: [authenticatedGuard] },
       // documentazione e impostazioni per le risposte AI ai ticket: livelli e permessi li decide il server
       { path: 'aidocumentlist', loadChildren: () => import('../../pages/infrastructure/ai-document-list-page/ai-document-list-page.module').then(m => m.AiDocumentListPageModule), canActivate: [authenticatedGuard] },
       { path: 'aidocumentedit', loadChildren: () => import('../../pages/infrastructure/ai-document-edit-page/ai-document-edit-page.module').then(m => m.AiDocumentEditPageModule), canActivate: [authenticatedGuard] },

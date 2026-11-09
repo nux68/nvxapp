@@ -3,7 +3,7 @@
 Branch: **Infrastructure_Dev** (funzione base: entità, risoluzione listino, abbonamenti, gateway di pagamento e l'aggancio all'attivazione applicativi stanno nell'infrastruttura, poi si mergiano verso gli altri rami).
 Le tabelle, il contesto `public` e il legame con `CompanyApplication`/`FinancialAdvisorApplication` sono lavoro di Infrastructure_Dev e vanno fatti *prima* che i singoli rami aggancino l'inibizione delle proprie funzioni (§8).
 
-Stato: **analisi iniziale, niente implementato. Decise (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3) e i tre livelli fissi di licenza Free/Standard/Pro con limite utenti parametrico 10/50/illimitati e i metodi vero/falso sul livello e sul limite (§5, §5.1, §8.1); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
+Stato: **Fasi 0, 1 e 2 implementate il 09/11/2026 (modello dati, listini, sottoscrizione e rinnovo con il gateway di debug), insieme a `ILicenseGuard` e al limite utenti: vedi §15. Mancano i pagamenti reali (Fase 3), l'inibizione delle singole funzioni (Fase 4) e la registrazione per tipo di soggetto (Fase 5). Decise (09/11/2026) la propagazione delle licenze dello studio alle aziende (§4.3) e i tre livelli fissi di licenza Free/Standard/Pro con limite utenti parametrico 10/50/illimitati e i metodi vero/falso sul livello e sul limite (§5, §5.1, §8.1); gli altri punti di §13 sono aperti.** Documento da rivedere con l'utente ai punti aperti (§13) prima di cominciare. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni.
 
 > Data: 06/11/2026. Le funzioni da inibire a licenza scaduta (punto 9 della richiesta) **non sono ancora pianificate**: qui si predispone solo il "gancio", non il comportamento di ogni funzione.
 
@@ -210,7 +210,7 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
 | Pro | illimitati |
 
 **I valori sono parametrici:**
-- **Valori predefiniti** in `AppSetting` (tabella chiave/valore già esistente): `Licenze.MaxUtenti.Free` = `10`, `Licenze.MaxUtenti.Standard` = `50`, `Licenze.MaxUtenti.Pro` = vuoto (illimitati). Si usano quando si crea un nuovo listino, compreso il popolamento iniziale dei listini globali. Cambiarli non tocca i listini già esistenti.
+- **Valori predefiniti** in `AppSetting` (tabella chiave/valore già esistente): `Licenze_MaxUtenti_Free` = `10`, `Licenze_MaxUtenti_Standard` = `50`, `Licenze_MaxUtenti_Pro` = vuoto (illimitati), modificabili dal SuperUser nella pagina Impostazioni licenze. Si usano quando si crea un nuovo listino. Cambiarli non tocca i listini già esistenti.
 - **Valore effettivo** su ogni piano (`Lic_Piano.MaxUtenti`). SuperUser e Dealer abilitati lo modificano per i propri listini come i prezzi; `null` = illimitati.
 - **Valore garantito al cliente**: `Lic_Abbonamento.MaxUtentiBloccato`, fotografato alla sottoscrizione e a ogni rinnovo. Se chi gestisce il listino abbassa il limite, il cliente mantiene il vecchio limite fino al rinnovo. Se lo alza, il nuovo limite vale subito: il servizio aggiorna `MaxUtentiBloccato` degli abbonamenti attivi quando il nuovo valore è più alto.
 
@@ -322,7 +322,7 @@ Task<bool> HasAtLeastAsync(int idCompany, ApplicationType ambito, LivelloLicenza
 
 - Il **livello effettivo** è quello risolto dalla regola del §4.3 (proprio, dello studio o Cumulativo, vince il più alto). Una licenza **scaduta** oltre la grace vale come nessuna licenza: tutti i metodi rispondono `false` e `LevelAsync` risponde `null`. Durante la grace i metodi rispondono come se fosse valida.
 - `HasAtLeastAsync` è il metodo da preferire nelle funzioni ("questa cosa richiede almeno Standard"): resta corretto anche se un domani un livello superiore sostituisce o si aggiunge a quelli attuali. `IsFree`/`IsStandard`/`IsPro` servono per i casi in cui conta il livello esatto (es. messaggi o pulsanti "passa a Pro").
-- Le stesse firme esistono per lo **studio** (sovraccarichi con `idFinancialAdvisor`) per le funzioni lato studio (`FinancialAdvisorApplication`).
+- Per lo **studio** (funzioni lato studio, `FinancialAdvisorApplication`) ci sono gli stessi metodi con il prefisso `Studio` e `idFinancialAdvisor` (es. `StudioLevelAsync`, `StudioHasAtLeastAsync`): due metodi con un solo `int` non si possono distinguere per sovraccarico.
 - **Frontend**: il livello effettivo per ambito viene caricato in `UserLoad` insieme agli applicativi attivi; `AuthService` espone gli equivalenti sincroni (`licenseLevel(app)`, `isLicensed(app)`, `isFree(app)`, `isStandard(app)`, `isPro(app)`, `hasLicenseAtLeast(app, livello)`) per menu e pulsanti. Il server ricontrolla sempre con `ILicenseGuard`: il frontend serve solo a mostrare o nascondere.
 - Finché il sistema licenze non è attivo (prima della Fase 4 o con abbonamenti non ancora migrati) i metodi devono avere un **comportamento neutro configurabile** (proposta: rispondere come `Pro`), così aggiungere un controllo a una funzione non blocca nessuno prima del tempo.
 
@@ -337,7 +337,7 @@ Task<bool> IsWithinUserLimitAsync(int idCompany, ApplicationType ambito);   // u
 Task<bool> CanAddUserAsync(int idCompany);                         // un utente in più resta entro il limite più alto dell'azienda
 ```
 
-- Sovraccarichi con `idFinancialAdvisor` per gli utenti dello studio.
+- Per gli utenti dello studio: `StudioMaxUsersAsync`, `StudioActiveUsersAsync`, `StudioUserLimitAsync`, `StudioCanAddUserAsync`. `CompanyUserLimitAsync` restituisce il limite più alto tra le funzioni coperte dell'azienda.
 - `CanAddUserAsync` è il metodo usato da `UserCompanyPut`; `IsWithinUserLimitAsync` è a disposizione delle funzioni per decidere, strada facendo, cosa restringere quando una funzione è oltre il limite.
 - Frontend: `UserLoad` porta anche utenti attivi e limite per funzione; `AuthService` espone `maxUsers(app)`, `isWithinUserLimit(app)` e `canAddUser()`.
 - Con il comportamento neutro (sistema licenze non ancora attivo) i metodi rispondono come illimitati.
@@ -370,8 +370,8 @@ Da decidere (§13): se la registrazione di uno Studio dallo showcase pubblico si
 
 ### 10.1 Voce di menu
 
-Aggiungere sotto **Assistenza** (`Pages4Support` in `main-menu-infrastructure.service.ts`, dove stanno già ticket, documenti AI, manuale) una voce **"Gestione licenze"**:
-- una sola voce, contenuto diverso per ruolo (il server ricontrolla i permessi):
+Sotto **Assistenza** (`Pages4Support` in `main-menu-infrastructure.service.ts`, dove stanno già ticket, documenti AI, manuale).
+**Implementazione (09/11/2026): due voci invece di una**, perché le due pagine sono molto diverse: **"Gestione licenze"** (`/licensemanagement`, azienda e studio) e **"Listini licenze"** (`/licensecataloglist`, SuperUser e centro; dalla pagina il SuperUser apre le Impostazioni licenze). Il contenuto per ruolo resta quello previsto (il server ricontrolla i permessi):
   - **SuperUser**: gestione listini globali + abilitazione Dealer;
   - **DealerPowerAdmin** (se `PuoGestireListini`): gestione dei propri listini;
   - **CompanyPowerAdmin / FinancialAdvisorPowerAdmin**: stato licenze del proprio soggetto, sottoscrivi/rinnova, storico pagamenti.
@@ -434,7 +434,7 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 ## 14. Fasi di implementazione (bozza, dopo le decisioni §13)
 
 **Fase 0 – Modello (Infrastructure_Dev)**
-- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, `LivelloLicenza`, stati; `Lic_Piano.MaxUtenti`, `Lic_Abbonamento.MaxUtentiBloccato`, chiavi `AppSetting` `Licenze.MaxUtenti.*` con i valori predefiniti (§5.1); flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
+- Entità `Lic_Listino`, `Lic_Piano`, `Lic_Abbonamento`, `Lic_Pagamento`; enum `TipoSoggetto`, `Periodicita`, `LivelloLicenza`, stati; `Lic_Piano.MaxUtenti`, `Lic_Abbonamento.MaxUtentiBloccato`, chiavi `AppSetting` `Licenze_MaxUtenti_*` con i valori predefiniti (§5.1); flag `Dealer.PuoGestireListini`; repository `Repositories/Public`; migration `PublicDbContext`.
 
 **Fase 1 – Listini (SuperUser/Dealer)**
 - Servizi + controller di gestione listini e piani; `ILicenseCatalogResolver` (§4.1); pagina Angular listini (sul modello `/storageplanlist`); autorizzazioni.
@@ -450,6 +450,55 @@ Regola ferma: ruoli e appartenenza dal **token**, mai dal client (come `Applicat
 
 **Fase 5 – Registrazione per tipo soggetto (punto 1)**
 - Selettore in `register-page`; `TipoSoggetto` in `CompanyRegistrationRequest`; instradamento Studio/Azienda in `RegistrationService`.
+
+---
+
+## 15. Stato dell'implementazione (09/11/2026)
+
+Implementato su **Infrastructure_Dev**: Fasi 0, 1 e 2, `ILicenseGuard` (§8.1, §8.1.1, §8.1.2) e il controllo del limite utenti. Verificato con una build del server e del client e con una prova completa delle API su un database PostgreSQL di prova (35 controlli: listini, sottoscrizione Free e a pagamento in debug, cambio piano, rinnovo, copertura dello studio, limite utenti, permessi), più rinnovo automatico e scadenza dalla manutenzione notturna.
+
+### 15.1 Cosa c'è
+
+| Parte | Dove |
+|---|---|
+| Entità ed enum | `nvxapp.server.data/Entities/Public/Lic_*.cs`, `LicenseEnums.cs`; `Dealer.PuoGestireListini` |
+| Tabelle, indici, impostazioni | `PublicDbContext_Infrastructure.cs` (`Gen_License`), migration `Licenses` |
+| Repository | `Repositories/Public/Lic_*Repository.cs` |
+| Punto di verità | `License/LicenseGuard.cs` (`ILicenseGuard`) |
+| Risoluzione del listino (§4.1) | `License/LicenseCatalogResolver.cs` |
+| Sottoscrizione, rinnovo, scadenza, avvisi | `License/LicenseSubscriptionManager.cs` |
+| Pagamenti | `License/Payment/PaymentGateway.cs` (`IPaymentGateway`, `DebugPaymentGateway`, `IPaymentGatewayResolver`) |
+| API | `License/LicenseService.cs`, `Controllers/Infrastructure/LicenseController.cs` |
+| Manutenzione notturna | `nvxapp.server/Utility/LicenseMaintenanceService.cs` (dopo le 3: rinnovi automatici, scadenze, avvisi) |
+| Limite utenti | `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut` (nuovo utente e riabilitazione) |
+| Stato per il client | `UserLoad` → `userData.license`; `AuthService` (`isLicensed`, `isFree`, `isStandard`, `isPro`, `hasLicenseAtLeast`, `maxUsers`, `isWithinUserLimit`, `canAddUser`) |
+| Pagine | `license-catalog-list`, `license-catalog-edit`, `license-settings`, `license-management`, `license-subscribe`; contatore e blocco nell'elenco utenti dell'azienda |
+| Testi | `InfrastructureMessages*.resx` (server), `assets/i18n/infrastructure/*.json` (client), manuale `Manuals/infrastructure.*.md` |
+
+### 15.2 Interruttore generale
+
+`AppSetting` **`Licenze_Attive`**, spento di default (pagina Impostazioni licenze). Spento: `ILicenseGuard` risponde in modo neutro (Pro, utenti illimitati) e nessuno viene bloccato; listini e sottoscrizioni funzionano lo stesso, così si possono preparare prima di accenderlo. È il "comportamento neutro configurabile" del §8.1.1.
+
+### 15.3 Scelte fatte sui punti ancora aperti (provvisorie, da confermare)
+
+Dove il §13 è aperto ho scelto la soluzione più semplice e, quando possibile, parametrica:
+- **Grace e preavviso** (§13.6): parametri in `AppSetting`, `Licenze_GraceGiorni` = 7 e `Licenze_AvvisoGiorni` = 10.
+- **Attivazione automatica** (§13.5): **non** fatta. La licenza non tocca `CompanyApplication`; l'attivazione resta manuale di SuperUser e centro.
+- **Valuta** (§13.3): solo EUR. **Cumulativo** (§13.2): funzione a sé con prezzo proprio. **Prezzi** (§13.1): due colonne sul piano.
+- **Cambio piano a metà periodo** (§13.10): il nuovo piano parte da oggi e il precedente viene annullato, senza pro-rata né rimborso.
+- **Rinnovo**: riparte dal giorno dopo la scadenza se la licenza vale ancora (anche nella grace), altrimenti da oggi. Al rinnovo si rifotografano prezzo, limite utenti ed etichette dal piano, se esiste ancora ed è attivo.
+- **Rinnovo automatico**: la manutenzione notturna rinnova solo i piani gratuiti e, in modalità debug, quelli a pagamento. Con un provider reale i rinnovi li addebiterà il provider (subscription e webhook).
+- **Avvisi di scadenza**: email ai PowerAdmin del soggetto per le licenze senza rinnovo automatico, una volta per periodo, solo se l'invio email è configurato. Le aziende coperte da uno studio non ricevono avvisi propri.
+- **Listini iniziali**: nessuno precaricato (i prezzi *x* e *y* non sono ancora decisi). Il SuperUser li crea dalla pagina Listini licenze; i nuovi listini propongono i tre piani con gli utenti predefiniti.
+- **Debug dei pagamenti**: attivo solo con `Payments:Debug = true` (variabile `NVXAPP_Payments__Debug`) **e** fuori da Production. In Production il flag è ignorato.
+- **Cancellazioni**: gli abbonamenti spariscono con l'azienda o lo studio, i listini con il centro (piano e listino dell'abbonamento diventano null: l'abbonamento ne conserva la fotografia). I pagamenti restano.
+
+### 15.4 Cosa manca
+
+- **Fase 3, pagamenti reali**: le implementazioni di `IPaymentGateway` per carta (es. Stripe Checkout) e PayPal, l'endpoint dei webhook (`ConfirmAsync`, idempotente sul `RiferimentoGateway`, con indice univoco già presente) e la configurazione dei secret. Senza debug e senza un provider configurato, i piani a pagamento rispondono "metodo di pagamento non disponibile".
+- **Fase 4, inibizione delle funzioni**: i metodi ci sono; nessuna funzione li usa ancora tranne il limite utenti. Manca anche il blocco tramite `CompanyApplication` alla scadenza.
+- **Fase 5**: scelta Azienda/Studio nella registrazione.
+- **Schermate del manuale** per le due nuove voci di menu: si rigenerano con `nvxapp.server/Tools/ManualScreenshots`.
 
 ---
 

@@ -175,6 +175,36 @@ namespace nvxapp.server.data.Migrations.Public
                         {
                             Key = "Storage_WarningPercent",
                             Value = "80"
+                        },
+                        new
+                        {
+                            Key = "Licenze_Attive",
+                            Value = "false"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxUtenti_Free",
+                            Value = "10"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxUtenti_Standard",
+                            Value = "50"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxUtenti_Pro",
+                            Value = ""
+                        },
+                        new
+                        {
+                            Key = "Licenze_GraceGiorni",
+                            Value = "7"
+                        },
+                        new
+                        {
+                            Key = "Licenze_AvvisoGiorni",
+                            Value = "10"
                         });
                 });
 
@@ -593,6 +623,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("PuoGestireListini")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Descrizione")
@@ -853,6 +886,317 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsUnique();
 
                     b.ToTable("FinancialAdvisorApplication", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Abbonamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Ambito")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataInizio")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataScadenza")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataUltimoAvviso")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("DescrizionePiano")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("DisponibileSuCompany")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDealerListino")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdListino")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdPiano")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Livello")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxUtentiBloccato")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Metodo")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Periodicita")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PrezzoBloccato")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<string>("RiferimentoGateway")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("RinnovoAutomatico")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Valuta")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DataScadenza");
+
+                    b.HasIndex("IdListino");
+
+                    b.HasIndex("IdPiano");
+
+                    b.HasIndex("RiferimentoGateway")
+                        .IsUnique()
+                        .HasFilter("\"RiferimentoGateway\" IS NOT NULL");
+
+                    b.HasIndex("IdCompany", "Ambito");
+
+                    b.HasIndex("IdFinancialAdvisor", "Ambito");
+
+                    b.ToTable("Lic_Abbonamento", "public", t =>
+                        {
+                            t.HasCheckConstraint("CK_Lic_Abbonamento_Soggetto", "(\"IdCompany\" IS NULL) <> (\"IdFinancialAdvisor\" IS NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Listino", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Ambito")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("DisponibileSuCompany")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("IdDealer")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TipoSoggetto")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Valuta")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TipoSoggetto", "Ambito")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Lic_Listino_Globale_Attivo")
+                        .HasFilter("\"Attivo\" AND \"IdDealer\" IS NULL");
+
+                    b.HasIndex("IdDealer", "TipoSoggetto", "Ambito")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Lic_Listino_Dealer_Attivo")
+                        .HasFilter("\"Attivo\" AND \"IdDealer\" IS NOT NULL");
+
+                    b.ToTable("Lic_Listino", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Pagamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Ambito")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataFineCoperta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataInizioCoperta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Debug")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("IdAbbonamento")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDealerListino")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Importo")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<int>("Livello")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Metodo")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Periodicita")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RiferimentoGateway")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Soggetto")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Valuta")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAbbonamento");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("IdFinancialAdvisor");
+
+                    b.HasIndex("RiferimentoGateway")
+                        .IsUnique()
+                        .HasFilter("\"RiferimentoGateway\" IS NOT NULL");
+
+                    b.ToTable("Lic_Pagamento", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Piano", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Codice")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("IdListino")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Livello")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxUtenti")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("PrezzoAnnuale")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("PrezzoMensile")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdListino", "Livello")
+                        .IsUnique();
+
+                    b.ToTable("Lic_Piano", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.StoragePlan", b =>
@@ -1591,6 +1935,68 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("FinancialAdvisorNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Abbonamento", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", "FinancialAdvisorNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdFinancialAdvisor")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Lic_Listino", "ListinoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdListino")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Lic_Piano", "PianoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPiano")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("CompanyNavigation");
+
+                    b.Navigation("FinancialAdvisorNavigation");
+
+                    b.Navigation("ListinoNavigation");
+
+                    b.Navigation("PianoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Listino", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDealer")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("DealerNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Pagamento", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Lic_Abbonamento", "AbbonamentoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAbbonamento")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("AbbonamentoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Piano", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Lic_Listino", "ListinoNavigation")
+                        .WithMany("Lic_Piano")
+                        .HasForeignKey("IdListino")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ListinoNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.TicketType", "TicketTypeNavigation")
@@ -1769,6 +2175,11 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("Company");
 
                     b.Navigation("UserFinancialAdvisor");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Listino", b =>
+                {
+                    b.Navigation("Lic_Piano");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>

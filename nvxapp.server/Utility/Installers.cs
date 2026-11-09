@@ -146,6 +146,8 @@ namespace nvxapp.server.Utility
             builder.Services.AddHostedService<JobFileCleanupService>();
             // spazio dei file delle aziende: riallineamento notturno e fotografia mensile
             builder.Services.AddHostedService<StorageMaintenanceService>();
+            // licenze: rinnovi automatici, scadenze e avvisi notturni (ANALISI_LICENZE.md §6)
+            builder.Services.AddHostedService<LicenseMaintenanceService>();
 
 
             return builder.Services;
