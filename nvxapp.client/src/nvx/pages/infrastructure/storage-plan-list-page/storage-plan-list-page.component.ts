@@ -10,7 +10,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { StoragePlanDeleteInModel, StoragePlanModel, StorageSettingsGetInModel, StorageSettingsModel, bytesToMB } from '../../../ClientServer-Service/Infrastructure/Storage/Models/storage-model';
 
 /*
- Pacchetti di spazio per i documenti delle aziende (SuperUser, ANALISI_DOCUMENTALE.md §5.3).
+ Pacchetti di spazio per i documenti delle aziende (SuperUser, ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3).
  Lo spazio di un'azienda e' sempre quello del suo pacchetto; uno e' il predefinito. Un pacchetto usato da aziende
  non si elimina: il server lo disattiva. Dal menu della pagina: valori predefiniti (dimensione massima, soglia).
 */
