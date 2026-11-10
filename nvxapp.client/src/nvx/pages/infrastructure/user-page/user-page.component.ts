@@ -16,7 +16,7 @@ import { DashboardConfigPageBase } from '../../../shared/components/infrastructu
 export class UserPageComponent extends DashboardConfigPageBase {
 
   /** chiave di traduzione del titolo (tradotto nel template) */
-  public readonly title = 'menu.userData';
+  public readonly title = 'menu.preferences';
 
   constructor(navCtrl: NavController,
               userInterfaceService: UserInterfaceService) {
