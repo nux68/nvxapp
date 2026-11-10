@@ -5,24 +5,13 @@
  (es. ShowcaseAttendanceTrackingService per la gestione presenze), vedi ShowcaseService.
 */
 
+import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
+
 /** Voce generica: icona, titolo e testo (punti di forza, passi, funzionalita', valori). */
 export interface ShowcaseVoce {
   icon: string;
   title: string;
   text: string;
-}
-
-export interface ShowcasePiano {
-  nome: string;
-  prezzo: string;
-  periodo: string;
-  descrizione: string;
-  caratteristiche: string[];
-  cta: string;
-  /** pagina del pulsante (predefinita: registrazione) */
-  url?: string;
-  /** piano consigliato, messo in evidenza */
-  evidenza?: boolean;
 }
 
 export interface ShowcaseDomanda {
@@ -53,10 +42,14 @@ export interface ShowcaseContenuti {
     sottotitolo: string;
     sezioni: ShowcaseVoce[];
   };
+  /** pagina prezzi: piani e prezzi vengono dai listini globali del SuperUser (License/LicensePublicPriceList) */
   pricing: {
     titolo: string;
     sottotitolo: string;
-    piani: ShowcasePiano[];
+    /** funzioni di cui mostrare il listino, nell'ordine (con piu' funzioni la pagina le fa scegliere) */
+    ambiti: AmbitoLicenza[];
+    /** compreso in tutti i piani (sotto le schede) */
+    inclusi: string[];
     nota: string;
     domande: ShowcaseDomanda[];
   };
