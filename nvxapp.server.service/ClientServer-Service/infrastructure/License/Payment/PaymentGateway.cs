@@ -8,7 +8,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Paym
      Pagamenti delle licenze (ANALISI_LICENZE.md §7).
      Il servizio licenze parla solo con IPaymentGateway: non conosce i dettagli del provider.
         - DebugPaymentGateway: giro completo senza transazione reale (§7.2), attivo con Payments:Debug = true
-          (variabile d'ambiente NVXAPP_Payments__Debug) e MAI in ambiente Production (li' il flag e' ignorato)
+          (appsettings.json, o variabile d'ambiente NVXAPP_Payments__Debug). Per ora e' acceso ovunque, anche in
+          Production (deploy Docker), finche' non ci sono pagamenti reali: in Production lo si segnala nel log
         - carta di credito e PayPal: implementazioni di IPaymentGateway da aggiungere nella fase dei pagamenti reali
           (provider da scegliere, §13); i secret stanno in configurazione, mai nel codice.
      Ogni implementazione registrata (scanner dei servizi) e' scelta da IPaymentGatewayResolver in base al metodo.
@@ -74,13 +75,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Paym
 
     public class PaymentGatewayResolver : IPaymentGatewayResolver
     {
+        private static int _avvisoProduction;
         private readonly IEnumerable<IPaymentGateway> _gateways;
 
         public PaymentGatewayResolver(IEnumerable<IPaymentGateway> gateways, IConfiguration configuration, IHostEnvironment environment)
         {
             _gateways = gateways;
-            DebugMode = !environment.IsProduction()
-                        && string.Equals(configuration["Payments:Debug"], "true", StringComparison.OrdinalIgnoreCase);
+            DebugMode = string.Equals(configuration["Payments:Debug"], "true", StringComparison.OrdinalIgnoreCase);
+
+            // in Production il debug e' consentito (per ora), ma si segnala una volta nel log: nessun pagamento e' reale
+            if (DebugMode && environment.IsProduction() && Interlocked.Exchange(ref _avvisoProduction, 1) == 0)
+                Serilog.Log.Warning("Pagamenti delle licenze in modalita' debug anche in Production (Payments:Debug = true): nessuna transazione reale viene eseguita");
         }
 
         public bool DebugMode { get; }
