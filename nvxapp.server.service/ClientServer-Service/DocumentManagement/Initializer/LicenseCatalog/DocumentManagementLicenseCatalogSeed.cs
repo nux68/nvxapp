@@ -4,8 +4,8 @@ using static nvxapp.server.service.ClientServer_Service.Infrastructure.License.S
 
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Initializer.LicenseCatalog
 {
-    // Listino iniziale del Documentale (ANALISI_LICENZE.md §15.5 [branch Infrastructure]): per gli studi, valido anche per le loro aziende.
-    // Creato una sola volta all'avvio da LicenseCatalogSeeder (Infrastructure).
+    // Listini iniziali del Documentale (ANALISI_LICENZE.md §15.5 [branch Infrastructure]): uno per gli studi (valido anche per le
+    // loro aziende) e uno per le aziende che si abbonano da sole. Creati una sola volta all'avvio da LicenseCatalogSeeder (Infrastructure).
     public class DocumentManagementLicenseCatalogSeed : ILicenseCatalogSeed
     {
         public string Name => "Documentale";
@@ -16,6 +16,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Initiali
                 Piano(LivelloLicenza.Free, "Free", null, 0, 0, 10),
                 Piano(LivelloLicenza.Standard, "Standard", null, 30.00m, 300.00m, 50),
                 Piano(LivelloLicenza.Pro, "Pro", null, 60.00m, 600.14m, null));
+
+            // per le aziende (sottoscrizione in autonomia): stessi piani dello studio con 5 euro in piu' su Standard e Pro
+            yield return Listino(TipoSoggettoLicenza.Company, AmbitoLicenza.DocumentManagement, "Piano base documentale aziende", disponibileSuCompany: false,
+                Piano(LivelloLicenza.Free, "Free", null, 0, 0, 10),
+                Piano(LivelloLicenza.Standard, "Standard", null, 35.00m, 305.00m, 50),
+                Piano(LivelloLicenza.Pro, "Pro", null, 65.00m, 605.14m, null));
         }
     }
 }
