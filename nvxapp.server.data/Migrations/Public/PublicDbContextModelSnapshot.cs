@@ -1733,6 +1733,47 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("UserCompany", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDashboard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Widgets")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("IdAspNetUsers", "IdCompany")
+                        .IsUnique();
+
+                    b.ToTable("UserDashboard", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDealer", b =>
                 {
                     b.Property<int>("Id")
@@ -2144,6 +2185,21 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("AspNetUsersNavigation");
 
                     b.Navigation("CompanyNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDashboard", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDealer", b =>

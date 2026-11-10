@@ -1131,5 +1131,35 @@
     "notification": {
       "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }
+  },
+  "widgets": {
+    "application": {
+      "0": "Core features",
+      "2": "Attendance",
+      "3": "CRM",
+      "4": "Documents"
+    },
+    "dashboard": {
+      "customize": "Customize",
+      "empty": "No widgets on the dashboard."
+    },
+    "config": {
+      "title": "Your dashboard",
+      "note": "Choose the widgets shown on your dashboard and their order. You only see the widgets of the applications active for your company.",
+      "notConfigurable": "The dashboard can be configured while working in a company.",
+      "selected": "On the dashboard",
+      "available": "Available widgets",
+      "noneSelected": "No widgets: the dashboard will only show the greeting.",
+      "allAdded": "You have already added all the available widgets.",
+      "restoreDefaults": "Restore defaults",
+      "add": "Add",
+      "remove": "Remove",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "askAssistant": {
+      "title": "Ask the assistant",
+      "description": "Field to ask the AI assistant a question."
+    }
   }
 }
