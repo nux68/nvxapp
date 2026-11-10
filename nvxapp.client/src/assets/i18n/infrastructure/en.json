@@ -856,8 +856,10 @@
       "freeNote": "The Free plan is always free of charge.",
       "priceInvalid": "Prices cannot be negative.",
       "maxUsers": "Maximum users",
-      "maxUsersNote": "Empty = unlimited users. Raising the limit applies at once to active licences too; lowering it applies from the renewal.",
-      "planActive": "Plan available"
+      "maxUsersNote": "Empty or 0 = unlimited users. Raising the limit applies at once to active licences too; lowering it applies from the renewal.",
+      "planActive": "Plan available",
+      "maxUsersInvalid": "Maximum users cannot be negative (empty or 0 = unlimited).",
+      "cannotSave": "To save, complete or correct: {{campi}}."
     },
     "licenseSettings": {
       "title": "Licence settings",
@@ -865,13 +867,13 @@
       "enabled": "Licence system active",
       "enabledNote": "Off: no function is limited and everyone is at the Pro level; price lists and subscriptions can still be used.",
       "defaultUsers": "Default users of the plans",
-      "defaultUsersNote": "Proposed when a new price list is created; empty = unlimited. Existing price lists do not change.",
+      "defaultUsersNote": "Proposed when a new price list is created; empty or 0 = unlimited. Existing price lists do not change.",
       "expiry": "Expiry",
       "graceDays": "Grace days after expiry",
       "graceDaysNote": "During these days the licence is still valid and a renewal reminder is shown.",
       "warningDays": "Notice days",
       "warningDaysNote": "How many days before expiry the e-mail reminder is sent to the administrators.",
-      "invalid": "Users greater than zero (empty = unlimited), days between 0 and 365.",
+      "invalid": "To save: users not negative (empty or 0 = unlimited), days between 0 and 365.",
       "dealers": "Centres that manage their own price lists",
       "dealersNote": "An enabled centre can define its own price lists, which replace the global ones for its companies and firms."
     },
