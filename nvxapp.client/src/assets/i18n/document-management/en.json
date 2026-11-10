@@ -291,38 +291,12 @@
       },
       "pricing": {
         "titolo": "Pricing",
-        "sottotitolo": "You pay for the employees and the storage you use: all features always included.",
-        "piani": {
-          "prova": {
-            "nome": "Trial",
-            "periodo": "for 30 days",
-            "descrizione": "To try it with your employees.",
-            "cta": "Start the trial"
-          },
-          "azienda": {
-            "nome": "Company",
-            "periodo": "per employee per month",
-            "descrizione": "For small and medium businesses.",
-            "cta": "Choose Company"
-          },
-          "studio": {
-            "nome": "Firm",
-            "prezzo": "Tailored",
-            "descrizione": "For payroll consultants and firms.",
-            "cta": "Contact us"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "All features",
-          "spazio1": "1 GB of storage",
-          "spazio5": "5 GB of storage",
-          "spazio20": "Packages up to 20 GB",
-          "tipologiePronte": "Ready-made types and folders",
+        "sottotitolo": "Choose the plan by the storage you need: start for free, with every feature always included.",
+        "inclusi": {
           "presaVisione": "Employee read confirmation",
-          "assistenzaEmailTelefono": "Email and phone support",
-          "piuAziende": "Several client companies",
           "invioMultiplo": "Send to several employees",
-          "assistenzaPrioritaria": "Priority support"
+          "tipologiePronte": "Ready-made types and folders",
+          "tutteLeFunzioni": "All features"
         },
         "nota": "Prices excluding VAT. No commitment: cancel whenever you want.",
         "domande": {
@@ -336,7 +310,7 @@
           },
           "spazio": {
             "domanda": "What happens if the storage runs out?",
-            "risposta": "Administrators get a warning before it runs out; at the limit new uploads stop until you move to a larger package."
+            "risposta": "Administrators are warned before it runs out; at the limit new uploads stop until you move to a higher plan."
           },
           "senzaAccount": {
             "domanda": "What about employees without an account?",

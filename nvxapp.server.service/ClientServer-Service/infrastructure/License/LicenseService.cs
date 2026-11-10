@@ -332,6 +332,45 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             }, isSubProcess);
         }
 
+        // listini globali del SuperUser (IdDealer null) attivi, con i piani attivi: pagina prezzi dello showcase, senza login.
+        // I listini dei centri non si espongono: valgono solo per i loro soggetti, dopo il login.
+        public virtual async Task<GenericResult<LicensePublicPriceListOutModel>> LicensePublicPriceList(GenericRequest<LicensePublicPriceListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ambiti = (model.Data?.Ambito ?? new List<int>())
+                             .Where(a => Enum.IsDefined(typeof(AmbitoLicenza), a))
+                             .Select(a => (AmbitoLicenza)a).Distinct().ToList();
+                if (ambiti.Count == 0)
+                    ambiti = AmbitiOfferta.ToList();
+
+                var listini = await _listinoRepository.FindAll(x => x.Attivo && x.IdDealer == null && ambiti.Contains(x.Ambito))
+                                                      .Include(x => x.Lic_Piano)
+                                                      .OrderBy(x => x.Ambito).ThenBy(x => x.TipoSoggetto)
+                                                      .ToListAsync();
+
+                var retVal = new LicensePublicPriceListOutModel();
+                foreach (var l in listini)
+                {
+                    var piani = (l.Lic_Piano ?? new List<Lic_Piano>()).Where(p => p.Attivo).OrderBy(p => p.Ordine).ThenBy(p => p.Livello)
+                                .Select(PlanModel).ToList();
+                    if (piani.Count == 0)
+                        continue;
+                    piani.ForEach(p => p.Id = 0);
+                    retVal.Listino.Add(new LicensePublicCatalogModel
+                    {
+                        TipoSoggetto = (int)l.TipoSoggetto,
+                        Ambito = (int)l.Ambito,
+                        Descrizione = l.Descrizione,
+                        Valuta = l.Valuta,
+                        DisponibileSuCompany = l.DisponibileSuCompany,
+                        Piano = piani
+                    });
+                }
+                return retVal;
+            }, isSubProcess);
+        }
+
         // ---------------------------------------------------------------------------
         // Licenze del soggetto
 
@@ -777,6 +816,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         Task<GenericResult<LicenseCatalogGetOutModel>> LicenseCatalogGet(GenericRequest<LicenseCatalogGetInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseCatalogPutOutModel>> LicenseCatalogPut(GenericRequest<LicenseCatalogPutInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseCatalogDeleteOutModel>> LicenseCatalogDelete(GenericRequest<LicenseCatalogDeleteInModel> model, Boolean isSubProcess);
+        Task<GenericResult<LicensePublicPriceListOutModel>> LicensePublicPriceList(GenericRequest<LicensePublicPriceListInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseStatusGetOutModel>> LicenseStatusGet(GenericRequest<LicenseStatusGetInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseSubscribeOutModel>> LicenseSubscribe(GenericRequest<LicenseSubscribeInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseRenewOutModel>> LicenseRenew(GenericRequest<LicenseRenewInModel> model, Boolean isSubProcess);

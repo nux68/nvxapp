@@ -192,38 +192,17 @@
     "pricing": {
       "titolo": "Pricing",
       "sottotitolo": "Simple plans with no commitment: start free and grow when you need to.",
-      "periodoMese": "per month",
-      "caratteristiche": {
-        "tutteLeFunzioni": "All features",
-        "assistenzaEmail": "Email support"
-      },
-      "piani": {
-        "prova": {
-          "nome": "Trial",
-          "periodo": "for 30 days",
-          "descrizione": "To get to know the platform.",
-          "utenti": "Up to 5 users",
-          "cta": "Start the trial"
-        },
-        "standard": {
-          "descrizione": "For small companies.",
-          "utenti": "Up to 25 users",
-          "assistenza": "Email and phone support",
-          "cta": "Choose Standard"
-        },
-        "professional": {
-          "descrizione": "For larger companies and firms.",
-          "utenti": "Unlimited users",
-          "assistenza": "Priority support",
-          "aziende": "Multiple companies managed",
-          "cta": "Choose Professional"
-        }
+      "inclusi": {
+        "tutteLeFunzioni": "Every platform feature",
+        "assistenza": "Ticket-based support",
+        "dispositivi": "Computers, tablets and smartphones",
+        "aggiornamenti": "Updates included"
       },
       "nota": "Prices exclude VAT. You can change plan or cancel at any time.",
       "domande": {
         "carta": {
-          "domanda": "Do I need a credit card for the trial?",
-          "risposta": "No: the trial is free with no commitment."
+          "domanda": "Do I need a credit card to get started?",
+          "risposta": "No: the Free plan is free with no expiry; you only pay if you move to a higher plan."
         },
         "utenti": {
           "domanda": "Can I add users later?",
@@ -293,7 +272,14 @@
       "seePrices": "See pricing"
     },
     "pricingPage": {
-      "faqTitle": "Frequently asked questions"
+      "faqTitle": "Frequently asked questions",
+      "forCompanies": "For companies",
+      "forStudios": "For firms",
+      "studioNote": "The firm's plan also covers every company it manages.",
+      "includedTitle": "Included in every plan",
+      "start": "Start for free",
+      "contactUs": "Contact us",
+      "notAvailable": "Prices are not available right now: contact us for a quote."
     },
     "contactPage": {
       "email": "Email",
