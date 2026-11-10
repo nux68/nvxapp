@@ -1,16 +1,20 @@
-// Dashboard (pagina iniziale dopo il login) in stile "chat AI": saluto centrato e campo a pillola che apre l'assistente
+// Dashboard (pagina iniziale dopo il login): saluto e griglia dei widget (12 colonne; una sola sotto i 768px)
 
 .nvx-home {
-  min-height: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 16px 40px 16px;
+}
+
+.nvx-home-head {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
-  padding: 24px 16px 15vh 16px;
+  margin-bottom: 24px;
 
   h1 {
-    margin: 18px 0 6px 0;
+    margin: 14px 0 6px 0;
     font-size: clamp(26px, 4vw, 34px);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -33,60 +37,85 @@
 }
 
 .nvx-home-sub {
-  margin: 0 0 28px 0;
+  margin: 0;
   color: var(--nvx-text-muted);
   font-size: 17px;
 }
 
-.nvx-home-hint {
-  margin: 14px 0 0 0;
-  color: var(--nvx-text-muted);
-  font-size: 13px;
-}
-
-// campo "Chiedi all'assistente" (apre la chat del FAB)
-.nvx-ask {
-  width: min(640px, 100%);
-  display: flex;
+.nvx-home-config {
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 8px 8px 20px;
-  border-radius: 28px;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
   border: 1px solid var(--nvx-border-strong);
   background: var(--nvx-surface);
   color: var(--nvx-text-muted);
   font: inherit;
-  font-size: 16px;
-  text-align: left;
-  cursor: text;
-  box-shadow: var(--nvx-shadow-soft);
-  transition: border-color 0.15s ease;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
 
   &:hover {
     border-color: var(--ion-color-primary);
-  }
-
-  > span:not(.nvx-ask-send) {
-    flex: 1;
+    color: var(--ion-color-primary);
   }
 }
 
-.nvx-ask-icon {
-  font-size: 20px;
-  color: var(--ion-color-primary);
+.nvx-home-empty {
+  text-align: center;
+  color: var(--nvx-text-muted);
 }
 
-.nvx-ask-send {
-  display: inline-flex;
+.nvx-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.nvx-widget {
+  min-width: 0;
+  padding: 16px 18px 18px;
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+  border: 1px solid var(--nvx-border);
+
+  &.frameless {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+}
+
+.nvx-widget-small { grid-column: span 4; }
+.nvx-widget-medium { grid-column: span 6; }
+.nvx-widget-large { grid-column: 1 / -1; }
+
+@media (max-width: 991px) {
+  .nvx-widget-small { grid-column: span 6; }
+}
+
+@media (max-width: 767px) {
+  .nvx-widget-small,
+  .nvx-widget-medium { grid-column: 1 / -1; }
+}
+
+.nvx-widget-head {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--ion-text-color);
-  color: var(--ion-background-color);
+  gap: 8px;
+  margin-bottom: 12px;
 
   ion-icon {
     font-size: 18px;
+    color: var(--ion-color-primary);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
   }
 }

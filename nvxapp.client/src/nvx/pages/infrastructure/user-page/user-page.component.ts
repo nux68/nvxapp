@@ -1,20 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
-import { environment } from '../../../../environments/environment';
-import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { MyMokeLongJobService } from '../../../ClientServer-Service/Infrastructure/MyMokeLongJob/my-moke-long-job.service';
-import { UserGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-model';
-import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { MyMokeLongJobInModel } from '../../../ClientServer-Service/Infrastructure/MyMokeLongJob/Models/my-moke-long-job-model';
-import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { NavController } from '@ionic/angular';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { DashboardConfigPageBase } from '../../../shared/components/infrastructure/widgets/widget-config/dashboard-config-page.base';
 
-
-
-
-
-
-
+/*
+ Pagina del ruolo User: l'utente configura i widget della propria dashboard (ANALISI_WIDGET.md).
+*/
 @Component({
   selector: 'app-user-page',
   templateUrl: './user-page.component.html',
@@ -22,70 +13,13 @@ import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserPageComponent {
+export class UserPageComponent extends DashboardConfigPageBase {
 
-  public title!: string;
+  /** chiave di traduzione del titolo (tradotto nel template) */
+  public readonly title = 'menu.userData';
 
-
-  public btnTask: ButtonItem;
-  public btnExport: ButtonItem;
-
-  constructor(private signalrService: SignalrService,
-    public userNavigationService: UserNavigationService,
-    private userInterfaceService: UserInterfaceService,
-    private myMokeLongJobService: MyMokeLongJobService,
-    private longJobNotifier: LongJobNotifierService /* RICVEVE LE NOTIFICHE  */
-  )
-
-  {
-    this.title = 'UserPage';
-
-    this.btnTask = userInterfaceService.Btn_Esegui;
-    this.btnTask.event = this.handleButtontaskClick;
-
-    this.btnExport = userInterfaceService.Btn_Esegui;
-    this.btnExport.event = this.handleButtontExportClick;
-
+  constructor(navCtrl: NavController,
+              userInterfaceService: UserInterfaceService) {
+    super(navCtrl, userInterfaceService);
   }
-
-  ionViewWillEnter() {
-    if (environment.signalR.useSignalR) {
-      this.signalrService.send("SendMessage", { 'text': "ciao" });
-    }
-
-    //riceve le notifiche di aggiornamento dei job in corso
-    this.longJobNotifier.jobFinished$.subscribe(jobUpdate => {
-      console.log('Job finished:', jobUpdate);
-    });
-
-  }
-
-
-
-
-  handleButtontaskClick = async (item: any) => {
-
-    let request: GenericRequest<MyMokeLongJobInModel> = new GenericRequest<MyMokeLongJobInModel>(MyMokeLongJobInModel);
-
-    this.myMokeLongJobService.StartJob(request).subscribe(x=>{
-
-      let c = 0;
-
-    });
-
-  }
-
-
-  handleButtontExportClick = async (item: any) => {
-
-    let request: GenericRequest<MyMokeLongJobInModel> = new GenericRequest<MyMokeLongJobInModel>(MyMokeLongJobInModel);
-
-    this.myMokeLongJobService.ExportJob(request).subscribe(x => {
-
-      let c = 0;
-
-    });
-
-  }
-
 }

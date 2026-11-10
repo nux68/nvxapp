@@ -21,6 +21,8 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<CompanyStorage> CompanyStorage { get; set; }
         public DbSet<CompanyStorageHistory> CompanyStorageHistory { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
+        // widget della dashboard scelti da ogni utente (ANALISI_WIDGET.md)
+        public DbSet<UserDashboard> UserDashboard { get; set; }
         public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
@@ -64,6 +66,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_FinancialAdvisorApplication(modelBuilder);
             Gen_Storage(modelBuilder);
             Gen_CompanyMenuRestriction(modelBuilder);
+            Gen_UserDashboard(modelBuilder);
             Gen_CompanyRegistrationRequest(modelBuilder);
             Gen_Ticket(modelBuilder);
             Gen_Document(modelBuilder);
@@ -498,6 +501,21 @@ namespace nvxapp.server.data.Infrastructure
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }
+        // dashboard degli utenti: una riga per utente/azienda, cancellata con l'utente o con l'azienda
+        private void Gen_UserDashboard(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserDashboard>(entity =>
+            {
+                entity.ToTable("UserDashboard", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdAspNetUsers, e.IdCompany }).IsUnique();
+
+                // chiavi esterne senza navigation (vedi CompanyMenuRestriction)
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
         private void Gen_DealerAndCompany_Init(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Dealer>(entity =>

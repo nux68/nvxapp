@@ -1,0 +1,100 @@
+// Configurazione della dashboard: elenco dei widget scelti e dei disponibili, con i colori del tema
+
+.nvx-wc-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}
+
+.nvx-wc {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.nvx-wc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+}
+
+.nvx-wc-group {
+  margin: 16px 0 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-wc-empty {
+  margin: 4px 0;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-wc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nvx-wc-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--nvx-radius-sm);
+  border: 1px solid var(--nvx-border);
+  background: var(--nvx-surface);
+
+  &.selezionato {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.45);
+  }
+}
+
+.nvx-wc-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+
+  ion-icon {
+    font-size: 20px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.nvx-wc-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.nvx-wc-title {
+  font-weight: 600;
+}
+
+.nvx-wc-desc {
+  font-size: 0.85rem;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-wc-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+}
