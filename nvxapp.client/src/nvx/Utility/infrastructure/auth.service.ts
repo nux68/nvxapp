@@ -105,7 +105,27 @@ export class AuthService {
     return max == null || (this.licenseSubject.getValue()?.activeUsers ?? 0) <= max;
   }
 
-  /** Si puo' aggiungere (o riabilitare) un utente: limite piu' alto tra le funzioni coperte. */
+  /** Limite clienti dell'azienda (licenza CRM); null = illimitati o CRM non coperto. */
+  public clientLimit(): number | null {
+    const license = this.licenseSubject.getValue();
+    return !license || !license.enabled ? null : license.clientLimit;
+  }
+
+  /** Si puo' aggiungere (o riattivare) un cliente: limite della licenza CRM. Il server ricontrolla. */
+  public canAddClient(): boolean {
+    const license = this.licenseSubject.getValue();
+    return !license || !license.enabled || license.canAddClient;
+  }
+
+  /** Spazio del Documentale dato dalla licenza, in MB; null = illimitato o non coperto. */
+  public maxStorageMB(): number | null {
+    const license = this.licenseSubject.getValue();
+    if (!license || !license.enabled)
+      return null;
+    return license.function.find(x => x.application === ApplicationType.DocumentManagement)?.maxSpazioMB ?? null;
+  }
+
+  /** Si puo' aggiungere (o riabilitare) un utente: limite della licenza Presenze. */
   public canAddUser(): boolean {
     const license = this.licenseSubject.getValue();
     return !license || !license.enabled || license.canAddUser;

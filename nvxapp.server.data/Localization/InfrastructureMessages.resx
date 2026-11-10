@@ -684,4 +684,12 @@
     <value>Licenza attivata, ma non è stato possibile attivare gli applicativi: contatta l'assistenza.</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicenseClientLimitReached" xml:space="preserve">
+    <value>Raggiunto il limite di {0} clienti attivi della licenza CRM: passa a un piano superiore o disattiva un cliente.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="StorageLicensePlan" xml:space="preserve">
+    <value>Licenza {0}</value>
+    <comment>licenze</comment>
+  </data>
 </root>

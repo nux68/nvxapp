@@ -44,11 +44,12 @@
           @if (f.dataScadenza) {
             <p>{{ (f.stato === Stato.Grace ? 'pages.licenseManagement.inGraceUntil' : 'pages.licenseManagement.validUntil') | transloco: { data: (f.dataScadenza | date:'dd/MM/yyyy') } }}</p>
           }
-          <p class="nvx-nota-disabled">
-            {{ f.maxUtenti == null ? ('pages.licenseManagement.functionUsersUnlimited' | transloco) : ('pages.licenseManagement.functionUsers' | transloco: { max: f.maxUtenti }) }}
-          </p>
+          <!-- limite della funzione e uso attuale (solo con la licenza): utenti, clienti, spazio -->
+          @if (f.livello != null) {
+            <p class="nvx-nota-disabled">{{ limite(f) }}</p>
+          }
           @if (status.attive && f.oltreLimite) {
-            <ion-note color="warning">{{ 'pages.licenseManagement.overLimit' | transloco }}</ion-note>
+            <ion-note color="warning">{{ 'pages.licenseManagement.overLimit' + f.ambito | transloco }}</ion-note>
           }
 
           <ng-container *ngTemplateOutlet="abbonamenti; context: { ambito: f.ambito }"></ng-container>

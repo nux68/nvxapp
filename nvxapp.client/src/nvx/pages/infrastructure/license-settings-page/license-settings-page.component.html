@@ -39,6 +39,32 @@
         </ion-item>
 
         <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.licenseSettings.defaultClients' | transloco }}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxClientiFree" [label]="'pages.license.level1' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxClientiStandard" [label]="'pages.license.level2' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxClientiPro" [label]="'pages.license.level3' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.licenseSettings.defaultStorage' | transloco }}</ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxSpazioMBFree" [label]="'pages.license.level1' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxSpazioMBStandard" [label]="'pages.license.level2' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" formControlName="maxSpazioMBPro" [label]="'pages.license.level3' | transloco" labelPlacement="floating" min="0"></ion-input>
+        </ion-item>
+
+        <ion-item class="nvx-item-4-title">
           <ion-label>{{ 'pages.licenseSettings.expiry' | transloco }}</ion-label>
         </ion-item>
 

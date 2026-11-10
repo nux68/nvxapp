@@ -23,6 +23,12 @@ export class LicenseSettingsModel {
   public maxUtentiFree: number | null = 10;
   public maxUtentiStandard: number | null = 50;
   public maxUtentiPro: number | null = null;
+  public maxClientiFree: number | null = 100;
+  public maxClientiStandard: number | null = 1000;
+  public maxClientiPro: number | null = null;
+  public maxSpazioMBFree: number | null = 1024;
+  public maxSpazioMBStandard: number | null = 5120;
+  public maxSpazioMBPro: number | null = 20480;
   public graceGiorni: number = 7;
   public avvisoGiorni: number = 10;
 }
@@ -57,8 +63,10 @@ export class LicensePlanModel {
   public ordine: number = 0;
   public prezzoMensile: number = 0;
   public prezzoAnnuale: number = 0;
-  // null = illimitati
+  // limiti (null = illimitati): utenti (Presenze), clienti (CRM), spazio in MB (Documentale); il Cumulativo li usa tutti
   public maxUtenti: number | null = null;
+  public maxClienti: number | null = null;
+  public maxSpazioMB: number | null = null;
   public attivo: boolean = true;
 }
 
@@ -119,6 +127,8 @@ export class LicenseSubscriptionModel {
   public prezzo: number = 0;
   public valuta: string = 'EUR';
   public maxUtenti: number | null = null;
+  public maxClienti: number | null = null;
+  public maxSpazioMB: number | null = null;
   public dataInizio: string = '';
   public dataScadenza: string = '';
   public stato: StatoAbbonamento = StatoAbbonamento.Attivo;
@@ -137,7 +147,12 @@ export class LicenseFunctionStatusModel {
   public fonte: FonteCopertura = FonteCopertura.Nessuna;
   public studio: string | null = null;
   public dataScadenza: string | null = null;
+  // limite della funzione e uso attuale: utenti (Presenze), clienti attivi (CRM), spazio in MB (Documentale)
   public maxUtenti: number | null = null;
+  public maxClienti: number | null = null;
+  public maxSpazioMB: number | null = null;
+  public clientiAttivi: number | null = null;
+  public spazioUsatoMB: number | null = null;
   public oltreLimite: boolean = false;
 }
 

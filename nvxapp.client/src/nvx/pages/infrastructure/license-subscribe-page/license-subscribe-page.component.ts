@@ -9,7 +9,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  LicenseOfferModel, LicensePlanModel, LicenseSubscribeInModel, LicenseSubscriptionModel, MetodoPagamento, PeriodicitaLicenza
+  AmbitoLicenza, LicenseOfferModel, LicensePlanModel, LicenseSubscribeInModel, LicenseSubscriptionModel, MetodoPagamento, PeriodicitaLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
@@ -83,6 +83,22 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     if (!p)
       return 0;
     return Number(this._editForm.get('periodicita')?.value) === PeriodicitaLicenza.Annuale ? p.prezzoAnnuale : p.prezzoMensile;
+  }
+
+  // limiti del piano per la funzione: Presenze utenti, CRM clienti, Documentale spazio, Cumulativo tutti (§5.1)
+  limitiPiano(p: LicensePlanModel): string {
+    const t = (k: string, par?: any) => this.transloco.translate(k, par);
+    const ambito = this.offerta?.ambito;
+    const tutti = ambito === AmbitoLicenza.Cumulativo;
+    const out: string[] = [];
+    if (tutti || ambito === AmbitoLicenza.AttendanceTracking)
+      out.push(p.maxUtenti == null ? t('pages.licenseSubscribe.unlimitedUsers') : t('pages.licenseSubscribe.users', { max: p.maxUtenti }));
+    if (tutti || ambito === AmbitoLicenza.Crm)
+      out.push(p.maxClienti == null ? t('pages.licenseSubscribe.unlimitedClients') : t('pages.licenseSubscribe.clients', { max: p.maxClienti }));
+    if (tutti || ambito === AmbitoLicenza.DocumentManagement)
+      out.push(p.maxSpazioMB == null ? t('pages.licenseSubscribe.unlimitedStorage')
+        : t('pages.licenseSubscribe.storage', { max: p.maxSpazioMB >= 1024 ? (p.maxSpazioMB / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' GB' : p.maxSpazioMB + ' MB' }));
+    return out.join(', ');
   }
 
   // a pagamento senza metodi disponibili non si puo' confermare

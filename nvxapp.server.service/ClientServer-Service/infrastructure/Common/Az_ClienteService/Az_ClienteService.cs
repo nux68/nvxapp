@@ -10,6 +10,7 @@ using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_ClienteService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -27,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly IEnumerable<ICommonEntityUsage> _commonEntityUsages;
         private readonly IApplicationActivationAuthorizer _authorizer;
+        private readonly ILicenseGuard _licenseGuard;
 
         public Az_ClienteService(IMapper mapper,
                                  UserManager<ApplicationUser> userManager,
@@ -38,9 +40,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                                  ICompanyApplicationRepository companyApplicationRepository,
                                  IEnumerable<ICommonEntityUsage> commonEntityUsages,
                                  IApplicationActivationAuthorizer authorizer,
-                                 IAz_ClienteRepository az_ClienteRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                 IAz_ClienteRepository az_ClienteRepository,
+                                 ILicenseGuard licenseGuard) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _authorizer = authorizer;
+            _licenseGuard = licenseGuard;
             _az_ClienteRepository = az_ClienteRepository;
             _commonCompanyUtility = commonCompanyUtility;
             _companyApplicationRepository = companyApplicationRepository;
@@ -86,11 +90,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                 var az_Anagrafica = await _commonCompanyUtility.CurrentAz_AnagraficaAsync(this.CurrentCompany);
 
                 // un cliente esistente deve essere dell'azienda corrente
-                if (model.Data.Az_Cliente.Id != 0 && await ClienteDellAzienda(model.Data.Az_Cliente.Id) == null)
+                var precedente = model.Data.Az_Cliente.Id != 0 ? await ClienteDellAzienda(model.Data.Az_Cliente.Id) : null;
+                if (model.Data.Az_Cliente.Id != 0 && precedente == null)
                     model.Data.Az_Cliente.Id = 0;
 
                 var az_Cliente = _mapper.Map<nvxapp.server.data.Entities.Tenant.Az_Cliente>(model.Data.Az_Cliente);
                 az_Cliente.IdAz_Anagrafica = az_Anagrafica.Id;
+
+                // limite clienti della licenza CRM (ANALISI_LICENZE.md §5.1): conta un cliente nuovo, riattivato o che smette di
+                // essere solo fornitore; quelli gia' contati restano
+                if (_licenseGuard.ContaComeCliente(az_Cliente) && !_licenseGuard.ContaComeCliente(precedente) && int.TryParse(this.CurrentCompany, out var idCompany))
+                    await _licenseGuard.EnsureCanAddClientAsync(idCompany);
                 az_Cliente = await _az_ClienteRepository.UpsertAsync(az_Cliente);
 
                 retVal.Az_Cliente = _mapper.Map<Az_ClienteModel>(az_Cliente);

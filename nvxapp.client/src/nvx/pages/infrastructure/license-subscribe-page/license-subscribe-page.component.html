@@ -23,7 +23,7 @@
             <ion-select formControlName="livello" [label]="'pages.licenseSubscribe.plan' | transloco" labelPlacement="floating" interface="popover">
               @for (p of offerta.piano; track p.livello) {
                 <ion-select-option [value]="p.livello">
-                  {{ p.descrizione || p.codice }} – {{ p.maxUtenti == null ? ('pages.licenseSubscribe.unlimitedUsers' | transloco) : ('pages.licenseSubscribe.users' | transloco: { max: p.maxUtenti }) }}
+                  {{ p.descrizione || p.codice }} – {{ limitiPiano(p) }}
                 </ion-select-option>
               }
             </ion-select>

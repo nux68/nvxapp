@@ -11,6 +11,7 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License.Payment;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -44,6 +45,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         private readonly ILicenseSubscriptionManager _subscriptionManager;
         private readonly IPaymentGatewayResolver _gatewayResolver;
         private readonly ICompanyApplicationService _companyApplicationService;
+        private readonly IStorageQuotaService _storageQuotaService;
 
         public LicenseService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -63,7 +65,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                               ILicenseCatalogResolver resolver,
                               ILicenseSubscriptionManager subscriptionManager,
                               IPaymentGatewayResolver gatewayResolver,
-                              ICompanyApplicationService companyApplicationService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                              ICompanyApplicationService companyApplicationService,
+                              IStorageQuotaService storageQuotaService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _listinoRepository = listinoRepository;
             _pianoRepository = pianoRepository;
@@ -78,6 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             _subscriptionManager = subscriptionManager;
             _gatewayResolver = gatewayResolver;
             _companyApplicationService = companyApplicationService;
+            _storageQuotaService = storageQuotaService;
         }
 
         // ---------------------------------------------------------------------------
@@ -103,8 +107,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             {
                 await SoloSuperUser();
                 var s = model.Data.Settings;
-                if ((s.MaxUtentiFree.HasValue && s.MaxUtentiFree <= 0) || (s.MaxUtentiStandard.HasValue && s.MaxUtentiStandard <= 0)
-                    || (s.MaxUtentiPro.HasValue && s.MaxUtentiPro <= 0) || s.GraceGiorni < 0 || s.GraceGiorni > 365 || s.AvvisoGiorni < 0 || s.AvvisoGiorni > 365)
+                var limiti = new[] { s.MaxUtentiFree, s.MaxUtentiStandard, s.MaxUtentiPro, s.MaxClientiFree, s.MaxClientiStandard, s.MaxClientiPro,
+                                     s.MaxSpazioMBFree, s.MaxSpazioMBStandard, s.MaxSpazioMBPro };
+                if (limiti.Any(x => x.HasValue && x <= 0) || s.GraceGiorni < 0 || s.GraceGiorni > 365 || s.AvvisoGiorni < 0 || s.AvvisoGiorni > 365)
                     throw new UserMessageException(InfrastructureMessages.Get("LicenseSettingsInvalid"));
 
                 await _settingsProvider.SaveAsync(new LicenseSettings
@@ -113,6 +118,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     MaxUtentiFree = s.MaxUtentiFree,
                     MaxUtentiStandard = s.MaxUtentiStandard,
                     MaxUtentiPro = s.MaxUtentiPro,
+                    MaxClientiFree = s.MaxClientiFree,
+                    MaxClientiStandard = s.MaxClientiStandard,
+                    MaxClientiPro = s.MaxClientiPro,
+                    MaxSpazioMBFree = s.MaxSpazioMBFree,
+                    MaxSpazioMBStandard = s.MaxSpazioMBStandard,
+                    MaxSpazioMBPro = s.MaxSpazioMBPro,
                     GraceGiorni = s.GraceGiorni,
                     AvvisoGiorni = s.AvvisoGiorni
                 });
@@ -201,7 +212,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 foreach (var p in dati.Piano)
                 {
                     if (string.IsNullOrWhiteSpace(p.Codice) || p.Codice.Trim().Length > 20 || (p.Descrizione?.Length ?? 0) > 100
-                        || p.PrezzoMensile < 0 || p.PrezzoAnnuale < 0 || (p.MaxUtenti.HasValue && p.MaxUtenti <= 0))
+                        || p.PrezzoMensile < 0 || p.PrezzoAnnuale < 0 || (p.MaxUtenti.HasValue && p.MaxUtenti <= 0)
+                        || (p.MaxClienti.HasValue && p.MaxClienti <= 0) || (p.MaxSpazioMB.HasValue && p.MaxSpazioMB <= 0))
                         throw new UserMessageException(InfrastructureMessages.Get("LicensePlanInvalid", p.Codice));
                     if (p.Livello == (int)LivelloLicenza.Free && (p.PrezzoMensile != 0 || p.PrezzoAnnuale != 0))
                         throw new UserMessageException(InfrastructureMessages.Get("LicenseFreeNotZero"));
@@ -256,7 +268,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                         piano.Ordine = p.Livello * 10;
                         piano.PrezzoMensile = Math.Round(p.PrezzoMensile, 2);
                         piano.PrezzoAnnuale = Math.Round(p.PrezzoAnnuale, 2);
-                        piano.MaxUtenti = p.MaxUtenti;
+                        // limiti: solo quelli della funzione del listino (il Cumulativo li ha tutti), gli altri non servono (§5.1)
+                        piano.MaxUtenti = UsaLimite(ambito, AmbitoLicenza.AttendanceTracking) ? p.MaxUtenti : null;
+                        piano.MaxClienti = UsaLimite(ambito, AmbitoLicenza.Crm) ? p.MaxClienti : null;
+                        piano.MaxSpazioMB = UsaLimite(ambito, AmbitoLicenza.DocumentManagement) ? p.MaxSpazioMB : null;
                         // il piano Free resta sempre disponibile
                         piano.Attivo = p.Livello == (int)LivelloLicenza.Free || p.Attivo;
                         await _pianoRepository.UpsertAsync(piano);
@@ -264,16 +279,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     await transaction.CommitAsync();
                 }
 
-                // limite utenti alzato: vale subito per gli abbonamenti attivi; abbassato: dal rinnovo (§5.1)
+                // limiti alzati: valgono subito per gli abbonamenti attivi; abbassati: dal rinnovo (§5.1)
                 foreach (var p in await _pianoRepository.FindAll(x => x.IdListino == listino.Id).ToListAsync())
                 {
-                    var max = p.MaxUtenti;
                     var idPiano = p.Id;
-                    var attivi = _abbonamentoRepository.FindAll(x => x.IdPiano == idPiano && x.Stato == StatoAbbonamento.Attivo && x.MaxUtentiBloccato != null);
-                    if (max == null)
-                        await attivi.ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxUtentiBloccato, (int?)null));
+                    var attivi = _abbonamentoRepository.FindAll(x => x.IdPiano == idPiano && x.Stato == StatoAbbonamento.Attivo);
+                    int? utenti = p.MaxUtenti, clienti = p.MaxClienti, spazio = p.MaxSpazioMB;
+                    if (utenti == null)
+                        await attivi.Where(x => x.MaxUtentiBloccato != null).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxUtentiBloccato, (int?)null));
                     else
-                        await attivi.Where(x => x.MaxUtentiBloccato < max).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxUtentiBloccato, max));
+                        await attivi.Where(x => x.MaxUtentiBloccato != null && x.MaxUtentiBloccato < utenti).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxUtentiBloccato, utenti));
+                    if (clienti == null)
+                        await attivi.Where(x => x.MaxClientiBloccato != null).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxClientiBloccato, (int?)null));
+                    else
+                        await attivi.Where(x => x.MaxClientiBloccato != null && x.MaxClientiBloccato < clienti).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxClientiBloccato, clienti));
+                    if (spazio == null)
+                        await attivi.Where(x => x.MaxSpazioMBBloccato != null).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxSpazioMBBloccato, (int?)null));
+                    else
+                        await attivi.Where(x => x.MaxSpazioMBBloccato != null && x.MaxSpazioMBBloccato < spazio).ExecuteUpdateAsync(u => u.SetProperty(x => x.MaxSpazioMBBloccato, spazio));
                 }
 
                 var salvato = await _listinoRepository.FindAll(x => x.Id == listino.Id).Include(x => x.DealerNavigation).Include(x => x.Lic_Piano).FirstAsync();
@@ -332,17 +355,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     GraceGiorni = settings.GraceGiorni
                 };
 
-                // copertura effettiva per funzione e limite utenti
+                // copertura effettiva per funzione, con il limite della funzione e l'uso attuale (§5.1):
+                // Presenze -> utenti, CRM -> clienti attivi, Documentale -> spazio occupato (solo per le aziende)
                 bool azienda = soggetto.Tipo == TipoSoggettoLicenza.Company;
                 retVal.UtentiAttivi = azienda ? await _licenseGuard.ActiveUsersAsync(soggetto.Id) : await _licenseGuard.StudioActiveUsersAsync(soggetto.Id);
-                var coperture = new List<LicenseCoverage>();
                 foreach (var ambito in LicenseGuard.Funzioni)
                 {
                     var c = azienda ? await _licenseGuard.CoverageAsync(soggetto.Id, ambito, reale: true)
                                     : await _licenseGuard.StudioCoverageAsync(soggetto.Id, ambito, reale: true);
-                    coperture.Add(c);
-                    var max = c.Livello == null ? settings.MaxUtentiFree : c.MaxUtenti;
-                    retVal.Funzione.Add(new LicenseFunctionStatusModel
+                    bool coperta = c.Livello != null;
+                    var f = new LicenseFunctionStatusModel
                     {
                         Ambito = (int)ambito,
                         Stato = (int)c.Stato,
@@ -350,12 +372,34 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                         DescrizionePiano = c.DescrizionePiano,
                         Fonte = (int)c.Fonte,
                         Studio = c.Studio,
-                        DataScadenza = c.DataScadenza,
-                        MaxUtenti = max,
-                        OltreLimite = max != null && retVal.UtentiAttivi > max
-                    });
+                        DataScadenza = c.DataScadenza
+                    };
+                    switch (ambito)
+                    {
+                        case AmbitoLicenza.AttendanceTracking:
+                            f.MaxUtenti = coperta ? c.MaxUtenti : null;
+                            f.OltreLimite = coperta && f.MaxUtenti != null && retVal.UtentiAttivi > f.MaxUtenti;
+                            retVal.LimiteUtenti = f.MaxUtenti;
+                            break;
+                        case AmbitoLicenza.Crm:
+                            f.MaxClienti = coperta ? c.MaxClienti : null;
+                            if (azienda)
+                            {
+                                f.ClientiAttivi = await _licenseGuard.ActiveClientsAsync(soggetto.Id);
+                                f.OltreLimite = coperta && f.MaxClienti != null && f.ClientiAttivi > f.MaxClienti;
+                            }
+                            break;
+                        case AmbitoLicenza.DocumentManagement:
+                            f.MaxSpazioMB = coperta ? c.MaxSpazioMB : null;
+                            if (azienda)
+                            {
+                                f.SpazioUsatoMB = (await _storageQuotaService.StatusAsync(soggetto.Id)).UsedBytes / (1024L * 1024L);
+                                f.OltreLimite = coperta && f.MaxSpazioMB != null && f.SpazioUsatoMB > f.MaxSpazioMB;
+                            }
+                            break;
+                    }
+                    retVal.Funzione.Add(f);
                 }
-                retVal.LimiteUtenti = LicenseGuard.LimitePiuAlto(coperture, settings);
 
                 // Cumulativo: la copertura per l'ambito Cumulativo considera solo le licenze cumulative (proprie o dello studio)
                 var cum = azienda ? await _licenseGuard.CoverageAsync(soggetto.Id, AmbitoLicenza.Cumulativo, reale: true)
@@ -369,7 +413,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     Fonte = (int)cum.Fonte,
                     Studio = cum.Studio,
                     DataScadenza = cum.DataScadenza,
-                    MaxUtenti = cum.Livello == null ? settings.MaxUtentiFree : cum.MaxUtenti
+                    MaxUtenti = cum.MaxUtenti,
+                    MaxClienti = cum.MaxClienti,
+                    MaxSpazioMB = cum.MaxSpazioMB
                 };
 
                 // abbonamenti propri (gli annullati non si mostrano)
@@ -574,6 +620,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             return accesso;
         }
 
+        // il listino della funzione usa il limite della funzione; il Cumulativo li usa tutti (§5.1)
+        private static bool UsaLimite(AmbitoLicenza listino, AmbitoLicenza funzione) => listino == funzione || listino == AmbitoLicenza.Cumulativo;
+
         private static bool PuoModificare(int? idDealerListino, bool dealerAbilitato, Accesso accesso)
             => accesso.SuperUser
                || (idDealerListino != null && idDealerListino == accesso.IdDealer && accesso.DealerPowerAdmin && dealerAbilitato);
@@ -631,6 +680,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     Codice = l.ToString(),
                     Ordine = (int)l * 10,
                     MaxUtenti = settings.MaxUtenti(l),
+                    MaxClienti = settings.MaxClienti(l),
+                    MaxSpazioMB = settings.MaxSpazioMB(l),
                     Attivo = true
                 }).ToList()
             };
@@ -662,6 +713,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             PrezzoMensile = p.PrezzoMensile,
             PrezzoAnnuale = p.PrezzoAnnuale,
             MaxUtenti = p.MaxUtenti,
+            MaxClienti = p.MaxClienti,
+            MaxSpazioMB = p.MaxSpazioMB,
             Attivo = p.Attivo
         };
 
@@ -678,6 +731,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 Prezzo = x.PrezzoBloccato,
                 Valuta = x.Valuta,
                 MaxUtenti = x.MaxUtentiBloccato,
+                MaxClienti = x.MaxClientiBloccato,
+                MaxSpazioMB = x.MaxSpazioMBBloccato,
                 DataInizio = x.DataInizio,
                 DataScadenza = x.DataScadenza,
                 Stato = (int)x.Stato,
@@ -695,6 +750,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             MaxUtentiFree = s.MaxUtentiFree,
             MaxUtentiStandard = s.MaxUtentiStandard,
             MaxUtentiPro = s.MaxUtentiPro,
+            MaxClientiFree = s.MaxClientiFree,
+            MaxClientiStandard = s.MaxClientiStandard,
+            MaxClientiPro = s.MaxClientiPro,
+            MaxSpazioMBFree = s.MaxSpazioMBFree,
+            MaxSpazioMBStandard = s.MaxSpazioMBStandard,
+            MaxSpazioMBPro = s.MaxSpazioMBPro,
             GraceGiorni = s.GraceGiorni,
             AvvisoGiorni = s.AvvisoGiorni
         };
