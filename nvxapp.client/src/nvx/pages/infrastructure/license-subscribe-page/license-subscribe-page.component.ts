@@ -11,11 +11,16 @@ import { LicenseService } from '../../../ClientServer-Service/Infrastructure/Lic
 import {
   AmbitoLicenza, LicenseOfferModel, LicensePlanModel, LicenseSubscribeInModel, LicenseSubscriptionModel, MetodoPagamento, PeriodicitaLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
+import { LivelloLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 /*
- Sottoscrizione (o cambio piano) di una licenza (ANALISI_LICENZE.md §6, §7): piano, periodicita', metodo di pagamento
- e rinnovo automatico. Il prezzo lo ricalcola sempre il server dal listino. I piani gratuiti non passano dal pagamento.
- Con un pagamento ospitato dal provider il server restituisce la pagina su cui portare l'utente.
+ Sottoscrizione (o cambio piano) di una licenza (ANALISI_LICENZE.md §6, §7), in forma di pagina prezzi:
+    - in alto la scelta Mensile / Annuale, con il risparmio massimo dell'annuale
+    - una scheda per piano (Free, Standard, Pro): prezzo al mese, importo annuale, limiti della funzione, pulsante di scelta;
+      il piano consigliato (Standard) e il piano attuale sono evidenziati
+    - in fondo il riepilogo della scelta, il metodo di pagamento e il rinnovo automatico
+ La conferma resta nella barra dei pulsanti (BasePageConfirmCancelComponent): la scheda sceglie il piano, Conferma lo sottoscrive.
+ Il prezzo lo ricalcola sempre il server dal listino. I piani gratuiti non passano dal pagamento.
  Arriva dalla pagina Gestione licenze con l'offerta (listino risolto) nello state della navigazione.
 */
 @Component({
@@ -31,7 +36,7 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   public metodi: MetodoPagamento[] = [];
   public debugPagamenti = false;
   public attuale: LicenseSubscriptionModel | null = null;
-  public readonly periodicita = [PeriodicitaLicenza.Mensile, PeriodicitaLicenza.Annuale];
+  public readonly Periodicita = PeriodicitaLicenza;
   private messaggio: string | null = null;
 
   constructor(protected override navCtrl: NavController,
@@ -66,27 +71,103 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
 
     const model = new LicenseSubscribeInModel();
     model.ambito = this.offerta.ambito;
-    // piano proposto: il primo diverso da quello attuale
-    model.livello = (this.offerta.piano.find(p => p.livello !== this.attuale?.livello) ?? this.offerta.piano[0]).livello;
+    // piano proposto: il consigliato (Standard) se non e' quello attuale, altrimenti il primo diverso dall'attuale
+    const scelti = this.offerta.piano.filter(p => p.livello !== this.attuale?.livello);
+    model.livello = (scelti.find(p => p.livello === LivelloLicenza.Standard) ?? scelti[0] ?? this.offerta.piano[0]).livello;
     model.periodicita = this.attuale?.periodicita ?? PeriodicitaLicenza.Mensile;
     model.metodo = this.metodi[0] ?? MetodoPagamento.Nessuno;
     return of(model);
   };
 
+  // ---------------------------------------------------------------- scelta del piano
+
+  get annuale(): boolean {
+    return Number(this._editForm?.get('periodicita')?.value) === PeriodicitaLicenza.Annuale;
+  }
+
+  get livelloScelto(): number {
+    return Number(this._editForm?.get('livello')?.value);
+  }
+
   get piano(): LicensePlanModel | undefined {
-    const livello = Number(this._editForm?.get('livello')?.value);
-    return this.offerta?.piano.find(p => p.livello === livello);
+    return this.offerta?.piano.find(p => p.livello === this.livelloScelto);
+  }
+
+  periodo(valore: PeriodicitaLicenza) {
+    this._editForm.get('periodicita')?.setValue(valore);
+  }
+
+  seleziona(p: LicensePlanModel) {
+    if (this.isAttuale(p))
+      return;
+    this._editForm.get('livello')?.setValue(p.livello);
+    this._editForm.markAsDirty();
+  }
+
+  isAttuale(p: LicensePlanModel): boolean {
+    return this.attuale?.livello === p.livello;
+  }
+
+  // piano evidenziato come consigliato: Standard, se c'e' e non e' quello attuale
+  isConsigliato(p: LicensePlanModel): boolean {
+    return p.livello === LivelloLicenza.Standard && !this.isAttuale(p);
+  }
+
+  nome(p: LicensePlanModel): string {
+    return p.descrizione || p.codice;
+  }
+
+  // ---------------------------------------------------------------- prezzi
+
+  // prezzo da pagare per il periodo scelto
+  prezzoPeriodo(p: LicensePlanModel | undefined): number {
+    if (!p)
+      return 0;
+    return this.annuale ? p.prezzoAnnuale : p.prezzoMensile;
+  }
+
+  // prezzo mostrato in grande: al mese (con l'annuale, l'importo annuo diviso per 12)
+  prezzoAlMese(p: LicensePlanModel): number {
+    return this.annuale ? p.prezzoAnnuale / 12 : p.prezzoMensile;
+  }
+
+  // risparmio dell'annuale rispetto a 12 mensilita' (percentuale intera; 0 se non c'e')
+  risparmio(p: LicensePlanModel): number {
+    if (!p.prezzoMensile)
+      return 0;
+    return Math.max(0, Math.round((1 - p.prezzoAnnuale / (p.prezzoMensile * 12)) * 100));
+  }
+
+  get risparmioMassimo(): number {
+    return Math.max(0, ...(this.offerta?.piano ?? []).map(p => this.risparmio(p)));
   }
 
   get prezzo(): number {
-    const p = this.piano;
-    if (!p)
-      return 0;
-    return Number(this._editForm.get('periodicita')?.value) === PeriodicitaLicenza.Annuale ? p.prezzoAnnuale : p.prezzoMensile;
+    return this.prezzoPeriodo(this.piano);
+  }
+
+  euro(valore: number): string {
+    return valore.toLocaleString(this.transloco.getActiveLang(), { style: 'currency', currency: this.offerta?.valuta || 'EUR', minimumFractionDigits: 2 });
+  }
+
+  // a pagamento senza metodi disponibili non si puo' confermare
+  get pagamentoNonDisponibile(): boolean {
+    return this.prezzo > 0 && this.metodi.length === 0;
+  }
+
+  // ---------------------------------------------------------------- contenuto delle schede
+
+  // funzioni incluse nel piano: la funzione del listino, oppure tutte con il Cumulativo
+  get funzioniIncluse(): string {
+    const ambito = this.offerta?.ambito;
+    if (ambito === AmbitoLicenza.Cumulativo)
+      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement]
+        .map(a => this.transloco.translate('pages.license.function' + a)).join(', ');
+    return this.transloco.translate('pages.license.function' + ambito);
   }
 
   // limiti del piano per la funzione: Presenze utenti, CRM clienti, Documentale spazio, Cumulativo tutti (§5.1)
-  limitiPiano(p: LicensePlanModel): string {
+  limiti(p: LicensePlanModel): string[] {
     const t = (k: string, par?: any) => this.transloco.translate(k, par);
     const ambito = this.offerta?.ambito;
     const tutti = ambito === AmbitoLicenza.Cumulativo;
@@ -96,15 +177,15 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     if (tutti || ambito === AmbitoLicenza.Crm)
       out.push(p.maxClienti == null ? t('pages.licenseSubscribe.unlimitedClients') : t('pages.licenseSubscribe.clients', { max: p.maxClienti }));
     if (tutti || ambito === AmbitoLicenza.DocumentManagement)
-      out.push(p.maxSpazioMB == null ? t('pages.licenseSubscribe.unlimitedStorage')
-        : t('pages.licenseSubscribe.storage', { max: p.maxSpazioMB >= 1024 ? (p.maxSpazioMB / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' GB' : p.maxSpazioMB + ' MB' }));
-    return out.join(', ');
+      out.push(p.maxSpazioMB == null ? t('pages.licenseSubscribe.unlimitedStorage') : t('pages.licenseSubscribe.storage', { max: this.spazio(p.maxSpazioMB) }));
+    return out;
   }
 
-  // a pagamento senza metodi disponibili non si puo' confermare
-  get pagamentoNonDisponibile(): boolean {
-    return this.prezzo > 0 && this.metodi.length === 0;
+  spazio(mb: number): string {
+    return mb >= 1024 ? (mb / 1024).toLocaleString(this.transloco.getActiveLang(), { maximumFractionDigits: 1 }) + ' GB' : mb + ' MB';
   }
+
+  // ---------------------------------------------------------------- salvataggio
 
   SaveData = (editModel: LicenseSubscribeInModel): Observable<boolean> => {
     if (this.pagamentoNonDisponibile)
@@ -126,7 +207,7 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
           return false;
         }
         if (res.success)
-          this.messaggio = res.data?.messages?.[0]?.text ?? null;
+          this.messaggio = res.data?.messages?.map(m => m.text).join(' ') ?? null;
         return res.success;
       }),
       catchError((error) => {
