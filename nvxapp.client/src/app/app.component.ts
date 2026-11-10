@@ -384,6 +384,10 @@ export class AppComponent implements OnInit {
           return false;
         break;
 
+      // listini delle licenze: a login fatto (i ruoli, SuperUser e centro, li filtra la voce di menu)
+      case 'LicenseCatalogListPageComponent':
+        return this.authService.Token != null;
+
 
       default:
 
@@ -399,12 +403,9 @@ export class AppComponent implements OnInit {
 
   public getMenuItem4User() {
 
-
-    let currRole = [];
-
-    if (this.authService.IsUser) {
-      currRole.push("User");
-    }
+    // ruoli dell'utente collegato: le voci della sezione Accesso con ruoli (es. 'User', listini delle licenze
+    // per SuperUser e centro) restano solo a chi li ha; senza login nessun ruolo
+    const currRole = this.authService.RoleNames;
 
     let retVal = this.appPages4User.filter(item =>
       (!item.roles || item.roles.some(role => currRole.includes(role))) &&
@@ -537,12 +538,8 @@ export class AppComponent implements OnInit {
 
   public getGroupedUser(): GroupMainMenuItem[] {
 
-
-    let currRole = [];
-
-    if (this.authService.IsUser) {
-      currRole.push("User");
-    }
+    // ruoli dell'utente collegato (vedi getMenuItem4User)
+    const currRole = this.authService.RoleNames;
 
     let retVal = this.appPages4User.filter(item =>
       (!item.roles || item.roles.some(role => currRole.includes(role))) &&
