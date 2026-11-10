@@ -1,4 +1,5 @@
 using AutoMapper;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         private readonly ICrmUtility _utility;
         private readonly IAz_ClienteRepository _clienteRepository;
         private readonly IAz_ClienteContattoRepository _contattoRepository;
+        private readonly ILicenseGuard _licenseGuard;
 
         public Crm_LeadService(IMapper mapper,
                                UserManager<ApplicationUser> userManager,
@@ -58,7 +60,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                ICrm_Par_FonteRepository crm_Par_FonteRepository,
                                ICrmUtility utility,
                                IAz_ClienteRepository clienteRepository,
-                               IAz_ClienteContattoRepository contattoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                               IAz_ClienteContattoRepository contattoRepository,
+                               ILicenseGuard licenseGuard) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _Crm_Lead = crm_LeadRepository;
             _Crm_ClienteDati = crm_ClienteDatiRepository;
@@ -72,6 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             _utility = utility;
             _clienteRepository = clienteRepository;
             _contattoRepository = contattoRepository;
+            _licenseGuard = licenseGuard;
         }
 
         public virtual async Task<GenericResult<Crm_LeadListOutModel>> Crm_LeadList(GenericRequest<Crm_LeadListInModel> model, Boolean isSubProcess)
@@ -192,6 +196,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 else
                 {
                     var nominativo = string.Join(" ", new[] { lead.Cognome, lead.Nome }.Where(x => !string.IsNullOrWhiteSpace(x)));
+                    // limite clienti della licenza CRM (ANALISI_LICENZE.md [branch Infrastructure] §5.1): il lead diventa un cliente nuovo
+                    if (int.TryParse(this.CurrentCompany, out var idCompany))
+                        await _licenseGuard.EnsureCanAddClientAsync(idCompany);
                     cliente = await _clienteRepository.UpsertAsync(new Az_Cliente
                     {
                         IdAz_Anagrafica = ctx.IdAz_Anagrafica,
