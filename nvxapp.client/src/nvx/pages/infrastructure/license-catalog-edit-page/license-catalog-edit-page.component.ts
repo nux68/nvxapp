@@ -8,7 +8,7 @@ import { UserInterfaceService } from '../../../Utility/infrastructure/user-inter
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  AMBITI_LICENZA, LicenseCatalogGetInModel, LicenseCatalogModel, LicenseCatalogPutInModel, LicenseDealerModel, LicensePlanModel,
+  AMBITI_LICENZA, AmbitoLicenza, LicenseCatalogGetInModel, LicenseCatalogModel, LicenseCatalogPutInModel, LicenseDealerModel, LicensePlanModel,
   TipoSoggettoLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { LivelloLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
@@ -64,8 +64,10 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
       descrizione: [null, [Validators.maxLength(100)]],
       prezzoMensile: [{ value: 0, disabled: free }, [Validators.required, Validators.min(0)]],
       prezzoAnnuale: [{ value: 0, disabled: free }, [Validators.required, Validators.min(0)]],
-      // 0 o vuoto = illimitati
+      // limiti, 0 o vuoto = illimitati: utenti (Presenze), clienti (CRM), spazio in MB (Documentale)
       maxUtenti: [null, [Validators.min(0)]],
+      maxClienti: [null, [Validators.min(0)]],
+      maxSpazioMB: [null, [Validators.min(0)]],
       attivo: [{ value: true, disabled: free }],
     });
   }
@@ -85,7 +87,8 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
       const livello = t('pages.license.level' + l.livello);
       const campi: [string, string][] = [['codice', 'pages.licenseCatalogEdit.planCode'], ['descrizione', 'pages.licenseCatalogEdit.planDescription'],
                                          ['prezzoMensile', 'pages.licenseCatalogEdit.monthlyPrice'], ['prezzoAnnuale', 'pages.licenseCatalogEdit.yearlyPrice'],
-                                         ['maxUtenti', 'pages.licenseCatalogEdit.maxUsers']];
+                                         ['maxUtenti', 'pages.licenseCatalogEdit.maxUsers'], ['maxClienti', 'pages.licenseCatalogEdit.maxClients'],
+                                         ['maxSpazioMB', 'pages.licenseCatalogEdit.maxStorage']];
       for (const [nome, chiave] of campi)
         if (this._editForm.get(l.key + '.' + nome)?.invalid)
           out.push(`${t(chiave)} (${livello})`);
@@ -106,6 +109,13 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
       pro: this.planGroup(false),
     });
   }
+
+  // limiti mostrati per la funzione del listino: Presenze utenti, CRM clienti, Documentale spazio, Cumulativo tutti (§5.1)
+  usaLimite(funzione: AmbitoLicenza): boolean {
+    const ambito = Number(this._editForm?.get('ambito')?.value);
+    return ambito === funzione || ambito === AmbitoLicenza.Cumulativo;
+  }
+  public readonly Ambito = AmbitoLicenza;
 
   get isFinancialAdvisor(): boolean {
     return Number(this._editForm?.get('tipoSoggetto')?.value) === TipoSoggettoLicenza.FinancialAdvisor;
@@ -160,6 +170,8 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
         prezzoAnnuale: free ? 0 : (numero(p.prezzoAnnuale) ?? 0),
         // 0 o vuoto = illimitati
         maxUtenti: (numero(p.maxUtenti) ?? 0) > 0 ? numero(p.maxUtenti) : null,
+        maxClienti: (numero(p.maxClienti) ?? 0) > 0 ? numero(p.maxClienti) : null,
+        maxSpazioMB: (numero(p.maxSpazioMB) ?? 0) > 0 ? numero(p.maxSpazioMB) : null,
         attivo: free ? true : !!p.attivo,
       });
     });

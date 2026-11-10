@@ -38,6 +38,8 @@ namespace nvxapp.server.data.Entities.Public
         public string Valuta { get; set; } = "EUR";
 
         public int? MaxUtentiBloccato { get; set; }
+        public int? MaxClientiBloccato { get; set; }
+        public int? MaxSpazioMBBloccato { get; set; }
         public bool DisponibileSuCompany { get; set; }
 
         // centro del listino d'origine (null = listino globale), per i resoconti degli incassi
