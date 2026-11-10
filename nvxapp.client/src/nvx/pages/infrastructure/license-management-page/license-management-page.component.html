@@ -69,15 +69,21 @@
         <ion-card-content>
           <ion-item class="nvx-item-4-title">
             <ion-label>{{ 'pages.license.function' + cumulativo | transloco }}</ion-label>
+            @if (status.cumulativo) {
+              <ion-badge slot="end" [color]="coloreStato(status.cumulativo)">{{ descrizioneStato(status.cumulativo) }}</ion-badge>
+            }
           </ion-item>
           <p class="nvx-nota-disabled">{{ 'pages.licenseManagement.bundleNote' | transloco }}</p>
+          @if (status.cumulativo?.dataScadenza) {
+            <p>{{ (status.cumulativo.stato === Stato.Grace ? 'pages.licenseManagement.inGraceUntil' : 'pages.licenseManagement.validUntil') | transloco: { data: (status.cumulativo.dataScadenza | date:'dd/MM/yyyy') } }}</p>
+          }
 
           <ng-container *ngTemplateOutlet="abbonamenti; context: { ambito: cumulativo }"></ng-container>
 
           @if (status.canManage && offertaDi(cumulativo)) {
             <ion-button size="small" fill="outline" shape="round" (click)="sottoscrivi(cumulativo)">
               <ion-icon slot="start" name="cart-outline"></ion-icon>
-              {{ 'pages.licenseManagement.subscribe' | transloco }}
+              {{ (status.cumulativo?.livello == null ? 'pages.licenseManagement.subscribe' : 'pages.licenseManagement.upgrade') | transloco }}
             </ion-button>
           }
         </ion-card-content>
