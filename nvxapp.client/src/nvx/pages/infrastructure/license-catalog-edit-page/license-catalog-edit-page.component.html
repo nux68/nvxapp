@@ -105,10 +105,23 @@
             <ion-note color="danger">{{ 'pages.licenseCatalogEdit.priceInvalid' | transloco }}</ion-note>
           }
 
-          <ion-item>
-            <ion-input type="number" formControlName="maxUtenti" [label]="'pages.licenseCatalogEdit.maxUsers' | transloco" labelPlacement="floating" min="0"></ion-input>
-          </ion-item>
-          @if (_editForm.get(l.key + '.maxUtenti')?.invalid) {
+          <!-- limiti della funzione del listino (il Cumulativo li ha tutti) -->
+          @if (usaLimite(Ambito.AttendanceTracking)) {
+            <ion-item>
+              <ion-input type="number" formControlName="maxUtenti" [label]="'pages.licenseCatalogEdit.maxUsers' | transloco" labelPlacement="floating" min="0"></ion-input>
+            </ion-item>
+          }
+          @if (usaLimite(Ambito.Crm)) {
+            <ion-item>
+              <ion-input type="number" formControlName="maxClienti" [label]="'pages.licenseCatalogEdit.maxClients' | transloco" labelPlacement="floating" min="0"></ion-input>
+            </ion-item>
+          }
+          @if (usaLimite(Ambito.DocumentManagement)) {
+            <ion-item>
+              <ion-input type="number" formControlName="maxSpazioMB" [label]="'pages.licenseCatalogEdit.maxStorage' | transloco" labelPlacement="floating" min="0"></ion-input>
+            </ion-item>
+          }
+          @if (_editForm.get(l.key + '.maxUtenti')?.invalid || _editForm.get(l.key + '.maxClienti')?.invalid || _editForm.get(l.key + '.maxSpazioMB')?.invalid) {
             <ion-note color="danger">{{ 'pages.licenseCatalogEdit.maxUsersInvalid' | transloco }}</ion-note>
           }
           <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.maxUsersNote' | transloco }}</ion-note>

@@ -47,6 +47,12 @@ export class LicenseSettingsPageComponent extends BasePageConfirmCancelComponent
       maxUtentiFree: [null, [Validators.min(0)]],
       maxUtentiStandard: [null, [Validators.min(0)]],
       maxUtentiPro: [null, [Validators.min(0)]],
+      maxClientiFree: [null, [Validators.min(0)]],
+      maxClientiStandard: [null, [Validators.min(0)]],
+      maxClientiPro: [null, [Validators.min(0)]],
+      maxSpazioMBFree: [null, [Validators.min(0)]],
+      maxSpazioMBStandard: [null, [Validators.min(0)]],
+      maxSpazioMBPro: [null, [Validators.min(0)]],
       graceGiorni: [7, [Validators.required, Validators.min(0), Validators.max(365)]],
       avvisoGiorni: [10, [Validators.required, Validators.min(0), Validators.max(365)]],
     });
@@ -76,6 +82,12 @@ export class LicenseSettingsPageComponent extends BasePageConfirmCancelComponent
       maxUtentiFree: numero(editModel.maxUtentiFree),
       maxUtentiStandard: numero(editModel.maxUtentiStandard),
       maxUtentiPro: numero(editModel.maxUtentiPro),
+      maxClientiFree: numero(editModel.maxClientiFree),
+      maxClientiStandard: numero(editModel.maxClientiStandard),
+      maxClientiPro: numero(editModel.maxClientiPro),
+      maxSpazioMBFree: numero(editModel.maxSpazioMBFree),
+      maxSpazioMBStandard: numero(editModel.maxSpazioMBStandard),
+      maxSpazioMBPro: numero(editModel.maxSpazioMBPro),
       graceGiorni: Number(editModel.graceGiorni) || 0,
       avvisoGiorni: Number(editModel.avvisoGiorni) || 0
     };
