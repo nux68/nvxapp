@@ -377,6 +377,28 @@
         "confermaTitolo": "Attivazione account",
         "esito": "La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto."
       }
+    },
+    "widgets": {
+      "noData": "Dati non disponibili.",
+      "details": "Dettagli",
+      "storage": {
+        "title": "Spazio documenti",
+        "description": "Spazio occupato e disponibile dell'azienda.",
+        "used": "Occupato",
+        "available": "Disponibile",
+        "unlimited": "Illimitato",
+        "ofQuota": "{{percent}}% di {{quota}}",
+        "files": "{{files}} file"
+      },
+      "typeSpace": {
+        "title": "Spazio per tipo documento",
+        "description": "Grafico a torta dello spazio occupato per tipologia di documento.",
+        "total": "occupati",
+        "others": "Altri",
+        "trash": "Cestino",
+        "empty": "Nessun documento caricato.",
+        "open": "Apri l'archivio"
+      }
     }
   },
   "pages": {

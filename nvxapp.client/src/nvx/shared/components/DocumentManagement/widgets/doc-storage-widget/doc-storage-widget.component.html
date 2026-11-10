@@ -1,0 +1,32 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!storage) {
+  <div class="nvx-w-empty">{{ 'documents.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat" [class.danger]="storage.overQuota" [class.warning]="!storage.overQuota && storage.overWarning" [class.primary]="!storage.overQuota && !storage.overWarning">
+      <div class="valore">{{ bytes(storage.usedBytes) }}</div>
+      <div class="etichetta">{{ 'documents.widgets.storage.used' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat success">
+      <div class="valore">{{ illimitato ? ('documents.widgets.storage.unlimited' | transloco) : bytes(disponibiliBytes) }}</div>
+      <div class="etichetta">{{ 'documents.widgets.storage.available' | transloco }}</div>
+    </div>
+  </div>
+
+  @if (!illimitato) {
+    <div class="nvx-dsw-bar">
+      <div class="nvx-w-bar" [class.danger]="storage.overQuota" [class.warning]="!storage.overQuota && storage.overWarning">
+        <div [style.width.%]="percentuale"></div>
+      </div>
+      <div class="nvx-dsw-bar-text nvx-w-muted">
+        {{ 'documents.widgets.storage.ofQuota' | transloco: { percent: percentuale, quota: bytes(quotaBytes) } }}
+      </div>
+    </div>
+  }
+
+  <div class="nvx-w-muted nvx-dsw-info">
+    {{ storage.pacchetto }} · {{ 'documents.widgets.storage.files' | transloco: { files: storage.fileCount } }}
+  </div>
+  <button type="button" class="nvx-w-link" (click)="dettagli()">{{ 'documents.widgets.details' | transloco }}</button>
+}
