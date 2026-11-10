@@ -98,7 +98,8 @@
     "customers": "Customers",
     "manualInfrastructure": "Basic functions manual",
     "licenseManagement": "Licence management",
-    "licenseCatalogs": "Licence price lists"
+    "licenseCatalogs": "Licence price lists",
+    "preferences": "Preferences"
   },
   "showcase": {
     "menu": {
