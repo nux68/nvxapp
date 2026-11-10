@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote } from '@ionic/angular';
+import { RouterModule } from '@angular/router';
 import { UserPageComponent } from './user-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { WidgetConfigComponent } from '../../../shared/components/infrastructure/widgets/widget-config/widget-config.component';
 
 
 
@@ -12,17 +13,16 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
   imports: [
     CommonModule,
     FormsModule,
-    IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel,
+    IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote,
     RouterModule.forChild([
       {
         path: '',
         component: UserPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    WidgetConfigComponent
   ],
   declarations: [UserPageComponent]
 })
 export class UserPageModule { }
-
-

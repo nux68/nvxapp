@@ -1,0 +1,79 @@
+@if (caricamento) {
+  <div class="nvx-wc-loading"><ion-spinner></ion-spinner></div>
+} @else if (!configurabile) {
+  <ion-note>{{ 'widgets.config.notConfigurable' | transloco }}</ion-note>
+} @else {
+  <div class="nvx-wc">
+
+    <!-- widget nella dashboard, nell'ordine -->
+    <section>
+      <div class="nvx-wc-head">
+        <h2>{{ 'widgets.config.selected' | transloco }}</h2>
+        <ion-button fill="clear" size="small" (click)="ripristina()">
+          <ion-icon slot="start" name="refresh"></ion-icon>
+          {{ 'widgets.config.restoreDefaults' | transloco }}
+        </ion-button>
+      </div>
+
+      @if (scelti.length === 0) {
+        <p class="nvx-wc-empty">{{ 'widgets.config.noneSelected' | transloco }}</p>
+      }
+
+      <ul class="nvx-wc-list">
+        @for (w of scelti; track w.key; let i = $index, last = $last) {
+          <li class="nvx-wc-item selezionato">
+            <span class="nvx-wc-icon"><ion-icon [name]="w.icon"></ion-icon></span>
+            <div class="nvx-wc-text">
+              <div class="nvx-wc-title">{{ w.title | transloco }}</div>
+              <div class="nvx-wc-desc">{{ nomeApplicativo(w.application) | transloco }} · {{ w.description | transloco }}</div>
+            </div>
+            <div class="nvx-wc-actions">
+              <ion-button fill="clear" size="small" [disabled]="i === 0" (click)="sposta(i, -1)" [attr.aria-label]="'widgets.config.moveUp' | transloco">
+                <ion-icon slot="icon-only" name="chevron-up"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" [disabled]="last" (click)="sposta(i, 1)" [attr.aria-label]="'widgets.config.moveDown' | transloco">
+                <ion-icon slot="icon-only" name="chevron-down"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" color="danger" (click)="rimuovi(w)" [attr.aria-label]="'widgets.config.remove' | transloco">
+                <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+              </ion-button>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- widget disponibili, per applicativo -->
+    <section>
+      <div class="nvx-wc-head">
+        <h2>{{ 'widgets.config.available' | transloco }}</h2>
+      </div>
+
+      @if (gruppi.length === 0) {
+        <p class="nvx-wc-empty">{{ 'widgets.config.allAdded' | transloco }}</p>
+      }
+
+      @for (g of gruppi; track g.application) {
+        <h3 class="nvx-wc-group">{{ nomeApplicativo(g.application) | transloco }}</h3>
+        <ul class="nvx-wc-list">
+          @for (w of g.widgets; track w.key) {
+            <li class="nvx-wc-item">
+              <span class="nvx-wc-icon"><ion-icon [name]="w.icon"></ion-icon></span>
+              <div class="nvx-wc-text">
+                <div class="nvx-wc-title">{{ w.title | transloco }}</div>
+                <div class="nvx-wc-desc">{{ w.description | transloco }}</div>
+              </div>
+              <div class="nvx-wc-actions">
+                <ion-button fill="outline" size="small" (click)="aggiungi(w)">
+                  <ion-icon slot="start" name="add"></ion-icon>
+                  {{ 'widgets.config.add' | transloco }}
+                </ion-button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+  </div>
+}
