@@ -5,76 +5,139 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-card>
-    <ion-card-content>
+  @if (offerta) {
+    <div class="nvx-pricing" [formGroup]="_editForm">
 
-      @if (offerta) {
-        <ion-item class="nvx-item-4-title">
-          <ion-label>{{ 'pages.license.function' + offerta.ambito | transloco }}</ion-label>
-        </ion-item>
-
+      <!-- intestazione -->
+      <header class="nvx-pricing-head">
+        <h1>{{ 'pages.licenseSubscribe.heading' | transloco: { funzione: ('pages.license.function' + offerta.ambito | transloco) } }}</h1>
+        <p>{{ 'pages.licenseSubscribe.subheading' | transloco }}</p>
         @if (attuale) {
-          <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.changeNote' | transloco: { piano: attuale.descrizionePiano ?? '' } }}</ion-note>
+          <p class="nvx-pricing-note">{{ 'pages.licenseSubscribe.changeNote' | transloco: { piano: attuale.descrizionePiano ?? '' } }}</p>
         }
+      </header>
 
-        <form [formGroup]="_editForm">
+      <!-- Mensile / Annuale -->
+      <div class="nvx-pricing-switch" role="radiogroup">
+        <button type="button" role="radio" [attr.aria-checked]="!annuale" [class.attivo]="!annuale" (click)="periodo(Periodicita.Mensile)">
+          {{ 'pages.license.period1' | transloco }}
+        </button>
+        <button type="button" role="radio" [attr.aria-checked]="annuale" [class.attivo]="annuale" (click)="periodo(Periodicita.Annuale)">
+          {{ 'pages.license.period2' | transloco }}
+          @if (risparmioMassimo > 0) {
+            <span class="nvx-pricing-save">{{ 'pages.licenseSubscribe.saveUpTo' | transloco: { pct: risparmioMassimo } }}</span>
+          }
+        </button>
+      </div>
 
-          <ion-item>
-            <ion-select formControlName="livello" [label]="'pages.licenseSubscribe.plan' | transloco" labelPlacement="floating" interface="popover">
-              @for (p of offerta.piano; track p.livello) {
-                <ion-select-option [value]="p.livello">
-                  {{ p.descrizione || p.codice }} – {{ limitiPiano(p) }}
-                </ion-select-option>
+      <!-- schede dei piani -->
+      <div class="nvx-pricing-grid">
+        @for (p of offerta.piano; track p.livello) {
+          <div class="nvx-plan"
+               [class.consigliato]="isConsigliato(p)"
+               [class.selezionato]="livelloScelto === p.livello"
+               [class.attuale]="isAttuale(p)"
+               (click)="seleziona(p)">
+
+            @if (isConsigliato(p)) {
+              <div class="nvx-plan-ribbon">{{ 'pages.licenseSubscribe.recommended' | transloco }}</div>
+            }
+            @if (isAttuale(p)) {
+              <div class="nvx-plan-ribbon attuale">{{ 'pages.licenseSubscribe.current' | transloco }}</div>
+            }
+
+            <h2>{{ nome(p) }}</h2>
+
+            <div class="nvx-plan-price">
+              @if (prezzoPeriodo(p) === 0) {
+                <span class="importo">{{ 'pages.licenseSubscribe.free' | transloco }}</span>
+              } @else {
+                <span class="importo">{{ euro(prezzoAlMese(p)) }}</span>
+                <span class="unita">{{ 'pages.licenseSubscribe.perMonth' | transloco }}</span>
               }
-            </ion-select>
-          </ion-item>
-
-          <ion-item>
-            <ion-select formControlName="periodicita" [label]="'pages.licenseSubscribe.period' | transloco" labelPlacement="floating" interface="popover">
-              @for (per of periodicita; track per) {
-                <ion-select-option [value]="per">{{ 'pages.license.period' + per | transloco }}</ion-select-option>
+            </div>
+            <div class="nvx-plan-billing">
+              @if (prezzoPeriodo(p) === 0) {
+                {{ 'pages.licenseSubscribe.freeForever' | transloco }}
+              } @else if (annuale) {
+                {{ 'pages.licenseSubscribe.billedYearly' | transloco: { totale: euro(p.prezzoAnnuale) } }}
+                @if (risparmio(p) > 0) {
+                  <span class="nvx-plan-save">-{{ risparmio(p) }}%</span>
+                }
+              } @else {
+                {{ 'pages.licenseSubscribe.billedMonthly' | transloco }}
               }
-            </ion-select>
-          </ion-item>
+            </div>
 
-          <ion-item lines="none">
-            <ion-label>
-              <h2>{{ 'pages.licenseSubscribe.price' | transloco }}: {{ prezzo | number:'1.2-2' }} {{ offerta.valuta }}</h2>
-              @if (prezzo === 0) {
-                <p>{{ 'pages.licenseSubscribe.freeNote' | transloco }}</p>
+            <button type="button" class="nvx-plan-cta" [disabled]="isAttuale(p)" (click)="seleziona(p); $event.stopPropagation()">
+              @if (isAttuale(p)) {
+                {{ 'pages.licenseSubscribe.current' | transloco }}
+              } @else if (livelloScelto === p.livello) {
+                <ion-icon name="checkmark-circle"></ion-icon> {{ 'pages.licenseSubscribe.selected' | transloco }}
+              } @else {
+                {{ 'pages.licenseSubscribe.choose' | transloco: { piano: nome(p) } }}
               }
-            </ion-label>
-          </ion-item>
+            </button>
+
+            <ul class="nvx-plan-features">
+              <li><ion-icon name="checkmark"></ion-icon>{{ 'pages.licenseSubscribe.includes' | transloco: { funzioni: funzioniIncluse } }}</li>
+              @for (l of limiti(p); track l) {
+                <li><ion-icon name="checkmark"></ion-icon>{{ l }}</li>
+              }
+              <li><ion-icon name="checkmark"></ion-icon>{{ 'pages.licenseSubscribe.support' | transloco }}</li>
+            </ul>
+          </div>
+        }
+      </div>
+
+      <!-- riepilogo, pagamento, rinnovo -->
+      @if (piano) {
+        <section class="nvx-pricing-summary">
+          <div class="riga">
+            <div>
+              <div class="titolo">{{ 'pages.licenseSubscribe.summary' | transloco }}</div>
+              <div class="dettaglio">
+                {{ nome(piano) }} · {{ 'pages.license.period' + (annuale ? 2 : 1) | transloco }} ·
+                {{ prezzo === 0 ? ('pages.licenseSubscribe.free' | transloco) : euro(prezzo) }}
+              </div>
+            </div>
+          </div>
 
           @if (prezzo > 0) {
             @if (metodi.length > 0) {
-              <ion-item>
-                <ion-select formControlName="metodo" [label]="'pages.licenseSubscribe.method' | transloco" labelPlacement="floating" interface="popover">
-                  @for (m of metodi; track m) {
-                    <ion-select-option [value]="m">{{ 'pages.license.method' + m | transloco }}</ion-select-option>
-                  }
-                </ion-select>
-              </ion-item>
+              <div class="etichetta">{{ 'pages.licenseSubscribe.method' | transloco }}</div>
+              <ion-segment formControlName="metodo" class="nvx-pricing-methods">
+                @for (m of metodi; track m) {
+                  <ion-segment-button [value]="m">
+                    <ion-label>{{ 'pages.license.method' + m | transloco }}</ion-label>
+                  </ion-segment-button>
+                }
+              </ion-segment>
             } @else {
               <ion-note color="danger">{{ 'pages.licenseSubscribe.noPaymentMethod' | transloco }}</ion-note>
             }
+          } @else {
+            <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.freeNote' | transloco }}</ion-note>
           }
 
-          <ion-item>
+          <ion-item lines="none" class="nvx-pricing-renew">
             <ion-toggle formControlName="rinnovoAutomatico" justify="start">{{ 'pages.licenseManagement.autoRenew' | transloco }}</ion-toggle>
           </ion-item>
 
           @if (debugPagamenti && prezzo > 0) {
             <ion-note color="warning">{{ 'pages.license.debugPayments' | transloco }}</ion-note>
           }
-
-        </form>
-      } @else {
-        <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.noOffer' | transloco }}</ion-note>
+        </section>
       }
 
-    </ion-card-content>
-  </ion-card>
+    </div>
+  } @else {
+    <ion-card>
+      <ion-card-content>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSubscribe.noOffer' | transloco }}</ion-note>
+      </ion-card-content>
+    </ion-card>
+  }
 
 </ion-content>
 
