@@ -68,14 +68,27 @@
   color: var(--nvx-text-muted);
 }
 
-.nvx-widget-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 16px;
-  align-items: start;
+// righe di widget (widget-layout.ts): ogni widget ha la sua frazione della riga in --nvx-w;
+// le righe incomplete sono centrate e i widget della stessa riga hanno la stessa altezza
+$gap: 16px;
+
+.nvx-widget-rows {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+}
+
+.nvx-widget-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: $gap;
 }
 
 .nvx-widget {
+  --nvx-w: 1;
+  flex: 0 0 calc(var(--nvx-w) * 100% - #{$gap} * (1 - var(--nvx-w)));
   min-width: 0;
   padding: 16px 18px 18px;
   border-radius: var(--nvx-radius-lg);
@@ -89,17 +102,18 @@
   }
 }
 
-.nvx-widget-small { grid-column: span 4; }
-.nvx-widget-medium { grid-column: span 6; }
-.nvx-widget-large { grid-column: 1 / -1; }
-
+// tablet: nessun widget sotto meta' riga (i piccoli vanno due per riga)
 @media (max-width: 991px) {
-  .nvx-widget-small { grid-column: span 6; }
+  .nvx-widget {
+    flex-basis: calc(max(var(--nvx-w), 0.5) * 100% - #{$gap} * (1 - max(var(--nvx-w), 0.5)));
+  }
 }
 
+// telefono: un widget per riga
 @media (max-width: 767px) {
-  .nvx-widget-small,
-  .nvx-widget-medium { grid-column: 1 / -1; }
+  .nvx-widget {
+    flex-basis: 100%;
+  }
 }
 
 .nvx-widget-head {
