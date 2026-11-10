@@ -490,7 +490,7 @@ Dove il §13 è aperto ho scelto la soluzione più semplice e, quando possibile,
 - **Rinnovo automatico**: la manutenzione notturna rinnova solo i piani gratuiti e, in modalità debug, quelli a pagamento. Con un provider reale i rinnovi li addebiterà il provider (subscription e webhook).
 - **Avvisi di scadenza**: email ai PowerAdmin del soggetto per le licenze senza rinnovo automatico, una volta per periodo, solo se l'invio email è configurato. Le aziende coperte da uno studio non ricevono avvisi propri.
 - **Listini iniziali**: nessuno precaricato (i prezzi *x* e *y* non sono ancora decisi). Il SuperUser li crea dalla pagina Listini licenze; i nuovi listini propongono i tre piani con gli utenti predefiniti.
-- **Debug dei pagamenti**: attivo solo con `Payments:Debug = true` (variabile `NVXAPP_Payments__Debug`) **e** fuori da Production. In Production il flag è ignorato.
+- **Debug dei pagamenti**: attivo solo con `Payments:Debug = true` **e** fuori da Production (in Production il flag è ignorato). In sviluppo è già acceso in `appsettings.Development.json` e `appsettings.Development.DEV1.json`; altrove si accende con la variabile `NVXAPP_Payments__Debug`.
 - **Cancellazioni**: gli abbonamenti spariscono con l'azienda o lo studio, i listini con il centro (piano e listino dell'abbonamento diventano null: l'abbonamento ne conserva la fotografia). I pagamenti restano.
 
 ### 15.4 Cosa manca
