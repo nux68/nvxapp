@@ -516,6 +516,16 @@ All'avvio, dopo le migration, `LicenseCatalogSeeder` crea i listini globali dich
 - Il listino di una funzione sta nel ramo della funzione (`ClientServer-Service/<ramo>/Initializer/...LicenseCatalogSeed.cs`); in Infrastructure solo il Cumulativo (`License/Seed/InfrastructureLicenseCatalogSeed.cs`).
 - Un errore nella creazione non ferma l'avvio: finisce nel log.
 
+### 15.6 Applicativi e licenze (10/11/2026)
+
+Con il sistema licenze acceso un applicativo si usa solo se è **attivo** (`CompanyApplication`) **e coperto da una licenza** (propria dell'azienda, dello studio con `DisponibileSuCompany`, o cumulativa: la regola di `ILicenseGuard`, §4.3). Con il sistema spento tutto resta come prima.
+
+- **Menu**: `UserLoad` restituisce in `activeApplications` solo gli applicativi attivi e coperti da licenza (e in `financialAdvisorApplications` quelli dello studio coperti dalla sua licenza), quindi il menu mostra le sezioni degli applicativi solo con la licenza. Dopo una sottoscrizione il client rilegge gli applicativi (`RefreshLicense`).
+- **Chi attiva/disattiva** (`CompanyApplicationService.CanChangeAsync`): il SuperUser sempre; con il sistema licenze acceso, solo per gli applicativi coperti da licenza, il DealerPowerAdmin del centro e il **FinancialAdvisorPowerAdmin dello studio** dell'azienda (pagina companyedit). Con il sistema spento la regola di sempre (SuperUser e DealerPowerAdmin).
+- **companyedit**: per ogni applicativo il server dice se è coperto da licenza (`Licensed`) e se l'utente può cambiarlo (`CanChange`); gli applicativi senza licenza sono disabilitati con la nota "Nessuna licenza". Il salvataggio dell'azienda salta gli applicativi che l'utente non può cambiare invece di fallire. Per un'azienda nuova la licenza è la copertura dello studio verso le sue aziende.
+- **Sottoscrizione dell'azienda in autonomia**: a sottoscrizione riuscita si attivano gli applicativi coperti (Cumulativo = tutti) con schema e dati iniziali, come in companyedit (`ActivateForLicenseAsync`). Un errore nell'attivazione non annulla la sottoscrizione: l'utente riceve un avviso. Con i pagamenti reali (Fase 3) l'attivazione andrà fatta alla conferma del pagamento.
+- La **scadenza** della licenza non disattiva l'applicativo: lo nasconde dal menu (non più coperto); rinnovando torna visibile.
+
 ---
 
 ### Riferimenti nel codice

@@ -601,4 +601,16 @@
     <value>Bundle (all functions)</value>
     <comment>licenze</comment>
   </data>
+  <data name="ApplicationLicenseRequired" xml:space="preserve">
+    <value>To activate {0} the company must be covered by a licence (its own or the firm's).</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseApplicationsActivated" xml:space="preserve">
+    <value>Applications activated: {0}.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseApplicationsActivationFailed" xml:space="preserve">
+    <value>Licence activated, but the applications could not be activated: contact support.</value>
+    <comment>licenze</comment>
+  </data>
 </root>
