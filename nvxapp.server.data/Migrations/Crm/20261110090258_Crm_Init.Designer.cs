@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Crm
 {
     [DbContext(typeof(CrmDbContext))]
-    [Migration("20261104162731_Crm_Init")]
+    [Migration("20261110090258_Crm_Init")]
     partial class Crm_Init
     {
         /// <inheritdoc />
