@@ -222,6 +222,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public int UtentiAttivi { get; set; }
         public int? LimiteUtenti { get; set; }
         public List<LicenseFunctionStatusModel> Funzione { get; set; } = new List<LicenseFunctionStatusModel>();
+        // stato della licenza Cumulativo (propria o dello studio), come per le singole funzioni
+        public LicenseFunctionStatusModel Cumulativo { get; set; } = new LicenseFunctionStatusModel { Ambito = 100 };
         public List<LicenseSubscriptionModel> Abbonamento { get; set; } = new List<LicenseSubscriptionModel>();
         public List<LicenseOfferModel> Offerta { get; set; } = new List<LicenseOfferModel>();
         public List<LicensePaymentModel> Pagamento { get; set; } = new List<LicensePaymentModel>();

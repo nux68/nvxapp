@@ -184,6 +184,8 @@ export class LicenseStatusGetOutModel extends ModelResult {
   public utentiAttivi: number = 0;
   public limiteUtenti: number | null = null;
   public funzione: LicenseFunctionStatusModel[] = [];
+  // stato della licenza Cumulativo (propria o dello studio)
+  public cumulativo: LicenseFunctionStatusModel = new LicenseFunctionStatusModel();
   public abbonamento: LicenseSubscriptionModel[] = [];
   public offerta: LicenseOfferModel[] = [];
   public pagamento: LicensePaymentModel[] = [];
