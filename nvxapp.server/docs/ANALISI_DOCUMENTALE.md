@@ -363,5 +363,5 @@ Legenda: [x] fatto · [ ] da fare.
 - [ ] CRM: fascicolo del cliente in lettura nella scheda cliente
 - [ ] AI sui contenuti (classificazione, domande sui documenti), quando si deciderà quali tipologie ammettere (oggi: nessuna)
 - [ ] OCR delle scansioni
-- [ ] firma elettronica tramite provider
+- [ ] firma elettronica tramite provider – analisi in `ANALISI_FIRMA_DIGITALE.md`
 - [ ] archivio proprio dello studio (escluso dalla prima versione)
