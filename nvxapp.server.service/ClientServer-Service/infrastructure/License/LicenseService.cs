@@ -357,6 +357,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 }
                 retVal.LimiteUtenti = LicenseGuard.LimitePiuAlto(coperture, settings);
 
+                // Cumulativo: la copertura per l'ambito Cumulativo considera solo le licenze cumulative (proprie o dello studio)
+                var cum = azienda ? await _licenseGuard.CoverageAsync(soggetto.Id, AmbitoLicenza.Cumulativo, reale: true)
+                                  : await _licenseGuard.StudioCoverageAsync(soggetto.Id, AmbitoLicenza.Cumulativo, reale: true);
+                retVal.Cumulativo = new LicenseFunctionStatusModel
+                {
+                    Ambito = (int)AmbitoLicenza.Cumulativo,
+                    Stato = (int)cum.Stato,
+                    Livello = (int?)cum.Livello,
+                    DescrizionePiano = cum.DescrizionePiano,
+                    Fonte = (int)cum.Fonte,
+                    Studio = cum.Studio,
+                    DataScadenza = cum.DataScadenza,
+                    MaxUtenti = cum.Livello == null ? settings.MaxUtentiFree : cum.MaxUtenti
+                };
+
                 // abbonamenti propri (gli annullati non si mostrano)
                 var propri = await AbbonamentiSoggetto(soggetto).Where(x => x.Stato != StatoAbbonamento.Annullato)
                                                                 .OrderBy(x => x.Ambito).ThenByDescending(x => x.DataScadenza)
