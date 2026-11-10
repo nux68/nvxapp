@@ -1,6 +1,6 @@
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Extension;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 
@@ -11,23 +11,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Extension
     public class GestionePresenzeUserCompanyListExtension : IUserCompanyListExtension
     {
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
-        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly ICommonDipendenteUtility _commonDipendenteUtility;
 
         public ApplicationType Application => ApplicationType.AttendanceTracking;
 
         public GestionePresenzeUserCompanyListExtension(IDip_AnagraficaRepository dip_AnagraficaRepository,
-                                                        IGestionePresenzeUserUtility gestionePresenzeUserUtility)
+                                                        ICommonDipendenteUtility commonDipendenteUtility)
         {
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
-            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _commonDipendenteUtility = commonDipendenteUtility;
         }
 
         public async Task ExtendAsync(int IdCompany, List<UserCompanyModel> userCompanyList)
         {
             var idAspNetUsers = userCompanyList.Where(x => x.IdAspNetUsers != null).Select(x => x.IdAspNetUsers!).ToList();
 
-            // anagrafiche create prima dell'assegnazione automatica: Cognome e Nome vuoti
-            await _gestionePresenzeUserUtility.CompletaCognomeNome(idAspNetUsers);
+            // anagrafiche con Cognome/Nome provvisori: completate dall'inizializzazione unica (Infrastructure)
+            await _commonDipendenteUtility.CompletaCognomeNomeAsync(IdCompany, idAspNetUsers);
 
             var anagrafiche = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers))
                                                        .Select(x => new { x.IdAspNetUsers, x.Cognome, x.Nome })
