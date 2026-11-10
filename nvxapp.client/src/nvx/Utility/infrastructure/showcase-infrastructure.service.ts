@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 import { MainMenuItem, MenuType } from './main-menu.service';
 import { ShowcaseContenuti } from './showcase.model';
 import { SITE_NAME } from './site-name';
+import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
  Showcase generico di Infrastructure: voci di menu, rotte e testi delle pagine pubbliche
@@ -104,11 +105,8 @@ export class ShowcaseInfrastructureService {
       pricing: {
         titolo: t('pricing.titolo'),
         sottotitolo: t('pricing.sottotitolo'),
-        piani: [
-          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.prova.utenti'), t('pricing.caratteristiche.assistenzaEmail')], cta: t('pricing.piani.prova.cta') },
-          { nome: 'Standard', prezzo: '29 €', periodo: t('pricing.periodoMese'), descrizione: t('pricing.piani.standard.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.standard.utenti'), t('pricing.piani.standard.assistenza')], cta: t('pricing.piani.standard.cta'), evidenza: true },
-          { nome: 'Professional', prezzo: '79 €', periodo: t('pricing.periodoMese'), descrizione: t('pricing.piani.professional.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.professional.utenti'), t('pricing.piani.professional.assistenza'), t('pricing.piani.professional.aziende')], cta: t('pricing.piani.professional.cta') }
-        ],
+        ambiti: [AmbitoLicenza.Cumulativo],
+        inclusi: [t('pricing.inclusi.tutteLeFunzioni'), t('pricing.inclusi.assistenza'), t('pricing.inclusi.dispositivi'), t('pricing.inclusi.aggiornamenti')],
         nota: t('pricing.nota'),
         domande: [
           { domanda: t('pricing.domande.carta.domanda'), risposta: t('pricing.domande.carta.risposta') },
