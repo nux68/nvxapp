@@ -15,6 +15,7 @@ using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement._utility;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_ConfigService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -41,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         private readonly IAspNetUserRolesRepository _userRolesRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
         private readonly IDocumentManagementUtility _utility;
+        private readonly ICommonDipendenteUtility _commonDipendenteUtility;
 
         public Doc_ConfigService(IMapper mapper,
                                  UserManager<ApplicationUser> userManager,
@@ -58,8 +60,10 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                                  IAspNetRolesRepository rolesRepository,
                                  IAspNetUserRolesRepository userRolesRepository,
                                  IUserCompanyRepository userCompanyRepository,
-                                 IDocumentManagementUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                 IDocumentManagementUtility utility,
+                                 ICommonDipendenteUtility commonDipendenteUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _commonDipendenteUtility = commonDipendenteUtility;
             _cfgRepository = cfgRepository;
             _tipoRepository = tipoRepository;
             _cartellaRepository = cartellaRepository;
@@ -364,9 +368,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
         /*
          Gli utenti dell'azienda con il ruolo User (i dipendenti con accesso all'app) sono dipendenti anche nel documentale:
-         chi non ha ancora l'anagrafica comune (es. le presenze la creano solo al primo accesso, o le presenze non sono attive)
-         la riceve qui, con il nome utente come cognome provvisorio (modificabile). Le presenze completano poi i loro dati
-         (rapporto di lavoro, reparto e competenza) al primo accesso.
+         chi non ha ancora l'anagrafica comune la riceve qui, dall'inizializzazione unica di Infrastructure
+         (ICommonDipendenteUtility: Cognome e Nome iniziali, modificabili), che completa anche i nomi provvisori.
+         Le presenze completano poi i loro dati (rapporto di lavoro, reparto e competenza) al primo accesso.
         */
         private async Task AllineaUtentiAsync(DocContesto ctx)
         {
@@ -380,30 +384,11 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
             var conAnagrafica = await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers != null)
                                          .Select(x => x.IdAspNetUsers!).ToListAsync();
             var mancanti = utenti.Except(conAnagrafica).ToList();
-            if (mancanti.Count == 0)
-                return;
+            if (mancanti.Count > 0)
+                await _commonDipendenteUtility.AllineaDip_AnagraficaAsync(ctx.IdCompany, mancanti);
 
-            var nomi = await _usersRepository.FindAll(u => mancanti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
-            foreach (var idUtente in mancanti)
-                // tabella comune: si scrive con il repository Common (un solo salvataggio per tutti)
-                await _dipendenteRepository.CreateAsync(new nvxapp.server.data.Entities.Tenant.Dip_Anagrafica
-                {
-                    IdAz_Anagrafica = ctx.IdAz_Anagrafica,
-                    IdAspNetUsers = idUtente,
-                    Cognome = nomi.FirstOrDefault(n => n.Id == idUtente)?.UserName,
-                    Attivo = true,
-                    CreationDate = DateTime.Now,
-                    ChangeUser = ctx.IdUtente
-                }, false);
-            try
-            {
-                await _dipendenteRepository.SaveChange();
-            }
-            catch (DbUpdateException ex)
-            {
-                // creata nel frattempo da un'altra richiesta (es. le presenze): indice unico azienda/utente
-                ex.Entries.FirstOrDefault()?.Context.ChangeTracker.Clear();
-            }
+            // anagrafiche esistenti con Cognome/Nome provvisori (es. create in passato con il nome utente come cognome)
+            await _commonDipendenteUtility.CompletaCognomeNomeAsync(ctx.IdCompany, utenti);
         }
 
         private async Task<Doc_CfgModel> CfgAsync(DocContesto ctx)
