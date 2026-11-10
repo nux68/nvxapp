@@ -139,7 +139,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         {
             if (await _applicationActivationAuthorizer.IsSuperUserAsync())
                 return true;
-            if (!await _licenseGuard.EnabledAsync())
+            // sistema licenze spento, o applicativo non soggetto a licenza (es. Moke): la regola di sempre (centro)
+            if (!await _licenseGuard.EnabledAsync() || LicenseGuard.Funzione(application) == null)
                 return idCompany > 0 && await _applicationActivationAuthorizer.CanManageCompanyAsync(idCompany);
             if (!await IsLicensedAsync(idCompany, application, idFinancialAdvisor))
                 return false;
