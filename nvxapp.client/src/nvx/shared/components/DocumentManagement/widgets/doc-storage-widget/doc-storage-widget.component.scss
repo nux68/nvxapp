@@ -1,0 +1,15 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+.nvx-dsw-bar {
+  margin-top: 14px;
+}
+
+.nvx-dsw-bar-text {
+  margin-top: 6px;
+}
+
+.nvx-dsw-info {
+  margin-top: 10px;
+}

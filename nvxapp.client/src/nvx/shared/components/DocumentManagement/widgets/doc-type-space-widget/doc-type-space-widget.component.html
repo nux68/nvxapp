@@ -1,0 +1,38 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (errore) {
+  <div class="nvx-w-empty">{{ 'documents.widgets.noData' | transloco }}</div>
+} @else if (fette.length === 0) {
+  <div class="nvx-w-empty">{{ 'documents.widgets.typeSpace.empty' | transloco }}</div>
+} @else {
+  <div class="nvx-dts">
+    <div class="nvx-dts-chart">
+      <svg viewBox="0 0 42 42" role="img" [attr.aria-label]="'documents.widgets.typeSpace.title' | transloco">
+        <circle class="fondo" cx="21" cy="21" r="15.9155"></circle>
+        @for (f of fette; track $index) {
+          <circle cx="21" cy="21" r="15.9155"
+                  [style.stroke]="f.colore"
+                  [attr.stroke-dasharray]="dash(f)"
+                  [attr.stroke-dashoffset]="offset(f)">
+            <title>{{ f.etichetta }}: {{ bytes(f.bytes) }} ({{ pct(f) }})</title>
+          </circle>
+        }
+      </svg>
+      <div class="nvx-dts-center">
+        <div class="valore">{{ bytes(totale) }}</div>
+        <div class="nvx-w-muted">{{ 'documents.widgets.typeSpace.total' | transloco }}</div>
+      </div>
+    </div>
+
+    <ul class="nvx-dts-legend">
+      @for (f of fette; track $index) {
+        <li>
+          <span class="punto" [style.background]="f.colore"></span>
+          <span class="nome">{{ f.etichetta }}</span>
+          <span class="nvx-w-muted">{{ bytes(f.bytes) }} · {{ pct(f) }}</span>
+        </li>
+      }
+    </ul>
+  </div>
+  <button type="button" class="nvx-w-link" (click)="dettagli()">{{ 'documents.widgets.typeSpace.open' | transloco }}</button>
+}

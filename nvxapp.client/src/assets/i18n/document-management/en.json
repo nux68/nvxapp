@@ -377,6 +377,28 @@
         "confermaTitolo": "Account activation",
         "esito": "Your company is ready. These are the users created: log in with the password you chose."
       }
+    },
+    "widgets": {
+      "noData": "Data not available.",
+      "details": "Details",
+      "storage": {
+        "title": "Document storage",
+        "description": "Storage used and available for the company.",
+        "used": "Used",
+        "available": "Available",
+        "unlimited": "Unlimited",
+        "ofQuota": "{{percent}}% of {{quota}}",
+        "files": "{{files}} files"
+      },
+      "typeSpace": {
+        "title": "Storage by document type",
+        "description": "Pie chart of the storage used by each document type.",
+        "total": "used",
+        "others": "Others",
+        "trash": "Trash",
+        "empty": "No documents uploaded.",
+        "open": "Open the archive"
+      }
     }
   },
   "pages": {
