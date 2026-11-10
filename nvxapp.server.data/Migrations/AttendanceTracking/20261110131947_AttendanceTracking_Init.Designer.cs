@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.AttendanceTracking
 {
     [DbContext(typeof(AttendanceTrackingDbContext))]
-    [Migration("20261110090242_AttendanceTracking_Init")]
+    [Migration("20261110131947_AttendanceTracking_Init")]
     partial class AttendanceTracking_Init
     {
         /// <inheritdoc />
