@@ -511,6 +511,12 @@ All'avvio, dopo le migration, `LicenseCatalogSeeder` crea i listini globali dich
 | AttendanceTracking | Piano base presenze | Studio | sì | 50 / 500 | 100 / 999,95 | 10 / 50 / illimitati |
 | CRM | Piano base CRM | Studio | no | 20 / 200 | 40 / 400 | 10 / 50 / illimitati |
 | DocumentManagement | Piano base documentale | Studio | sì | 30 / 300 | 60 / 600,14 | 10 / 50 / illimitati |
+| Infrastructure | Piano base ALL aziende (Cumulativo) | Azienda | - | 85 / 805 | 165 / 1605 | 10 / 50 / illimitati |
+| AttendanceTracking | Piano base presenze aziende | Azienda | - | 55 / 505 | 105 / 1004,95 | 10 / 50 / illimitati |
+| CRM | Piano base CRM aziende | Azienda | - | 25 / 205 | 45 / 405 | 10 / 50 / illimitati |
+| DocumentManagement | Piano base documentale aziende | Azienda | - | 35 / 305 | 65 / 605,14 | 10 / 50 / illimitati |
+
+I listini per le aziende (aggiunti il 10/11/2026) sono quelli degli studi con 5 euro in più su Standard e Pro: servono alle aziende che si abbonano da sole (§4.3, §15.6).
 
 - Ogni listino si crea **una sola volta** (segnato in `AppSetting` con `Licenze_ListinoIniziale_<TipoSoggetto>_<Ambito>`): se il SuperUser lo modifica o lo elimina non viene ricreato; se esiste già un listino globale per lo stesso tipo di soggetto e funzione non si tocca.
 - Il listino di una funzione sta nel ramo della funzione (`ClientServer-Service/<ramo>/Initializer/...LicenseCatalogSeed.cs`); in Infrastructure solo il Cumulativo (`License/Seed/InfrastructureLicenseCatalogSeed.cs`).
