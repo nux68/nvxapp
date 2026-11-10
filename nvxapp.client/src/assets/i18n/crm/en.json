@@ -409,38 +409,12 @@
       },
       "pricing": {
         "titolo": "Pricing",
-        "sottotitolo": "You pay for the users of the CRM: all features are always included.",
-        "piani": {
-          "prova": {
-            "nome": "Trial",
-            "periodo": "for 30 days",
-            "descrizione": "To try it with your sales team.",
-            "cta": "Start the trial"
-          },
-          "azienda": {
-            "nome": "Company",
-            "periodo": "per user per month",
-            "descrizione": "For small and medium businesses.",
-            "cta": "Choose Company"
-          },
-          "studio": {
-            "nome": "Custom",
-            "prezzo": "On request",
-            "descrizione": "For sales networks and multiple companies.",
-            "cta": "Contact us"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "All features",
-          "fino3Utenti": "Up to 3 users",
-          "tabellePronte": "Phases and tables ready",
+        "sottotitolo": "Choose the plan by the number of customers you manage: start for free, with every feature always included.",
+        "inclusi": {
           "offertePdf": "PDF offers and email sending",
           "report": "Reports and Excel export",
-          "assistenzaEmailTelefono": "Email and phone support",
-          "piuAziende": "Multiple companies",
-          "integrazioni": "Attendance and documents integrated",
-          "importazione": "Customer import",
-          "assistenzaPrioritaria": "Priority support"
+          "tabellePronte": "Phases and tables ready",
+          "tutteLeFunzioni": "All features"
         },
         "nota": "Prices exclude VAT. No commitment: cancel whenever you want.",
         "domande": {
