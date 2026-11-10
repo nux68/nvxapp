@@ -501,6 +501,21 @@ Dove il §13 è aperto ho scelto la soluzione più semplice e, quando possibile,
 - **Fase 5**: scelta Azienda/Studio nella registrazione.
 - **Schermate del manuale** per le due nuove voci di menu: si rigenerano con `nvxapp.server/Tools/ManualScreenshots`.
 
+### 15.5 Listini iniziali (10/11/2026)
+
+All'avvio, dopo le migration, `LicenseCatalogSeeder` crea i listini globali dichiarati dai rami con `ILicenseCatalogSeed` (registrazione automatica, come gli inizializzatori di azienda). Riproducono i listini configurati il 10/11/2026:
+
+| Ramo | Listino | Soggetto | Copre le aziende | Standard (mese/anno) | Pro (mese/anno) | Utenti Free / Std / Pro |
+|---|---|---|---|---|---|---|
+| Infrastructure | Piano base ALL (Cumulativo) | Studio | sì | 80 / 800 | 160 / 1600 | 10 / 50 / illimitati |
+| AttendanceTracking | Piano base presenze | Studio | sì | 50 / 500 | 100 / 999,95 | 10 / 50 / illimitati |
+| CRM | Piano base CRM | Studio | no | 20 / 200 | 40 / 400 | 10 / 50 / illimitati |
+| DocumentManagement | Piano base documentale | Studio | sì | 30 / 300 | 60 / 600,14 | 10 / 50 / illimitati |
+
+- Ogni listino si crea **una sola volta** (segnato in `AppSetting` con `Licenze_ListinoIniziale_<TipoSoggetto>_<Ambito>`): se il SuperUser lo modifica o lo elimina non viene ricreato; se esiste già un listino globale per lo stesso tipo di soggetto e funzione non si tocca.
+- Il listino di una funzione sta nel ramo della funzione (`ClientServer-Service/<ramo>/Initializer/...LicenseCatalogSeed.cs`); in Infrastructure solo il Cumulativo (`License/Seed/InfrastructureLicenseCatalogSeed.cs`).
+- Un errore nella creazione non ferma l'avvio: finisce nel log.
+
 ---
 
 ### Riferimenti nel codice
