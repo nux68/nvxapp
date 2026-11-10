@@ -12,21 +12,104 @@
     </section>
 
     <section class="nvx-sc-section">
-      <div class="nvx-sc-grid">
-        @for (p of c.piani; track p.nome) {
-          <div class="nvx-sc-plan" [class.nvx-sc-plan-evidenza]="p.evidenza">
-            <h3>{{ p.nome }}</h3>
-            <div class="nvx-sc-muted">{{ p.descrizione }}</div>
-            <div class="nvx-sc-price">{{ p.prezzo }}<small>{{ p.periodo }}</small></div>
-            <ul>
-              @for (f of p.caratteristiche; track f) {
-                <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ f }}</li>
-              }
-            </ul>
-            <ion-button shape="round" expand="block" [fill]="p.evidenza ? 'solid' : 'outline'" (click)="vai(p.url ?? '/register')">{{ p.cta }}</ion-button>
+      @if (listini === null) {
+        <div class="nvx-scp-loading"><ion-spinner name="crescent"></ion-spinner></div>
+      } @else if (!listino) {
+        <p class="nvx-sc-note">{{ 'showcase.pricingPage.notAvailable' | transloco }}</p>
+        <div class="nvx-scp-center">
+          <ion-button shape="round" fill="outline" (click)="vai('/contact')">{{ 'showcase.pricingPage.contactUs' | transloco }}</ion-button>
+        </div>
+      } @else {
+
+        <!-- funzione (solo con piu' funzioni, es. applicativo completo) -->
+        @if (ambiti.length > 1) {
+          <div class="nvx-scp-switch nvx-scp-switch-wrap" role="radiogroup">
+            @for (a of ambiti; track a) {
+              <button type="button" role="radio" [attr.aria-checked]="ambito === a" [class.attivo]="ambito === a" (click)="scegliAmbito(a)">
+                {{ nomeFunzione(a) }}
+              </button>
+            }
           </div>
         }
-      </div>
+
+        <!-- Aziende / Studi (solo se ci sono i listini per entrambi) -->
+        @if (tipi.length > 1) {
+          <div class="nvx-scp-switch" role="radiogroup">
+            <button type="button" role="radio" [attr.aria-checked]="tipo === Tipo.Company" [class.attivo]="tipo === Tipo.Company" (click)="tipo = Tipo.Company">
+              <ion-icon name="business-outline"></ion-icon>{{ 'showcase.pricingPage.forCompanies' | transloco }}
+            </button>
+            <button type="button" role="radio" [attr.aria-checked]="tipo === Tipo.FinancialAdvisor" [class.attivo]="tipo === Tipo.FinancialAdvisor" (click)="tipo = Tipo.FinancialAdvisor">
+              <ion-icon name="briefcase-outline"></ion-icon>{{ 'showcase.pricingPage.forStudios' | transloco }}
+            </button>
+          </div>
+        }
+
+        <!-- Mensile / Annuale -->
+        <div class="nvx-scp-switch" role="radiogroup">
+          <button type="button" role="radio" [attr.aria-checked]="!annuale" [class.attivo]="!annuale" (click)="annuale = false">
+            {{ 'pages.license.period1' | transloco }}
+          </button>
+          <button type="button" role="radio" [attr.aria-checked]="annuale" [class.attivo]="annuale" (click)="annuale = true">
+            {{ 'pages.license.period2' | transloco }}
+            @if (risparmioMassimo > 0) {
+              <span class="nvx-scp-save">{{ 'pages.licenseSubscribe.saveUpTo' | transloco: { pct: risparmioMassimo } }}</span>
+            }
+          </button>
+        </div>
+
+        @if (tipo === Tipo.FinancialAdvisor && listino.disponibileSuCompany) {
+          <p class="nvx-sc-note nvx-scp-studio">{{ 'showcase.pricingPage.studioNote' | transloco }}</p>
+        }
+
+        <!-- schede dei piani del listino -->
+        <div class="nvx-sc-grid">
+          @for (p of listino.piano; track p.livello) {
+            <div class="nvx-sc-plan" [class.nvx-sc-plan-evidenza]="isConsigliato(p)">
+              @if (isConsigliato(p)) {
+                <div class="nvx-scp-ribbon">{{ 'pages.licenseSubscribe.recommended' | transloco }}</div>
+              }
+              <h3>{{ nome(p) }}</h3>
+              <div class="nvx-sc-price">
+                @if (prezzoPeriodo(p) === 0) {
+                  {{ 'pages.licenseSubscribe.free' | transloco }}
+                } @else {
+                  {{ euro(prezzoAlMese(p)) }}<small>{{ 'pages.licenseSubscribe.perMonth' | transloco }}</small>
+                }
+              </div>
+              <div class="nvx-sc-muted">
+                @if (prezzoPeriodo(p) === 0) {
+                  {{ 'pages.licenseSubscribe.freeForever' | transloco }}
+                } @else if (annuale) {
+                  {{ 'pages.licenseSubscribe.billedYearly' | transloco: { totale: euro(p.prezzoAnnuale) } }}
+                  @if (risparmio(p) > 0) {
+                    <span class="nvx-scp-save-small">-{{ risparmio(p) }}%</span>
+                  }
+                } @else {
+                  {{ 'pages.licenseSubscribe.billedMonthly' | transloco }}
+                }
+              </div>
+              <ul>
+                <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ 'pages.licenseSubscribe.includes' | transloco: { funzioni: funzioniIncluse } }}</li>
+                @for (l of limiti(p); track l) {
+                  <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ l }}</li>
+                }
+              </ul>
+              <ion-button shape="round" expand="block" [fill]="isConsigliato(p) ? 'solid' : 'outline'" (click)="scegli()">{{ cta(p) }}</ion-button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (c.inclusi.length > 0) {
+        <div class="nvx-scp-inclusi">
+          <h2 class="nvx-sc-section-title">{{ 'showcase.pricingPage.includedTitle' | transloco }}</h2>
+          <ul>
+            @for (f of c.inclusi; track f) {
+              <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ f }}</li>
+            }
+          </ul>
+        </div>
+      }
       <p class="nvx-sc-note">{{ c.nota }}</p>
     </section>
 

@@ -409,38 +409,12 @@
       },
       "pricing": {
         "titolo": "Prezzi",
-        "sottotitolo": "Paghi per gli utenti che usano il CRM: tutte le funzioni sono sempre incluse.",
-        "piani": {
-          "prova": {
-            "nome": "Prova",
-            "periodo": "per 30 giorni",
-            "descrizione": "Per provare con i tuoi commerciali.",
-            "cta": "Inizia la prova"
-          },
-          "azienda": {
-            "nome": "Azienda",
-            "periodo": "per utente al mese",
-            "descrizione": "Per piccole e medie imprese.",
-            "cta": "Scegli Azienda"
-          },
-          "studio": {
-            "nome": "Su misura",
-            "prezzo": "Su richiesta",
-            "descrizione": "Per reti commerciali e più aziende.",
-            "cta": "Contattaci"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "Tutte le funzioni",
-          "fino3Utenti": "Fino a 3 utenti",
-          "tabellePronte": "Fasi e tabelle pronte",
+        "sottotitolo": "Scegli il piano in base ai clienti da gestire: si parte gratis e tutte le funzioni sono sempre incluse.",
+        "inclusi": {
           "offertePdf": "Offerte in PDF e invio email",
           "report": "Report e export Excel",
-          "assistenzaEmailTelefono": "Assistenza via email e telefono",
-          "piuAziende": "Più aziende",
-          "integrazioni": "Presenze e documentale integrati",
-          "importazione": "Importazione dei clienti",
-          "assistenzaPrioritaria": "Assistenza prioritaria"
+          "tabellePronte": "Fasi e tabelle pronte",
+          "tutteLeFunzioni": "Tutte le funzioni"
         },
         "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
         "domande": {
