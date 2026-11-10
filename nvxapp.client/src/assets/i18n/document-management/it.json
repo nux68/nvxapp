@@ -291,38 +291,12 @@
       },
       "pricing": {
         "titolo": "Prezzi",
-        "sottotitolo": "Paghi per i dipendenti e lo spazio che usi: tutte le funzioni sono sempre incluse.",
-        "piani": {
-          "prova": {
-            "nome": "Prova",
-            "periodo": "per 30 giorni",
-            "descrizione": "Per provare con i tuoi dipendenti.",
-            "cta": "Inizia la prova"
-          },
-          "azienda": {
-            "nome": "Azienda",
-            "periodo": "per dipendente al mese",
-            "descrizione": "Per piccole e medie imprese.",
-            "cta": "Scegli Azienda"
-          },
-          "studio": {
-            "nome": "Studio",
-            "prezzo": "Su misura",
-            "descrizione": "Per consulenti del lavoro e studi paghe.",
-            "cta": "Contattaci"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "Tutte le funzioni",
-          "spazio1": "1 GB di spazio",
-          "spazio5": "5 GB di spazio",
-          "spazio20": "Pacchetti fino a 20 GB",
-          "tipologiePronte": "Tipologie e cartelle pronte",
+        "sottotitolo": "Scegli il piano in base allo spazio che ti serve: si parte gratis e tutte le funzioni sono sempre incluse.",
+        "inclusi": {
           "presaVisione": "Presa visione dei dipendenti",
-          "assistenzaEmailTelefono": "Assistenza via email e telefono",
-          "piuAziende": "Più aziende clienti",
           "invioMultiplo": "Invio a più dipendenti",
-          "assistenzaPrioritaria": "Assistenza prioritaria"
+          "tipologiePronte": "Tipologie e cartelle pronte",
+          "tutteLeFunzioni": "Tutte le funzioni"
         },
         "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
         "domande": {
@@ -336,7 +310,7 @@
           },
           "spazio": {
             "domanda": "Cosa succede se finisce lo spazio?",
-            "risposta": "Gli amministratori ricevono un avviso prima che finisca; al limite i nuovi caricamenti si fermano finché non si passa a un pacchetto più grande."
+            "risposta": "Gli amministratori ricevono un avviso prima che finisca; al limite i nuovi caricamenti si fermano finché non si passa a un piano superiore."
           },
           "senzaAccount": {
             "domanda": "E i dipendenti senza account?",
