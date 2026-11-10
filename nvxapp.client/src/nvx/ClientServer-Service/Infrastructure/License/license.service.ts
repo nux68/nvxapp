@@ -7,7 +7,7 @@ import { GenericResult } from '../../ModelsBase/generic-result';
 import {
   LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel, LicenseCatalogDeleteInModel, LicenseCatalogDeleteOutModel,
   LicenseCatalogGetInModel, LicenseCatalogGetOutModel, LicenseCatalogListInModel, LicenseCatalogListOutModel,
-  LicenseCatalogPutInModel, LicenseCatalogPutOutModel, LicenseRenewInModel, LicenseRenewOutModel,
+  LicenseCatalogPutInModel, LicenseCatalogPutOutModel, LicensePublicPriceListInModel, LicensePublicPriceListOutModel, LicenseRenewInModel, LicenseRenewOutModel,
   LicenseSettingsGetInModel, LicenseSettingsGetOutModel, LicenseSettingsPutInModel, LicenseSettingsPutOutModel,
   LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscribeInModel, LicenseSubscribeOutModel
 } from './Models/license-model';
@@ -30,6 +30,8 @@ export class LicenseService {
   LicenseCatalogGet(model: GenericRequest<LicenseCatalogGetInModel>) { return this.post<LicenseCatalogGetInModel, LicenseCatalogGetOutModel>('LicenseCatalogGet', model); }
   LicenseCatalogPut(model: GenericRequest<LicenseCatalogPutInModel>) { return this.post<LicenseCatalogPutInModel, LicenseCatalogPutOutModel>('LicenseCatalogPut', model); }
   LicenseCatalogDelete(model: GenericRequest<LicenseCatalogDeleteInModel>) { return this.post<LicenseCatalogDeleteInModel, LicenseCatalogDeleteOutModel>('LicenseCatalogDelete', model); }
+  // pagina prezzi dello showcase, senza login
+  LicensePublicPriceList(model: GenericRequest<LicensePublicPriceListInModel>) { return this.post<LicensePublicPriceListInModel, LicensePublicPriceListOutModel>('LicensePublicPriceList', model); }
   LicenseStatusGet(model: GenericRequest<LicenseStatusGetInModel>) { return this.post<LicenseStatusGetInModel, LicenseStatusGetOutModel>('LicenseStatusGet', model); }
   LicenseSubscribe(model: GenericRequest<LicenseSubscribeInModel>) { return this.post<LicenseSubscribeInModel, LicenseSubscribeOutModel>('LicenseSubscribe', model); }
   LicenseRenew(model: GenericRequest<LicenseRenewInModel>) { return this.post<LicenseRenewInModel, LicenseRenewOutModel>('LicenseRenew', model); }

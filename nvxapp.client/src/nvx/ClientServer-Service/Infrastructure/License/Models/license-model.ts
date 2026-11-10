@@ -116,6 +116,27 @@ export class LicenseCatalogDeleteOutModel extends ModelResult {
 }
 
 // ---------------------------------------------------------------------------
+// Listini pubblici (pagina prezzi dello showcase, senza login): solo i listini globali del SuperUser
+
+export class LicensePublicPriceListInModel {
+  /** funzioni da mostrare; vuoto = tutte */
+  public ambito: AmbitoLicenza[] = [];
+}
+export class LicensePublicCatalogModel {
+  public tipoSoggetto: TipoSoggettoLicenza = TipoSoggettoLicenza.Company;
+  public ambito: AmbitoLicenza = AmbitoLicenza.Cumulativo;
+  public descrizione: string = '';
+  public valuta: string = 'EUR';
+  /** listino dello studio valido anche per le sue aziende */
+  public disponibileSuCompany: boolean = false;
+  /** solo i piani attivi, in ordine */
+  public piano: LicensePlanModel[] = [];
+}
+export class LicensePublicPriceListOutModel extends ModelResult {
+  public listino: LicensePublicCatalogModel[] = [];
+}
+
+// ---------------------------------------------------------------------------
 // Licenze del soggetto (azienda o studio)
 
 export class LicenseSubscriptionModel {

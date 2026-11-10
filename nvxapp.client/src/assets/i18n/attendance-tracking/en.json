@@ -1323,38 +1323,12 @@
       },
       "pricing": {
         "titolo": "Pricing",
-        "sottotitolo": "You pay for the employees you manage: all features are always included.",
-        "piani": {
-          "prova": {
-            "nome": "Trial",
-            "periodo": "for 30 days",
-            "descrizione": "To try it with your employees.",
-            "cta": "Start the trial"
-          },
-          "azienda": {
-            "nome": "Business",
-            "periodo": "per employee per month",
-            "descrizione": "For small and medium-sized businesses.",
-            "cta": "Choose Business"
-          },
-          "studio": {
-            "nome": "Practice",
-            "prezzo": "Custom",
-            "descrizione": "For labour consultants and payroll firms.",
-            "cta": "Contact us"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "All features",
-          "fino10Dipendenti": "Up to 10 employees",
-          "causaliPronte": "Ready-made pay codes and parameters",
+        "sottotitolo": "Choose the plan by the number of employees you manage: start for free, with every feature always included.",
+        "inclusi": {
           "timbraturaSmartphone": "Clock in from your smartphone",
           "exportPaghe": "Payroll export",
-          "assistenzaEmailTelefono": "Email and phone support",
-          "piuAziende": "Multiple client companies",
-          "accessoPerCliente": "Access on behalf of the client",
-          "modelliExport": "Dedicated export templates",
-          "assistenzaPrioritaria": "Priority support"
+          "causaliPronte": "Ready-made pay codes and parameters",
+          "tutteLeFunzioni": "All features"
         },
         "nota": "Prices exclude VAT. No commitment: cancel whenever you like.",
         "domande": {
@@ -1372,7 +1346,7 @@
           },
           "consulente": {
             "domanda": "I am a labour consultant: can I manage several companies?",
-            "risposta": "Yes, with the Practice plan you manage your client companies and log in on their behalf when needed."
+            "risposta": "Yes: with the plans for firms you manage your client companies and act on their behalf when needed."
           }
         }
       },
