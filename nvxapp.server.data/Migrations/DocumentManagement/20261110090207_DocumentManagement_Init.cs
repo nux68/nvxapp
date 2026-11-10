@@ -104,6 +104,7 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
                     Codice = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Categoria = table.Column<int>(type: "integer", nullable: false),
+                    TipoInvio = table.Column<int>(type: "integer", nullable: false),
                     AnniConservazione = table.Column<int>(type: "integer", nullable: true),
                     HaScadenza = table.Column<bool>(type: "boolean", nullable: false),
                     PresaVisioneRichiesta = table.Column<bool>(type: "boolean", nullable: false),
