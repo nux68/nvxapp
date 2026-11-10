@@ -79,7 +79,7 @@ export class UserManualPageComponent {
     const conRuoli = (items: MainMenuItem[], lista: 'user' | 'company', propri: string[]) =>
       items.filter(i => (!i.roles || i.roles.some(r => propri.includes(r))) && this.mainMenuService.VoceVisibile(i, lista, ruoli));
 
-    elenchi.push(conRuoli(this.mainMenuService.Pages4User, 'user', a.IsUser ? ['User'] : []));
+    elenchi.push(conRuoli(this.mainMenuService.Pages4User, 'user', ruoli));
     if (a.IsSuperUser) elenchi.push(this.mainMenuService.Pages4SuperUser);
     if (a.IsInGroupAdmin) elenchi.push(this.mainMenuService.Pages4Admin.filter(i => i.component !== 'PowerAdminPageComponent' || a.IsPowerAdmin));
     if (a.IsInGroupDealerAdmin) elenchi.push(this.mainMenuService.Pages4DealerAdmin.filter(i => i.component !== 'DealerPowerAdminPageComponent' || a.IsDealerPowerAdmin));
