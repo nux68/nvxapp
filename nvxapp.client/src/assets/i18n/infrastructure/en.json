@@ -388,7 +388,8 @@
       "title": "Impersonate user"
     },
     "companyEdit": {
-      "applicationsReadOnly": "Applications can only be activated or deactivated by the SuperUser and the centre's DealerPowerAdmin.",
+      "applicationsReadOnly": "Applications are activated and deactivated by the SuperUser, the centre's DealerPowerAdmin and, with a licence covering the company, the firm's PowerAdmin.",
+      "noLicense": "No licence: to activate it the company must be covered by a licence (its own or the firm's).",
       "title": "Edit company",
       "info": "Info",
       "description": "Description",

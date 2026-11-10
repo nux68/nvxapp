@@ -11,6 +11,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         public bool Active { get; set; }
         public DateTime? ActivationDate { get; set; }
         public DateTime? DeactivationDate { get; set; }
+        // licenze (ANALISI_LICENZE.md §15.6): l'azienda e' coperta da una licenza per l'applicativo (propria, dello studio
+        // o cumulativa; sempre true con il sistema licenze spento) e l'utente corrente puo' cambiarne lo stato
+        public bool Licensed { get; set; } = true;
+        public bool CanChange { get; set; }
     }
 
 
