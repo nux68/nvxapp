@@ -13,7 +13,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.DocumentManagement
 {
     [DbContext(typeof(DocumentManagementDbContext))]
-    [Migration("20261104103256_DocumentManagement_Init")]
+    [Migration("20261110090207_DocumentManagement_Init")]
     partial class DocumentManagement_Init
     {
         /// <inheritdoc />
@@ -652,6 +652,9 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
 
                     b.Property<bool>("PresaVisioneRichiesta")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("TipoInvio")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
