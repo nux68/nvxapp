@@ -15,7 +15,7 @@ I merge vanno sempe da "Funzioni base" verso gli altri branch a mai al contrario
 
 
 ## ATTENZIONE !!! 
-le mod. vanno fatte sul branch corrente
+le mod. vanno fatte su un worktree dedicato, e va chiesto se procedere alla catena dei merge (se i merge hanno esito positivo, cancellare il worktree) 
 non effettuare mai commit verso origin, tutte le mod. fatte devono rimenere locali
    
    
