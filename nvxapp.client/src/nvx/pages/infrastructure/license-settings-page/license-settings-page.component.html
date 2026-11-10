@@ -29,13 +29,13 @@
         <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSettings.defaultUsersNote' | transloco }}</ion-note>
 
         <ion-item>
-          <ion-input type="number" formControlName="maxUtentiFree" [label]="'pages.license.level1' | transloco" labelPlacement="floating" min="1"></ion-input>
+          <ion-input type="number" formControlName="maxUtentiFree" [label]="'pages.license.level1' | transloco" labelPlacement="floating" min="0"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-input type="number" formControlName="maxUtentiStandard" [label]="'pages.license.level2' | transloco" labelPlacement="floating" min="1"></ion-input>
+          <ion-input type="number" formControlName="maxUtentiStandard" [label]="'pages.license.level2' | transloco" labelPlacement="floating" min="0"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-input type="number" formControlName="maxUtentiPro" [label]="'pages.license.level3' | transloco" labelPlacement="floating" min="1"></ion-input>
+          <ion-input type="number" formControlName="maxUtentiPro" [label]="'pages.license.level3' | transloco" labelPlacement="floating" min="0"></ion-input>
         </ion-item>
 
         <ion-item class="nvx-item-4-title">
@@ -52,7 +52,7 @@
         </ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'pages.licenseSettings.warningDaysNote' | transloco }}</ion-note>
 
-        @if (_editForm.invalid && _editForm.touched) {
+        @if (_editForm.invalid) {
           <ion-note color="danger">{{ 'pages.licenseSettings.invalid' | transloco }}</ion-note>
         }
 
