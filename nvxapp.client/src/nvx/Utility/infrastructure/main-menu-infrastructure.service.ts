@@ -101,8 +101,10 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.userData', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true },
-      // listini delle licenze (ANALISI_LICENZE.md §10): dopo il login, per SuperUser e utenti del centro
-      { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' }
+      // licenze (ANALISI_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
+      // gestione delle licenze per studio e azienda
+      { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },
+      { menuType: MenuType.MenuItem,   zorder: 610, group: 0, title: 'menu.licenseManagement', roles: RUOLI_LICENZE_SOGGETTO, component: "LicenseManagementPageComponent", url: '/licensemanagement', icon: 'ribbon' }
     ];
   }
 
@@ -115,8 +117,6 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.support', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
-      // licenze (ANALISI_LICENZE.md §10): stato e sottoscrizione per azienda e studio (i listini sono nella sezione Accesso)
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.licenseManagement', roles: RUOLI_LICENZE_SOGGETTO, component: "LicenseManagementPageComponent", url: '/licensemanagement', icon: 'ribbon' },
       // manuali in PDF: quello delle funzioni base qui, quelli degli applicativi nei loro rami (Pages4Support), dopo questa voce
       { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true },
       // "Configurazione" dell'assistenza (gruppo 1, dopo la sezione Assistenza e i manuali), come quelle di CRM e documentale
