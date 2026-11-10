@@ -1,0 +1,284 @@
+// Pagina prezzi delle licenze: schede dei piani affiancate (impilate su schermi stretti),
+// con i colori e le misure del tema (variabili --nvx-* e --ion-color-*), quindi anche nel tema scuro.
+
+.nvx-pricing {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 16px 32px;
+}
+
+.nvx-pricing-head {
+  text-align: center;
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--nvx-text-muted);
+  }
+
+  .nvx-pricing-note {
+    margin-top: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+// selettore Mensile / Annuale a pillola
+.nvx-pricing-switch {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  width: fit-content;
+  margin: 0 auto 28px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--nvx-surface-soft);
+  border: 1px solid var(--nvx-border);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--nvx-text-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+
+    &.attivo {
+      background: var(--nvx-surface);
+      color: var(--ion-text-color);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+  }
+
+  .nvx-pricing-save {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    color: var(--ion-color-success-contrast);
+    background: var(--ion-color-success);
+  }
+}
+
+// griglia delle schede
+.nvx-pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+
+.nvx-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 22px 22px;
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+  border: 1px solid var(--nvx-border);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+
+  &:hover {
+    border-color: var(--nvx-border-strong);
+    box-shadow: var(--nvx-shadow-soft);
+  }
+
+  &.consigliato {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.55);
+  }
+
+  &.selezionato {
+    border: 2px solid var(--ion-color-primary);
+    box-shadow: 0 10px 34px rgba(var(--ion-color-primary-rgb), 0.18);
+    transform: translateY(-2px);
+  }
+
+  &.attuale {
+    cursor: default;
+    opacity: 0.85;
+  }
+
+  h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+}
+
+.nvx-plan-ribbon {
+  position: absolute;
+  top: -12px;
+  left: 22px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ion-color-primary-contrast);
+  background: var(--ion-color-primary);
+
+  &.attuale {
+    color: var(--ion-text-color);
+    background: var(--nvx-surface-soft);
+    border: 1px solid var(--nvx-border-strong);
+  }
+}
+
+.nvx-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+
+  .importo {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .unita {
+    color: var(--nvx-text-muted);
+    font-weight: 600;
+  }
+}
+
+.nvx-plan-billing {
+  min-height: 2.6em;
+  margin: 6px 0 18px;
+  font-size: 0.85rem;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-plan-save {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--ion-color-success-shade);
+  background: rgba(var(--ion-color-success-rgb), 0.14);
+}
+
+.nvx-plan-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--nvx-radius-sm);
+  border: 1px solid var(--ion-color-primary);
+  font: inherit;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover:not([disabled]) {
+    background: rgba(var(--ion-color-primary-rgb), 0.08);
+  }
+
+  &[disabled] {
+    cursor: default;
+    border-color: var(--nvx-border-strong);
+    color: var(--nvx-text-muted);
+  }
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+}
+
+.nvx-plan.consigliato .nvx-plan-cta:not([disabled]),
+.nvx-plan.selezionato .nvx-plan-cta:not([disabled]) {
+  color: var(--ion-color-primary-contrast);
+  background: var(--ion-color-primary);
+
+  &:hover {
+    background: var(--ion-color-primary-shade);
+  }
+}
+
+.nvx-plan-features {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 18px 0 0;
+  border-top: 1px solid var(--nvx-border);
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 0.92rem;
+  }
+
+  ion-icon {
+    flex: none;
+    margin-top: 2px;
+    color: var(--ion-color-primary);
+  }
+}
+
+// riepilogo della scelta
+.nvx-pricing-summary {
+  margin-top: 24px;
+  padding: 20px 22px;
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+  border: 1px solid var(--nvx-border);
+
+  .titolo {
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .dettaglio {
+    color: var(--nvx-text-muted);
+  }
+
+  .etichetta {
+    margin: 18px 0 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .nvx-pricing-methods {
+    max-width: 420px;
+  }
+
+  .nvx-pricing-renew {
+    --background: transparent;
+    --padding-start: 0;
+    margin-top: 12px;
+  }
+
+  ion-note {
+    display: block;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .nvx-pricing-head h1 {
+    font-size: 1.5rem;
+  }
+
+  .nvx-pricing-switch button {
+    padding: 8px 12px;
+  }
+}
