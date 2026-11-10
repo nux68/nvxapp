@@ -485,7 +485,7 @@ Implementato su **Infrastructure_Dev**: Fasi 0, 1 e 2, `ILicenseGuard` (§8.1, �
 | Pagamenti | `License/Payment/PaymentGateway.cs` (`IPaymentGateway`, `DebugPaymentGateway`, `IPaymentGatewayResolver`) |
 | API | `License/LicenseService.cs`, `Controllers/Infrastructure/LicenseController.cs` |
 | Manutenzione notturna | `nvxapp.server/Utility/LicenseMaintenanceService.cs` (dopo le 3: rinnovi automatici, scadenze, avvisi) |
-| Limiti per funzione (§5.1) | utenti: `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut`; clienti: `Az_ClienteService` e ramo CRM; spazio: `StorageQuotaService` (migration `LicenseLimits`) |
+| Limiti per funzione (§5.1) | utenti: `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut`; clienti: `Az_ClienteService` e ramo CRM; spazio: `StorageQuotaService` |
 | Stato per il client | `UserLoad` → `userData.license`; `AuthService` (`isLicensed`, `isFree`, `isStandard`, `isPro`, `hasLicenseAtLeast`, `maxUsers`, `isWithinUserLimit`, `canAddUser`) |
 | Pagine | `license-catalog-list`, `license-catalog-edit`, `license-settings`, `license-management`, `license-subscribe`; contatore e blocco nell'elenco utenti dell'azienda |
 | Testi | `InfrastructureMessages*.resx` (server), `assets/i18n/infrastructure/*.json` (client), manuale `Manuals/infrastructure.*.md` |
@@ -535,6 +535,7 @@ I listini per le aziende (aggiunti il 10/11/2026) sono quelli degli studi con 5 
 - Ogni listino si crea **una sola volta** (segnato in `AppSetting` con `Licenze_ListinoIniziale_<TipoSoggetto>_<Ambito>`): se il SuperUser lo modifica o lo elimina non viene ricreato; se esiste già un listino globale per lo stesso tipo di soggetto e funzione non si tocca.
 - Il listino di una funzione sta nel ramo della funzione (`ClientServer-Service/<ramo>/Initializer/...LicenseCatalogSeed.cs`); in Infrastructure solo il Cumulativo (`License/Seed/InfrastructureLicenseCatalogSeed.cs`).
 - Un errore nella creazione non ferma l'avvio: finisce nel log.
+- I **limiti** dei piani dei listini iniziali non li scrivono i rami: `LicenseCatalogSeedData.Listino` assegna i valori predefiniti della funzione del listino (`LicenseDefaults`, gli stessi del §5.1: Presenze utenti, CRM clienti, Documentale spazio, Cumulativo tutti e tre). I rami dichiarano solo listino, piani e prezzi.
 
 ### 15.6 Applicativi e licenze (10/11/2026)
 
