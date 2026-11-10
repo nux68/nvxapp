@@ -75,7 +75,8 @@ namespace nvxapp.server.data.Infrastructure
          Licenze d'uso (ANALISI_LICENZE.md).
          Impostazioni (AppSetting):
             - Licenze_Attive          : "true" = le regole delle licenze si applicano; altrimenti ILicenseGuard risponde
-                                        in modo neutro (come Pro, utenti illimitati) e nessuno viene bloccato (§8.1.1)
+                                        in modo neutro (come Pro, utenti illimitati) e nessuno viene bloccato (§8.1.1).
+                                        Acceso alla creazione del database (10/11/2026)
             - Licenze_MaxUtenti_*     : utenti predefiniti dei piani dei nuovi listini (Free 10, Standard 50, Pro illimitati) (§5.1)
             - Licenze_GraceGiorni     : giorni dopo la scadenza in cui la licenza vale ancora (si avvisa ma non si blocca)
             - Licenze_AvvisoGiorni    : giorni prima della scadenza in cui parte l'avviso
@@ -164,7 +165,7 @@ namespace nvxapp.server.data.Infrastructure
             });
 
             modelBuilder.Entity<AppSetting>().HasData(
-                new AppSetting { Key = Key_LicenzeAttive, Value = "false" },
+                new AppSetting { Key = Key_LicenzeAttive, Value = "true" },
                 new AppSetting { Key = Key_LicenzeMaxUtentiFree, Value = "10" },
                 new AppSetting { Key = Key_LicenzeMaxUtentiStandard, Value = "50" },
                 new AppSetting { Key = Key_LicenzeMaxUtentiPro, Value = "" },

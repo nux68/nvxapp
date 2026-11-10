@@ -478,7 +478,7 @@ Implementato su **Infrastructure_Dev**: Fasi 0, 1 e 2, `ILicenseGuard` (§8.1, �
 
 ### 15.2 Interruttore generale
 
-`AppSetting` **`Licenze_Attive`**, spento di default (pagina Impostazioni licenze). Spento: `ILicenseGuard` risponde in modo neutro (Pro, utenti illimitati) e nessuno viene bloccato; listini e sottoscrizioni funzionano lo stesso, così si possono preparare prima di accenderlo. È il "comportamento neutro configurabile" del §8.1.1.
+`AppSetting` **`Licenze_Attive`**, **acceso alla creazione del database** (dal 10/11/2026; prima spento), si cambia dalla pagina Impostazioni licenze. Spento: `ILicenseGuard` risponde in modo neutro (Pro, utenti illimitati) e nessuno viene bloccato; listini e sottoscrizioni funzionano lo stesso, così si possono preparare prima di accenderlo. È il "comportamento neutro configurabile" del §8.1.1.
 
 ### 15.3 Scelte fatte sui punti ancora aperti (provvisorie, da confermare)
 
