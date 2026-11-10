@@ -31,6 +31,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
         /// <summary>L'utente corrente (token) ha il ruolo.</summary>
         Task<bool> CurrentUserHasRoleAsync(string role);
+
+        /// <summary>L'utente corrente e' FinancialAdvisorPowerAdmin dello studio dell'azienda (attivazione con licenza, ANALISI_LICENZE.md §15.6).</summary>
+        Task<bool> IsStudioPowerAdminOfCompanyAsync(int idCompany);
+
+        /// <summary>L'utente corrente e' FinancialAdvisorPowerAdmin dello studio (azienda nuova, non ancora salvata).</summary>
+        Task<bool> IsStudioPowerAdminAsync(int idFinancialAdvisor);
     }
 
     public class ApplicationActivationAuthorizer : ServiceBase, IApplicationActivationAuthorizer
@@ -64,6 +70,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                             .FirstOrDefaultAsync();
             return await CanManageDealerAsync(idDealer);
         }
+
+        public async Task<bool> IsStudioPowerAdminOfCompanyAsync(int idCompany)
+        {
+            var studioAzienda = await _companyRepository.FindAll(x => x.Id == idCompany).Select(x => (int?)x.IdFinancialAdvisor).FirstOrDefaultAsync();
+            return studioAzienda != null && await IsStudioPowerAdminAsync(studioAzienda.Value);
+        }
+
+        public async Task<bool> IsStudioPowerAdminAsync(int idFinancialAdvisor)
+            => idFinancialAdvisor > 0
+               && int.TryParse(CurrentFinancialAdvisor, out var idStudio) && idStudio == idFinancialAdvisor
+               && await HasRoleAsync(CurrentUserId, nameof(RoleCode.FinancialAdvisorPowerAdmin));
 
         public async Task<bool> CanManageFinancialAdvisorAsync(int idFinancialAdvisor)
         {

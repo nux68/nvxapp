@@ -9,6 +9,7 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -21,6 +22,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         - attivazione: registra l'applicativo come attivo, crea/migra il suo schema (multi-tenant)
           ed esegue gli inizializzatori di quell'applicativo per l'azienda
         - disattivazione: blocca l'accesso; schema e dati restano (riattivando si ritrova tutto)
+     Chi cambia lo stato di un applicativo (ANALISI_LICENZE.md §15.6):
+        - SuperUser: sempre
+        - sistema licenze spento: il DealerPowerAdmin del centro (regola di sempre)
+        - sistema licenze acceso: solo se l'azienda e' coperta da una licenza per l'applicativo (propria, dello studio o
+          cumulativa), il DealerPowerAdmin del centro e il FinancialAdvisorPowerAdmin dello studio dell'azienda (companyedit)
+     Un'azienda che sottoscrive da se' una licenza attiva l'applicativo con ActivateForLicenseAsync (schema e dati iniziali).
     */
     public class CompanyApplicationService : ServiceBase, ICompanyApplicationService
     {
@@ -30,6 +37,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ApplicationDbContextRegistry _applicationDbContextRegistry;
         private readonly IApplicationActivationAuthorizer _applicationActivationAuthorizer;
+        private readonly ILicenseGuard _licenseGuard;
+        private readonly ILicenseSubscriptionManager _licenseSubscriptionManager;
 
         public CompanyApplicationService(IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
@@ -43,8 +52,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                          ITenantProvisioningService tenantProvisioningService,
                                          ICompanyInitializerRegistry companyInitializerRegistry,
                                          ApplicationDbContextRegistry applicationDbContextRegistry,
-                                         IApplicationActivationAuthorizer applicationActivationAuthorizer) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                         IApplicationActivationAuthorizer applicationActivationAuthorizer,
+                                         ILicenseGuard licenseGuard,
+                                         ILicenseSubscriptionManager licenseSubscriptionManager) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _licenseGuard = licenseGuard;
+            _licenseSubscriptionManager = licenseSubscriptionManager;
             _companyRepository = companyRepository;
             _companyApplicationRepository = companyApplicationRepository;
             _tenantProvisioningService = tenantProvisioningService;
@@ -85,10 +98,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
                 var row = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id && x.ApplicationType == application).FirstOrDefault();
 
-                // cambiare lo stato e' riservato al SuperUser e al DealerPowerAdmin del centro (stesso stato: nessun controllo,
-                // perche' il salvataggio dell'azienda rimanda sempre tutti gli applicativi)
-                if (model.Data.Active != (row?.Active ?? false) && !await _applicationActivationAuthorizer.CanManageCompanyAsync(company.Id))
+                // cambiare lo stato: vedi CanChangeAsync (stesso stato: nessun controllo, perche' il salvataggio
+                // dell'azienda rimanda sempre tutti gli applicativi)
+                if (model.Data.Active != (row?.Active ?? false) && !await CanChangeAsync(company.Id, application))
+                {
+                    if (model.Data.Active && !await _licenseGuard.IsLicensedAsync(company.Id, application))
+                        throw new UserMessageException(InfrastructureMessages.Get("ApplicationLicenseRequired", application.ToString()));
                     throw new UserMessageException(InfrastructureMessages.Get("ApplicationActivationNotAllowed"));
+                }
 
                 row = await SetActiveAsync(company, application, model.Data.Active, row);
 
@@ -113,6 +130,70 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         }
 
         public Task<bool> CanManageAsync(int idCompany) => _applicationActivationAuthorizer.CanManageCompanyAsync(idCompany);
+
+        /*
+         L'utente corrente puo' cambiare lo stato dell'applicativo per l'azienda (regole in testa alla classe).
+         idCompany = 0: azienda nuova dello studio idFinancialAdvisor (licenza = copertura dello studio).
+        */
+        public async Task<bool> CanChangeAsync(int idCompany, ApplicationType application, int idFinancialAdvisor = 0)
+        {
+            if (await _applicationActivationAuthorizer.IsSuperUserAsync())
+                return true;
+            if (!await _licenseGuard.EnabledAsync())
+                return idCompany > 0 && await _applicationActivationAuthorizer.CanManageCompanyAsync(idCompany);
+            if (!await IsLicensedAsync(idCompany, application, idFinancialAdvisor))
+                return false;
+            return idCompany > 0
+                   ? await _applicationActivationAuthorizer.CanManageCompanyAsync(idCompany) || await _applicationActivationAuthorizer.IsStudioPowerAdminOfCompanyAsync(idCompany)
+                   : await _applicationActivationAuthorizer.CanManageFinancialAdvisorAsync(idFinancialAdvisor) || await _applicationActivationAuthorizer.IsStudioPowerAdminAsync(idFinancialAdvisor);
+        }
+
+        // coperta da licenza (sistema spento: sempre); azienda nuova: copertura dello studio verso le sue aziende
+        private async Task<bool> IsLicensedAsync(int idCompany, ApplicationType application, int idFinancialAdvisor)
+        {
+            if (!await _licenseGuard.EnabledAsync())
+                return true;
+            if (idCompany > 0)
+                return await _licenseGuard.IsLicensedAsync(idCompany, application);
+            return LicenseGuard.Funzione(application) is not nvxapp.server.data.Entities.Public.AmbitoLicenza ambito
+                   || (idFinancialAdvisor > 0 && await _licenseSubscriptionManager.StudioCoverageLevelAsync(idFinancialAdvisor, ambito) != null);
+        }
+
+        /// <summary>Applicativi con lo stato per l'azienda e, per ognuno, licenza e possibilita' di cambiarlo da parte dell'utente corrente.</summary>
+        public async Task<List<CompanyApplicationModel>> ApplicationsWithRightsAsync(int idCompany, int idFinancialAdvisor = 0)
+        {
+            var list = Applications(idCompany);
+            foreach (var a in list)
+            {
+                a.Licensed = await IsLicensedAsync(idCompany, a.ApplicationType, idFinancialAdvisor);
+                a.CanChange = await CanChangeAsync(idCompany, a.ApplicationType, idFinancialAdvisor);
+            }
+            return list;
+        }
+
+        /*
+         Attivazione per una licenza sottoscritta dall'azienda (ANALISI_LICENZE.md §15.6): schema e dati iniziali come in
+         companyedit, senza controllo del ruolo (la sottoscrizione e' gia' autorizzata). Cumulativo = tutte le funzioni.
+         Restituisce gli applicativi attivati adesso (quelli gia' attivi o non presenti in questo ramo sono saltati).
+        */
+        public async Task<List<ApplicationType>> ActivateForLicenseAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito)
+        {
+            var applicativi = ambito == nvxapp.server.data.Entities.Public.AmbitoLicenza.Cumulativo
+                              ? LicenseGuard.Funzioni.Select(x => (ApplicationType)(int)x).ToList()
+                              : new List<ApplicationType> { (ApplicationType)(int)ambito };
+            var company = await _companyRepository.FindByIdAsync(idCompany)
+                          ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyNotFoundWithId", idCompany));
+            var attivati = new List<ApplicationType>();
+            foreach (var application in applicativi.Where(a => a.IsActivatable() && _applicationDbContextRegistry.IsRegistered(a)))
+            {
+                var row = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id && x.ApplicationType == application).FirstOrDefault();
+                if (row?.Active == true)
+                    continue;
+                await SetActiveAsync(company, application, true, row);
+                attivati.Add(application);
+            }
+            return attivati;
+        }
 
         // attiva o disattiva (gia' autorizzato): attivazione con schema e dati iniziali, disattivazione con soli dati conservati
         private async Task<nvxapp.server.data.Entities.Public.CompanyApplication?> SetActiveAsync(Company company, ApplicationType application, bool active,
@@ -201,5 +282,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
         // applicativi che il ramo attiva sulle aziende appena create (senza controllo del ruolo)
         public Task ActivateForNewCompanyAsync(int idCompany, ApplicationType application);
+
+        // licenze (ANALISI_LICENZE.md §15.6): chi puo' cambiare lo stato, elenco con licenza e diritti, attivazione da sottoscrizione
+        public Task<bool> CanChangeAsync(int idCompany, ApplicationType application, int idFinancialAdvisor = 0);
+        public Task<List<CompanyApplicationModel>> ApplicationsWithRightsAsync(int idCompany, int idFinancialAdvisor = 0);
+        public Task<List<ApplicationType>> ActivateForLicenseAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito);
     }
 }

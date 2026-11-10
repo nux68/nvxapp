@@ -51,6 +51,9 @@ export class CompanyApplicationModel {
   public active: boolean = false;
   public activationDate: string | null = null;
   public deactivationDate: string | null = null;
+  // licenze (ANALISI_LICENZE.md §15.6): coperta da licenza e modificabile dall'utente corrente
+  public licensed: boolean = true;
+  public canChange: boolean = false;
 }
 export class CompanyGetInModel {
   public id: number;

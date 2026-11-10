@@ -61,6 +61,11 @@ export class UserNavigationService {
       if (usl.success && usl.data?.userData) {
         corrente.userData.license = usl.data.userData.license;
         this.authService.setLicense(usl.data.userData.license);
+        // gli applicativi del menu dipendono dalla licenza (e una sottoscrizione dell'azienda li attiva)
+        corrente.userData.activeApplications = usl.data.userData.activeApplications;
+        corrente.userData.financialAdvisorApplications = usl.data.userData.financialAdvisorApplications;
+        this.authService.setActiveApplications(usl.data.userData.activeApplications);
+        this.authService.setFinancialAdvisorApplications(usl.data.userData.financialAdvisorApplications);
       }
     });
   }
