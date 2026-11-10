@@ -192,38 +192,17 @@
     "pricing": {
       "titolo": "Prezzi",
       "sottotitolo": "Piani semplici, senza vincoli: inizi gratis e cresci quando ti serve.",
-      "periodoMese": "al mese",
-      "caratteristiche": {
-        "tutteLeFunzioni": "Tutte le funzioni",
-        "assistenzaEmail": "Assistenza via email"
-      },
-      "piani": {
-        "prova": {
-          "nome": "Prova",
-          "periodo": "per 30 giorni",
-          "descrizione": "Per conoscere la piattaforma.",
-          "utenti": "Fino a 5 utenti",
-          "cta": "Inizia la prova"
-        },
-        "standard": {
-          "descrizione": "Per le piccole aziende.",
-          "utenti": "Fino a 25 utenti",
-          "assistenza": "Assistenza via email e telefono",
-          "cta": "Scegli Standard"
-        },
-        "professional": {
-          "descrizione": "Per aziende e studi strutturati.",
-          "utenti": "Utenti illimitati",
-          "assistenza": "Assistenza prioritaria",
-          "aziende": "Più aziende gestite",
-          "cta": "Scegli Professional"
-        }
+      "inclusi": {
+        "tutteLeFunzioni": "Tutte le funzioni della piattaforma",
+        "assistenza": "Assistenza tramite ticket",
+        "dispositivi": "Computer, tablet e smartphone",
+        "aggiornamenti": "Aggiornamenti compresi"
       },
       "nota": "Prezzi IVA esclusa. Puoi cambiare piano o disdire in qualsiasi momento.",
       "domande": {
         "carta": {
-          "domanda": "Serve una carta di credito per la prova?",
-          "risposta": "No: la prova è gratuita e senza impegno."
+          "domanda": "Serve una carta di credito per iniziare?",
+          "risposta": "No: il piano Free è gratuito e senza scadenza; paghi solo se passi a un piano superiore."
         },
         "utenti": {
           "domanda": "Posso aggiungere utenti in seguito?",
@@ -293,7 +272,14 @@
       "seePrices": "Vedi i prezzi"
     },
     "pricingPage": {
-      "faqTitle": "Domande frequenti"
+      "faqTitle": "Domande frequenti",
+      "forCompanies": "Per le aziende",
+      "forStudios": "Per gli studi",
+      "studioNote": "Il piano dello studio vale anche per tutte le aziende che gestisce.",
+      "includedTitle": "Compreso in tutti i piani",
+      "start": "Inizia gratis",
+      "contactUs": "Contattaci",
+      "notAvailable": "I prezzi non sono disponibili in questo momento: contattaci per un preventivo."
     },
     "contactPage": {
       "email": "Email",
