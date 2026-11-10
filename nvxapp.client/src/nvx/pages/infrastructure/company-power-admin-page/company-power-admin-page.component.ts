@@ -16,7 +16,7 @@ import { DashboardConfigPageBase } from '../../../shared/components/infrastructu
 export class CompanyPowerAdminPageComponent extends DashboardConfigPageBase {
 
   /** chiave di traduzione del titolo (tradotto nel template) */
-  public readonly title = 'menu.companyPowerAdmin';
+  public readonly title = 'menu.preferences';
 
   constructor(navCtrl: NavController,
               userInterfaceService: UserInterfaceService) {
