@@ -1702,6 +1702,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     Livello = (int?)c.Livello,
                     Stato = (int)c.Stato,
                     MaxUtenti = c.MaxUtenti,
+                    MaxClienti = c.MaxClienti,
+                    MaxSpazioMB = c.MaxSpazioMB,
                     DataScadenza = c.DataScadenza
                 });
             }
@@ -1711,6 +1713,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 retVal.ActiveUsers = await _licenseGuard.ActiveUsersAsync(idCompany.Value);
                 retVal.UserLimit = await _licenseGuard.CompanyUserLimitAsync(idCompany.Value);
                 retVal.CanAddUser = await _licenseGuard.CanAddUserAsync(idCompany.Value);
+                // clienti contati solo se c'e' un limite (licenza CRM con un massimo)
+                retVal.ClientLimit = await _licenseGuard.ClientLimitAsync(idCompany.Value);
+                retVal.CanAddClient = retVal.ClientLimit == null || await _licenseGuard.CanAddClientAsync(idCompany.Value);
             }
             else
             {

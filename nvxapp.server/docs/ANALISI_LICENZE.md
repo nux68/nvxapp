@@ -201,36 +201,39 @@ Parametro `Lic_Listino.DisponibileSuCompany` (valido per i listini con `TipoSogg
 
   Chi gestisce il listino modifica prezzi, limite utenti ed etichette (`Codice`/`Descrizione`), non il numero dei livelli. Il primo elemento che distingue i livelli è il **limite utenti** (§5.1). **Le altre differenze tra i livelli non sono ancora definite** e si decideranno strada facendo: per questo il sistema espone metodi che rispondono vero/falso sul livello di licenza (§8.1.1), e ogni funzione deciderà con quelli cosa concedere a Free, Standard o Pro.
 
-### 5.1 Limite utenti per livello (deciso il 09/11/2026)
+### 5.1 Limiti dei piani per funzione (09/11/2026, rivisto il 10/11/2026)
 
-| Livello | Utenti attivi (valore predefinito) |
-|---|---|
-| Free | 10 |
-| Standard | 50 |
-| Pro | illimitati |
+Il solo numero di utenti non basta: ogni funzione ha il **suo** limite, che dipende da cosa consuma.
+
+| Funzione | Limite del piano | Free | Standard | Pro | Si controlla |
+|---|---|---|---|---|---|
+| Presenze | utenti attivi (`MaxUtenti`) | 10 | 50 | illimitati | creazione e riabilitazione degli utenti |
+| CRM | clienti attivi (`MaxClienti`) | 100 | 1.000 | illimitati | creazione e riattivazione dei clienti |
+| Documentale | spazio dei file in MB (`MaxSpazioMB`) | 1 GB | 5 GB | 20 GB | caricamento dei file (quota dello spazio) |
+| Cumulativo | tutti e tre | come sopra | | | come sopra |
+
+I valori in tabella sono i **predefiniti**; un listino di una sola funzione usa solo il suo limite (gli altri restano vuoti), il Cumulativo li usa tutti.
 
 **I valori sono parametrici:**
-- **Valori predefiniti** in `AppSetting` (tabella chiave/valore già esistente): `Licenze_MaxUtenti_Free` = `10`, `Licenze_MaxUtenti_Standard` = `50`, `Licenze_MaxUtenti_Pro` = vuoto (illimitati), modificabili dal SuperUser nella pagina Impostazioni licenze. Si usano quando si crea un nuovo listino. Cambiarli non tocca i listini già esistenti.
-- **Valore effettivo** su ogni piano (`Lic_Piano.MaxUtenti`). SuperUser e Dealer abilitati lo modificano per i propri listini come i prezzi; `null` = illimitati.
-- **Valore garantito al cliente**: `Lic_Abbonamento.MaxUtentiBloccato`, fotografato alla sottoscrizione e a ogni rinnovo. Se chi gestisce il listino abbassa il limite, il cliente mantiene il vecchio limite fino al rinnovo. Se lo alza, il nuovo limite vale subito: il servizio aggiorna `MaxUtentiBloccato` degli abbonamenti attivi quando il nuovo valore è più alto.
+- **Valori predefiniti** in `AppSetting`: `Licenze_MaxUtenti_*`, `Licenze_MaxClienti_*`, `Licenze_MaxSpazioMB_*` (Free, Standard, Pro; vuoto = illimitati), modificabili dal SuperUser in Impostazioni licenze. Si usano quando si crea un nuovo listino; cambiarli non tocca i listini già esistenti.
+- **Valore effettivo** su ogni piano (`Lic_Piano.MaxUtenti`, `MaxClienti`, `MaxSpazioMB`), modificabile da chi gestisce il listino come i prezzi; vuoto o 0 = illimitati.
+- **Valore garantito al cliente**: fotografato sull'abbonamento (`MaxUtentiBloccato`, `MaxClientiBloccato`, `MaxSpazioMBBloccato`) alla sottoscrizione e a ogni rinnovo. Se il limite del piano viene alzato vale subito per gli abbonamenti attivi; se viene abbassato, dal rinnovo.
+
+**Quando vale un limite:** solo se l'azienda è **coperta da una licenza per quella funzione** (propria, dello studio con `DisponibileSuCompany`, o cumulativa: §4.3). Senza licenza per la funzione il limite non si applica (la funzione è comunque nascosta dal menu, §15.6). Con più coperture vince il livello più alto, a parità il limite più alto della funzione.
 
 **Cosa si conta:**
-- **Azienda**: gli utenti dell'azienda **non disabilitati** (`UserCompany.Disabled = false`). Gli utenti appartengono all'azienda, non al singolo applicativo (non esiste un'abilitazione degli utenti per applicativo), quindi il conteggio è unico per l'azienda.
-- **Studio** (funzioni lato studio): gli utenti dello studio non disabilitati (`UserFinancialAdvisor.Disabled = false`).
-- **Copertura dello studio sulle aziende** (§4.3): il limite del piano dello studio vale **per ogni azienda** (ogni azienda coperta può avere fino a `MaxUtenti` utenti), non come totale sommato su tutte le aziende. Resta coerente con la copertura "a posti illimitati" delle aziende.
+- **Utenti (Presenze)**: gli utenti dell'azienda non disabilitati (`UserCompany.Disabled = false`); per lo studio quelli non disabilitati dello studio. Il limite utenti dell'azienda è quello della licenza Presenze: un'azienda senza licenza Presenze non ha limite utenti.
+- **Clienti (CRM)**: i clienti dell'anagrafica comune (`Az_Cliente`, schema Common dell'azienda) **attivi** e di tipo **Cliente o Entrambi**; i soli fornitori non contano. Conta come "cliente in più" un cliente nuovo, uno riattivato o uno che da solo fornitore diventa cliente.
+- **Spazio (Documentale)**: lo spazio occupato dai file (`CompanyStorage`, già esistente). Con la licenza Documentale la quota è quella della licenza e **sostituisce il pacchetto di spazio** assegnato all'azienda; senza licenza resta il pacchetto, come prima.
+- **Copertura dello studio sulle aziende**: i limiti del piano dello studio valgono **per ogni azienda** coperta, non come totale.
 
-**Limite di un'azienda con più funzioni:** ogni funzione ha il proprio livello e quindi il proprio limite (es. Presenze Free = 10, CRM Pro = illimitati). Poiché gli utenti sono unici per l'azienda:
-- **creare o riabilitare un utente** è consentito se il nuovo totale non supera il **limite più alto** tra le funzioni coperte dell'azienda. Così chi paga Pro su una funzione non viene bloccato da un Free su un'altra;
-- una funzione il cui limite è **inferiore** al numero di utenti attivi risulta **"oltre il limite"**: lo si mostra in "Gestione licenze" con l'invito a passare al livello superiore. Cosa restringere in quella funzione si deciderà strada facendo, usando il metodo `IsWithinUserLimitAsync` (§8.1.2);
-- un'azienda **senza alcuna licenza valida** usa come limite il valore predefinito Free di `AppSetting`.
-
-**Superamento del limite** (downgrade, scadenza della copertura dello studio, abbassamento del limite al rinnovo):
-- gli utenti già attivi **non vengono mai disabilitati automaticamente**;
-- non si possono creare né riabilitare utenti finché il totale non torna sotto il limite. L'utente vede un messaggio dedicato ("Raggiunto il limite di N utenti del piano *piano*: passa a un piano superiore o disabilita un utente"), non un errore generico.
+**Superamento del limite** (downgrade, scadenza della copertura dello studio, limite abbassato al rinnovo): non si elimina né si disattiva mai niente; si bloccano solo i nuovi utenti, i nuovi clienti e i nuovi caricamenti, con un messaggio dedicato. In "Gestione licenze" ogni funzione mostra uso e limite (es. "Clienti attivi: 120 su 100") e l'avviso di superamento.
 
 **Dove si applica il controllo:**
-- backend: `AccountService.UserCompanyPut` (nuovo utente e passaggio di `Disabled` da `true` a `false`) e il corrispondente metodo per gli utenti dello studio. Gli utenti amministratori creati insieme all'azienda (`CompanyPut`) non vengono bloccati, perché l'azienda nuova parte da zero utenti;
-- frontend: contatore "utenti attivi / limite" (es. "12 / 50") nell'elenco utenti dell'azienda e in "Gestione licenze"; il pulsante "Nuovo utente" è disabilitato al raggiungimento del limite, con il link alla pagina licenze. Il server ricontrolla sempre.
+- utenti: `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut` (nuovo utente, riabilitazione); gli amministratori creati con l'azienda non vengono bloccati;
+- clienti: `Az_ClienteService.Az_ClientePut` (Anagrafiche → Clienti) e, nel ramo CRM, `Crm_ClienteService` e la conversione dei lead (`Crm_LeadService`), tutti con `ILicenseGuard.EnsureCanAddClientAsync`; i clienti creati in automatico dagli altri applicativi non vengono bloccati;
+- spazio: `StorageQuotaService` (quota e prenotazione atomica del caricamento con la quota della licenza);
+- frontend: contatore utenti nell'elenco utenti, limiti e uso in "Gestione licenze"; il server ricontrolla sempre.
 - **Periodicità** (punto 4): `Mensile`/`Annuale`, scelta alla sottoscrizione; prezzo annuale indipendente (consente lo sconto annuale senza calcoli).
 
 Esempio (listino globale SuperUser, TipoSoggetto=Company, Ambito=Presenze):
@@ -327,21 +330,32 @@ Task<bool> HasAtLeastAsync(int idCompany, ApplicationType ambito, LivelloLicenza
 - **Frontend**: il livello effettivo per ambito viene caricato in `UserLoad` insieme agli applicativi attivi; `AuthService` espone gli equivalenti sincroni (`licenseLevel(app)`, `isLicensed(app)`, `isFree(app)`, `isStandard(app)`, `isPro(app)`, `hasLicenseAtLeast(app, livello)`) per menu e pulsanti. Il server ricontrolla sempre con `ILicenseGuard`: il frontend serve solo a mostrare o nascondere.
 - Finché il sistema licenze non è attivo (prima della Fase 4 o con abbonamenti non ancora migrati) i metodi devono avere un **comportamento neutro configurabile** (proposta: rispondere come `Pro`), così aggiungere un controllo a una funzione non blocca nessuno prima del tempo.
 
-### 8.1.2 Metodi sul limite utenti (deciso il 09/11/2026)
+### 8.1.2 Metodi sui limiti (09/11/2026, rivisto il 10/11/2026)
 
 Sempre in `ILicenseGuard`, con le regole del §5.1:
 
 ```
-Task<int?> MaxUsersAsync(int idCompany, ApplicationType ambito);   // limite della funzione; null = illimitati
-Task<int>  ActiveUsersAsync(int idCompany);                        // utenti non disabilitati dell'azienda
-Task<bool> IsWithinUserLimitAsync(int idCompany, ApplicationType ambito);   // utenti attivi <= limite della funzione
-Task<bool> CanAddUserAsync(int idCompany);                         // un utente in più resta entro il limite più alto dell'azienda
+// utenti (Presenze)
+Task<int?> CompanyUserLimitAsync(int idCompany);   // limite della licenza Presenze; null = illimitati o Presenze non coperte
+Task<int>  ActiveUsersAsync(int idCompany);        // utenti non disabilitati dell'azienda
+Task<bool> CanAddUserAsync(int idCompany);
+Task<int?> MaxUsersAsync(int idCompany, ApplicationType ambito);          // solo Presenze ha un limite utenti
+Task<bool> IsWithinUserLimitAsync(int idCompany, ApplicationType ambito);
+
+// clienti (CRM)
+Task<int?> ClientLimitAsync(int idCompany);        // limite della licenza CRM; null = illimitati o CRM non coperto
+Task<int>  ActiveClientsAsync(int idCompany);      // clienti attivi (Cliente o Entrambi) nello schema Common dell'azienda
+Task<bool> CanAddClientAsync(int idCompany);
+Task       EnsureCanAddClientAsync(int idCompany); // messaggio per l'utente se il limite e' raggiunto
+bool       ContaComeCliente(Az_Cliente? cliente);  // attivo e non solo fornitore
+
+// spazio (Documentale)
+Task<LicenseStorageQuota?> StorageQuotaAsync(int idCompany);   // quota della licenza; null = vale il pacchetto
 ```
 
-- Per gli utenti dello studio: `StudioMaxUsersAsync`, `StudioActiveUsersAsync`, `StudioUserLimitAsync`, `StudioCanAddUserAsync`. `CompanyUserLimitAsync` restituisce il limite più alto tra le funzioni coperte dell'azienda.
-- `CanAddUserAsync` è il metodo usato da `UserCompanyPut`; `IsWithinUserLimitAsync` è a disposizione delle funzioni per decidere, strada facendo, cosa restringere quando una funzione è oltre il limite.
-- Frontend: `UserLoad` porta anche utenti attivi e limite per funzione; `AuthService` espone `maxUsers(app)`, `isWithinUserLimit(app)` e `canAddUser()`.
-- Con il comportamento neutro (sistema licenze non ancora attivo) i metodi rispondono come illimitati.
+- Per gli utenti dello studio: `StudioUserLimitAsync`, `StudioActiveUsersAsync`, `StudioCanAddUserAsync`, `StudioMaxUsersAsync` (limite della licenza Presenze dello studio).
+- Frontend: `UserLoad` porta per funzione i tre limiti, il limite utenti (`userLimit`, `canAddUser`) e il limite clienti (`clientLimit`, `canAddClient`); `AuthService` espone `maxUsers(app)`, `canAddUser()`, `clientLimit()`, `canAddClient()`, `maxStorageMB()`.
+- Con il comportamento neutro (sistema licenze non attivo) tutti i limiti sono illimitati.
 
 ### 8.2 Dove si applica (tre livelli, da attivare quando si pianifica)
 
@@ -471,7 +485,7 @@ Implementato su **Infrastructure_Dev**: Fasi 0, 1 e 2, `ILicenseGuard` (§8.1, �
 | Pagamenti | `License/Payment/PaymentGateway.cs` (`IPaymentGateway`, `DebugPaymentGateway`, `IPaymentGatewayResolver`) |
 | API | `License/LicenseService.cs`, `Controllers/Infrastructure/LicenseController.cs` |
 | Manutenzione notturna | `nvxapp.server/Utility/LicenseMaintenanceService.cs` (dopo le 3: rinnovi automatici, scadenze, avvisi) |
-| Limite utenti | `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut` (nuovo utente e riabilitazione) |
+| Limiti per funzione (§5.1) | utenti: `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut`; clienti: `Az_ClienteService` e ramo CRM; spazio: `StorageQuotaService` (migration `LicenseLimits`) |
 | Stato per il client | `UserLoad` → `userData.license`; `AuthService` (`isLicensed`, `isFree`, `isStandard`, `isPro`, `hasLicenseAtLeast`, `maxUsers`, `isWithinUserLimit`, `canAddUser`) |
 | Pagine | `license-catalog-list`, `license-catalog-edit`, `license-settings`, `license-management`, `license-subscribe`; contatore e blocco nell'elenco utenti dell'azienda |
 | Testi | `InfrastructureMessages*.resx` (server), `assets/i18n/infrastructure/*.json` (client), manuale `Manuals/infrastructure.*.md` |

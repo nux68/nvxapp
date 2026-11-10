@@ -613,4 +613,12 @@
     <value>Licence activated, but the applications could not be activated: contact support.</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicenseClientLimitReached" xml:space="preserve">
+    <value>The CRM licence limit of {0} active customers has been reached: upgrade to a higher plan or deactivate a customer.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="StorageLicensePlan" xml:space="preserve">
+    <value>Licence {0}</value>
+    <comment>licenze</comment>
+  </data>
 </root>

@@ -150,6 +150,32 @@ export class LicenseManagementPageComponent {
       : this.transloco.translate('pages.licenseManagement.usersOfLimit', { attivi: this.status.utentiAttivi, limite: this.status.limiteUtenti });
   }
 
+  // limite della funzione con l'uso attuale (ANALISI_LICENZE.md §5.1): Presenze utenti, CRM clienti attivi, Documentale spazio
+  limite(f: LicenseFunctionStatusModel): string {
+    const t = (k: string, p?: any) => this.transloco.translate(k, p);
+    switch (f.ambito) {
+      case AmbitoLicenza.AttendanceTracking:
+        return f.maxUtenti == null
+          ? t('pages.licenseManagement.usersUnlimitedOf', { attivi: this.status?.utentiAttivi ?? 0 })
+          : t('pages.licenseManagement.usersOf', { attivi: this.status?.utentiAttivi ?? 0, max: f.maxUtenti });
+      case AmbitoLicenza.Crm:
+        return f.maxClienti == null
+          ? t('pages.licenseManagement.clientsUnlimitedOf', { attivi: f.clientiAttivi ?? 0 })
+          : t('pages.licenseManagement.clientsOf', { attivi: f.clientiAttivi ?? 0, max: f.maxClienti });
+      case AmbitoLicenza.DocumentManagement:
+        return f.maxSpazioMB == null
+          ? t('pages.licenseManagement.storageUnlimitedOf', { usato: this.mb(f.spazioUsatoMB ?? 0) })
+          : t('pages.licenseManagement.storageOf', { usato: this.mb(f.spazioUsatoMB ?? 0), max: this.mb(f.maxSpazioMB) });
+      default:
+        return '';
+    }
+  }
+
+  // MB in forma leggibile (oltre 1024 MB in GB)
+  mb(valore: number): string {
+    return valore >= 1024 ? (valore / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' GB' : valore + ' MB';
+  }
+
   funzioniSuperiori(ambiti: number[]): string {
     return ambiti.map(a => this.transloco.translate('pages.license.function' + a)).join(', ');
   }

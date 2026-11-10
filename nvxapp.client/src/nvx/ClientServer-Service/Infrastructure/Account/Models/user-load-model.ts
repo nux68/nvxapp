@@ -42,6 +42,9 @@ export class UserLicenseModel {
   // limite utenti del soggetto; null = illimitati
   public userLimit: number | null = null;
   public canAddUser: boolean = true;
+  // limite clienti dell'azienda (licenza CRM); null = illimitati o CRM non coperto
+  public clientLimit: number | null = null;
+  public canAddClient: boolean = true;
 }
 
 export class UserLicenseFunctionModel {
@@ -50,6 +53,8 @@ export class UserLicenseFunctionModel {
   public livello: LivelloLicenza | null = null;
   public stato: StatoLicenza = StatoLicenza.NotSubscribed;
   public maxUtenti: number | null = null;
+  public maxClienti: number | null = null;
+  public maxSpazioMB: number | null = null;
   public dataScadenza: string | null = null;
 }
 

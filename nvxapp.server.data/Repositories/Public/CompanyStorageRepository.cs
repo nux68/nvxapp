@@ -34,6 +34,14 @@ namespace nvxapp.server.data.Repositories.Public
                    AND cs.""IdCompany"" = {idCompany}
                    AND cs.""UsedBytes"" + cs.""ReservedBytes"" + {bytes} <= p.""QuotaMB""::bigint * {MB}", cancellationToken) > 0;
 
+        // stessa prenotazione atomica, con la quota data dalla licenza del documentale invece che dal pacchetto (ANALISI_LICENZE.md §5.1)
+        public async Task<bool> ReserveAsync(int idCompany, long bytes, long quotaBytes, CancellationToken cancellationToken = default)
+            => await DbContext.Database.ExecuteSqlInterpolatedAsync($@"
+                UPDATE public.""CompanyStorage"" cs
+                   SET ""ReservedBytes"" = cs.""ReservedBytes"" + {bytes}
+                 WHERE cs.""IdCompany"" = {idCompany}
+                   AND cs.""UsedBytes"" + cs.""ReservedBytes"" + {bytes} <= {quotaBytes}", cancellationToken) > 0;
+
         public Task<int> ConfirmAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
             => DbContext.Database.ExecuteSqlInterpolatedAsync($@"
                 UPDATE public.""CompanyStorage""
@@ -71,6 +79,9 @@ namespace nvxapp.server.data.Repositories.Public
 
         /// <summary>Prenota lo spazio solo se c'e' (atomico); false = quota superata.</summary>
         Task<bool> ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default);
+
+        /// <summary>Prenota lo spazio con una quota esplicita (licenza del documentale); false se non basta.</summary>
+        Task<bool> ReserveAsync(int idCompany, long bytes, long quotaBytes, CancellationToken cancellationToken = default);
 
         /// <summary>Spazio prenotato che diventa occupato (+1 file).</summary>
         Task<int> ConfirmAsync(int idCompany, long bytes, CancellationToken cancellationToken = default);

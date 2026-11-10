@@ -35,8 +35,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Seed
                 Lic_Piano = piani.ToList()
             };
 
-        /// <summary>Piano del listino; maxUtenti null = illimitati.</summary>
-        public static Lic_Piano Piano(LivelloLicenza livello, string codice, string? descrizione, decimal prezzoMensile, decimal prezzoAnnuale, int? maxUtenti)
+        /// <summary>Piano del listino; limiti null = illimitati: maxUtenti (Presenze), maxClienti (CRM), maxSpazioMB (Documentale).</summary>
+        public static Lic_Piano Piano(LivelloLicenza livello, string codice, string? descrizione, decimal prezzoMensile, decimal prezzoAnnuale, int? maxUtenti,
+                                      int? maxClienti = null, int? maxSpazioMB = null)
             => new()
             {
                 Livello = livello,
@@ -46,6 +47,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Seed
                 PrezzoMensile = livello == LivelloLicenza.Free ? 0 : prezzoMensile,
                 PrezzoAnnuale = livello == LivelloLicenza.Free ? 0 : prezzoAnnuale,
                 MaxUtenti = maxUtenti,
+                MaxClienti = maxClienti,
+                MaxSpazioMB = maxSpazioMB,
                 Attivo = true
             };
     }
