@@ -37,6 +37,19 @@ export class PageToolbarComponent {
   }
 
 
+  // username dell'utente del login (il primo della cronologia)
+  public get loggedUserName(): string | null {
+    return this.userNavigationService.userCronology?.[0]?.userData?.userName ?? null;
+  }
+
+  // username dell'utente impersonato (l'ultimo della cronologia), solo se diverso da quello del login
+  public get impersonatedUserName(): string | null {
+    const cronologia = this.userNavigationService.userCronology;
+    if (!cronologia || cronologia.length < 2)
+      return null;
+    return cronologia[cronologia.length - 1]?.userData?.userName ?? null;
+  }
+
   public get isMobile(): boolean {
     return this.platform.width() < 576;
   }
