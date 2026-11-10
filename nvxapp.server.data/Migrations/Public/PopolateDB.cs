@@ -96,8 +96,8 @@ namespace nvxapp.server.data.Migrations.Public
 
                 migrationBuilder.InsertData(
                         table: "Dealer",
-                        columns: new[] { "Descrizione" },
-                        values: new object[] { "Concessionario " + key_Dealer }
+                        columns: new[] { "Descrizione", "PuoGestireListini" },
+                        values: new object[] { "Concessionario " + key_Dealer, false }
                         );
                 //DealerPowerAdmin
                 migrationBuilder.InsertData(
@@ -207,8 +207,8 @@ namespace nvxapp.server.data.Migrations.Public
 
             migrationBuilder.InsertData(
                     table: "Dealer",
-                    columns: new[] { "Descrizione" },
-                    values: new object[] { "DEMO" }
+                    columns: new[] { "Descrizione", "PuoGestireListini" },
+                    values: new object[] { "DEMO", false }
                     );
             //DealerPowerAdmin
             migrationBuilder.InsertData(
