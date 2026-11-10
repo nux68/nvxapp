@@ -1,0 +1,89 @@
+// Stili comuni dei widget della dashboard (ANALISI_WIDGET.md): i widget dei rami li includono con
+//   @use '<percorso>/shared/components/infrastructure/widgets/widget-common' as wc;
+//   @include wc.widget-common;
+// cosi' numeri, etichette, barre e messaggi hanno lo stesso aspetto in ogni applicativo (anche nel tema scuro).
+
+@mixin widget-common {
+  // riga di indicatori (numero grande + etichetta)
+  .nvx-w-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .nvx-w-stat {
+    flex: 1 1 110px;
+    padding: 12px 14px;
+    border-radius: var(--nvx-radius-sm);
+    background: var(--nvx-surface-soft);
+    border: 1px solid var(--nvx-border);
+
+    .valore {
+      font-size: 1.8rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .etichetta {
+      margin-top: 2px;
+      font-size: 0.85rem;
+      color: var(--nvx-text-muted);
+    }
+
+    &.primary .valore { color: var(--ion-color-primary); }
+    &.success .valore { color: var(--ion-color-success); }
+    &.warning .valore { color: var(--ion-color-warning-shade); }
+    &.danger  .valore { color: var(--ion-color-danger); }
+    &.cliccabile { cursor: pointer; }
+    &.cliccabile:hover { border-color: var(--nvx-border-strong); }
+  }
+
+  // barra di avanzamento (es. spazio occupato)
+  .nvx-w-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--nvx-surface-soft);
+    border: 1px solid var(--nvx-border);
+    overflow: hidden;
+
+    > div {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--ion-color-primary);
+      transition: width 0.3s ease;
+    }
+
+    &.warning > div { background: var(--ion-color-warning); }
+    &.danger > div { background: var(--ion-color-danger); }
+  }
+
+  .nvx-w-muted {
+    color: var(--nvx-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .nvx-w-empty {
+    padding: 12px 0;
+    text-align: center;
+    color: var(--nvx-text-muted);
+  }
+
+  .nvx-w-loading {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0;
+  }
+
+  .nvx-w-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-color-primary);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+}

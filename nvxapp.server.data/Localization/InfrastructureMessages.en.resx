@@ -621,4 +621,16 @@
     <value>Licence {0}</value>
     <comment>licenze</comment>
   </data>
+  <data name="DashboardNotConfigurable" xml:space="preserve">
+    <value>The dashboard can only be configured while working in a company with the User, CompanyAdmin or CompanyPowerAdmin role.</value>
+    <comment>dashboard</comment>
+  </data>
+  <data name="DashboardTooManyWidgets" xml:space="preserve">
+    <value>You can add at most {0} widgets to the dashboard.</value>
+    <comment>dashboard</comment>
+  </data>
+  <data name="DashboardWidgetInvalid" xml:space="preserve">
+    <value>Invalid widget: {0}.</value>
+    <comment>dashboard</comment>
+  </data>
 </root>
