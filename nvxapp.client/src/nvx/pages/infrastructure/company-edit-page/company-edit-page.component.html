@@ -94,11 +94,14 @@
           <ion-item>
             <ion-checkbox justify="start" labelPlacement="end"
                           [checked]="app.active"
-                          [disabled]="_editModel.applicationsReadOnly"
+                          [disabled]="_editModel.applicationsReadOnly || !app.canChange"
                           (ionChange)="app.active = $event.detail.checked">
               {{ app.descrizione }}
             </ion-checkbox>
           </ion-item>
+          @if (!app.licensed) {
+            <ion-note class="nvx-nota-disabled">{{ 'pages.companyEdit.noLicense' | transloco }}</ion-note>
+          }
         }
         <ion-note>
           {{ (_editModel.applicationsReadOnly ? 'pages.companyEdit.applicationsReadOnly' : 'pages.companyEdit.applicationsNote') | transloco }}
