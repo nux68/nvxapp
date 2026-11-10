@@ -16,9 +16,10 @@ interface Fetta {
   inizio: number;
 }
 
-// colori delle fette: quelli del tema, cosi' vanno anche nel tema scuro; il cestino e "altri" in grigio
-const COLORI = ['--ion-color-primary', '--ion-color-secondary', '--ion-color-tertiary', '--ion-color-success',
-                '--ion-color-warning', '--ion-color-danger'];
+// colori delle fette: quelli del tema, cosi' vanno anche nel tema scuro; il cestino e "altri" in grigio.
+// Ordine scelto perche' fette vicine abbiano toni lontani (primary e secondary sono entrambi blu).
+const COLORI = ['--ion-color-primary', '--ion-color-warning', '--ion-color-success', '--ion-color-tertiary',
+                '--ion-color-danger', '--ion-color-secondary'];
 const MAX_FETTE = COLORI.length;
 
 /*

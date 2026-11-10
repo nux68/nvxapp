@@ -37,7 +37,7 @@ Grafico a **ciambella** (SVG disegnato dal widget, nessuna libreria di grafici) 
 legenda (tipo, spazio, percentuale); collegamento **Apri l'archivio** (`/doclist`).
 
 - Fette: le tipologie ordinate per spazio; oltre la sesta confluiscono in **Altri**; il **Cestino** è una fetta a parte.
-- Colori del tema (`--ion-color-primary`, `secondary`, `tertiary`, `success`, `warning`, `danger`; grigi per Altri e
+- Colori del tema in ordine `primary`, `warning`, `success`, `tertiary`, `danger`, `secondary` (fette vicine con toni lontani; grigi per Altri e
   Cestino), quindi leggibili anche nel tema scuro.
 
 ### 3.1 Endpoint `Doc_Widget/Doc_SpazioPerTipoGet`
