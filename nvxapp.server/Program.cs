@@ -93,6 +93,8 @@ nvxapp.server.Base.ServiceBase.InitScopeFactory(app.Services.GetRequiredService<
 Boolean configuredMultiTenant = false;
 bool.TryParse(builder.Configuration["DbParameter:MultiTenant"], out configuredMultiTenant);
 await DatabaseInitializer.InitializeAsync(app.Services, configuredMultiTenant);
+// licenze: listini iniziali dichiarati dai rami (ILicenseCatalogSeed), creati una sola volta
+await LicenseCatalogSeedRunner.RunAsync(app.Services);
 
 
 // primo middleware: tutti quelli successivi (CORS, https, autenticazione, log) vedono IP e schema originali
