@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
 import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
 // Showcase del CRM: stesse pagine template di Infrastructure (ShowcaseService), con i testi sulle funzioni del ramo.
@@ -78,11 +79,8 @@ export class ShowcaseCrmService {
       pricing: {
         titolo: t('pricing.titolo'),
         sottotitolo: t('pricing.sottotitolo'),
-        piani: [
-          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.fino3Utenti'), t('pricing.caratteristiche.tabellePronte')], cta: t('pricing.piani.prova.cta') },
-          { nome: t('pricing.piani.azienda.nome'), prezzo: '9 €', periodo: t('pricing.piani.azienda.periodo'), descrizione: t('pricing.piani.azienda.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.offertePdf'), t('pricing.caratteristiche.report'), t('pricing.caratteristiche.assistenzaEmailTelefono')], cta: t('pricing.piani.azienda.cta'), evidenza: true },
-          { nome: t('pricing.piani.studio.nome'), prezzo: t('pricing.piani.studio.prezzo'), periodo: '', descrizione: t('pricing.piani.studio.descrizione'), caratteristiche: [t('pricing.caratteristiche.piuAziende'), t('pricing.caratteristiche.integrazioni'), t('pricing.caratteristiche.importazione'), t('pricing.caratteristiche.assistenzaPrioritaria')], cta: t('pricing.piani.studio.cta'), url: '/contact' }
-        ],
+        ambiti: [AmbitoLicenza.Crm],
+        inclusi: [t('pricing.inclusi.offertePdf'), t('pricing.inclusi.report'), t('pricing.inclusi.tabellePronte'), t('pricing.inclusi.tutteLeFunzioni')],
         nota: t('pricing.nota'),
         domande: [
           { domanda: t('pricing.domande.installare.domanda'), risposta: t('pricing.domande.installare.risposta') },
