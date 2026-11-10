@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initializer.CompanyInit
@@ -24,6 +25,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IGestionePresenzeParametriDefault _gestionePresenzeParametriDefault;
         private readonly IUserCompanyRepository _userCompanyRepository;
+        private readonly ICommonDipendenteUtility _commonDipendenteUtility;
         private readonly ILogger<GestionePresenzeCompanyInitializer> _logger;
 
         public string Name => "GestionePresenze";
@@ -37,8 +39,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
             IGestionePresenzeUserUtility gestionePresenzeUserUtility,
             IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,
             IUserCompanyRepository userCompanyRepository,
+            ICommonDipendenteUtility commonDipendenteUtility,
             ILogger<GestionePresenzeCompanyInitializer> logger)
         {
+            _commonDipendenteUtility = commonDipendenteUtility;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _gestionePresenzeParametriDefault = gestionePresenzeParametriDefault;
             _userCompanyRepository = userCompanyRepository;
@@ -71,9 +75,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
             if (companyData.az_Anagrafica != null)
                 await _gestionePresenzeParametriDefault.InitParametri(companyData.az_Anagrafica.Id);
 
-            // Cognome e Nome dei dipendenti esistenti che non li hanno ancora
+            // Cognome e Nome dei dipendenti esistenti che li hanno ancora provvisori (inizializzazione unica, Infrastructure)
             var idAspNetUsers = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id).Select(x => x.IdAspNetUsers).ToList();
-            await _gestionePresenzeUserUtility.CompletaCognomeNome(idAspNetUsers);
+            await _commonDipendenteUtility.CompletaCognomeNomeAsync(company.Id, idAspNetUsers);
 
             // Competenza di default ai dipendenti esistenti che non hanno ancora competenze
             if (companyData.az_Anagrafica != null)

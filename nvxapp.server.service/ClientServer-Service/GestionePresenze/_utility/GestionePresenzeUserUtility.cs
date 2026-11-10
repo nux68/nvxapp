@@ -24,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         private readonly IAz_AnagraficaRepository _az_AnagraficaRepository;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
+        private readonly ICommonDipendenteUtility _commonDipendenteUtility;
         private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor;
 
         // azienda su cui si lavora: TenantScope (job, inizializzatori) o claim "company" del token
@@ -92,11 +93,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
                                            IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                            ICommonCompanyUtility commonCompanyUtility,
+                                           ICommonDipendenteUtility commonDipendenteUtility,
                                            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
                                            )
         {
             _mapper = mapper;
             _commonCompanyUtility = commonCompanyUtility;
+            _commonDipendenteUtility = commonDipendenteUtility;
             _httpContextAccessor = httpContextAccessor;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
@@ -146,19 +149,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
-                    // Cognome e Nome iniziali: personaggi Disney in sequenza (modificabili poi dall'anagrafica)
-                    var (cognome, nome) = PersonaggioDisney(_dip_AnagraficaRepository.FindAll(x => true).Count());
                     if (az_AnagraficaDip == null)
                         throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyRecordNotFound"));
 
-                    user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = new Dip_Anagrafica()
-                    {
-                        IdAz_Anagrafica = az_AnagraficaDip.Id,
-                        IdAspNetUsers = IdAspNetUsers,
-                        Cognome = cognome,
-                        Nome = nome
-                    };
-                    await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
+                    // anagrafica comune (con Cognome e Nome iniziali): inizializzazione unica in Infrastructure,
+                    // qui si aggiungono solo i dati delle presenze (rapporto di lavoro, reparto, competenza, profilo)
+                    var dip_AnagraficaComune = await _commonDipendenteUtility.GetOrCreateDip_AnagraficaAsync(idCompanyDip!.Value, IdAspNetUsers);
+                    user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.Id == dip_AnagraficaComune.Id).FirstAsync();
                 }
                 else
                 {
@@ -224,60 +221,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
 
             return user_DATA_COMB_DipAna_DipRapp;
-        }
-
-        // Nomi di partenza per le anagrafiche dei dipendenti: personaggi di Topolino e Paperino.
-        // Finito l'elenco si riparte con un numero progressivo nel nome (es. "Topolino 2").
-        private static readonly (string Cognome, string Nome)[] _personaggiDisney =
-        {
-            ("Mouse", "Topolino"),
-            ("Mouse", "Minni"),
-            ("Paperino", "Paolino"),
-            ("De' Paperoni", "Paperon"),
-            ("Papera", "Paperina"),
-            ("Duck", "Qui"),
-            ("Duck", "Quo"),
-            ("Duck", "Qua"),
-            ("Goof", "Pippo"),
-            ("Paperone", "Gastone"),
-            ("Pitagorico", "Archimede"),
-            ("Papera", "Nonna"),
-            ("Duck", "Paperoga"),
-            ("Cavezza", "Orazio"),
-            ("Cow", "Clarabella"),
-            ("Gambadilegno", "Pietro"),
-            ("Beta", "Eta"),
-            ("Basettoni", "Commissario"),
-            ("Manetta", "Ispettore"),
-            ("Nera", "Macchia"),
-            ("Rockerduck", "John"),
-            ("McBridge", "Brigitta"),
-        };
-
-        private static (string Cognome, string Nome) PersonaggioDisney(int indice)
-        {
-            var p = _personaggiDisney[indice % _personaggiDisney.Length];
-            int giro = indice / _personaggiDisney.Length;
-            return giro == 0 ? p : (p.Cognome, $"{p.Nome} {giro + 1}");
-        }
-
-        // Completa Cognome e Nome delle anagrafiche esistenti che li hanno entrambi vuoti
-        // (create prima dell'assegnazione automatica), con lo stesso criterio delle nuove:
-        // il personaggio dipende dalla posizione dell'anagrafica nella tabella.
-        public async Task CompletaCognomeNome(List<string> IdAspNetUsers)
-        {
-            var vuote = _dip_AnagraficaRepository.FindAll(x => IdAspNetUsers.Contains(x.IdAspNetUsers) &&
-                                                               (x.Cognome == null || x.Cognome == "") &&
-                                                               (x.Nome == null || x.Nome == ""))
-                                                 .OrderBy(x => x.Id)
-                                                 .ToList();
-            foreach (var dip_Anagrafica in vuote)
-            {
-                var (cognome, nome) = PersonaggioDisney(_dip_AnagraficaRepository.FindAll(x => x.Id < dip_Anagrafica.Id).Count());
-                dip_Anagrafica.Cognome = cognome;
-                dip_Anagrafica.Nome = nome;
-                await _dip_AnagraficaRepository.UpsertAsync(dip_Anagrafica);
-            }
         }
 
         // Competenza di default dell'azienda (creata con l'azienda e collegata all'attivita' di default)
@@ -915,7 +858,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         string? VerificaGiorniNelRapporto(int IdDip_RapportoLavoro, DateTime Dal, DateTime Al);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
-        Task CompletaCognomeNome(List<string> IdAspNetUsers);
         Par_Competenza? GetCompetenzaDefault(int IdAz_Anagrafica);
         Task CompletaCompetenzaDefault(List<string> IdAspNetUsers, int IdAz_Anagrafica);
         Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany);
