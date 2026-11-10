@@ -43,6 +43,11 @@ namespace nvxapp.server.Controllers.Infrastructure
         public async Task<GenericResult<LicenseCatalogDeleteOutModel>> LicenseCatalogDelete(GenericRequest<LicenseCatalogDeleteInModel> inModel)
             => await _service.LicenseCatalogDelete(inModel, false);
 
+        // pagina prezzi dello showcase: listini globali del SuperUser, senza login
+        [AllowAnonymous, HttpPost, Route("LicensePublicPriceList")]
+        public async Task<GenericResult<LicensePublicPriceListOutModel>> LicensePublicPriceList(GenericRequest<LicensePublicPriceListInModel> inModel)
+            => await _service.LicensePublicPriceList(inModel, false);
+
         [Authorize, HttpPost, Route("LicenseStatusGet")]
         public async Task<GenericResult<LicenseStatusGetOutModel>> LicenseStatusGet(GenericRequest<LicenseStatusGetInModel> inModel)
             => await _service.LicenseStatusGet(inModel, false);
