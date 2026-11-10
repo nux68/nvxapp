@@ -32,7 +32,7 @@
 
       <!-- righe calcolate da widget-layout.ts: righe incomplete allargate o centrate, stessa altezza nella riga -->
       <div class="nvx-widget-rows">
-        @for (riga of righe; track $index + '|' + giro) {
+        @for (riga of righe; track $index) {
           <div class="nvx-widget-row">
             @for (c of riga.celle; track c.widget.key) {
               <section [class]="'nvx-widget' + (c.widget.frameless ? ' frameless' : '')" [style.--nvx-w]="c.frazione">
