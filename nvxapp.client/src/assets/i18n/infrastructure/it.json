@@ -1131,5 +1131,35 @@
     "notification": {
       "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }
+  },
+  "widgets": {
+    "application": {
+      "0": "Funzioni base",
+      "2": "Presenze",
+      "3": "CRM",
+      "4": "Documentale"
+    },
+    "dashboard": {
+      "customize": "Personalizza",
+      "empty": "Nessun widget nella dashboard."
+    },
+    "config": {
+      "title": "La tua dashboard",
+      "note": "Scegli i widget da mostrare nella dashboard e il loro ordine. Vedi solo i widget degli applicativi attivi per la tua azienda.",
+      "notConfigurable": "La dashboard si configura lavorando in un'azienda.",
+      "selected": "Nella dashboard",
+      "available": "Widget disponibili",
+      "noneSelected": "Nessun widget: la dashboard mostrerà solo il saluto.",
+      "allAdded": "Hai già aggiunto tutti i widget disponibili.",
+      "restoreDefaults": "Ripristina predefiniti",
+      "add": "Aggiungi",
+      "remove": "Togli",
+      "moveUp": "Sposta su",
+      "moveDown": "Sposta giù"
+    },
+    "askAssistant": {
+      "title": "Chiedi all'assistente",
+      "description": "Campo per fare una domanda all'assistente AI."
+    }
   }
 }

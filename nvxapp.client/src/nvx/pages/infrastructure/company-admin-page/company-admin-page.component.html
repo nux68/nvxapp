@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="title | transloco"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -7,18 +7,15 @@
 
   <ion-card>
     <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'widgets.config.title' | transloco }}</ion-label>
+      </ion-item>
+      <ion-note class="nvx-dashboard-config-note">{{ 'widgets.config.note' | transloco }}</ion-note>
 
-      <br />
-
-
-      <div id="container">
-        <strong class="capitalize">{{ title }}</strong>
-        <p>{{title}}Component works...</p>
-      </div>
-
-      <br />
+      <app-widget-config></app-widget-config>
     </ion-card-content>
   </ion-card>
 
-
 </ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
