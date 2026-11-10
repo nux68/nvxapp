@@ -269,9 +269,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                         piano.PrezzoMensile = Math.Round(p.PrezzoMensile, 2);
                         piano.PrezzoAnnuale = Math.Round(p.PrezzoAnnuale, 2);
                         // limiti: solo quelli della funzione del listino (il Cumulativo li ha tutti), gli altri non servono (§5.1)
-                        piano.MaxUtenti = UsaLimite(ambito, AmbitoLicenza.AttendanceTracking) ? p.MaxUtenti : null;
-                        piano.MaxClienti = UsaLimite(ambito, AmbitoLicenza.Crm) ? p.MaxClienti : null;
-                        piano.MaxSpazioMB = UsaLimite(ambito, AmbitoLicenza.DocumentManagement) ? p.MaxSpazioMB : null;
+                        piano.MaxUtenti = LicenseDefaults.UsaLimite(ambito, AmbitoLicenza.AttendanceTracking) ? p.MaxUtenti : null;
+                        piano.MaxClienti = LicenseDefaults.UsaLimite(ambito, AmbitoLicenza.Crm) ? p.MaxClienti : null;
+                        piano.MaxSpazioMB = LicenseDefaults.UsaLimite(ambito, AmbitoLicenza.DocumentManagement) ? p.MaxSpazioMB : null;
                         // il piano Free resta sempre disponibile
                         piano.Attivo = p.Livello == (int)LivelloLicenza.Free || p.Attivo;
                         await _pianoRepository.UpsertAsync(piano);
@@ -619,9 +619,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             accesso.PuoGestire = powerAdmin && await _dealerRepository.FindAll(x => x.Id == idDealer && x.PuoGestireListini).AnyAsync();
             return accesso;
         }
-
-        // il listino della funzione usa il limite della funzione; il Cumulativo li usa tutti (§5.1)
-        private static bool UsaLimite(AmbitoLicenza listino, AmbitoLicenza funzione) => listino == funzione || listino == AmbitoLicenza.Cumulativo;
 
         private static bool PuoModificare(int? idDealerListino, bool dealerAbilitato, Accesso accesso)
             => accesso.SuperUser
