@@ -1,0 +1,28 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    @if (dati.admin) {
+      <div class="nvx-w-stat cliccabile" [class.warning]="dati.daApprovare > 0" (click)="apri()">
+        <div class="valore">{{ dati.daApprovare }}</div>
+        <div class="etichetta">{{ 'attendance.widgets.requests.toApprove' | transloco }}</div>
+      </div>
+    } @else {
+      <div class="nvx-w-stat cliccabile" [class.warning]="dati.inAttesa > 0" (click)="apri()">
+        <div class="valore">{{ dati.inAttesa }}</div>
+        <div class="etichetta">{{ 'attendance.widgets.requests.pending' | transloco }}</div>
+      </div>
+    }
+    <div class="nvx-w-stat success cliccabile" (click)="apri()">
+      <div class="valore">{{ dati.approvateMese }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.requests.approvedMonth' | transloco }}</div>
+    </div>
+  </div>
+
+  @if (dati.admin && dati.inAttesa > 0) {
+    <div class="nvx-w-muted nvx-rw-info">{{ 'attendance.widgets.requests.ownPending' | transloco: { count: dati.inAttesa } }}</div>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'attendance.widgets.requests.open' | transloco }}</button>
+}

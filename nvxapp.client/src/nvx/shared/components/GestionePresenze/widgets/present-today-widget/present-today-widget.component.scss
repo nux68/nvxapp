@@ -1,0 +1,16 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+// barra dei presenti in verde
+.nvx-ptw-bar {
+  margin-top: 14px;
+
+  .nvx-w-bar > div {
+    background: var(--ion-color-success);
+  }
+}
+
+.nvx-ptw-info {
+  margin-top: 8px;
+}

@@ -1385,4 +1385,8 @@
     <value>commesse delle presenze: {0}</value>
     <comment>cliente comune usato dalle commesse (ICommonEntityUsage)</comment>
   </data>
+  <data name="WidgetAdminsOnly" xml:space="preserve">
+    <value>Dato riservato agli amministratori dell'azienda.</value>
+    <comment>widget della dashboard</comment>
+  </data>
 </root>
