@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261110125127_LicenseLimits")]
-    partial class LicenseLimits
+    [Migration("20261110131736_InitPublic")]
+    partial class InitPublic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

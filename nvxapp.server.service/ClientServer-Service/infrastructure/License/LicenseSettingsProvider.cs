@@ -16,15 +16,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     public class LicenseSettings
     {
         public bool Attive { get; set; }
-        public int? MaxUtentiFree { get; set; } = 10;
-        public int? MaxUtentiStandard { get; set; } = 50;
-        public int? MaxUtentiPro { get; set; }
-        public int? MaxClientiFree { get; set; } = 100;
-        public int? MaxClientiStandard { get; set; } = 1000;
-        public int? MaxClientiPro { get; set; }
-        public int? MaxSpazioMBFree { get; set; } = 1024;
-        public int? MaxSpazioMBStandard { get; set; } = 5120;
-        public int? MaxSpazioMBPro { get; set; } = 20480;
+        public int? MaxUtentiFree { get; set; } = LicenseDefaults.MaxUtenti(LivelloLicenza.Free);
+        public int? MaxUtentiStandard { get; set; } = LicenseDefaults.MaxUtenti(LivelloLicenza.Standard);
+        public int? MaxUtentiPro { get; set; } = LicenseDefaults.MaxUtenti(LivelloLicenza.Pro);
+        public int? MaxClientiFree { get; set; } = LicenseDefaults.MaxClienti(LivelloLicenza.Free);
+        public int? MaxClientiStandard { get; set; } = LicenseDefaults.MaxClienti(LivelloLicenza.Standard);
+        public int? MaxClientiPro { get; set; } = LicenseDefaults.MaxClienti(LivelloLicenza.Pro);
+        public int? MaxSpazioMBFree { get; set; } = LicenseDefaults.MaxSpazioMB(LivelloLicenza.Free);
+        public int? MaxSpazioMBStandard { get; set; } = LicenseDefaults.MaxSpazioMB(LivelloLicenza.Standard);
+        public int? MaxSpazioMBPro { get; set; } = LicenseDefaults.MaxSpazioMB(LivelloLicenza.Pro);
         public int GraceGiorni { get; set; } = 7;
         public int AvvisoGiorni { get; set; } = 10;
 
@@ -87,15 +87,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             _cache = new LicenseSettings
             {
                 Attive = string.Equals(await _appSettingRepository.GetValueAsync(PublicDbContext.Key_LicenzeAttive), "true", StringComparison.OrdinalIgnoreCase),
-                MaxUtentiFree = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiFree, 10),
-                MaxUtentiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiStandard, 50),
-                MaxUtentiPro = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiPro, null),
-                MaxClientiFree = await Utenti(PublicDbContext.Key_LicenzeMaxClientiFree, 100),
-                MaxClientiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxClientiStandard, 1000),
-                MaxClientiPro = await Utenti(PublicDbContext.Key_LicenzeMaxClientiPro, null),
-                MaxSpazioMBFree = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBFree, 1024),
-                MaxSpazioMBStandard = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBStandard, 5120),
-                MaxSpazioMBPro = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBPro, 20480),
+                MaxUtentiFree = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiFree, LicenseDefaults.MaxUtenti(LivelloLicenza.Free)),
+                MaxUtentiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiStandard, LicenseDefaults.MaxUtenti(LivelloLicenza.Standard)),
+                MaxUtentiPro = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiPro, LicenseDefaults.MaxUtenti(LivelloLicenza.Pro)),
+                MaxClientiFree = await Utenti(PublicDbContext.Key_LicenzeMaxClientiFree, LicenseDefaults.MaxClienti(LivelloLicenza.Free)),
+                MaxClientiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxClientiStandard, LicenseDefaults.MaxClienti(LivelloLicenza.Standard)),
+                MaxClientiPro = await Utenti(PublicDbContext.Key_LicenzeMaxClientiPro, LicenseDefaults.MaxClienti(LivelloLicenza.Pro)),
+                MaxSpazioMBFree = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBFree, LicenseDefaults.MaxSpazioMB(LivelloLicenza.Free)),
+                MaxSpazioMBStandard = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBStandard, LicenseDefaults.MaxSpazioMB(LivelloLicenza.Standard)),
+                MaxSpazioMBPro = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBPro, LicenseDefaults.MaxSpazioMB(LivelloLicenza.Pro)),
                 GraceGiorni = await Giorni(PublicDbContext.Key_LicenzeGraceGiorni, 7),
                 AvvisoGiorni = await Giorni(PublicDbContext.Key_LicenzeAvvisoGiorni, 10)
             };
