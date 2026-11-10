@@ -141,6 +141,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
     }
 
     // ---------------------------------------------------------------------------
+    // Listini pubblici (pagina prezzi dello showcase, senza login): solo i listini globali del SuperUser
+
+    public class LicensePublicPriceListInModel
+    {
+        // funzioni da mostrare (AmbitoLicenza); vuoto = tutte
+        public List<int> Ambito { get; set; } = new List<int>();
+    }
+    public class LicensePublicCatalogModel
+    {
+        public int TipoSoggetto { get; set; }
+        public int Ambito { get; set; }
+        public string Descrizione { get; set; } = string.Empty;
+        public string Valuta { get; set; } = "EUR";
+        // listino dello studio valido anche per le sue aziende
+        public bool DisponibileSuCompany { get; set; }
+        // solo i piani attivi, in ordine
+        public List<LicensePlanModel> Piano { get; set; } = new List<LicensePlanModel>();
+    }
+    public class LicensePublicPriceListOutModel : ModelResult
+    {
+        public List<LicensePublicCatalogModel> Listino { get; set; } = new List<LicensePublicCatalogModel>();
+    }
+
+    // ---------------------------------------------------------------------------
     // Gestione licenze del soggetto (azienda o studio)
 
     public class LicenseSubscriptionModel
