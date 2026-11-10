@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonCard, IonCardContent, IonContent } from '@ionic/angular';
+import { IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { CompanyAdminPageComponent } from './company-admin-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { WidgetConfigComponent } from '../../../shared/components/infrastructure/widgets/widget-config/widget-config.component';
 
 
 
@@ -12,14 +13,15 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
   imports: [
     CommonModule,
     FormsModule,
-    IonCard, IonCardContent, IonContent,
+    IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote,
     RouterModule.forChild([
       {
         path: '',
         component: CompanyAdminPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    WidgetConfigComponent
   ],
   declarations: [CompanyAdminPageComponent]
 })
