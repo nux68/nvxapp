@@ -1,0 +1,30 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.noData' | transloco }}</div>
+} @else if (dati.totale === 0) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.presentToday.noEmployees' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat success">
+      <div class="valore">{{ dati.presenti }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.presentToday.present' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat danger">
+      <div class="valore">{{ dati.assenti }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.presentToday.absent' | transloco }}</div>
+    </div>
+  </div>
+
+  <div class="nvx-ptw-bar">
+    <div class="nvx-w-bar"><div [style.width.%]="percentuale"></div></div>
+  </div>
+
+  <div class="nvx-w-muted nvx-ptw-info">
+    {{ 'attendance.widgets.presentToday.ofTotal' | transloco: { total: dati.totale } }}
+    @if (dati.assentiGiustificati > 0) {
+      · {{ 'attendance.widgets.presentToday.justified' | transloco: { count: dati.assentiGiustificati } }}
+    }
+  </div>
+  <button type="button" class="nvx-w-link" (click)="dettagli()">{{ 'attendance.widgets.details' | transloco }}</button>
+}

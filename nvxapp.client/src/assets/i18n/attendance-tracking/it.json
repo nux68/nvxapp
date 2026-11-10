@@ -1494,6 +1494,28 @@
           "nessunRisultato": "Nessun risultato calcolato"
         }
       }
+    },
+    "widgets": {
+      "noData": "Dati non disponibili.",
+      "details": "Dettagli",
+      "presentToday": {
+        "title": "Presenti oggi",
+        "description": "Dipendenti presenti e assenti oggi.",
+        "present": "Presenti",
+        "absent": "Assenti",
+        "ofTotal": "su {{total}} dipendenti in servizio",
+        "justified": "{{count}} assenti giustificati",
+        "noEmployees": "Nessun dipendente in servizio oggi."
+      },
+      "requests": {
+        "title": "Richieste",
+        "description": "Richieste da approvare (amministratori) o in attesa (dipendenti) e richieste approvate nel mese.",
+        "toApprove": "Da approvare",
+        "pending": "In attesa",
+        "approvedMonth": "Approvate nel mese",
+        "ownPending": "Tue richieste in attesa: {{count}}",
+        "open": "Vai alle richieste"
+      }
     }
   },
   "pages": {
