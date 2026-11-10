@@ -96,19 +96,15 @@
     box-shadow: var(--nvx-shadow-soft);
   }
 
+  // consigliato: solo il bordo della scheda in primary (il bottone resta grigio)
   &.consigliato {
-    border-color: rgba(var(--ion-color-primary-rgb), 0.55);
+    border-color: var(--ion-color-primary);
   }
 
-  &.selezionato {
-    border: 2px solid var(--ion-color-primary);
-    box-shadow: 0 10px 34px rgba(var(--ion-color-primary-rgb), 0.18);
-    transform: translateY(-2px);
-  }
-
+  // il piano selezionato non ha enfasi: lo dicono il bottone ("Selezionato") e il riepilogo.
+  // Il piano attuale si riconosce dal nastro e dal bottone con il bordo primary.
   &.attuale {
     cursor: default;
-    opacity: 0.85;
   }
 
   h2 {
@@ -130,9 +126,9 @@
   background: var(--ion-color-primary);
 
   &.attuale {
-    color: var(--ion-text-color);
-    background: var(--nvx-surface-soft);
-    border: 1px solid var(--nvx-border-strong);
+    color: var(--ion-color-primary);
+    background: var(--nvx-surface);
+    border: 1px solid var(--ion-color-primary);
   }
 }
 
@@ -180,22 +176,21 @@
   width: 100%;
   padding: 11px 16px;
   border-radius: var(--nvx-radius-sm);
-  border: 1px solid var(--ion-color-primary);
+  // bottone grigio per tutti i piani (anche consigliato e selezionato)
+  border: 1px solid var(--nvx-border-strong);
   font: inherit;
   font-weight: 700;
-  color: var(--ion-color-primary);
-  background: transparent;
+  color: var(--ion-text-color);
+  background: var(--nvx-surface-soft);
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 
   &:hover:not([disabled]) {
-    background: rgba(var(--ion-color-primary-rgb), 0.08);
+    border-color: var(--nvx-text-muted);
   }
 
   &[disabled] {
     cursor: default;
-    border-color: var(--nvx-border-strong);
-    color: var(--nvx-text-muted);
   }
 
   ion-icon {
@@ -203,14 +198,11 @@
   }
 }
 
-.nvx-plan.consigliato .nvx-plan-cta:not([disabled]),
-.nvx-plan.selezionato .nvx-plan-cta:not([disabled]) {
-  color: var(--ion-color-primary-contrast);
-  background: var(--ion-color-primary);
-
-  &:hover {
-    background: var(--ion-color-primary-shade);
-  }
+// piano attuale: bottone con il bordo primary
+.nvx-plan.attuale .nvx-plan-cta {
+  border: 2px solid var(--ion-color-primary);
+  color: var(--ion-color-primary);
+  background: transparent;
 }
 
 .nvx-plan-features {
