@@ -77,8 +77,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
   public get Pages4CompanyAdmin(): MainMenuItem[] {
     return [
       { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'menu.general'                                           , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.companyPowerAdmin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.companyAdmin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.preferences'       , roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'options' },
+      { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.preferences'       , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'options' },
       { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
       // Anagrafiche comuni (schema Common): visibili se l'azienda ha almeno un applicativo che usa i clienti
       { menuType: MenuType.MenuHeader, zorder: 5000,  group: 6, title: 'menu.registry'                                          , component: '', url: '', icon: '' },
@@ -100,7 +100,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dashboard', component: "DashboardPageComponent", url: '/dashboard', icon: 'home', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.userData', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.preferences', component: "UserPageComponent", url: '/user', icon: 'options', nonConfigurabile: true },
       // licenze (ANALISI_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
       // gestione delle licenze per studio e azienda
       { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },

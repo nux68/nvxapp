@@ -21,9 +21,11 @@ piccoli riquadri con informazioni o comandi rapidi.
 
 | Ruolo | Pagina di configurazione | Voce di menu |
 |---|---|---|
-| User | `/user` | Accesso → User Data |
-| CompanyAdmin | `/companyadmin` | Generale → Azienda Admin |
-| CompanyPowerAdmin | `/companypoweradmin` | Generale → Azienda Power Admin |
+| User | `/user` | Accesso → **Preferenze** |
+| CompanyAdmin | `/companyadmin` | Generale → **Preferenze** |
+| CompanyPowerAdmin | `/companypoweradmin` | Generale → **Preferenze** |
+
+Le tre voci (e il titolo delle pagine) usano la chiave `menu.preferences` ("Preferenze"), con l'icona `options`.
 
 - Chi non ha ancora configurato la dashboard vede i **widget predefiniti**.
 - Le pagine dei ruoli prima erano segnaposto; nella pagina User c'erano i **pulsanti demo** dei job lunghi ("Esegui", "Export"): sono stati **eliminati**.
@@ -119,8 +121,27 @@ ricaricano i dati.
 ### 5.1 Dashboard (`dashboard-page`)
 
 - In alto il saluto e, per chi può configurarla, il pulsante **Personalizza** che apre la pagina del proprio ruolo.
-- Sotto, la griglia dei widget scelti, ognuno nella sua cornice (icona e titolo), tranne i widget `frameless`.
+- Sotto, i widget scelti, ognuno nella sua cornice (icona e titolo), tranne i widget `frameless`.
 - Nessun widget: messaggio "Nessun widget nella dashboard".
+
+**Disposizione** (`Utility/infrastructure/widget-layout.ts`), in funzione del numero e delle dimensioni:
+
+1. nell'ordine scelto i widget riempiono **righe da 12 colonne** (small 4, medium 6, large 12);
+2. una riga con **più widget** che non arriva a 12 colonne si **riempie** allargandoli in proporzione
+   (due small → metà e metà; small + medium → 40% e 60%): niente buchi;
+3. un widget **da solo** nella riga (non large) è largo **almeno metà pagina** ed è **centrato**, allineato al campo
+   dell'assistente: a tutta pagina indicatori e grafici diventerebbero dispersivi;
+4. i widget della stessa riga hanno la **stessa altezza**.
+
+| Esempio | Disposizione |
+|---|---|
+| assistente + 1 small (es. User con "Richieste") | assistente; sotto "Richieste" centrato, largo metà |
+| 3 small | una riga piena, un terzo ciascuno |
+| 3 small + 1 medium (CompanyPowerAdmin predefinito) | riga di tre; sotto il medium centrato, largo metà |
+| 2 small | metà e metà |
+| 1 small + 1 medium | 40% e 60% |
+
+Sotto i 992px nessun widget è più stretto di metà riga (i small vanno due per riga); sotto i 768px un widget per riga.
 
 ### 5.2 Configurazione (`app-widget-config`, nelle pagine dei ruoli)
 
@@ -168,6 +189,7 @@ Una chiave, una volta rilasciata, **non si cambia**: è salvata nelle dashboard 
 | Controller | `Controllers/Infrastructure/UserDashboardController.cs` |
 | Client, servizio API | `ClientServer-Service/Infrastructure/UserDashboard/user-dashboard.service.ts` |
 | Client, catalogo | `Utility/infrastructure/widget.model.ts`, `widget.service.ts`, `widget-*.service.ts` |
+| Client, disposizione | `Utility/infrastructure/widget-layout.ts` |
 | Client, componenti | `shared/components/infrastructure/widgets/` (assistente, configurazione, stili comuni) |
 | Pagine | `dashboard-page`, `user-page`, `company-admin-page`, `company-power-admin-page` |
 | Traduzioni | `assets/i18n/infrastructure/{it,en}.json`, sezione `widgets` |
