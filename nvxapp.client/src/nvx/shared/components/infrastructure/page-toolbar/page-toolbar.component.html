@@ -5,6 +5,19 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
+    <!-- utente collegato (quello del login); durante l'impersonificazione anche l'utente impersonato -->
+    @if (loggedUserName) {
+      <ion-buttons slot="end">
+        <div class="nvx-logged-user" [title]="impersonatedUserName ? loggedUserName + ' → ' + impersonatedUserName : loggedUserName">
+          <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+          <span class="ion-hide-sm-down">{{ loggedUserName }}</span>
+          @if (impersonatedUserName) {
+            <ion-icon name="arrow-forward-outline" aria-hidden="true" class="ion-hide-sm-down"></ion-icon>
+            <span class="ion-hide-sm-down nvx-impersonated-user">{{ impersonatedUserName }}</span>
+          }
+        </div>
+      </ion-buttons>
+    }
   </ion-toolbar>
 
   @if (showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1) || (showActiveJobs && ((activeJobs$ | async)?.length ?? 0) > 0)) {
