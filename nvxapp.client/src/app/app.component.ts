@@ -384,8 +384,9 @@ export class AppComponent implements OnInit {
           return false;
         break;
 
-      // listini delle licenze: a login fatto (i ruoli, SuperUser e centro, li filtra la voce di menu)
+      // licenze (listini; gestione per studio e azienda): a login fatto (i ruoli li filtra la voce di menu)
       case 'LicenseCatalogListPageComponent':
+      case 'LicenseManagementPageComponent':
         return this.authService.Token != null;
 
 

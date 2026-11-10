@@ -372,7 +372,7 @@ Da decidere (§13): se la registrazione di uno Studio dallo showcase pubblico si
 ### 10.1 Voce di menu
 
 Sotto **Assistenza** (`Pages4Support` in `main-menu-infrastructure.service.ts`, dove stanno già ticket, documenti AI, manuale).
-**Implementazione (09/11/2026): due voci invece di una**, perché le due pagine sono molto diverse: **"Gestione licenze"** (`/licensemanagement`, azienda e studio) sotto Assistenza e **"Listini licenze"** (`/licensecataloglist`, SuperUser e centro; dalla pagina il SuperUser apre le Impostazioni licenze), che dal 10/11/2026 sta nella sezione **Accesso** (visibile dopo il login a chi ha uno di quei ruoli). Il contenuto per ruolo resta quello previsto (il server ricontrolla i permessi):
+**Implementazione (09/11/2026): due voci invece di una**, perché le due pagine sono molto diverse: **"Gestione licenze"** (`/licensemanagement`, azienda e studio) e **"Listini licenze"** (`/licensecataloglist`, SuperUser e centro; dalla pagina il SuperUser apre le Impostazioni licenze). Dal 10/11/2026 **entrambe stanno nella sezione Accesso** (visibili dopo il login a chi ha uno di quei ruoli), non più sotto Assistenza. Il contenuto per ruolo resta quello previsto (il server ricontrolla i permessi):
   - **SuperUser**: gestione listini globali + abilitazione Dealer;
   - **DealerPowerAdmin** (se `PuoGestireListini`): gestione dei propri listini;
   - **CompanyPowerAdmin / FinancialAdvisorPowerAdmin**: stato licenze del proprio soggetto, sottoscrivi/rinnova, storico pagamenti.
