@@ -388,7 +388,8 @@
       "title": "UserImpersonate"
     },
     "companyEdit": {
-      "applicationsReadOnly": "Gli applicativi li attivano e disattivano solo il SuperUser e il DealerPowerAdmin del centro.",
+      "applicationsReadOnly": "Gli applicativi li attivano e disattivano il SuperUser, il DealerPowerAdmin del centro e, con una licenza che copre l'azienda, il PowerAdmin dello studio.",
+      "noLicense": "Nessuna licenza: per attivarlo l'azienda deve essere coperta da una licenza (propria o dello studio).",
       "title": "CompanyEditPage",
       "info": "Info",
       "description": "Descrizione",

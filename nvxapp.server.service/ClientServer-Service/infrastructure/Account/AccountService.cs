@@ -295,13 +295,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             retVal.UserData.UserName = applicationUser.UserName;
 
                             // applicativi abilitati dello studio dell'utente (funzioni lato studio, es. area studio del documentale)
+                            // con il sistema licenze acceso restano solo quelli coperti da licenza (ANALISI_LICENZE.md §15.6)
                             if (int.TryParse(financialAdvisor, out var idFinancialAdvisorActive))
-                                retVal.UserData.FinancialAdvisorApplications = _financialAdvisorApplicationRepository.ActiveApplications(idFinancialAdvisorActive);
+                            {
+                                var applicativiStudio = new List<ApplicationType>();
+                                foreach (var app in _financialAdvisorApplicationRepository.ActiveApplications(idFinancialAdvisorActive))
+                                    if (await _licenseGuard.StudioIsLicensedAsync(idFinancialAdvisorActive, app))
+                                        applicativiStudio.Add(app);
+                                retVal.UserData.FinancialAdvisorApplications = applicativiStudio;
+                            }
 
                             // applicativi attivi dell'azienda dell'utente (il client mostra solo quelli)
                             if (int.TryParse(company, out var idCompanyActive))
                             {
-                                retVal.UserData.ActiveApplications = _companyApplicationRepository.ActiveApplications(idCompanyActive);
+                                // attivi e coperti da licenza (propria, dello studio o cumulativa; tutti con il sistema licenze spento)
+                                var applicativi = new List<ApplicationType>();
+                                foreach (var app in _companyApplicationRepository.ActiveApplications(idCompanyActive))
+                                    if (await _licenseGuard.IsLicensedAsync(idCompanyActive, app))
+                                        applicativi.Add(app);
+                                retVal.UserData.ActiveApplications = applicativi;
 
                                 // voci di menu nascoste ai ruoli dell'azienda (il client le toglie da menu e navigazione)
                                 retVal.UserData.MenuRestrictions = _companyMenuRestrictionRepository.Restrictions(idCompanyActive)
@@ -791,9 +803,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         Descrizione = company.Descrizione,
                         IdCompany = company.Id,
                         Disabled = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id && x.MainUser).Any(x => x.Disabled),
-                        Applications = _companyApplicationService.Applications(company.Id),
-                        ApplicationsReadOnly = !await _companyApplicationService.CanManageAsync(company.Id)
+                        // applicativi con licenza e diritto di cambiarli (ANALISI_LICENZE.md §15.6)
+                        Applications = await _companyApplicationService.ApplicationsWithRightsAsync(company.Id)
                     };
+                    retVal.CompanyEdit.ApplicationsReadOnly = !retVal.CompanyEdit.Applications.Any(x => x.CanChange);
                 }
                 else
                 {
@@ -801,9 +814,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = "",
                         IdCompany = 0,
-                        Applications = _companyApplicationService.Applications(0),
-                        ApplicationsReadOnly = !await _financialAdvisorApplicationService.CanManageAsync(int.TryParse(this.CurrentFinancialAdvisor, out var idStudioNuova) ? idStudioNuova : 0)
+                        // azienda nuova: licenza = copertura dello studio verso le sue aziende
+                        Applications = await _companyApplicationService.ApplicationsWithRightsAsync(0, int.TryParse(this.CurrentFinancialAdvisor, out var idStudioNuova) ? idStudioNuova : 0)
                     };
+                    retVal.CompanyEdit.ApplicationsReadOnly = !retVal.CompanyEdit.Applications.Any(x => x.CanChange);
                 }
 
                 //eliminare
@@ -818,7 +832,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             return await ExecuteAction(model, async () =>
             {
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
-                bool nuovaAziendaApplicativi = false;
 
 
                 Company? company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
@@ -853,7 +866,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
-                    nuovaAziendaApplicativi = true;
 
                     // nessun applicativo attivo: si attivano con CompanyApplicationPut
 
@@ -907,13 +919,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 // applicativi dell'azienda:
                 //  - spuntato: attivato se serve e schema verificato a ogni salvataggio (creato se manca)
                 //  - tolto: solo disattivato, lo schema e i dati restano
-                // - solo il SuperUser e il DealerPowerAdmin del centro cambiano lo stato (CompanyApplicationPut lo verifica);
-                //   su un'azienda nuova chi non e' autorizzato (es. lo studio che la crea) non attiva nulla
-                if (company != null && model.Data.CompanyEdit.Applications != null
-                    && (!nuovaAziendaApplicativi || await _companyApplicationService.CanManageAsync(company.Id)))
+                // - chi puo' cambiare lo stato lo decide CompanyApplicationService.CanChangeAsync (licenza, ANALISI_LICENZE.md §15.6):
+                //   gli applicativi che l'utente non puo' cambiare restano come sono, senza bloccare il salvataggio dell'azienda
+                if (company != null && model.Data.CompanyEdit.Applications != null)
                 {
+                    var statoAttuale = _companyApplicationService.Applications(company.Id);
                     foreach (var application in model.Data.CompanyEdit.Applications)
                     {
+                        bool attivoOra = statoAttuale.FirstOrDefault(x => x.ApplicationType == application.ApplicationType)?.Active ?? false;
+                        if (application.Active != attivoOra && !await _companyApplicationService.CanChangeAsync(company.Id, application.ApplicationType))
+                            continue;
+
                         var reqApp = new GenericRequest<CompanyApplicationPutInModel>();
                         reqApp.Data = new CompanyApplicationPutInModel()
                         {

@@ -43,6 +43,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         private readonly ILicenseCatalogResolver _resolver;
         private readonly ILicenseSubscriptionManager _subscriptionManager;
         private readonly IPaymentGatewayResolver _gatewayResolver;
+        private readonly ICompanyApplicationService _companyApplicationService;
 
         public LicenseService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -61,7 +62,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                               ILicenseGuard licenseGuard,
                               ILicenseCatalogResolver resolver,
                               ILicenseSubscriptionManager subscriptionManager,
-                              IPaymentGatewayResolver gatewayResolver) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                              IPaymentGatewayResolver gatewayResolver,
+                              ICompanyApplicationService companyApplicationService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _listinoRepository = listinoRepository;
             _pianoRepository = pianoRepository;
@@ -75,6 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             _resolver = resolver;
             _subscriptionManager = subscriptionManager;
             _gatewayResolver = gatewayResolver;
+            _companyApplicationService = companyApplicationService;
         }
 
         // ---------------------------------------------------------------------------
@@ -464,6 +467,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 };
                 if (retVal.RedirectUrl == null)
                     retVal.Messages.Add(new Message(InfrastructureMessages.Get(retVal.Debug ? "LicenseSubscribedDebug" : "LicenseSubscribed"), MessageType.Information));
+
+                // azienda che si sottoscrive da se' la licenza: si attivano gli applicativi coperti, con schema e dati iniziali
+                // come in companyedit (ANALISI_LICENZE.md §15.6). Un errore non annulla la sottoscrizione: si avvisa.
+                if (soggetto.Tipo == TipoSoggettoLicenza.Company && esito.Abbonamento.Stato == StatoAbbonamento.Attivo)
+                {
+                    try
+                    {
+                        var attivati = await _companyApplicationService.ActivateForLicenseAsync(soggetto.Id, esito.Abbonamento.Ambito);
+                        if (attivati.Count > 0)
+                            retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivated",
+                                string.Join(", ", attivati.Select(a => LicenseSubscriptionManager.NomeFunzione((AmbitoLicenza)(int)a)))), MessageType.Information));
+                    }
+                    catch (Exception ex)
+                    {
+                        Serilog.Log.Error(ex, "Attivazione degli applicativi per la licenza {Id} non riuscita", esito.Abbonamento.Id);
+                        retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivationFailed"), MessageType.Warning));
+                    }
+                }
                 return retVal;
             }, isSubProcess);
         }
