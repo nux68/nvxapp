@@ -1,4 +1,5 @@
 using AutoMapper;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,6 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         private readonly ICrmUtility _utility;
         private readonly IAz_ClienteRepository _clienteRepository;
         private readonly IAz_ClienteContattoRepository _contattoRepository;
+        private readonly ILicenseGuard _licenseGuard;
 
         public Crm_ClienteService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -61,7 +63,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                                   ICrm_Par_TagRepository crm_Par_TagRepository,
                                   ICrmUtility utility,
                                   IAz_ClienteRepository clienteRepository,
-                                  IAz_ClienteContattoRepository contattoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_ClienteContattoRepository contattoRepository,
+                                  ILicenseGuard licenseGuard) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _Az_ClienteContatto = az_ClienteContattoRepository;
             _Crm_ClienteDati = crm_ClienteDatiRepository;
@@ -75,6 +78,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             _utility = utility;
             _clienteRepository = clienteRepository;
             _contattoRepository = contattoRepository;
+            _licenseGuard = licenseGuard;
         }
 
         public virtual async Task<GenericResult<Crm_ClienteListOutModel>> Crm_ClienteList(GenericRequest<Crm_ClienteListInModel> model, Boolean isSubProcess)
@@ -127,6 +131,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 }
                 else
                     cliente = new Az_Cliente { IdAz_Anagrafica = ctx.IdAz_Anagrafica };
+                // per il limite clienti della licenza CRM: contava gia' prima della modifica?
+                bool contavaPrima = d.Id != 0 && _licenseGuard.ContaComeCliente(cliente);
 
                 // anagrafica comune
                 cliente.Descrizione = d.Descrizione.Trim();
@@ -145,6 +151,12 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 cliente.Referente = Pulito(d.Referente);
                 cliente.CodiceDestinatario = Pulito(d.CodiceDestinatario)?.ToUpperInvariant();
                 cliente.Note = Pulito(d.Note);
+
+                // limite clienti della licenza CRM (ANALISI_LICENZE.md [branch Infrastructure] §5.1): cliente nuovo, riattivato
+                // o che smette di essere solo fornitore
+                if (_licenseGuard.ContaComeCliente(cliente) && !contavaPrima && int.TryParse(this.CurrentCompany, out var idCompany))
+                    await _licenseGuard.EnsureCanAddClientAsync(idCompany);
+
                 cliente = await _clienteRepository.UpsertAsync(cliente);
 
                 // dati del CRM
