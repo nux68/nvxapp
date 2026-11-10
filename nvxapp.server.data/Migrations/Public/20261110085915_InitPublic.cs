@@ -1088,7 +1088,7 @@ namespace nvxapp.server.data.Migrations.Public
                 columns: new[] { "Key", "ModifiedDate", "Value" },
                 values: new object[,]
                 {
-                    { "Licenze_Attive", null, "false" },
+                    { "Licenze_Attive", null, "true" },
                     { "Licenze_AvvisoGiorni", null, "10" },
                     { "Licenze_GraceGiorni", null, "7" },
                     { "Licenze_MaxUtenti_Free", null, "10" },

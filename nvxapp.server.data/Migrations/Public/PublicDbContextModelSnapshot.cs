@@ -179,7 +179,7 @@ namespace nvxapp.server.data.Migrations.Public
                         new
                         {
                             Key = "Licenze_Attive",
-                            Value = "false"
+                            Value = "true"
                         },
                         new
                         {
