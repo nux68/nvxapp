@@ -5,23 +5,46 @@
 
 <ion-content [fullscreen]="true">
 
-  <!-- accoglienza in stile "chat AI": saluto e invito a chiedere all'assistente -->
   <div class="nvx-home">
-    <div class="nvx-home-icon">
-      <ion-icon name="calendar-clear-outline"></ion-icon>
-    </div>
 
-    @if (userName) {
-      <h1>{{ 'pages.dashboard.greeting' | transloco: { name: userName } }}</h1>
-      <p class="nvx-home-sub">{{ 'pages.dashboard.subtitle' | transloco }}</p>
+    <!-- saluto -->
+    <header class="nvx-home-head">
+      <div class="nvx-home-icon">
+        <ion-icon name="calendar-clear-outline"></ion-icon>
+      </div>
+      @if (userName) {
+        <h1>{{ 'pages.dashboard.greeting' | transloco: { name: userName } }}</h1>
+        <p class="nvx-home-sub">{{ 'pages.dashboard.subtitle' | transloco }}</p>
+      }
+      @if (paginaConfigurazione) {
+        <button type="button" class="nvx-home-config" (click)="configura()">
+          <ion-icon name="options-outline"></ion-icon>
+          {{ 'widgets.dashboard.customize' | transloco }}
+        </button>
+      }
+    </header>
 
-      <button type="button" class="nvx-ask" (click)="openChat()">
-        <ion-icon name="sparkles-outline" class="nvx-ask-icon"></ion-icon>
-        <span>{{ 'pages.dashboard.askAssistant' | transloco }}</span>
-        <span class="nvx-ask-send"><ion-icon name="arrow-up"></ion-icon></span>
-      </button>
+    <!-- widget scelti, nell'ordine -->
+    @if (!caricamento) {
+      @if (widgets.length === 0) {
+        <p class="nvx-home-empty">{{ 'widgets.dashboard.empty' | transloco }}</p>
+      }
 
-      <p class="nvx-home-hint">{{ 'pages.dashboard.hint' | transloco }}</p>
+      <div class="nvx-widget-grid">
+        @for (w of widgets; track w.key + '|' + giro) {
+          <section [class]="'nvx-widget nvx-widget-' + w.size + (w.frameless ? ' frameless' : '')">
+            @if (!w.frameless) {
+              <header class="nvx-widget-head">
+                <ion-icon [name]="w.icon"></ion-icon>
+                <h2>{{ w.title | transloco }}</h2>
+              </header>
+            }
+            <div class="nvx-widget-body">
+              <ng-container *ngComponentOutlet="w.component"></ng-container>
+            </div>
+          </section>
+        }
+      </div>
     }
   </div>
 
