@@ -78,6 +78,8 @@ namespace nvxapp.server.data.Infrastructure
                                         in modo neutro (come Pro, utenti illimitati) e nessuno viene bloccato (§8.1.1).
                                         Acceso alla creazione del database (10/11/2026)
             - Licenze_MaxUtenti_*     : utenti predefiniti dei piani dei nuovi listini (Free 10, Standard 50, Pro illimitati) (§5.1)
+            - Licenze_MaxClienti_*    : clienti predefiniti (CRM: Free 100, Standard 1000, Pro illimitati)
+            - Licenze_MaxSpazioMB_*   : spazio predefinito in MB (Documentale: Free 1024, Standard 5120, Pro 20480)
             - Licenze_GraceGiorni     : giorni dopo la scadenza in cui la licenza vale ancora (si avvisa ma non si blocca)
             - Licenze_AvvisoGiorni    : giorni prima della scadenza in cui parte l'avviso
          Cancellazioni: gli abbonamenti spariscono con l'azienda o lo studio, i listini con il centro; i pagamenti restano.
@@ -86,6 +88,12 @@ namespace nvxapp.server.data.Infrastructure
         public const string Key_LicenzeMaxUtentiFree = "Licenze_MaxUtenti_Free";
         public const string Key_LicenzeMaxUtentiStandard = "Licenze_MaxUtenti_Standard";
         public const string Key_LicenzeMaxUtentiPro = "Licenze_MaxUtenti_Pro";
+        public const string Key_LicenzeMaxClientiFree = "Licenze_MaxClienti_Free";
+        public const string Key_LicenzeMaxClientiStandard = "Licenze_MaxClienti_Standard";
+        public const string Key_LicenzeMaxClientiPro = "Licenze_MaxClienti_Pro";
+        public const string Key_LicenzeMaxSpazioMBFree = "Licenze_MaxSpazioMB_Free";
+        public const string Key_LicenzeMaxSpazioMBStandard = "Licenze_MaxSpazioMB_Standard";
+        public const string Key_LicenzeMaxSpazioMBPro = "Licenze_MaxSpazioMB_Pro";
         public const string Key_LicenzeGraceGiorni = "Licenze_GraceGiorni";
         public const string Key_LicenzeAvvisoGiorni = "Licenze_AvvisoGiorni";
 
@@ -169,6 +177,12 @@ namespace nvxapp.server.data.Infrastructure
                 new AppSetting { Key = Key_LicenzeMaxUtentiFree, Value = "10" },
                 new AppSetting { Key = Key_LicenzeMaxUtentiStandard, Value = "50" },
                 new AppSetting { Key = Key_LicenzeMaxUtentiPro, Value = "" },
+                new AppSetting { Key = Key_LicenzeMaxClientiFree, Value = "100" },
+                new AppSetting { Key = Key_LicenzeMaxClientiStandard, Value = "1000" },
+                new AppSetting { Key = Key_LicenzeMaxClientiPro, Value = "" },
+                new AppSetting { Key = Key_LicenzeMaxSpazioMBFree, Value = "1024" },
+                new AppSetting { Key = Key_LicenzeMaxSpazioMBStandard, Value = "5120" },
+                new AppSetting { Key = Key_LicenzeMaxSpazioMBPro, Value = "20480" },
                 new AppSetting { Key = Key_LicenzeGraceGiorni, Value = "7" },
                 new AppSetting { Key = Key_LicenzeAvvisoGiorni, Value = "10" });
         }

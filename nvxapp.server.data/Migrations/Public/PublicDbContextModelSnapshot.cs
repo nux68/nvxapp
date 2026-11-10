@@ -198,6 +198,36 @@ namespace nvxapp.server.data.Migrations.Public
                         },
                         new
                         {
+                            Key = "Licenze_MaxClienti_Free",
+                            Value = "100"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxClienti_Standard",
+                            Value = "1000"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxClienti_Pro",
+                            Value = ""
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxSpazioMB_Free",
+                            Value = "1024"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxSpazioMB_Standard",
+                            Value = "5120"
+                        },
+                        new
+                        {
+                            Key = "Licenze_MaxSpazioMB_Pro",
+                            Value = "20480"
+                        },
+                        new
+                        {
                             Key = "Licenze_GraceGiorni",
                             Value = "7"
                         },
@@ -940,6 +970,12 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int>("Livello")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("MaxClientiBloccato")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxSpazioMBBloccato")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("MaxUtentiBloccato")
                         .HasColumnType("integer");
 
@@ -1172,6 +1208,12 @@ namespace nvxapp.server.data.Migrations.Public
                         .HasColumnType("integer");
 
                     b.Property<int>("Livello")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxClienti")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxSpazioMB")
                         .HasColumnType("integer");
 
                     b.Property<int?>("MaxUtenti")

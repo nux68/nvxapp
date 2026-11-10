@@ -6,7 +6,8 @@ namespace nvxapp.server.data.Entities.Public
      Piano di un listino (ANALISI_LICENZE.md §3.1, §5): uno per livello (Free, Standard, Pro).
         - Codice, Descrizione: etichette modificabili da chi gestisce il listino
         - PrezzoMensile, PrezzoAnnuale: Free sempre 0
-        - MaxUtenti: utenti attivi coperti dal piano, null = illimitati (§5.1)
+        - limiti del piano, null = illimitati (§5.1): MaxUtenti (Presenze), MaxClienti (CRM), MaxSpazioMB (Documentale);
+          il Cumulativo li usa tutti e tre, un listino di una sola funzione solo il suo
     */
     public class Lic_Piano : BaseEntity
     {
@@ -29,6 +30,10 @@ namespace nvxapp.server.data.Entities.Public
         public decimal PrezzoAnnuale { get; set; }
 
         public int? MaxUtenti { get; set; }
+
+        public int? MaxClienti { get; set; }
+
+        public int? MaxSpazioMB { get; set; }
 
         public bool Attivo { get; set; } = true;
     }

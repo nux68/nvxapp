@@ -7,7 +7,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     /*
      Impostazioni delle licenze (ANALISI_LICENZE.md §5.1, §8.1.1), nella tabella AppSetting:
         - Attive        : false = ILicenseGuard risponde in modo neutro (come Pro, utenti illimitati), nessuno viene bloccato
-        - MaxUtenti*    : utenti predefiniti dei piani dei nuovi listini (null = illimitati)
+        - MaxUtenti*    : utenti predefiniti dei piani dei nuovi listini (Presenze; null = illimitati)
+        - MaxClienti*   : clienti predefiniti (CRM), MaxSpazioMB*: spazio predefinito in MB (Documentale)
         - GraceGiorni   : giorni dopo la scadenza in cui la licenza vale ancora
         - AvvisoGiorni  : giorni prima della scadenza in cui parte l'avviso
      Letti una volta per richiesta (servizio Scoped).
@@ -18,6 +19,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         public int? MaxUtentiFree { get; set; } = 10;
         public int? MaxUtentiStandard { get; set; } = 50;
         public int? MaxUtentiPro { get; set; }
+        public int? MaxClientiFree { get; set; } = 100;
+        public int? MaxClientiStandard { get; set; } = 1000;
+        public int? MaxClientiPro { get; set; }
+        public int? MaxSpazioMBFree { get; set; } = 1024;
+        public int? MaxSpazioMBStandard { get; set; } = 5120;
+        public int? MaxSpazioMBPro { get; set; } = 20480;
         public int GraceGiorni { get; set; } = 7;
         public int AvvisoGiorni { get; set; } = 10;
 
@@ -26,6 +33,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             LivelloLicenza.Free => MaxUtentiFree,
             LivelloLicenza.Standard => MaxUtentiStandard,
             _ => MaxUtentiPro
+        };
+
+        public int? MaxClienti(LivelloLicenza livello) => livello switch
+        {
+            LivelloLicenza.Free => MaxClientiFree,
+            LivelloLicenza.Standard => MaxClientiStandard,
+            _ => MaxClientiPro
+        };
+
+        public int? MaxSpazioMB(LivelloLicenza livello) => livello switch
+        {
+            LivelloLicenza.Free => MaxSpazioMBFree,
+            LivelloLicenza.Standard => MaxSpazioMBStandard,
+            _ => MaxSpazioMBPro
         };
     }
 
@@ -69,6 +90,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 MaxUtentiFree = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiFree, 10),
                 MaxUtentiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiStandard, 50),
                 MaxUtentiPro = await Utenti(PublicDbContext.Key_LicenzeMaxUtentiPro, null),
+                MaxClientiFree = await Utenti(PublicDbContext.Key_LicenzeMaxClientiFree, 100),
+                MaxClientiStandard = await Utenti(PublicDbContext.Key_LicenzeMaxClientiStandard, 1000),
+                MaxClientiPro = await Utenti(PublicDbContext.Key_LicenzeMaxClientiPro, null),
+                MaxSpazioMBFree = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBFree, 1024),
+                MaxSpazioMBStandard = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBStandard, 5120),
+                MaxSpazioMBPro = await Utenti(PublicDbContext.Key_LicenzeMaxSpazioMBPro, 20480),
                 GraceGiorni = await Giorni(PublicDbContext.Key_LicenzeGraceGiorni, 7),
                 AvvisoGiorni = await Giorni(PublicDbContext.Key_LicenzeAvvisoGiorni, 10)
             };
@@ -83,6 +110,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxUtentiFree, Utenti(settings.MaxUtentiFree));
             await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxUtentiStandard, Utenti(settings.MaxUtentiStandard));
             await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxUtentiPro, Utenti(settings.MaxUtentiPro));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxClientiFree, Utenti(settings.MaxClientiFree));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxClientiStandard, Utenti(settings.MaxClientiStandard));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxClientiPro, Utenti(settings.MaxClientiPro));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxSpazioMBFree, Utenti(settings.MaxSpazioMBFree));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxSpazioMBStandard, Utenti(settings.MaxSpazioMBStandard));
+            await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeMaxSpazioMBPro, Utenti(settings.MaxSpazioMBPro));
             await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeGraceGiorni, settings.GraceGiorni.ToString());
             await _appSettingRepository.SetValueAsync(PublicDbContext.Key_LicenzeAvvisoGiorni, settings.AvvisoGiorni.ToString());
             _cache = null;
