@@ -54,6 +54,9 @@
         @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">{{ 'common.validation.descriptionRequired' | transloco }}</ion-note>
         }
+        @if (_editForm.get('descrizione')?.hasError('maxlength')) {
+          <ion-note color="danger">{{ 'common.validation.descriptionMaxLength' | transloco: { max: 100 } }}</ion-note>
+        }
 
         @if (isFinancialAdvisor) {
           <ion-item>
@@ -81,7 +84,7 @@
           <ion-item>
             <ion-input type="text" formControlName="codice" [label]="'pages.licenseCatalogEdit.planCode' | transloco" labelPlacement="floating" maxlength="20"></ion-input>
           </ion-item>
-          @if (_editForm.get(l.key + '.codice')?.invalid && _editForm.get(l.key + '.codice')?.touched) {
+          @if (_editForm.get(l.key + '.codice')?.invalid && (_editForm.get(l.key + '.codice')?.touched || _editForm.get(l.key + '.codice')?.dirty)) {
             <ion-note color="danger">{{ 'pages.licenseCatalogEdit.planCodeRequired' | transloco }}</ion-note>
           }
 
@@ -98,13 +101,16 @@
           @if (l.key === 'free') {
             <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.freeNote' | transloco }}</ion-note>
           }
-          @if ((_editForm.get(l.key + '.prezzoMensile')?.invalid || _editForm.get(l.key + '.prezzoAnnuale')?.invalid) && _editForm.get(l.key + '.prezzoMensile')?.touched) {
+          @if (_editForm.get(l.key + '.prezzoMensile')?.invalid || _editForm.get(l.key + '.prezzoAnnuale')?.invalid) {
             <ion-note color="danger">{{ 'pages.licenseCatalogEdit.priceInvalid' | transloco }}</ion-note>
           }
 
           <ion-item>
-            <ion-input type="number" formControlName="maxUtenti" [label]="'pages.licenseCatalogEdit.maxUsers' | transloco" labelPlacement="floating" min="1"></ion-input>
+            <ion-input type="number" formControlName="maxUtenti" [label]="'pages.licenseCatalogEdit.maxUsers' | transloco" labelPlacement="floating" min="0"></ion-input>
           </ion-item>
+          @if (_editForm.get(l.key + '.maxUtenti')?.invalid) {
+            <ion-note color="danger">{{ 'pages.licenseCatalogEdit.maxUsersInvalid' | transloco }}</ion-note>
+          }
           <ion-note class="nvx-nota-disabled">{{ 'pages.licenseCatalogEdit.maxUsersNote' | transloco }}</ion-note>
 
           @if (l.key !== 'free') {
@@ -118,6 +124,15 @@
     }
 
   </form>
+
+  <!-- perche' Conferma e' grigio: campi da completare o correggere -->
+  @if (campiNonValidi.length > 0) {
+    <ion-card>
+      <ion-card-content>
+        <ion-note color="danger">{{ 'pages.licenseCatalogEdit.cannotSave' | transloco: { campi: campiNonValidi.join(', ') } }}</ion-note>
+      </ion-card-content>
+    </ion-card>
+  }
 
 </ion-content>
 
