@@ -43,9 +43,10 @@ export class LicenseSettingsPageComponent extends BasePageConfirmCancelComponent
   get EditForm(): FormGroup {
     return this.fb.group({
       attive: [false],
-      maxUtentiFree: [null, [Validators.min(1)]],
-      maxUtentiStandard: [null, [Validators.min(1)]],
-      maxUtentiPro: [null, [Validators.min(1)]],
+      // 0 o vuoto = illimitati
+      maxUtentiFree: [null, [Validators.min(0)]],
+      maxUtentiStandard: [null, [Validators.min(0)]],
+      maxUtentiPro: [null, [Validators.min(0)]],
       graceGiorni: [7, [Validators.required, Validators.min(0), Validators.max(365)]],
       avvisoGiorni: [10, [Validators.required, Validators.min(0), Validators.max(365)]],
     });
@@ -67,7 +68,8 @@ export class LicenseSettingsPageComponent extends BasePageConfirmCancelComponent
     );
 
   SaveData = (editModel: LicenseSettingsModel): Observable<boolean> => {
-    const numero = (v: any) => (v === null || v === undefined || v === '') ? null : Number(v);
+    // 0 o vuoto = illimitati
+    const numero = (v: any) => (v === null || v === undefined || v === '' || Number(v) <= 0) ? null : Number(v);
     const request = new GenericRequest<LicenseSettingsPutInModel>(LicenseSettingsPutInModel);
     request.data.settings = {
       attive: !!editModel.attive,

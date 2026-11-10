@@ -64,9 +64,33 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
       descrizione: [null, [Validators.maxLength(100)]],
       prezzoMensile: [{ value: 0, disabled: free }, [Validators.required, Validators.min(0)]],
       prezzoAnnuale: [{ value: 0, disabled: free }, [Validators.required, Validators.min(0)]],
-      maxUtenti: [null, [Validators.min(1)]],
+      // 0 o vuoto = illimitati
+      maxUtenti: [null, [Validators.min(0)]],
       attivo: [{ value: true, disabled: free }],
     });
+  }
+
+  /*
+   Campi che impediscono il salvataggio (il pulsante Conferma resta grigio finche' il form non e' valido):
+   elencati sopra i pulsanti, cosi' si capisce sempre cosa correggere.
+  */
+  get campiNonValidi(): string[] {
+    if (!this._editForm || this._editForm.valid || this._editForm.disabled)
+      return [];
+    const t = (k: string) => this.transloco.translate(k);
+    const out: string[] = [];
+    if (this._editForm.get('descrizione')?.invalid)
+      out.push(t('pages.licenseCatalogEdit.description'));
+    for (const l of this.livelli) {
+      const livello = t('pages.license.level' + l.livello);
+      const campi: [string, string][] = [['codice', 'pages.licenseCatalogEdit.planCode'], ['descrizione', 'pages.licenseCatalogEdit.planDescription'],
+                                         ['prezzoMensile', 'pages.licenseCatalogEdit.monthlyPrice'], ['prezzoAnnuale', 'pages.licenseCatalogEdit.yearlyPrice'],
+                                         ['maxUtenti', 'pages.licenseCatalogEdit.maxUsers']];
+      for (const [nome, chiave] of campi)
+        if (this._editForm.get(l.key + '.' + nome)?.invalid)
+          out.push(`${t(chiave)} (${livello})`);
+    }
+    return out;
   }
 
   get EditForm(): FormGroup {
@@ -134,7 +158,8 @@ export class LicenseCatalogEditPageComponent extends BasePageConfirmCancelCompon
         ordine: l.livello * 10,
         prezzoMensile: free ? 0 : (numero(p.prezzoMensile) ?? 0),
         prezzoAnnuale: free ? 0 : (numero(p.prezzoAnnuale) ?? 0),
-        maxUtenti: numero(p.maxUtenti),
+        // 0 o vuoto = illimitati
+        maxUtenti: (numero(p.maxUtenti) ?? 0) > 0 ? numero(p.maxUtenti) : null,
         attivo: free ? true : !!p.attivo,
       });
     });

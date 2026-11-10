@@ -856,8 +856,10 @@
       "freeNote": "Il piano Free è sempre gratuito.",
       "priceInvalid": "I prezzi non possono essere negativi.",
       "maxUsers": "Utenti massimi",
-      "maxUsersNote": "Vuoto = utenti illimitati. Se alzi il limite vale subito anche per le licenze attive; se lo abbassi, dal rinnovo.",
-      "planActive": "Piano disponibile"
+      "maxUsersNote": "Vuoto o 0 = utenti illimitati. Se alzi il limite vale subito anche per le licenze attive; se lo abbassi, dal rinnovo.",
+      "planActive": "Piano disponibile",
+      "maxUsersInvalid": "Gli utenti massimi non possono essere negativi (vuoto o 0 = illimitati).",
+      "cannotSave": "Per salvare completa o correggi: {{campi}}."
     },
     "licenseSettings": {
       "title": "Impostazioni licenze",
@@ -865,13 +867,13 @@
       "enabled": "Sistema licenze attivo",
       "enabledNote": "Spento: nessuna funzione viene limitata e tutti risultano al livello Pro; listini e sottoscrizioni restano utilizzabili.",
       "defaultUsers": "Utenti predefiniti dei piani",
-      "defaultUsersNote": "Proposti quando si crea un nuovo listino; vuoto = illimitati. Non cambiano i listini esistenti.",
+      "defaultUsersNote": "Proposti quando si crea un nuovo listino; vuoto o 0 = illimitati. Non cambiano i listini esistenti.",
       "expiry": "Scadenze",
       "graceDays": "Giorni di tolleranza dopo la scadenza",
       "graceDaysNote": "In questi giorni la licenza vale ancora e si avvisa di rinnovarla.",
       "warningDays": "Giorni di preavviso",
       "warningDaysNote": "Quanti giorni prima della scadenza parte l'avviso per email agli amministratori.",
-      "invalid": "Utenti maggiori di zero (vuoto = illimitati), giorni tra 0 e 365.",
+      "invalid": "Per salvare: utenti non negativi (vuoto o 0 = illimitati), giorni tra 0 e 365.",
       "dealers": "Centri che gestiscono i propri listini",
       "dealersNote": "Un centro abilitato può definire listini propri, che per le sue aziende e i suoi studi sostituiscono quelli globali."
     },
