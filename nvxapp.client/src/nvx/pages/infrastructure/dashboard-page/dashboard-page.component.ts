@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { WidgetService } from '../../../Utility/infrastructure/widget.service';
 import { WidgetDefinition } from '../../../Utility/infrastructure/widget.model';
+import { disponiWidget, WidgetRiga } from '../../../Utility/infrastructure/widget-layout';
 
 /*
  Dashboard (pagina iniziale dopo il login): saluto e widget scelti dall'utente (ANALISI_WIDGET.md).
@@ -22,10 +23,12 @@ export class DashboardPageComponent {
   public title!: string;
 
   public widgets: WidgetDefinition[] = [];
+  /** widget disposti in righe secondo numero e dimensioni (widget-layout.ts) */
+  public righe: WidgetRiga[] = [];
   public configurabile = false;
   public caricamento = true;
-  /** cambia a ogni ingresso: i widget si ricreano e ricaricano i loro dati */
-  public giro = 0;
+  /** richiesta in corso: con ingressi ravvicinati vale solo l'ultima risposta */
+  private richiesta = 0;
 
   constructor(public userNavigationService: UserNavigationService,
               private widgetService: WidgetService,
@@ -35,11 +38,18 @@ export class DashboardPageComponent {
     this.title = this.transloco.translate('pages.dashboard.title');
   }
 
+  // a ogni ingresso l'elenco si svuota e si ricostruisce: i widget si ricreano (ricaricando i dati) sempre
+  // nell'ordine giusto, senza riconciliare righe vecchie e nuove
   ionViewWillEnter() {
+    const numero = ++this.richiesta;
+    this.caricamento = true;
+    this.righe = [];
     this.widgetService.Carica().subscribe(stato => {
+      if (numero !== this.richiesta)
+        return;
       this.configurabile = stato.configurabile;
       this.widgets = this.widgetService.Dashboard(stato);
-      this.giro++;
+      this.righe = disponiWidget(this.widgets);
       this.caricamento = false;
     });
   }
