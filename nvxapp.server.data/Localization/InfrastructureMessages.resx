@@ -672,4 +672,16 @@
     <value>Cumulativo (tutte le funzioni)</value>
     <comment>licenze</comment>
   </data>
+  <data name="ApplicationLicenseRequired" xml:space="preserve">
+    <value>Per attivare {0} l'azienda deve essere coperta da una licenza (propria o dello studio).</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseApplicationsActivated" xml:space="preserve">
+    <value>Applicativi attivati: {0}.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseApplicationsActivationFailed" xml:space="preserve">
+    <value>Licenza attivata, ma non è stato possibile attivare gli applicativi: contatta l'assistenza.</value>
+    <comment>licenze</comment>
+  </data>
 </root>
