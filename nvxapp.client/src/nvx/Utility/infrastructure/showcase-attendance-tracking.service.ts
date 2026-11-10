@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
 import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
 // Showcase della gestione presenze: stesse pagine template di Infrastructure (ShowcaseService),
@@ -78,11 +79,8 @@ export class ShowcaseAttendanceTrackingService {
       pricing: {
         titolo: t('pricing.titolo'),
         sottotitolo: t('pricing.sottotitolo'),
-        piani: [
-          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.fino10Dipendenti'), t('pricing.caratteristiche.causaliPronte')], cta: t('pricing.piani.prova.cta') },
-          { nome: t('pricing.piani.azienda.nome'), prezzo: '2 €', periodo: t('pricing.piani.azienda.periodo'), descrizione: t('pricing.piani.azienda.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.timbraturaSmartphone'), t('pricing.caratteristiche.exportPaghe'), t('pricing.caratteristiche.assistenzaEmailTelefono')], cta: t('pricing.piani.azienda.cta'), evidenza: true },
-          { nome: t('pricing.piani.studio.nome'), prezzo: t('pricing.piani.studio.prezzo'), periodo: '', descrizione: t('pricing.piani.studio.descrizione'), caratteristiche: [t('pricing.caratteristiche.piuAziende'), t('pricing.caratteristiche.accessoPerCliente'), t('pricing.caratteristiche.modelliExport'), t('pricing.caratteristiche.assistenzaPrioritaria')], cta: t('pricing.piani.studio.cta'), url: '/contact' }
-        ],
+        ambiti: [AmbitoLicenza.AttendanceTracking],
+        inclusi: [t('pricing.inclusi.timbraturaSmartphone'), t('pricing.inclusi.exportPaghe'), t('pricing.inclusi.causaliPronte'), t('pricing.inclusi.tutteLeFunzioni')],
         nota: t('pricing.nota'),
         domande: [
           { domanda: t('pricing.domande.installare.domanda'), risposta: t('pricing.domande.installare.risposta') },

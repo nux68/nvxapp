@@ -1323,38 +1323,12 @@
       },
       "pricing": {
         "titolo": "Prezzi",
-        "sottotitolo": "Paghi per i dipendenti che gestisci: tutte le funzioni sono sempre incluse.",
-        "piani": {
-          "prova": {
-            "nome": "Prova",
-            "periodo": "per 30 giorni",
-            "descrizione": "Per provare con i tuoi dipendenti.",
-            "cta": "Inizia la prova"
-          },
-          "azienda": {
-            "nome": "Azienda",
-            "periodo": "per dipendente al mese",
-            "descrizione": "Per piccole e medie imprese.",
-            "cta": "Scegli Azienda"
-          },
-          "studio": {
-            "nome": "Studio",
-            "prezzo": "Su misura",
-            "descrizione": "Per consulenti del lavoro e studi paghe.",
-            "cta": "Contattaci"
-          }
-        },
-        "caratteristiche": {
-          "tutteLeFunzioni": "Tutte le funzioni",
-          "fino10Dipendenti": "Fino a 10 dipendenti",
-          "causaliPronte": "Causali e parametri pronti",
+        "sottotitolo": "Scegli il piano in base ai dipendenti da gestire: si parte gratis e tutte le funzioni sono sempre incluse.",
+        "inclusi": {
           "timbraturaSmartphone": "Timbratura da smartphone",
           "exportPaghe": "Export per le paghe",
-          "assistenzaEmailTelefono": "Assistenza via email e telefono",
-          "piuAziende": "Più aziende clienti",
-          "accessoPerCliente": "Accesso per conto del cliente",
-          "modelliExport": "Modelli di export dedicati",
-          "assistenzaPrioritaria": "Assistenza prioritaria"
+          "causaliPronte": "Causali e parametri pronti",
+          "tutteLeFunzioni": "Tutte le funzioni"
         },
         "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
         "domande": {
@@ -1372,7 +1346,7 @@
           },
           "consulente": {
             "domanda": "Sono un consulente del lavoro: posso gestire più aziende?",
-            "risposta": "Sì, con il piano Studio gestisci le aziende clienti ed entri per loro conto quando serve."
+            "risposta": "Sì: con i piani per gli studi gestisci le aziende clienti ed entri per loro conto quando serve."
           }
         }
       },
