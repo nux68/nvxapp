@@ -4,6 +4,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { WidgetService } from '../../../Utility/infrastructure/widget.service';
 import { WidgetDefinition } from '../../../Utility/infrastructure/widget.model';
+import { disponiWidget, WidgetRiga } from '../../../Utility/infrastructure/widget-layout';
 
 /*
  Dashboard (pagina iniziale dopo il login): saluto e widget scelti dall'utente (ANALISI_WIDGET.md).
@@ -22,6 +23,8 @@ export class DashboardPageComponent {
   public title!: string;
 
   public widgets: WidgetDefinition[] = [];
+  /** widget disposti in righe secondo numero e dimensioni (widget-layout.ts) */
+  public righe: WidgetRiga[] = [];
   public configurabile = false;
   public caricamento = true;
   /** cambia a ogni ingresso: i widget si ricreano e ricaricano i loro dati */
@@ -39,6 +42,7 @@ export class DashboardPageComponent {
     this.widgetService.Carica().subscribe(stato => {
       this.configurabile = stato.configurabile;
       this.widgets = this.widgetService.Dashboard(stato);
+      this.righe = disponiWidget(this.widgets);
       this.giro++;
       this.caricamento = false;
     });

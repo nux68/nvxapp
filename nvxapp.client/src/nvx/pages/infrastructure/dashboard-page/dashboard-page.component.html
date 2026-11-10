@@ -30,19 +30,24 @@
         <p class="nvx-home-empty">{{ 'widgets.dashboard.empty' | transloco }}</p>
       }
 
-      <div class="nvx-widget-grid">
-        @for (w of widgets; track w.key + '|' + giro) {
-          <section [class]="'nvx-widget nvx-widget-' + w.size + (w.frameless ? ' frameless' : '')">
-            @if (!w.frameless) {
-              <header class="nvx-widget-head">
-                <ion-icon [name]="w.icon"></ion-icon>
-                <h2>{{ w.title | transloco }}</h2>
-              </header>
+      <!-- righe calcolate da widget-layout.ts: righe incomplete allargate o centrate, stessa altezza nella riga -->
+      <div class="nvx-widget-rows">
+        @for (riga of righe; track $index + '|' + giro) {
+          <div class="nvx-widget-row">
+            @for (c of riga.celle; track c.widget.key) {
+              <section [class]="'nvx-widget' + (c.widget.frameless ? ' frameless' : '')" [style.--nvx-w]="c.frazione">
+                @if (!c.widget.frameless) {
+                  <header class="nvx-widget-head">
+                    <ion-icon [name]="c.widget.icon"></ion-icon>
+                    <h2>{{ c.widget.title | transloco }}</h2>
+                  </header>
+                }
+                <div class="nvx-widget-body">
+                  <ng-container *ngComponentOutlet="c.widget.component"></ng-container>
+                </div>
+              </section>
             }
-            <div class="nvx-widget-body">
-              <ng-container *ngComponentOutlet="w.component"></ng-container>
-            </div>
-          </section>
+          </div>
         }
       </div>
     }
