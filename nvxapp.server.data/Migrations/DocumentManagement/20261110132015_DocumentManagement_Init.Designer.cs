@@ -13,7 +13,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.DocumentManagement
 {
     [DbContext(typeof(DocumentManagementDbContext))]
-    [Migration("20261110090207_DocumentManagement_Init")]
+    [Migration("20261110132015_DocumentManagement_Init")]
     partial class DocumentManagement_Init
     {
         /// <inheritdoc />
