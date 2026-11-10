@@ -102,40 +102,12 @@
       },
       "pricing": {
         "titolo": "Simple pricing",
-        "sottotitolo": "You only pay for the applications you activate.",
-        "piani": {
-          "prova": {
-            "nome": "Trial",
-            "periodo": "for 30 days",
-            "descrizione": "All applications, no commitment.",
-            "cta": "Start free"
-          },
-          "azienda": {
-            "nome": "Company",
-            "prezzo": "custom",
-            "periodo": "per month",
-            "descrizione": "The applications you need, for all your users.",
-            "cta": "Sign up"
-          },
-          "studio": {
-            "nome": "Firm",
-            "prezzo": "On request",
-            "descrizione": "For consultants and firms following several companies.",
-            "cta": "Contact us"
-          }
-        },
-        "caratteristiche": {
-          "tuttiGliApplicativi": "Attendance, CRM and documents",
-          "fino10Utenti": "Up to 10 users",
-          "datiPronti": "Parameters and tables ready",
-          "applicativiAScelta": "Applications of your choice",
+        "sottotitolo": "One plan for every function, or just the ones you need: start for free.",
+        "inclusi": {
           "anagraficheComuni": "Shared customers and employees",
-          "spazioDocumenti": "Document storage in packages",
-          "assistenza": "Ticket support",
-          "piuAziende": "Several companies with one login",
           "documentiAiClienti": "Documents to clients and their employees",
           "exportPaghe": "Payroll export",
-          "assistenzaPrioritaria": "Priority support"
+          "datiPronti": "Parameters and tables ready"
         },
         "nota": "Prices excluding VAT. You can activate or deactivate an application at any time.",
         "domande": {

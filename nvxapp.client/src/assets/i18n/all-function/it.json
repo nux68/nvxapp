@@ -102,40 +102,12 @@
       },
       "pricing": {
         "titolo": "Prezzi semplici",
-        "sottotitolo": "Paghi solo gli applicativi che attivi.",
-        "piani": {
-          "prova": {
-            "nome": "Prova",
-            "periodo": "per 30 giorni",
-            "descrizione": "Tutti gli applicativi, senza impegno.",
-            "cta": "Inizia gratis"
-          },
-          "azienda": {
-            "nome": "Azienda",
-            "prezzo": "su misura",
-            "periodo": "al mese",
-            "descrizione": "Gli applicativi che ti servono, per tutti i tuoi utenti.",
-            "cta": "Registrati"
-          },
-          "studio": {
-            "nome": "Studio",
-            "prezzo": "Su richiesta",
-            "descrizione": "Per consulenti e studi che seguono più aziende.",
-            "cta": "Contattaci"
-          }
-        },
-        "caratteristiche": {
-          "tuttiGliApplicativi": "Presenze, CRM e documentale",
-          "fino10Utenti": "Fino a 10 utenti",
-          "datiPronti": "Parametri e tabelle già pronti",
-          "applicativiAScelta": "Applicativi a scelta",
+        "sottotitolo": "Un piano unico per tutte le funzioni, oppure solo quelle che ti servono: si parte gratis.",
+        "inclusi": {
           "anagraficheComuni": "Clienti e dipendenti condivisi",
-          "spazioDocumenti": "Spazio documenti a pacchetti",
-          "assistenza": "Assistenza via ticket",
-          "piuAziende": "Più aziende in un solo accesso",
           "documentiAiClienti": "Documenti ai clienti e ai loro dipendenti",
           "exportPaghe": "Export per le paghe",
-          "assistenzaPrioritaria": "Assistenza prioritaria"
+          "datiPronti": "Parametri e tabelle già pronti"
         },
         "nota": "Prezzi IVA esclusa. Puoi attivare o disattivare un applicativo in qualunque momento.",
         "domande": {

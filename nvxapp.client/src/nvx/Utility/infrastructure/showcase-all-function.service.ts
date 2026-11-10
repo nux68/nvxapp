@@ -3,6 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
 import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
 // Showcase dell'applicativo completo (ramo AllFunction): presenze, CRM e documentale insieme, sulle stesse pagine template
@@ -77,11 +78,8 @@ export class ShowcaseAllFunctionService {
       pricing: {
         titolo: t('pricing.titolo'),
         sottotitolo: t('pricing.sottotitolo'),
-        piani: [
-          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tuttiGliApplicativi'), t('pricing.caratteristiche.fino10Utenti'), t('pricing.caratteristiche.datiPronti')], cta: t('pricing.piani.prova.cta') },
-          { nome: t('pricing.piani.azienda.nome'), prezzo: t('pricing.piani.azienda.prezzo'), periodo: t('pricing.piani.azienda.periodo'), descrizione: t('pricing.piani.azienda.descrizione'), caratteristiche: [t('pricing.caratteristiche.applicativiAScelta'), t('pricing.caratteristiche.anagraficheComuni'), t('pricing.caratteristiche.spazioDocumenti'), t('pricing.caratteristiche.assistenza')], cta: t('pricing.piani.azienda.cta'), evidenza: true },
-          { nome: t('pricing.piani.studio.nome'), prezzo: t('pricing.piani.studio.prezzo'), periodo: '', descrizione: t('pricing.piani.studio.descrizione'), caratteristiche: [t('pricing.caratteristiche.piuAziende'), t('pricing.caratteristiche.documentiAiClienti'), t('pricing.caratteristiche.exportPaghe'), t('pricing.caratteristiche.assistenzaPrioritaria')], cta: t('pricing.piani.studio.cta'), url: '/contact' }
-        ],
+        ambiti: [AmbitoLicenza.Cumulativo, AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement],
+        inclusi: [t('pricing.inclusi.anagraficheComuni'), t('pricing.inclusi.documentiAiClienti'), t('pricing.inclusi.exportPaghe'), t('pricing.inclusi.datiPronti')],
         nota: t('pricing.nota'),
         domande: [
           { domanda: t('pricing.domande.scelta.domanda'), risposta: t('pricing.domande.scelta.risposta') },
