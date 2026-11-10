@@ -279,6 +279,7 @@ Il servizio licenze parla **solo** con `IPaymentGateway`: non conosce i dettagli
 ### 7.2 Modalità debug (punto 8)
 
 Flag di configurazione (es. `NVXAPP_Payments__Debug=true`) che fa risolvere l'`IPaymentGateway` al **`DebugPaymentGateway`**:
+- **implementazione (10/11/2026)**: `Payments:Debug` in `appsettings.json`, per ora `true` anche in Production (vedi §15.3);
 - esegue **tutto il giro** (crea `Lic_Pagamento`, aggiorna l'abbonamento, chiude il flusso) **senza chiamare alcun provider né muovere denaro**;
 - marca il pagamento con `Debug=true` e `Stato=Debug`, così lo storico resta distinguibile;
 - serve per demo, test end-to-end e sviluppo senza credenziali reali.
@@ -490,7 +491,7 @@ Dove il §13 è aperto ho scelto la soluzione più semplice e, quando possibile,
 - **Rinnovo automatico**: la manutenzione notturna rinnova solo i piani gratuiti e, in modalità debug, quelli a pagamento. Con un provider reale i rinnovi li addebiterà il provider (subscription e webhook).
 - **Avvisi di scadenza**: email ai PowerAdmin del soggetto per le licenze senza rinnovo automatico, una volta per periodo, solo se l'invio email è configurato. Le aziende coperte da uno studio non ricevono avvisi propri.
 - **Listini iniziali**: nessuno precaricato (i prezzi *x* e *y* non sono ancora decisi). Il SuperUser li crea dalla pagina Listini licenze; i nuovi listini propongono i tre piani con gli utenti predefiniti.
-- **Debug dei pagamenti**: attivo solo con `Payments:Debug = true` **e** fuori da Production (in Production il flag è ignorato). In sviluppo è già acceso in `appsettings.Development.json` e `appsettings.Development.DEV1.json`; altrove si accende con la variabile `NVXAPP_Payments__Debug`.
+- **Debug dei pagamenti** (deciso il 10/11/2026): **per ora acceso ovunque**, anche nei deploy Docker (Production), con `Payments:Debug = true` in `appsettings.json` (o la variabile `NVXAPP_Payments__Debug`). In Production all'avvio il log segnala che nessun pagamento è reale. Va rimesso a `false` quando arriveranno i pagamenti reali (Fase 3).
 - **Cancellazioni**: gli abbonamenti spariscono con l'azienda o lo studio, i listini con il centro (piano e listino dell'abbonamento diventano null: l'abbonamento ne conserva la fotografia). I pagamenti restano.
 
 ### 15.4 Cosa manca
