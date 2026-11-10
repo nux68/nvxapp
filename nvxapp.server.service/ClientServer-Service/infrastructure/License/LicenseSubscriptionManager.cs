@@ -25,7 +25,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
           scadenza se la licenza vale ancora (anche nella grace), altrimenti da oggi
         - cambio di piano sulla stessa funzione: il nuovo abbonamento parte da oggi e il precedente viene annullato
           (nessun calcolo pro-rata in questa fase)
-        - al rinnovo si rifotografano prezzo, limite utenti ed etichette dal piano, se esiste ancora ed e' attivo (§5.1)
+        - al rinnovo si rifotografano prezzo, limiti (utenti, clienti, spazio) ed etichette dal piano, se esiste ancora ed e' attivo (§5.1)
     */
     public interface ILicenseSubscriptionManager
     {
@@ -130,6 +130,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 PrezzoBloccato = prezzo,
                 Valuta = listino.Valuta,
                 MaxUtentiBloccato = piano.MaxUtenti,
+                MaxClientiBloccato = piano.MaxClienti,
+                MaxSpazioMBBloccato = piano.MaxSpazioMB,
                 DisponibileSuCompany = listino.TipoSoggetto == TipoSoggettoLicenza.FinancialAdvisor && listino.DisponibileSuCompany,
                 IdDealerListino = listino.IdDealer,
                 DataInizio = oggi,
@@ -203,6 +205,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             {
                 abbonamento.PrezzoBloccato = abbonamento.Periodicita == PeriodicitaLicenza.Annuale ? piano.PrezzoAnnuale : piano.PrezzoMensile;
                 abbonamento.MaxUtentiBloccato = piano.MaxUtenti;
+                abbonamento.MaxClientiBloccato = piano.MaxClienti;
+                abbonamento.MaxSpazioMBBloccato = piano.MaxSpazioMB;
                 abbonamento.DescrizionePiano = Etichetta(piano);
                 abbonamento.DisponibileSuCompany = piano.ListinoNavigation!.TipoSoggetto == TipoSoggettoLicenza.FinancialAdvisor && piano.ListinoNavigation.DisponibileSuCompany;
             }

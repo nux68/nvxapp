@@ -24,6 +24,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public int? MaxUtentiFree { get; set; }
         public int? MaxUtentiStandard { get; set; }
         public int? MaxUtentiPro { get; set; }
+        public int? MaxClientiFree { get; set; }
+        public int? MaxClientiStandard { get; set; }
+        public int? MaxClientiPro { get; set; }
+        public int? MaxSpazioMBFree { get; set; }
+        public int? MaxSpazioMBStandard { get; set; }
+        public int? MaxSpazioMBPro { get; set; }
         public int GraceGiorni { get; set; }
         public int AvvisoGiorni { get; set; }
     }
@@ -69,7 +75,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public int Ordine { get; set; }
         public decimal PrezzoMensile { get; set; }
         public decimal PrezzoAnnuale { get; set; }
+        // limiti (null = illimitati): utenti (Presenze), clienti (CRM), spazio in MB (Documentale); il Cumulativo li usa tutti
         public int? MaxUtenti { get; set; }
+        public int? MaxClienti { get; set; }
+        public int? MaxSpazioMB { get; set; }
         public bool Attivo { get; set; } = true;
     }
 
@@ -144,6 +153,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public decimal Prezzo { get; set; }
         public string Valuta { get; set; } = "EUR";
         public int? MaxUtenti { get; set; }
+        public int? MaxClienti { get; set; }
+        public int? MaxSpazioMB { get; set; }
         public DateTime DataInizio { get; set; }
         public DateTime DataScadenza { get; set; }
         public int Stato { get; set; }
@@ -164,8 +175,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public int Fonte { get; set; }
         public string? Studio { get; set; }
         public DateTime? DataScadenza { get; set; }
+        // limite della funzione (null = illimitati o non applicabile): utenti (Presenze), clienti (CRM), spazio (Documentale)
         public int? MaxUtenti { get; set; }
-        // utenti attivi oltre il limite della funzione
+        public int? MaxClienti { get; set; }
+        public int? MaxSpazioMB { get; set; }
+        // uso attuale: clienti attivi (CRM) e spazio occupato in MB (Documentale); gli utenti sono in UtentiAttivi
+        public int? ClientiAttivi { get; set; }
+        public long? SpazioUsatoMB { get; set; }
+        // uso oltre il limite della funzione
         public bool OltreLimite { get; set; }
     }
 
