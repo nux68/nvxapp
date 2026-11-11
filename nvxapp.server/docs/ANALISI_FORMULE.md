@@ -556,8 +556,8 @@ Numerazione unica per tutto il documento. `[ ]` da fare, `[x]` fatto (con nota).
 | 12.7 | Dipendente | 47–51 | 5 | fatto |
 | 12.8 | Menu, route, i18n, permessi, piano Pro | 52–55, 67–68 | 6 | fatto |
 | 12.9 | AI formula | 56–59 | 4 | fatto |
-| 12.10 | Verifiche e merge | 60–66 | 5 | in corso (63 e merge) |
-| **Totale** | | **68** | **65** | |
+| 12.10 | Verifiche e merge | 60–66 | 6 | quasi (manca 63) |
+| **Totale** | | **68** | **66** | |
 
 ### 12.0 Decisioni (lavori 1–5) (§0, §11)
 - [x] 1. Confermare D1: linguaggio JavaScript con Jint
@@ -681,7 +681,8 @@ Numerazione unica per tutto il documento. `[ ]` da fare, `[x]` fatto (con nota).
   — Fatto: `210572aa`, `42c1d7a6` (Presenze) e `189acc55` (Infrastructure).
 - [x] 65. Prova di merge in un worktree temporaneo su AllFunction_Dev (csproj, migrazioni, resx)
   — Fatto: nessun conflitto; JSON e resx validi; server e client compilano. Worktree temporaneo rimosso.
-- [ ] 66. Catena di merge, **previa conferma**: Infrastructure_Dev_menulicenza → Infrastructure_Dev → Infrastructure; AttendanceTracking_Dev_formule → AttendanceTracking_Dev → AttendanceTracking; poi AllFunction_Dev → AllFunction
+- [x] 66. Catena di merge, **previa conferma**: Infrastructure_Dev_menulicenza → Infrastructure_Dev → Infrastructure; AttendanceTracking_Dev_formule → AttendanceTracking_Dev → AttendanceTracking; poi AllFunction_Dev → AllFunction
+  — Fatto l'11/11/2026, su conferma: Infrastructure_Dev `84056fa5`, Infrastructure `58605a2d`, AttendanceTracking_Dev `6f245756`, AttendanceTracking `846c3df6`, AllFunction_Dev `9a89e418` (CRM e DocumentManagement gia' allineati), AllFunction `623d67e3`. Nessun conflitto; build di server e client ok su AllFunction_Dev.
 
 ---
 
@@ -694,3 +695,4 @@ Numerazione unica per tutto il documento. `[ ]` da fare, `[x]` fatto (con nota).
 | 11/11/2026 | 12.1–12.4, 12.8 | Server: dati, motore Jint, calcolo, API, Pro (6–33, 68) | `AttendanceTracking_Dev_formule` | `210572aa` | Build ok, motore provato con un programma di prova |
 | 11/11/2026 | 12.5–12.9 | Client: pagine, dialog, dipendente, menu, i18n, AI (34–59) | `AttendanceTracking_Dev_formule` | `42c1d7a6` | `ng build` ok |
 | 11/11/2026 | 12.8, 12.10 | Test E2E su DB usa-e-getta (55, 61, 62); correzioni: log tolti quando si toglie il profilo, ora locale nel log, messaggio di parentesi non chiusa | `AttendanceTracking_Dev_formule` | (questo commit) | 6 verifiche su 6 OK, DB eliminato |
+| 11/11/2026 | 12.10 | Catena dei merge fino ad AllFunction (66) | tutti | `623d67e3` | Worktree di lavoro eliminati |
