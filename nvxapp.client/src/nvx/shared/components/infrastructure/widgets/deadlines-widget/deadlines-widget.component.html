@@ -1,0 +1,33 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!summary) {
+  <div class="nvx-w-empty">{{ 'widgets.deadlines.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="summary.scadute > 0" (click)="scadenzario()">
+      <div class="valore">{{ summary.scadute }}</div>
+      <div class="etichetta">{{ 'widgets.deadlines.expired' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="summary.inScadenza > 0" (click)="scadenzario()">
+      <div class="valore">{{ summary.inScadenza }}</div>
+      <div class="etichetta">{{ 'widgets.deadlines.expiring' | transloco }}</div>
+    </div>
+  </div>
+
+  @if (summary.prossime.length === 0) {
+    <div class="nvx-w-empty">{{ 'widgets.deadlines.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-dlw-list">
+      @for (d of summary.prossime; track d.id) {
+        <li>
+          <button type="button" (click)="apri(d)">
+            <span class="nvx-dlw-date" [class.danger]="d.scaduta" [class.warning]="!d.scaduta && d.inScadenza">{{ data(d) }}</span>
+            <span class="nvx-dlw-desc">{{ d.descrizione }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="scadenzario()">{{ 'widgets.deadlines.openAll' | transloco }}</button>
+}
