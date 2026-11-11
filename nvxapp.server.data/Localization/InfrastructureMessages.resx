@@ -1022,4 +1022,28 @@ In allegato il rendiconto.</value>
     <value>Stato pagamento</value>
     <comment>pagamenti</comment>
   </data>
+  <data name="PaymentExportStarted" xml:space="preserve">
+    <value>Preparazione del report dei pagamenti...</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentExportReady" xml:space="preserve">
+    <value>Report dei pagamenti pronto: clicca per scaricarlo.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentExportFailed" xml:space="preserve">
+    <value>Report dei pagamenti non riuscito.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentJobUserNotIdentified" xml:space="preserve">
+    <value>Utente non identificato: impossibile avviare il report.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendStarted" xml:space="preserve">
+    <value>Invio del riepilogo dei pagamenti a {0}...</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendDone" xml:space="preserve">
+    <value>Riepilogo dei pagamenti inviato a {0}.</value>
+    <comment>pagamenti</comment>
+  </data>
 </root>

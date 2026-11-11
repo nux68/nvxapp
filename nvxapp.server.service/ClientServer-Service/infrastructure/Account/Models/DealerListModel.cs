@@ -46,6 +46,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
+
+        // trattenuta della piattaforma sugli incassi dei clienti del centro (ANALISI_PAGAMENTI_CENTRI.md):
+        // null = vale quella generale (PercentualeGenerale); la cambia solo il SuperUser (CanEditPercentuale)
+        public decimal? PercentualePiattaforma { get; set; }
+        public decimal PercentualeGenerale { get; set; }
+        public bool CanEditPercentuale { get; set; }
     }
     public class DealerGetInModel
     {
