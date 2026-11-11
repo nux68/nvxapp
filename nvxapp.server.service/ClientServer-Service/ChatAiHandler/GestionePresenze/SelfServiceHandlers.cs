@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
@@ -29,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "ClockNow",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
                 CategoryOrder = 100,
                 DisplayName = AttendanceTrackingMessages.Get("ChatClockNowDisplayName"),
@@ -80,6 +82,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RequestLeave",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryLeave"),
                 CategoryOrder = 300,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRequestLeaveDisplayName"),
@@ -170,6 +173,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RequestClocking",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
                 CategoryOrder = 100,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRequestClockingDisplayName"),
