@@ -125,7 +125,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 {
                     UserIds = admin,
                     IdCompany = idCompany,
-                    Categoria = NotificationCategory.Generale.Code,
+                    Categoria = AstNotificationCategoryProvider.Beni.Code,
                     Titolo = AssetsMessages.Get("ReturnNotificationTitle", nuove.Count),
                     Messaggio = string.Join("\n", righe) + (nuove.Count > 20 ? "\n..." : string.Empty),
                     Url = Url,
