@@ -57,10 +57,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
                                                           s.Contains(c, StringComparison.OrdinalIgnoreCase) ||
                                                           c.StartsWith(pref, StringComparison.OrdinalIgnoreCase)))
                               .ToList();
-            static string Elenco(List<string> l) => string.Join(", ", l.Take(12)) + (l.Count > 12 ? ", ..." : "");
+            static string Elenco(List<string> l) => string.Join(", ", l.Take(12)) + (l.Count > 12 ? ", ..." : ".");
             var altri = tutti.Except(simili).ToList();
-            if (simili.Count == 0) return "Codici disponibili: " + Elenco(tutti) + ".";
-            return "Forse: " + Elenco(simili) + "." + (altri.Count > 0 ? " Altri codici: " + Elenco(altri) + "." : "");
+            if (simili.Count == 0) return "Codici disponibili: " + Elenco(tutti);
+            return "Forse: " + Elenco(simili) + (altri.Count > 0 ? " Altri codici: " + Elenco(altri) : "");
         }
     }
 
