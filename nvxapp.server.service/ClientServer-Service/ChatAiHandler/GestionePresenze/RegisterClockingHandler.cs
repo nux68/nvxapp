@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using System.Globalization;
 using nvxapp.server.data.Localization;
@@ -41,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RegisterClocking",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
                 CategoryOrder = 100,
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },

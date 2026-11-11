@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Globalization;
 using System.Text;
@@ -334,6 +335,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         string BuildTurnSystemPrompt(ChatSession session, ICollection<string> detailedIntents);
         object BuildResponseSchema();
         void Fuilter4UserRoles(List<string> userRoles);
+
+        // Toglie i comandi degli applicativi non attivi per l'azienda (null = nessun filtro).
+        void Filter4Applications(IReadOnlyCollection<ApplicationType>? activeApplications);
     }
 
     public class IntentCatalog : IIntentCatalog
@@ -356,6 +360,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             {
                 _intents = _intents
                     .Where(intent => intent.Usable4Role.Contains("*") || intent.Usable4Role.Intersect(userRoles).Any())
+                    .ToList()
+                    .AsReadOnly();
+            }
+        }
+
+        public void Filter4Applications(IReadOnlyCollection<ApplicationType>? activeApplications)
+        {
+            if (_intents != null && activeApplications != null)
+            {
+                _intents = _intents
+                    .Where(intent => intent.Application == null || activeApplications.Contains(intent.Application.Value))
                     .ToList()
                     .AsReadOnly();
             }
@@ -812,6 +827,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public List<SlotDefinition> Slots { get; set; } = new();
 
         public List<string> Usable4Role { get; set; } = new List<string>();
+
+        // Applicativo a cui appartiene il comando (presenze, CRM, documentale): il comando compare solo
+        // se l'applicativo è attivo per l'azienda dell'utente (CompanyApplication). null = comando comune
+        // (help, navigazione, impostazioni), sempre disponibile.
+        public ApplicationType? Application { get; set; }
 
         // Validazione cross-slot (es. startDate <= endDate).
         // Chiamata dopo che tutti gli slot singoli sono validi.

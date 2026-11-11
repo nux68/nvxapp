@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
@@ -35,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "CalcolaGiorno",
+                Application = ApplicationType.AttendanceTracking,
                 Category    = AttendanceTrackingMessages.Get("ChatCategoryTimeSheet"),
                 CategoryOrder = 600,
                 DisplayName = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDisplayName"),
