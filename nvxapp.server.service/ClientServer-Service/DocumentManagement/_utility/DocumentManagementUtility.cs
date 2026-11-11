@@ -206,6 +206,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
                 {
                     IdAz_Anagrafica = idAz_Anagrafica, Codice = t.Codice, Descrizione = DocumentManagementMessages.Get(t.Chiave),
                     Categoria = t.Cat, AnniConservazione = t.Anni, HaScadenza = t.Scad, PresaVisioneRichiesta = t.Presa, HaCompetenza = t.Comp,
+                    // firma proposta solo per il contratto (all'invio si puo' sempre togliere o aggiungere)
+                    FirmaRichiesta = t.Codice == "CONTRATTO",
                     Ordine = (ordine += 10), Active = true, CreationDate = now
                 }, false);
 

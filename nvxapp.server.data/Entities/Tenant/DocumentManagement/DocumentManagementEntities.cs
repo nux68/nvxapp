@@ -53,6 +53,8 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
         Cestino = 6,
         Ripristino = 7,
         Eliminazione = 8,
+        Firma = 9,
+        RichiestaFirma = 10,     // richiesta di firma aggiunta o tolta su un documento gia' inviato
     }
 
     // configurazione del documentale per l'azienda (una riga)
@@ -98,6 +100,10 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
 
         // ai destinatari si chiede la presa visione
         public bool PresaVisioneRichiesta { get; set; }
+
+        // ai destinatari si chiede la firma (FES, ANALISI_FIRMA_DIGITALE.md §4.2): e' solo il valore proposto,
+        // all'invio del singolo documento si puo' togliere o aggiungere (Doc_Documento.FirmaRichiesta)
+        public bool FirmaRichiesta { get; set; }
 
         // ha competenza (anno/mese), es. cedolino
         public bool HaCompetenza { get; set; }
@@ -186,6 +192,9 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
 
         public Doc_Origine Origine { get; set; } = Doc_Origine.Azienda;
 
+        // ai destinatari si chiede la firma: proposta dalla tipologia, decisa a ogni invio
+        public bool FirmaRichiesta { get; set; }
+
         // cestino (eliminazione logica): i file restano e contano nello spazio finche' il cestino non si svuota
         public bool NelCestino { get; set; }
         public DateTime? DataCestino { get; set; }
@@ -251,6 +260,25 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
         public DateTime? DataPrimaApertura { get; set; }
         public DateTime? DataPresaVisione { get; set; }
         public DateTime? DataDownload { get; set; }
+
+        // firma elettronica semplice (FES) del destinatario: prova di chi ha firmato cosa e quando.
+        // Una nuova versione azzera la firma (va firmata di nuovo); se la richiesta viene tolta la firma fatta resta.
+        public bool FirmaRichiesta { get; set; }
+        public DateTime? DataFirma { get; set; }
+        public int? FirmaVersione { get; set; }
+
+        // SHA-256 della versione firmata (Doc_Versione.Hash)
+        [MaxLength(64)]
+        public string? FirmaHash { get; set; }
+
+        [MaxLength(64)]
+        public string? FirmaIp { get; set; }
+
+        [MaxLength(300)]
+        public string? FirmaUserAgent { get; set; }
+
+        [MaxLength(450)]
+        public string? IdAspNetUsersFirma { get; set; }
     }
 
     // registro degli accessi (obbligatorio per i documenti del personale)
