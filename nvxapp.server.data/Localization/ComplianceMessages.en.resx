@@ -18,4 +18,298 @@
   <data name="DeletionCountCfg" xml:space="preserve">
     <value>Compliance configuration</value>
   </data>
+  <data name="StudioCompanyRequired" xml:space="preserve">
+    <value>Choose the company to work on.</value>
+  </data>
+  <data name="StudioNotEnabled" xml:space="preserve">
+    <value>Compliance is not enabled for the firm.</value>
+  </data>
+  <data name="CompanyNotActive" xml:space="preserve">
+    <value>Compliance is not active for the company.</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Item not found.</value>
+  </data>
+  <data name="EmployeeInvalid" xml:space="preserve">
+    <value>Invalid employee.</value>
+  </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>The description is required.</value>
+  </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>The date is required.</value>
+  </data>
+  <data name="PeriodInvalid" xml:space="preserve">
+    <value>The dates are inconsistent (the end date is before the start date).</value>
+  </data>
+  <data name="JobInvalid" xml:space="preserve">
+    <value>Invalid job role.</value>
+  </data>
+  <data name="DpiInvalid" xml:space="preserve">
+    <value>Invalid PPE.</value>
+  </data>
+  <data name="DpiInUse" xml:space="preserve">
+    <value>The PPE has already been delivered: disable it instead of deleting it.</value>
+  </data>
+  <data name="SiteInvalid" xml:space="preserve">
+    <value>Invalid site.</value>
+  </data>
+  <data name="AppointmentPersonRequired" xml:space="preserve">
+    <value>Specify the appointed employee or the external person.</value>
+  </data>
+  <data name="SanitaryUserInvalid" xml:space="preserve">
+    <value>Invalid user enabled for health data.</value>
+  </data>
+  <data name="JobUserNotIdentified" xml:space="preserve">
+    <value>User not identified: the export cannot be started.</value>
+  </data>
+  <data name="DeadlineCourse" xml:space="preserve">
+    <value>Course {0} - {1}</value>
+  </data>
+  <data name="DeadlineVisit" xml:space="preserve">
+    <value>Medical examination - {0}</value>
+  </data>
+  <data name="DeadlineAppointment" xml:space="preserve">
+    <value>Appointment {0} - {1}</value>
+  </data>
+  <data name="DeadlineDocument" xml:space="preserve">
+    <value>Review: {0}</value>
+  </data>
+  <data name="DeadlineProcessor" xml:space="preserve">
+    <value>Processor agreement: {0}</value>
+  </data>
+  <data name="DeadlineBreach" xml:space="preserve">
+    <value>Notification to the supervisory authority of the breach discovered on {0}</value>
+  </data>
+  <data name="DeadlineBreachNote" xml:space="preserve">
+    <value>72-hour deadline: {0}</value>
+  </data>
+  <data name="AckDpiTitle" xml:space="preserve">
+    <value>PPE delivery: {0}</value>
+  </data>
+  <data name="AckDpiText" xml:space="preserve">
+    <value>I, {0}, declare that on {1} I received the personal protective equipment {2}{5}, quantity {3}{4}, that I have been informed and trained on its correct use and that I undertake to use it and keep it with care (art. 77-78 Italian Legislative Decree 81/08).</value>
+  </data>
+  <data name="AckDpiSize" xml:space="preserve">
+    <value>, size {0}</value>
+  </data>
+  <data name="AckAppointmentTitle" xml:space="preserve">
+    <value>Appointment: {0}</value>
+  </data>
+  <data name="AckAppointmentText" xml:space="preserve">
+    <value>{0} acknowledges the appointment as {1} starting from {2}{3} and the related obligations under Italian Legislative Decree 81/08.</value>
+  </data>
+  <data name="AckAppointmentUntil" xml:space="preserve">
+    <value> to {0}</value>
+  </data>
+  <data name="BreachNotifyTitle" xml:space="preserve">
+    <value>New personal data breach</value>
+  </data>
+  <data name="BreachNotifyText" xml:space="preserve">
+    <value>A breach discovered on {0} has been recorded: if it entails a risk it must be notified to the supervisory authority by {1}.</value>
+  </data>
+  <data name="GdprExportFileName" xml:space="preserve">
+    <value>GDPR register {0}</value>
+  </data>
+  <data name="GdprExportStarted" xml:space="preserve">
+    <value>Preparing the GDPR register</value>
+  </data>
+  <data name="GdprExportReady" xml:space="preserve">
+    <value>GDPR register ready</value>
+  </data>
+  <data name="GdprExportFailed" xml:space="preserve">
+    <value>GDPR register export failed</value>
+  </data>
+  <data name="GdprSheetTreatments" xml:space="preserve">
+    <value>Processing activities</value>
+  </data>
+  <data name="GdprSheetProcessors" xml:space="preserve">
+    <value>Processors</value>
+  </data>
+  <data name="GdprSheetBreaches" xml:space="preserve">
+    <value>Breaches</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="DeletionCountTraining" xml:space="preserve">
+    <value>Safety training courses</value>
+  </data>
+  <data name="DeletionCountVisits" xml:space="preserve">
+    <value>Medical examinations</value>
+  </data>
+  <data name="DeletionCountPpe" xml:space="preserve">
+    <value>PPE deliveries</value>
+  </data>
+  <data name="DeletionCountGdpr" xml:space="preserve">
+    <value>GDPR register (processing, processors, breaches)</value>
+  </data>
+  <data name="GdprColT1" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GdprColT2" xml:space="preserve">
+    <value>Purposes</value>
+  </data>
+  <data name="GdprColT3" xml:space="preserve">
+    <value>Legal basis</value>
+  </data>
+  <data name="GdprColT4" xml:space="preserve">
+    <value>Data subject categories</value>
+  </data>
+  <data name="GdprColT5" xml:space="preserve">
+    <value>Data categories</value>
+  </data>
+  <data name="GdprColT6" xml:space="preserve">
+    <value>Special or judicial data</value>
+  </data>
+  <data name="GdprColT7" xml:space="preserve">
+    <value>Recipients</value>
+  </data>
+  <data name="GdprColT8" xml:space="preserve">
+    <value>Transfers outside the EU</value>
+  </data>
+  <data name="GdprColT9" xml:space="preserve">
+    <value>Erasure time limits</value>
+  </data>
+  <data name="GdprColT10" xml:space="preserve">
+    <value>Security measures</value>
+  </data>
+  <data name="GdprColT11" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="GdprColT12" xml:space="preserve">
+    <value>Notes</value>
+  </data>
+  <data name="GdprColR1" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="GdprColR2" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="GdprColR3" xml:space="preserve">
+    <value>Tax code / VAT</value>
+  </data>
+  <data name="GdprColR4" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="GdprColR5" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="GdprColR6" xml:space="preserve">
+    <value>Entrusted processing</value>
+  </data>
+  <data name="GdprColR7" xml:space="preserve">
+    <value>Agreement date</value>
+  </data>
+  <data name="GdprColR8" xml:space="preserve">
+    <value>Expiry</value>
+  </data>
+  <data name="GdprColR9" xml:space="preserve">
+    <value>Document</value>
+  </data>
+  <data name="GdprColV1" xml:space="preserve">
+    <value>Discovered</value>
+  </data>
+  <data name="GdprColV2" xml:space="preserve">
+    <value>Breach date</value>
+  </data>
+  <data name="GdprColV3" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="GdprColV4" xml:space="preserve">
+    <value>Data categories</value>
+  </data>
+  <data name="GdprColV5" xml:space="preserve">
+    <value>Data subjects</value>
+  </data>
+  <data name="GdprColV6" xml:space="preserve">
+    <value>Consequences</value>
+  </data>
+  <data name="GdprColV7" xml:space="preserve">
+    <value>Measures taken</value>
+  </data>
+  <data name="GdprColV8" xml:space="preserve">
+    <value>Risk</value>
+  </data>
+  <data name="GdprColV9" xml:space="preserve">
+    <value>Notification to the authority</value>
+  </data>
+  <data name="GdprColV10" xml:space="preserve">
+    <value>Reasons for delay</value>
+  </data>
+  <data name="GdprColV11" xml:space="preserve">
+    <value>Communication to data subjects</value>
+  </data>
+  <data name="AppointmentType_0" xml:space="preserve">
+    <value>RSPP (safety manager)</value>
+  </data>
+  <data name="AppointmentType_1" xml:space="preserve">
+    <value>ASPP (safety officer)</value>
+  </data>
+  <data name="AppointmentType_2" xml:space="preserve">
+    <value>RLS (workers' safety representative)</value>
+  </data>
+  <data name="AppointmentType_3" xml:space="preserve">
+    <value>Supervisor</value>
+  </data>
+  <data name="AppointmentType_4" xml:space="preserve">
+    <value>Fire and emergency officer</value>
+  </data>
+  <data name="AppointmentType_5" xml:space="preserve">
+    <value>First aid officer</value>
+  </data>
+  <data name="AppointmentType_6" xml:space="preserve">
+    <value>Occupational physician</value>
+  </data>
+  <data name="AppointmentType_7" xml:space="preserve">
+    <value>Safety executive</value>
+  </data>
+  <data name="AppointmentType_8" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="LegalBasis_0" xml:space="preserve">
+    <value>Consent</value>
+  </data>
+  <data name="LegalBasis_1" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="LegalBasis_2" xml:space="preserve">
+    <value>Legal obligation</value>
+  </data>
+  <data name="LegalBasis_3" xml:space="preserve">
+    <value>Vital interests</value>
+  </data>
+  <data name="LegalBasis_4" xml:space="preserve">
+    <value>Public interest</value>
+  </data>
+  <data name="LegalBasis_5" xml:space="preserve">
+    <value>Legitimate interest</value>
+  </data>
+  <data name="ProcessorType_0" xml:space="preserve">
+    <value>Processor</value>
+  </data>
+  <data name="ProcessorType_1" xml:space="preserve">
+    <value>Sub-processor</value>
+  </data>
+  <data name="ProcessorType_2" xml:space="preserve">
+    <value>DPO</value>
+  </data>
+  <data name="ProcessorType_3" xml:space="preserve">
+    <value>Joint controller</value>
+  </data>
+  <data name="ProcessorType_4" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="BreachRisk_0" xml:space="preserve">
+    <value>Unlikely</value>
+  </data>
+  <data name="BreachRisk_1" xml:space="preserve">
+    <value>Risk</value>
+  </data>
+  <data name="BreachRisk_2" xml:space="preserve">
+    <value>High risk</value>
+  </data>
 </root>

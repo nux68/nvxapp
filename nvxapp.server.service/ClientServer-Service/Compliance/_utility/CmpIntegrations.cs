@@ -79,9 +79,26 @@ namespace nvxapp.server.service.ClientServer_Service.Compliance._utility
 
         public ApplicationType Application => ApplicationType.Compliance;
 
-        // per ora solo la configurazione: i conteggi arrivano con le aree del modulo
-        public Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
-            => Task.FromResult(new List<DeletionCountModel>());
+        // dati principali del modulo (sicurezza e registro GDPR)
+        public async Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            await using var db = await CmpSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return new List<DeletionCountModel>();
+            var rep = new CmpRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            if (idAz == 0)
+                return new List<DeletionCountModel>();
+            return new List<DeletionCountModel>
+            {
+                new() { Label = ComplianceMessages.Get("DeletionCountTraining"), Count = await rep.Cmp_Formazione.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = ComplianceMessages.Get("DeletionCountVisits"), Count = await rep.Cmp_Visita.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = ComplianceMessages.Get("DeletionCountPpe"), Count = await rep.Cmp_DpiConsegna.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = ComplianceMessages.Get("DeletionCountGdpr"), Count = await rep.Cmp_Trattamento.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken)
+                                                                                    + await rep.Cmp_Responsabile.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken)
+                                                                                    + await rep.Cmp_Violazione.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+            };
+        }
 
         // multi-tenant: lo schema si elimina con gli altri (DeletionService)
         public async Task DeleteCompanyDataAsync(int idCompany, CancellationToken cancellationToken = default)
@@ -95,11 +112,38 @@ namespace nvxapp.server.service.ClientServer_Service.Compliance._utility
             var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             if (idAz == 0)
                 return;
+            // figli prima dei padri (consegne prima del catalogo DPI, corsi richiesti e assegnazioni prima delle mansioni)
+            await rep.Cmp_DpiConsegna.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Dpi.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_MansioneCorso.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_DipendenteMansione.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Mansione.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Formazione.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Visita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Nomina.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Documento.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Trattamento.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Responsabile.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Cmp_Violazione.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Cmp_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 
-        // nessun dato legato all'utente per ora
-        public Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        // utente rimosso: esce dagli abilitati ai dati sanitari (i dati dei dipendenti seguono Dip_Anagrafica in Common)
+        public async Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
+        {
+            await using var db = await CmpSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return;
+            var rep = new CmpRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            var cfg = await rep.Cmp_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).AsTracking().FirstOrDefaultAsync(cancellationToken);
+            if (cfg == null)
+                return;
+            var sanitari = CmpUtility.UtentiSanitari(cfg);
+            if (!sanitari.Remove(idAspNetUsers))
+                return;
+            cfg.UtentiDatiSanitari = sanitari.Count == 0 ? null : string.Join(';', sanitari);
+            await rep.Cmp_Cfg.SaveChange();
+        }
     }
 }
