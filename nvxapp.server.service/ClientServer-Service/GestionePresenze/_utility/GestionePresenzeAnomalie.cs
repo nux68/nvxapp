@@ -158,7 +158,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     var giustDelGiorno = giustificativi[chiave].ToList();
                     bool giustValido = giustDelGiorno.Any(g => StatiValidi.Contains(g.RichiestaStato));
                     bool inAttesa = delGiorno.Any(t => StatiInAttesa.Contains(t.RichiestaStato)) || giustDelGiorno.Any(g => StatiInAttesa.Contains(g.RichiestaStato));
-                    bool calcolato = risultato != null && (risultato.Stato & GG_ResultStato.STATE_MASK) != GG_ResultStato.Init;
+                    bool calcolato = risultato != null && !risultato.Stato.HasFlag(GG_ResultStato.Init);   // Init = non ancora ricalcolata
                     int teo = calcolato ? (int)risultato!.HH_Teo.ToTimeSpan().TotalMinutes : orario?.MinTeo ?? 0;
                     bool aCoppie = orario?.Orario.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario;
 
@@ -194,7 +194,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     {
                         // dettagli dell'errore del motore non gia' spiegati dalle regole precedenti
                         var cause = new List<string>();
-                        if (risultato.Stato.HasFlag(GG_ResultStato.Err_TimbratureMancanti) && !dispari)
+                        if (risultato.Stato.HasFlag(GG_ResultStato.Err_TimbratureMancanti) && !dispari && !vuota)
                             cause.Add(AttendanceTrackingMessages.Get("Anomalia_ErrTimbratureMancanti"));
                         if (risultato.Stato.HasFlag(GG_ResultStato.Err_2) && !vuota)
                             cause.Add(AttendanceTrackingMessages.Get("Anomalia_ErrOreMancanti"));
@@ -351,7 +351,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                                && r.Data >= retVal.StoricoDal && r.Data < oggi)
                                                   .Select(r => new { r.Data, r.HH_Teo, r.Min_Assenze, r.Stato })
                                                   .ToList()
-                                                  .Where(r => (r.Stato & GG_ResultStato.STATE_MASK) != GG_ResultStato.Init && r.HH_Teo.ToTimeSpan().TotalMinutes > 0)
+                                                  .Where(r => !r.Stato.HasFlag(GG_ResultStato.Init) && r.HH_Teo.ToTimeSpan().TotalMinutes > 0)
                                                   .Select(r => new
                                                   {
                                                       r.Data,

@@ -5,6 +5,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -28,13 +29,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anomal
         private readonly ITenantProvisioningService _tenantProvisioningService;
         private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
         public AttendanceTrackingDigestProvider(UserManager<ApplicationUser> userManager,
                                                 TenancySettings tenancySettings,
                                                 IApplicationDbContextFactory applicationDbContextFactory,
                                                 ITenantProvisioningService tenantProvisioningService,
                                                 IServiceProvider serviceProvider,
-                                                IHttpContextAccessor httpContextAccessor)
+                                                IHttpContextAccessor httpContextAccessor,
+                                                IAspNetRolesRepository aspNetRolesRepository,
+                                                IAspNetUserRolesRepository aspNetUserRolesRepository)
         {
             _userManager = userManager;
             _tenancySettings = tenancySettings;
@@ -42,6 +47,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anomal
             _tenantProvisioningService = tenantProvisioningService;
             _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
+            _aspNetRolesRepository = aspNetRolesRepository;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
         }
 
         public ApplicationType Application => ApplicationType.AttendanceTracking;
@@ -98,7 +105,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anomal
                                               .Select(x => x.IdAspNetUsers).ToListAsync();
                 query = query.Where(a => utenti.Contains(a.IdAspNetUsers!));
             }
-            var dipendenti = await query.Select(a => a.Id).ToListAsync();
+            // solo i dipendenti (ruolo User), come le pagine e i widget delle presenze
+            var candidati = await query.Select(a => new { a.Id, a.IdAspNetUsers }).ToListAsync();
+            var idUtenti = candidati.Select(a => a.IdAspNetUsers!).ToList();
+            var ruoloUser = await _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.User).Select(x => x.Id).ToListAsync();
+            var conRuolo = (await _aspNetUserRolesRepository.FindAll(x => ruoloUser.Contains(x.RoleId) && idUtenti.Contains(x.UserId))
+                                                            .Select(x => x.UserId).ToListAsync()).ToHashSet();
+            var dipendenti = candidati.Where(a => conRuolo.Contains(a.IdAspNetUsers!)).Select(a => a.Id).ToList();
             if (dipendenti.Count == 0)
                 return null;
 
