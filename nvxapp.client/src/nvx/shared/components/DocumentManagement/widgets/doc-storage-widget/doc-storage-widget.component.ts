@@ -8,7 +8,7 @@ import { formatBytes, QUOTA_ILLIMITATA_MB } from '../doc-widget-format';
 
 /*
  Widget "Spazio documenti" (Documentale, ANALISI_WIDGET_DOCUMENTALE.md): spazio occupato e disponibile dell'azienda,
- dalla quota della licenza o del pacchetto (CompanyStorageGet, Infrastructure).
+ dalla quota della licenza Documentale, illimitata senza licenza (CompanyStorageGet, Infrastructure).
 */
 @Component({
   selector: 'app-doc-storage-widget',

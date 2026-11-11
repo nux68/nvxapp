@@ -198,10 +198,11 @@
       "storage": {
         "title": "Spazio documenti",
         "used": "Usati {{used}} MB su {{quota}} MB ({{percent}}%)",
-        "files": "{{files}} file · dimensione massima del file {{maxFile}} MB · avviso al {{warning}}%",
+        "usedUnlimited": "Usati {{used}} MB, spazio illimitato",
+        "files": "{{files}} file · avviso al {{warning}}%",
         "over": "Spazio esaurito",
         "warning": "Quasi pieno",
-        "note": "Oltre il 100% non si caricano documenti. Per un pacchetto più grande rivolgersi al centro."
+        "note": "Lo spazio è quello della licenza Documentale dell'azienda. Oltre il 100% non si caricano documenti: per più spazio passa a un piano superiore da Gestione licenze."
       }
     },
     "showcase": {
@@ -300,7 +301,7 @@
           },
           "spazio": {
             "title": "Spazio",
-            "text": "Pacchetti di spazio e avviso prima che finisca."
+            "text": "Spazio secondo la licenza e avviso prima che finisca."
           }
         }
       },

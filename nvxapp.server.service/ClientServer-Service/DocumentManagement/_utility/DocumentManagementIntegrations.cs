@@ -16,7 +16,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 {
     /*
      Agganci del documentale ai meccanismi comuni di Infrastructure:
-        - inizializzazione all'attivazione (impostazioni, tipologie e cartelle predefinite, spazio con il pacchetto predefinito)
+        - inizializzazione all'attivazione (impostazioni, tipologie e cartelle predefinite, riga dello spazio dell'azienda)
         - cancellazione fisica (IApplicationDataDeleter)
         - spazio reale occupato per il riallineamento notturno (IStorageUsageProvider)
         - clienti comuni usati dai documenti (ICommonEntityUsage)
