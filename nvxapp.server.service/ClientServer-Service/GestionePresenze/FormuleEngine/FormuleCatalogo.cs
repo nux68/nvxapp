@@ -104,7 +104,7 @@ x.Attiva.Sempre(true);
 if (!x.Attiva.ApplicaLaFormula()) return;
 
 // inizio formula (durate in minuti, causali e giustificativi per codice)
-// esempio: le ore ORDI oltre le 8 vanno su STR1
+// esempio (sostituisci ORDI e STR1 con i codici delle tue causali): le ore ORDI oltre le 8 vanno su STR1
 // x.Causale.TogliEccedenza(""ORDI"", x.Time.Min(8, 0), ""STR1"");
 ";
     }
