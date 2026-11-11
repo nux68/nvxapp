@@ -704,4 +704,56 @@
     <value>Widget non valido: {0}.</value>
     <comment>dashboard</comment>
   </data>
+  <data name="VoiceManualApp_0" xml:space="preserve">
+    <value>Funzioni base</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_2" xml:space="preserve">
+    <value>Gestione presenze</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_3" xml:space="preserve">
+    <value>CRM</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_4" xml:space="preserve">
+    <value>Documentale</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualAppIntro" xml:space="preserve">
+    <value>Comandi di {0}, per argomento: {1}.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualExamples" xml:space="preserve">
+    <value>Puoi dire, per esempio:</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualKeywords" xml:space="preserve">
+    <value>Parole riconosciute: {0}</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualConfirmation" xml:space="preserve">
+    <value>Prima di eseguire, l'assistente mostra il riepilogo e chiede conferma.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualNoCommands" xml:space="preserve">
+    <value>Non ci sono comandi disponibili per i tuoi ruoli e per gli applicativi attivi della tua azienda.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndex" xml:space="preserve">
+    <value>Indice dei comandi</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexCommand" xml:space="preserve">
+    <value>Comando</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexFunction" xml:space="preserve">
+    <value>Funzione</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexWhere" xml:space="preserve">
+    <value>Applicativo › Argomento</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
 </root>
