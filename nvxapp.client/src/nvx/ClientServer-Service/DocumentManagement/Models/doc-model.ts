@@ -101,6 +101,11 @@ export class DocDocumentoListModel {
   // per l'utente corrente come destinatario: firma richiesta e fatta (versione corrente)
   public firmaRichiesta = false;
   public dataFirma: string | null = null;
+  // stato della firma del documento (archivio)
+  public firmaDocumento = false;
+  public firmatari = 0;
+  public firmati = 0;
+  public ultimaFirma: string | null = null;
   public nuovo = false;
   public oltreConservazione = false;
 }
