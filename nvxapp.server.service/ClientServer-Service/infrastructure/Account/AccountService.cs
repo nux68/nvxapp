@@ -11,6 +11,7 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Extension;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication.Models;
@@ -49,6 +50,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
         private readonly IHubContext<SignalRHub> _hubContext;
         private readonly IUserInitializerRegistry _userInitializerRegistry;
+        private readonly ICommonDipendenteUtility _commonDipendenteUtility;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ICompanyMenuRestrictionRepository _companyMenuRestrictionRepository;
@@ -91,6 +93,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               ILicenseGuard licenseGuard,
                               IPaymentSettlementManager paymentSettlementManager,
                               IApplicationActivationAuthorizer authorizer,
+                              ICommonDipendenteUtility commonDipendenteUtility,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -107,6 +110,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userCompanyRepository = userCompanyRepository;
             
             _userInitializerRegistry = userInitializerRegistry;
+            _commonDipendenteUtility = commonDipendenteUtility;
             _companyInitializerRegistry = companyInitializerRegistry;
             _companyApplicationRepository = companyApplicationRepository;
             _companyMenuRestrictionRepository = companyMenuRestrictionRepository;
@@ -1165,6 +1169,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     // limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1)
                     await VerificaLimiteUtentiAzienda(IdCompany);
 
+                    // account di un dipendente esistente (INF-SVC.8): anagrafica dell'azienda e senza utente
+                    int? idDip_Anagrafica = model.Data.UserCompanyEdit.IdDip_Anagrafica is int idDip && idDip > 0 ? idDip : null;
+                    if (idDip_Anagrafica != null && !await _commonDipendenteUtility.Dip_AnagraficaAgganciabileAsync(IdCompany, idDip_Anagrafica.Value))
+                        throw new UserMessageException(InfrastructureMessages.Get("UserCompanyEmployeeNotLinkable"));
+
                     //DealerPowerAdmin
                     string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
 
@@ -1190,6 +1199,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                           {
                                model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
                           }
+
+                        // l'anagrafica esistente si collega prima degli inizializzatori (UserCompanyGet qui sotto):
+                        // l'inizializzatore comune la trova e non ne crea una nuova
+                        if (idDip_Anagrafica != null && !await _commonDipendenteUtility.AgganciaDip_AnagraficaAsync(IdCompany, idDip_Anagrafica.Value, user.Id))
+                            Serilog.Log.Warning("[UserCompanyPut] Anagrafica {IdDip} non agganciata all'utente {UserId} (collegata nel frattempo?)", idDip_Anagrafica, user.Id);
                     }
 
                 }
