@@ -1,0 +1,27 @@
+<app-page-toolbar [title]="title" [showFilter]="false" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-header><ion-card-title>{{ 'ast.pages.mine.goods' | transloco }}</ion-card-title></ion-card-header>
+    <ion-card-content>
+      <nvx-list [items]="beni" [columns]="colBene" [actions]="actBene" icon="cube-outline" [rowDisabled]="beneRestituito" [highlight]="verbaleDaConfermare"
+        [emptyText]="'ast.pages.mine.noGoods' | transloco"></nvx-list>
+      <ion-note class="nvx-nota-disabled">{{ 'ast.pages.mine.goodsNote' | transloco }}</ion-note>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header><ion-card-title>{{ 'ast.pages.mine.vehicles' | transloco }}</ion-card-title></ion-card-header>
+    <ion-card-content>
+      <nvx-list [items]="veicoli" [columns]="colVeicolo" icon="car-outline" [emptyText]="'ast.pages.mine.noVehicles' | transloco"></nvx-list>
+      <ion-note class="nvx-nota-disabled">{{ 'ast.pages.mine.fringeNote' | transloco }}</ion-note>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header><ion-card-title>{{ 'ast.pages.mine.fines' | transloco }}</ion-card-title></ion-card-header>
+    <ion-card-content>
+      <nvx-list [items]="multe" [columns]="colMulta" icon="alert-circle-outline" [emptyText]="'ast.pages.mine.noFines' | transloco"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

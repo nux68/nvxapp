@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController, ModalController, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -35,7 +36,8 @@ export class CrmActivityEditPageComponent extends BasePageConfirmCancelComponent
               private service: CrmService,
               public setupService: CrmSetupService,
               private collectionDialogService: CollectionDialogService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private route: ActivatedRoute) {
     super(navCtrl, userInterfaceService, fb);
   }
 
@@ -62,7 +64,8 @@ export class CrmActivityEditPageComponent extends BasePageConfirmCancelComponent
   }
 
   LoadData = (): Observable<M.CrmAttivitaModel | null> => {
-    this.id = this.id || history.state?.id || 0;
+    // id dallo stato della navigazione o dall'indirizzo (link degli eventi del calendario, CRM-CAL.1)
+    this.id = this.id || history.state?.id || Number(this.route.snapshot.queryParamMap.get('id')) || 0;
     const preset = history.state?.preset ?? {};
     return from(this.setupService.load()).pipe(switchMap(setup => {
       const r = new GenericRequest<M.CrmClienteListInModel>(M.CrmClienteListInModel);

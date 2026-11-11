@@ -3,17 +3,285 @@
     "menu": {
       "section": "Human Resources",
       "settings": "Settings",
-      "manual": "Human Resources manual"
+      "manual": "Human Resources manual",
+      "employees": "Employees",
+      "payslips": "Payslips and CU",
+      "myPayslips": "My payslips",
+      "courses": "Courses",
+      "plans": "Training plans",
+      "checklists": "Onboarding and offboarding checklists",
+      "templates": "Checklist templates",
+      "studioPayslips": "Company payslips"
+    },
+    "common": {
+      "showDisabled": "Show disabled",
+      "none": "None"
+    },
+    "account": {
+      "createTitle": "New employee account",
+      "createNote": "The account has the User role and counts towards the licence user limit.",
+      "userName": "User name",
+      "mail": "Email",
+      "password": "Password",
+      "create": "Create account",
+      "disable": "Disable account",
+      "confirmDisable": "Disable the account {{nome}}? The employee will no longer be able to log in."
+    },
+    "fields": {
+      "account": "Account",
+      "anno": "Year",
+      "attestato": "Certificate",
+      "attivo": "Active",
+      "avanzamento": "Progress",
+      "azienda": "Company",
+      "azione": "Action",
+      "codiceFiscale": "Tax code",
+      "cognome": "Surname",
+      "competenza": "Skill",
+      "corso": "Course",
+      "daVerificare": "To check",
+      "dataAssunzione": "Hire date",
+      "dataCaricamento": "Uploaded on",
+      "dataCessazione": "End date",
+      "dataConseguimento": "Obtained on",
+      "dataFine": "End",
+      "dataInizio": "Start",
+      "dataPrevista": "Due",
+      "dataPubblicazione": "Published on",
+      "dataScadenza": "Expiry",
+      "descrizione": "Description",
+      "dipendente": "Employee",
+      "docente": "Trainer",
+      "documenti": "Documents",
+      "documento": "Document to hand over",
+      "durataOre": "Duration (hours)",
+      "edizioni": "Editions",
+      "email": "Personal email",
+      "ente": "Provider",
+      "entroIl": "By",
+      "esito": "Outcome",
+      "file": "File",
+      "giorni": "Days",
+      "luogo": "Place",
+      "matricola": "Employee number",
+      "mese": "Month",
+      "metodo": "Matching",
+      "motivo": "Reason",
+      "nome": "Name",
+      "note": "Notes",
+      "obbligatorio": "Mandatory",
+      "origine": "Uploaded by",
+      "pagina": "Page",
+      "pagine": "Pages",
+      "partecipanti": "Participants",
+      "periodo": "Period",
+      "predefinito": "Default",
+      "presaVisione": "Acknowledgement",
+      "proposta": "Suggestion",
+      "prossimaScadenza": "Next due date",
+      "pubblicati": "Published",
+      "responsabile": "Owner",
+      "sede": "Site",
+      "stato": "Status",
+      "testo": "Text",
+      "tipoChecklist": "Type",
+      "tipoDocumento": "Document",
+      "validitaMesi": "Validity (months)",
+      "voci": "Items"
+    },
+    "enums": {
+      "tipoDocumento": {
+        "1": "Payslip",
+        "2": "CU"
+      },
+      "statoCaricamento": {
+        "0": "Processing",
+        "1": "Pages to check",
+        "2": "To publish",
+        "3": "Published",
+        "9": "Error"
+      },
+      "metodo": {
+        "1": "Tax code",
+        "2": "Employee number",
+        "3": "Name",
+        "4": "Manual"
+      },
+      "esitoScarto": {
+        "0": "To check",
+        "1": "Assigned",
+        "2": "Ignored"
+      },
+      "origine": {
+        "1": "Company",
+        "2": "Accounting firm"
+      },
+      "esito": {
+        "0": "Enrolled",
+        "1": "Passed",
+        "2": "Failed",
+        "3": "Absent"
+      },
+      "tipoChecklist": {
+        "1": "Onboarding",
+        "2": "Offboarding"
+      },
+      "statoChecklist": {
+        "0": "Open",
+        "1": "Completed",
+        "2": "Cancelled"
+      },
+      "azione": {
+        "0": "None",
+        "1": "Create account",
+        "2": "Disable account"
+      },
+      "mese": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December",
+        "13": "13th month"
+      }
     },
     "pages": {
       "settings": {
         "title": "Human Resources settings",
         "general": "General",
         "noticeDays": "Deadline notice days",
-        "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
+        "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule (courses and checklist items).",
         "notifications": "Notifications on",
-        "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
+        "notificationsNote": "When off, the module sends no notifications (e.g. new payslip). Each user chooses how to receive them from the notification preferences.",
         "note": "Notes"
+      },
+      "employeeList": {
+        "title": "Employees",
+        "new": "New employee",
+        "note": "Employee data shared by all applications: tax code and employee number are used to split the payslips, hire and end dates generate the checklists."
+      },
+      "employeeEdit": {
+        "title": "Employee",
+        "personal": "Personal data",
+        "employment": "Employment",
+        "codesNote": "Tax code and employee number are unique among the company's employees.",
+        "datesNote": "With a default template, the dates generate the onboarding or offboarding checklist.",
+        "noAccount": "No account",
+        "accountDisabled": "disabled",
+        "accountNote": "With an account the employee sees their payslips and acknowledges the documents."
+      },
+      "payslipList": {
+        "title": "Payslips and CU",
+        "studioTitle": "Company payslips",
+        "upload": "Upload the single PDF",
+        "note": "The single PDF is split by employee (tax code, then employee number); unrecognised pages must be checked before publishing.",
+        "noCompanies": "No company of the firm has Human Resources active."
+      },
+      "payslipUpload": {
+        "title": "Upload payslips or CU",
+        "start": "Upload and split",
+        "choose": "Choose the PDF",
+        "noFile": "No file chosen",
+        "note": "The split by employee continues in the background: progress is shown in the jobs bar."
+      },
+      "payslipDetail": {
+        "title": "Upload",
+        "publish": "Publish",
+        "ignore": "Ignore",
+        "processing": "Split in progress: the page refreshes when done.",
+        "report": "Acknowledgements",
+        "confirmedN": "{{n}} confirmed",
+        "waitingN": "{{n}} waiting",
+        "noUserN": "{{n}} without account",
+        "pagesToCheck": "Pages to check",
+        "scrapNote": "Assign each page to the right employee (the suggestion comes from the surname and name found on the page) or ignore it.",
+        "notPublished": "Not published",
+        "noUser": "No account",
+        "confirmed": "Confirmed on",
+        "waiting": "Waiting for confirmation",
+        "confirmPublish": "Publish the documents in the employees' area and request acknowledgement?",
+        "confirmPublishPending": "There are still {{n}} pages to check: publish the documents already split anyway? Pages assigned later are published immediately.",
+        "confirmDelete": "Delete the upload with the split documents?"
+      },
+      "myPayslips": {
+        "title": "My payslips",
+        "note": "Payslips and CU published by the HR office or the accounting firm. Download the PDF and confirm you have read it.",
+        "notEmployee": "Your user is not linked to an employee of the company.",
+        "toConfirm": "To confirm"
+      },
+      "courseList": {
+        "title": "Courses",
+        "new": "New course",
+        "note": "The company's course catalogue (* = mandatory). With a validity, a passed course records its expiry in the deadline schedule.",
+        "noExpiry": "no expiry",
+        "confirmDelete": "Delete the course {{nome}}?"
+      },
+      "courseEdit": {
+        "title": "Course",
+        "newEdition": "New edition",
+        "validityNote": "Empty = the certificate does not expire.",
+        "skillNote": "Shared skill the employee acquires by passing the course.",
+        "confirmDeleteEdition": "Delete the edition of {{data}} with its participants and certificates?"
+      },
+      "courseEdition": {
+        "title": "Course edition",
+        "addParticipants": "Add participants",
+        "noParticipants": "No participants: add them with the + button.",
+        "noteValidity": "With the \"passed\" outcome the expiry is the obtained date plus {{mesi}} months. Certificates can be uploaded after saving.",
+        "noteNoValidity": "The course does not expire. Certificates can be uploaded after saving."
+      },
+      "planList": {
+        "title": "Training plans",
+        "new": "New plan",
+        "note": "Progress: rows whose course the employee passed in the plan's year.",
+        "confirmDelete": "Delete the plan {{nome}}?"
+      },
+      "planEdit": {
+        "title": "Training plan",
+        "rows": "Courses to attend",
+        "addRows": "Add employees",
+        "noRows": "No rows: add employees with the + button.",
+        "courseRequired": "Choose the course for every row.",
+        "done": "Done"
+      },
+      "templateList": {
+        "title": "Checklist templates",
+        "new": "New template",
+        "note": "The default template of each type generates the checklist when an employee has a hire or end date.",
+        "confirmDelete": "Delete the template {{nome}}? Checklists already generated are kept."
+      },
+      "templateEdit": {
+        "title": "Checklist template",
+        "addItem": "Add item",
+        "defaultNote": "Only one per type: it generates the checklists from the employees' dates (from 30 days ago onwards).",
+        "itemsNote": "Days from the hire or end date (negative = before). The document is handed over with the employee's acknowledgement.",
+        "itemRequired": "Each item needs a description.",
+        "noItems": "No items: add them with the + button.",
+        "admins": "Administrators"
+      },
+      "checklistList": {
+        "title": "Onboarding and offboarding checklists",
+        "new": "New checklist",
+        "note": "Checklists are generated from the default templates on hire and end dates; items have a deadline in the deadline schedule.",
+        "onlyOpen": "Open only",
+        "noTemplates": "There are no active checklist templates.",
+        "chooseTemplate": "Template"
+      },
+      "checklistEdit": {
+        "title": "Employee checklist",
+        "cancelled": "Cancelled",
+        "completedOn": "completed on",
+        "noDocument": "Document to upload",
+        "requestAck": "Request acknowledgement",
+        "confirmRequestAgain": "Acknowledgement was already requested: request it again?",
+        "note": "Items with a document are completed when the employee acknowledges it; those with an account action when the action is done."
       }
     }
   }

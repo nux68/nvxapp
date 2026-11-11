@@ -3,17 +3,285 @@
     "menu": {
       "section": "Risorse Umane",
       "settings": "Impostazioni",
-      "manual": "Manuale Risorse Umane"
+      "manual": "Manuale Risorse Umane",
+      "employees": "Dipendenti",
+      "payslips": "Cedolini e CU",
+      "myPayslips": "I miei cedolini",
+      "courses": "Corsi",
+      "plans": "Piani di formazione",
+      "checklists": "Checklist assunzioni e cessazioni",
+      "templates": "Modelli di checklist",
+      "studioPayslips": "Cedolini delle aziende"
+    },
+    "common": {
+      "showDisabled": "Mostra disattivati",
+      "none": "Nessuno"
+    },
+    "account": {
+      "createTitle": "Nuovo account del dipendente",
+      "createNote": "L'account ha il ruolo User e conta nel limite utenti della licenza.",
+      "userName": "Nome utente",
+      "mail": "Email",
+      "password": "Password",
+      "create": "Crea account",
+      "disable": "Disattiva account",
+      "confirmDisable": "Disattivare l'account {{nome}}? Il dipendente non potrà più accedere."
+    },
+    "fields": {
+      "account": "Account",
+      "anno": "Anno",
+      "attestato": "Attestato",
+      "attivo": "Attivo",
+      "avanzamento": "Avanzamento",
+      "azienda": "Azienda",
+      "azione": "Azione",
+      "codiceFiscale": "Codice fiscale",
+      "cognome": "Cognome",
+      "competenza": "Competenza",
+      "corso": "Corso",
+      "daVerificare": "Da verificare",
+      "dataAssunzione": "Data di assunzione",
+      "dataCaricamento": "Caricato il",
+      "dataCessazione": "Data di cessazione",
+      "dataConseguimento": "Conseguito il",
+      "dataFine": "Fine",
+      "dataInizio": "Inizio",
+      "dataPrevista": "Entro il",
+      "dataPubblicazione": "Pubblicato il",
+      "dataScadenza": "Scadenza",
+      "descrizione": "Descrizione",
+      "dipendente": "Dipendente",
+      "docente": "Docente",
+      "documenti": "Documenti",
+      "documento": "Documento da consegnare",
+      "durataOre": "Durata (ore)",
+      "edizioni": "Edizioni",
+      "email": "Email personale",
+      "ente": "Ente",
+      "entroIl": "Entro il",
+      "esito": "Esito",
+      "file": "File",
+      "giorni": "Giorni",
+      "luogo": "Luogo",
+      "matricola": "Matricola",
+      "mese": "Mese",
+      "metodo": "Abbinamento",
+      "motivo": "Motivo",
+      "nome": "Nome",
+      "note": "Note",
+      "obbligatorio": "Obbligatorio",
+      "origine": "Caricato da",
+      "pagina": "Pagina",
+      "pagine": "Pagine",
+      "partecipanti": "Partecipanti",
+      "periodo": "Periodo",
+      "predefinito": "Predefinito",
+      "presaVisione": "Presa visione",
+      "proposta": "Proposta",
+      "prossimaScadenza": "Prossima scadenza",
+      "pubblicati": "Pubblicati",
+      "responsabile": "Responsabile",
+      "sede": "Sede",
+      "stato": "Stato",
+      "testo": "Testo",
+      "tipoChecklist": "Tipo",
+      "tipoDocumento": "Documento",
+      "validitaMesi": "Validità (mesi)",
+      "voci": "Voci"
+    },
+    "enums": {
+      "tipoDocumento": {
+        "1": "Cedolino",
+        "2": "CU"
+      },
+      "statoCaricamento": {
+        "0": "In elaborazione",
+        "1": "Pagine da verificare",
+        "2": "Da pubblicare",
+        "3": "Pubblicato",
+        "9": "Errore"
+      },
+      "metodo": {
+        "1": "Codice fiscale",
+        "2": "Matricola",
+        "3": "Nome",
+        "4": "A mano"
+      },
+      "esitoScarto": {
+        "0": "Da verificare",
+        "1": "Assegnata",
+        "2": "Ignorata"
+      },
+      "origine": {
+        "1": "Azienda",
+        "2": "Studio"
+      },
+      "esito": {
+        "0": "Iscritto",
+        "1": "Superato",
+        "2": "Non superato",
+        "3": "Assente"
+      },
+      "tipoChecklist": {
+        "1": "Assunzione",
+        "2": "Cessazione"
+      },
+      "statoChecklist": {
+        "0": "Aperta",
+        "1": "Completata",
+        "2": "Annullata"
+      },
+      "azione": {
+        "0": "Nessuna",
+        "1": "Crea account",
+        "2": "Disattiva account"
+      },
+      "mese": {
+        "1": "Gennaio",
+        "2": "Febbraio",
+        "3": "Marzo",
+        "4": "Aprile",
+        "5": "Maggio",
+        "6": "Giugno",
+        "7": "Luglio",
+        "8": "Agosto",
+        "9": "Settembre",
+        "10": "Ottobre",
+        "11": "Novembre",
+        "12": "Dicembre",
+        "13": "Tredicesima"
+      }
     },
     "pages": {
       "settings": {
         "title": "Impostazioni Risorse Umane",
         "general": "Generale",
         "noticeDays": "Giorni di preavviso delle scadenze",
-        "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
+        "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune (corsi e voci delle checklist).",
         "notifications": "Notifiche attive",
-        "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
+        "notificationsNote": "Se disattivate, il modulo non invia notifiche (es. nuovo cedolino). Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
         "note": "Note"
+      },
+      "employeeList": {
+        "title": "Dipendenti",
+        "new": "Nuovo dipendente",
+        "note": "Anagrafica comune a tutti gli applicativi: codice fiscale e matricola servono a dividere i cedolini, le date di assunzione e cessazione generano le checklist."
+      },
+      "employeeEdit": {
+        "title": "Dipendente",
+        "personal": "Anagrafica",
+        "employment": "Rapporto di lavoro",
+        "codesNote": "Codice fiscale e matricola sono unici tra i dipendenti dell'azienda.",
+        "datesNote": "Con un modello predefinito, le date generano la checklist di assunzione o di cessazione.",
+        "noAccount": "Nessun account",
+        "accountDisabled": "disattivato",
+        "accountNote": "Con l'account il dipendente vede i propri cedolini e conferma la presa visione dei documenti."
+      },
+      "payslipList": {
+        "title": "Cedolini e CU",
+        "studioTitle": "Cedolini delle aziende",
+        "upload": "Carica il PDF unico",
+        "note": "Il PDF unico si divide per dipendente (codice fiscale, poi matricola); le pagine non riconosciute vanno verificate prima della pubblicazione.",
+        "noCompanies": "Nessuna azienda dello studio ha Risorse Umane attivo."
+      },
+      "payslipUpload": {
+        "title": "Caricamento cedolini o CU",
+        "start": "Carica e dividi",
+        "choose": "Scegli il PDF",
+        "noFile": "Nessun file scelto",
+        "note": "La divisione per dipendente prosegue in background: l'avanzamento compare nella barra dei lavori."
+      },
+      "payslipDetail": {
+        "title": "Caricamento",
+        "publish": "Pubblica",
+        "ignore": "Ignora",
+        "processing": "Divisione in corso: la pagina si aggiorna alla fine.",
+        "report": "Conferme di presa visione",
+        "confirmedN": "{{n}} confermati",
+        "waitingN": "{{n}} in attesa",
+        "noUserN": "{{n}} senza account",
+        "pagesToCheck": "Pagine da verificare",
+        "scrapNote": "Assegna ogni pagina al dipendente giusto (la proposta viene da cognome e nome trovati nella pagina) oppure ignorala.",
+        "notPublished": "Non pubblicato",
+        "noUser": "Senza account",
+        "confirmed": "Confermata il",
+        "waiting": "In attesa di conferma",
+        "confirmPublish": "Pubblicare i documenti nell'area dei dipendenti e chiedere la presa visione?",
+        "confirmPublishPending": "Ci sono ancora {{n}} pagine da verificare: pubblicare comunque i documenti già divisi? Le pagine assegnate dopo si pubblicano subito.",
+        "confirmDelete": "Cancellare il caricamento con i documenti divisi?"
+      },
+      "myPayslips": {
+        "title": "I miei cedolini",
+        "note": "Cedolini e CU pubblicati dall'ufficio del personale o dallo studio. Scarica il PDF e conferma la presa visione.",
+        "notEmployee": "Il tuo utente non è collegato a un dipendente dell'azienda.",
+        "toConfirm": "Da confermare"
+      },
+      "courseList": {
+        "title": "Corsi",
+        "new": "Nuovo corso",
+        "note": "Catalogo dei corsi dell'azienda (* = obbligatorio). Con la validità, il corso superato registra la scadenza nello scadenzario.",
+        "noExpiry": "non scade",
+        "confirmDelete": "Cancellare il corso {{nome}}?"
+      },
+      "courseEdit": {
+        "title": "Corso",
+        "newEdition": "Nuova edizione",
+        "validityNote": "Vuoto = l'attestato non scade.",
+        "skillNote": "Competenza comune che il dipendente acquisisce superando il corso.",
+        "confirmDeleteEdition": "Cancellare l'edizione del {{data}} con i partecipanti e gli attestati?"
+      },
+      "courseEdition": {
+        "title": "Edizione del corso",
+        "addParticipants": "Aggiungi partecipanti",
+        "noParticipants": "Nessun partecipante: aggiungili con il pulsante +.",
+        "noteValidity": "Con l'esito \"superato\" la scadenza è il conseguimento più {{mesi}} mesi. Gli attestati si caricano dopo il salvataggio.",
+        "noteNoValidity": "Il corso non scade. Gli attestati si caricano dopo il salvataggio."
+      },
+      "planList": {
+        "title": "Piani di formazione",
+        "new": "Nuovo piano",
+        "note": "Avanzamento: righe con il corso superato dal dipendente nell'anno del piano.",
+        "confirmDelete": "Cancellare il piano {{nome}}?"
+      },
+      "planEdit": {
+        "title": "Piano di formazione",
+        "rows": "Corsi da seguire",
+        "addRows": "Aggiungi dipendenti",
+        "noRows": "Nessuna riga: aggiungi i dipendenti con il pulsante +.",
+        "courseRequired": "Scegli il corso per ogni riga.",
+        "done": "Svolto"
+      },
+      "templateList": {
+        "title": "Modelli di checklist",
+        "new": "Nuovo modello",
+        "note": "Il modello predefinito di ogni tipo genera la checklist quando un dipendente ha la data di assunzione o di cessazione.",
+        "confirmDelete": "Cancellare il modello {{nome}}? Le checklist già generate restano."
+      },
+      "templateEdit": {
+        "title": "Modello di checklist",
+        "addItem": "Aggiungi voce",
+        "defaultNote": "Uno solo per tipo: genera le checklist dalle date dei dipendenti (da 30 giorni fa in avanti).",
+        "itemsNote": "Giorni rispetto alla data di assunzione o cessazione (negativi = prima). Il documento si consegna con la presa visione del dipendente.",
+        "itemRequired": "Ogni voce deve avere una descrizione.",
+        "noItems": "Nessuna voce: aggiungile con il pulsante +.",
+        "admins": "Amministratori"
+      },
+      "checklistList": {
+        "title": "Checklist assunzioni e cessazioni",
+        "new": "Nuova checklist",
+        "note": "Le checklist si generano dai modelli predefiniti sulle date di assunzione e cessazione; le voci hanno una scadenza nello scadenzario.",
+        "onlyOpen": "Solo aperte",
+        "noTemplates": "Non ci sono modelli di checklist attivi.",
+        "chooseTemplate": "Modello"
+      },
+      "checklistEdit": {
+        "title": "Checklist del dipendente",
+        "cancelled": "Annullata",
+        "completedOn": "completata il",
+        "noDocument": "Documento da caricare",
+        "requestAck": "Chiedi presa visione",
+        "confirmRequestAgain": "La presa visione è già stata chiesta: chiederla di nuovo?",
+        "note": "Le voci con il documento si completano quando il dipendente conferma la presa visione; quelle con l'azione sull'account quando l'azione è fatta."
       }
     }
   }

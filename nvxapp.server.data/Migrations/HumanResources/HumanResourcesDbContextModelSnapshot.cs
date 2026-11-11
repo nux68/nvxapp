@@ -153,6 +153,108 @@ namespace nvxapp.server.data.Migrations.HumanResources
                         });
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Sedi", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Az_Sedi", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("CodiceFiscale")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.Property<string>("Cognome")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataAssunzione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataCessazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Matricola")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Nome")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Dip_Anagrafica", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Cfg", b =>
                 {
                     b.Property<int>("Id")
@@ -192,6 +294,714 @@ namespace nvxapp.server.data.Migrations.HumanResources
                     b.ToTable("Hr_Cfg");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Checklist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataRiferimento")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdHr_ChecklistModello")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.HasIndex("IdDip_Anagrafica", "Tipo");
+
+                    b.ToTable("Hr_Checklist");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModello", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Predefinito")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Hr_ChecklistModello");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModelloVoce", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Azione")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("Documento")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Giorni")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IdAspNetUsersResponsabile")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdHr_ChecklistModello")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdHr_ChecklistModello");
+
+                    b.ToTable("Hr_ChecklistModelloVoce");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistVoce", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Azione")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("Completata")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataCompletamento")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataPrevista")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataRichiestaPresaVisione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<bool>("Documento")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("DocumentoContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<long?>("DocumentoDimensione")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("DocumentoNomeFile")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<string>("DocumentoStorageKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Giorni")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IdAspNetUsersCompletamento")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersResponsabile")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdHr_Checklist")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdHr_Checklist");
+
+                    b.ToTable("Hr_ChecklistVoce");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Corso", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal?>("DurataOre")
+                        .HasPrecision(8, 2)
+                        .HasColumnType("numeric(8,2)");
+
+                    b.Property<string>("Ente")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdPar_Competenza")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<bool>("Obbligatorio")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Titolo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("ValiditaMesi")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.HasIndex("IdPar_Competenza");
+
+                    b.ToTable("Hr_Corso");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoEdizione", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataFine")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataInizio")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Docente")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int?>("IdAz_Sedi")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_Corso")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Luogo")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Sedi");
+
+                    b.HasIndex("IdHr_Corso");
+
+                    b.ToTable("Hr_CorsoEdizione");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoPartecipante", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AttestatoContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<long?>("AttestatoDimensione")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("AttestatoNomeFile")
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<string>("AttestatoStorageKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataConseguimento")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataScadenza")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Esito")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_CorsoEdizione")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_Anagrafica");
+
+                    b.HasIndex("IdHr_CorsoEdizione", "IdDip_Anagrafica")
+                        .IsUnique();
+
+                    b.ToTable("Hr_CorsoPartecipante");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocCaricamento", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataPubblicazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("Dimensione")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("IdAspNetUsersCaricamento")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Mese")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Messaggio")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("NomeFile")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<int>("NumeroPagine")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Origine")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica", "Anno", "Mese");
+
+                    b.ToTable("Hr_DocCaricamento");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocDipendente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataPubblicazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("Dimensione")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_DocCaricamento")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Mese")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Metodo")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Pagine")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_Anagrafica", "DataPubblicazione");
+
+                    b.HasIndex("IdHr_DocCaricamento", "IdDip_Anagrafica")
+                        .IsUnique();
+
+                    b.ToTable("Hr_DocDipendente");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocScarto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Esito")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_AnagraficaProposta")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_DocCaricamento")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Motivo")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Pagina")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Testo")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdHr_DocCaricamento", "Pagina")
+                        .IsUnique();
+
+                    b.ToTable("Hr_DocScarto");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazione", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica", "Anno");
+
+                    b.ToTable("Hr_PianoFormazione");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazioneRiga", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("EntroIl")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_Corso")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdHr_PianoFormazione")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_Anagrafica");
+
+                    b.HasIndex("IdHr_Corso");
+
+                    b.HasIndex("IdHr_PianoFormazione");
+
+                    b.ToTable("Hr_PianoFormazioneRiga");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Competenza", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Par_Competenza", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
@@ -203,6 +1013,34 @@ namespace nvxapp.server.data.Migrations.HumanResources
                     b.Navigation("CompanyNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Sedi", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers");
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Cfg", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
@@ -212,6 +1050,235 @@ namespace nvxapp.server.data.Migrations.HumanResources
                         .IsRequired();
 
                     b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Checklist", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Dip_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModello", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModelloVoce", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModello", "Hr_ChecklistModelloNavigation")
+                        .WithMany("Hr_ChecklistModelloVoce")
+                        .HasForeignKey("IdHr_ChecklistModello")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hr_ChecklistModelloNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistVoce", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Checklist", "Hr_ChecklistNavigation")
+                        .WithMany("Hr_ChecklistVoce")
+                        .HasForeignKey("IdHr_Checklist")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hr_ChecklistNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Corso", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Competenza", "Par_CompetenzaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Competenza")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Par_CompetenzaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoEdizione", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Sedi", "Az_SediNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Sedi")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Corso", "Hr_CorsoNavigation")
+                        .WithMany("Hr_CorsoEdizione")
+                        .HasForeignKey("IdHr_Corso")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediNavigation");
+
+                    b.Navigation("Hr_CorsoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoPartecipante", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoEdizione", "Hr_CorsoEdizioneNavigation")
+                        .WithMany("Hr_CorsoPartecipante")
+                        .HasForeignKey("IdHr_CorsoEdizione")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_AnagraficaNavigation");
+
+                    b.Navigation("Hr_CorsoEdizioneNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocCaricamento", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocDipendente", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocCaricamento", "Hr_DocCaricamentoNavigation")
+                        .WithMany("Hr_DocDipendente")
+                        .HasForeignKey("IdHr_DocCaricamento")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_AnagraficaNavigation");
+
+                    b.Navigation("Hr_DocCaricamentoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocScarto", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocCaricamento", "Hr_DocCaricamentoNavigation")
+                        .WithMany("Hr_DocScarto")
+                        .HasForeignKey("IdHr_DocCaricamento")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hr_DocCaricamentoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazione", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazioneRiga", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Corso", "Hr_CorsoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdHr_Corso")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazione", "Hr_PianoFormazioneNavigation")
+                        .WithMany("Hr_PianoFormazioneRiga")
+                        .HasForeignKey("IdHr_PianoFormazione")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_AnagraficaNavigation");
+
+                    b.Navigation("Hr_CorsoNavigation");
+
+                    b.Navigation("Hr_PianoFormazioneNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Competenza", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Checklist", b =>
+                {
+                    b.Navigation("Hr_ChecklistVoce");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_ChecklistModello", b =>
+                {
+                    b.Navigation("Hr_ChecklistModelloVoce");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_Corso", b =>
+                {
+                    b.Navigation("Hr_CorsoEdizione");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_CorsoEdizione", b =>
+                {
+                    b.Navigation("Hr_CorsoPartecipante");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_DocCaricamento", b =>
+                {
+                    b.Navigation("Hr_DocDipendente");
+
+                    b.Navigation("Hr_DocScarto");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.HumanResources.Hr_PianoFormazione", b =>
+                {
+                    b.Navigation("Hr_PianoFormazioneRiga");
                 });
 #pragma warning restore 612, 618
         }

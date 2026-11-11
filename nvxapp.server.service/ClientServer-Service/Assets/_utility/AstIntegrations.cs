@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.Assets;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
@@ -79,9 +80,20 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 
         public ApplicationType Application => ApplicationType.Assets;
 
-        // per ora solo la configurazione: i conteggi arrivano con le aree del modulo
-        public Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
-            => Task.FromResult(new List<DeletionCountModel>());
+        public async Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            await using var db = await AstSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return new List<DeletionCountModel>();
+            var rep = new AstRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            return new List<DeletionCountModel>
+            {
+                new() { Label = AssetsMessages.Get("DeletionCountVehicles"), Count = await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = AssetsMessages.Get("DeletionCountGoods"), Count = await rep.Ast_Bene.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = AssetsMessages.Get("DeletionCountBookings"), Count = await rep.Ast_Prenotazione.FindAll(x => x.Ast_RisorsaNavigation!.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+            };
+        }
 
         // multi-tenant: lo schema si elimina con gli altri (DeletionService)
         public async Task DeleteCompanyDataAsync(int idCompany, CancellationToken cancellationToken = default)
@@ -95,11 +107,33 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             if (idAz == 0)
                 return;
+            // le tabelle figlie seguono in cascata
+            await rep.Ast_Risorsa.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Ast_Bene.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Ast_Categoria.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Ast_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 
-        // nessun dato legato all'utente per ora
-        public Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        /*
+         utente rimosso dall'azienda: le sue prenotazioni future si annullano (le passate restano come storico; se l'utente viene
+         cancellato del tutto le porta via la chiave esterna). Beni e veicoli sono assegnati al dipendente (Common), non all'utente:
+         restano finche' non si registra la restituzione.
+        */
+        public async Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
+        {
+            await using var db = await AstSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return;
+            var rep = new AstRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            if (idAz == 0)
+                return;
+            var ora = DateTime.Now;
+            await rep.Ast_Prenotazione.FindAll(x => x.IdAspNetUsers == idAspNetUsers && x.Ast_RisorsaNavigation!.IdAz_Anagrafica == idAz
+                                                    && x.Stato == AstStatoPrenotazione.Confermata && x.Fine > ora)
+                                      .ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, AstStatoPrenotazione.Annullata)
+                                                                .SetProperty(x => x.DataAnnullamento, ora), cancellationToken);
+        }
     }
 }

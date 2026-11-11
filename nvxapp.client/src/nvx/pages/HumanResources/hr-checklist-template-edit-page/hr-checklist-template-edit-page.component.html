@@ -1,0 +1,57 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-select formControlName="tipo" [label]="'hr.fields.tipoChecklist' | transloco" labelPlacement="floating" interface="popover">
+          <ion-select-option [value]="1">{{ 'hr.enums.tipoChecklist.1' | transloco }}</ion-select-option>
+          <ion-select-option [value]="2">{{ 'hr.enums.tipoChecklist.2' | transloco }}</ion-select-option>
+        </ion-select></ion-item>
+        <ion-item><ion-input formControlName="descrizione" maxlength="200" [label]="'hr.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-toggle formControlName="predefinito">{{ 'hr.fields.predefinito' | transloco }}</ion-toggle></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.templateEdit.defaultNote' | transloco }}</ion-note>
+        <ion-item><ion-toggle formControlName="attivo">{{ 'hr.fields.attivo' | transloco }}</ion-toggle></ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header><ion-card-title>{{ 'hr.fields.voci' | transloco }} ({{ voci.length }})</ion-card-title></ion-card-header>
+    <ion-card-content>
+      <ion-note class="nvx-nota-disabled">{{ 'hr.pages.templateEdit.itemsNote' | transloco }}</ion-note>
+      @if (!vociValide) { <ion-note color="danger">{{ 'hr.pages.templateEdit.itemRequired' | transloco }}</ion-note> }
+      <ion-list>
+        @for (v of voci; track $index; let i = $index) {
+          <ion-item>
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-align-items-center">
+                <ion-col size="12" size-md="4"><ion-input [(ngModel)]="v.descrizione" maxlength="300" [label]="'hr.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-col>
+                <ion-col size="4" size-md="1"><ion-input type="number" [(ngModel)]="v.giorni" [label]="'hr.fields.giorni' | transloco" labelPlacement="floating"></ion-input></ion-col>
+                <ion-col size="8" size-md="2">
+                  <ion-select [(ngModel)]="v.idAspNetUsersResponsabile" [label]="'hr.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+                    <ion-select-option [value]="null">{{ 'hr.pages.templateEdit.admins' | transloco }}</ion-select-option>
+                    @for (u of utenti; track u.id) { <ion-select-option [value]="u.id">{{ u.nome }}</ion-select-option> }
+                  </ion-select>
+                </ion-col>
+                <ion-col size="6" size-md="2"><ion-checkbox [(ngModel)]="v.documento" labelPlacement="end">{{ 'hr.fields.documento' | transloco }}</ion-checkbox></ion-col>
+                <ion-col size="6" size-md="2">
+                  <ion-select [(ngModel)]="v.azione" [label]="'hr.fields.azione' | transloco" labelPlacement="floating" interface="popover">
+                    @for (a of azioni; track a) { <ion-select-option [value]="a">{{ 'hr.enums.azione.' + a | transloco }}</ion-select-option> }
+                  </ion-select>
+                </ion-col>
+                <ion-col size="12" size-md="1" class="ion-text-end">
+                  <ion-button fill="clear" size="small" (click)="sposta(i, -1)"><ion-icon slot="icon-only" name="arrow-up-outline"></ion-icon></ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="togli(v)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
+        } @empty {
+          <ion-item lines="none"><ion-label color="medium">{{ 'hr.pages.templateEdit.noItems' | transloco }}</ion-label></ion-item>
+        }
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
