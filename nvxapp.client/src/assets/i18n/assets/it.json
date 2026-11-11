@@ -3,7 +3,12 @@
     "menu": {
       "section": "Risorse aziendali",
       "settings": "Impostazioni",
-      "manual": "Manuale Risorse aziendali"
+      "manual": "Manuale Risorse aziendali",
+      "vehicles": "Veicoli",
+      "mine": "Le mie risorse",
+      "goods": "Beni",
+      "bookings": "Prenotazioni",
+      "resources": "Risorse prenotabili"
     },
     "pages": {
       "settings": {
@@ -13,7 +18,278 @@
         "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
         "notifications": "Notifiche attive",
         "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
-        "note": "Note"
+        "note": "Note",
+        "bookings": "Prenotazioni",
+        "maxHours": "Durata massima di una prenotazione (ore)",
+        "maxDaysAhead": "Anticipo massimo (giorni)",
+        "bookingsNote": "Le prenotazioni non richiedono approvazione; 0 = nessun limite."
+      },
+      "vehicleList": {
+        "title": "Veicoli aziendali",
+        "new": "Nuovo veicolo",
+        "confirmDelete": "Eliminare il veicolo {{targa}} con assegnazioni, scadenze, costi e multe?",
+        "showDisposed": "Mostra i veicoli dismessi",
+        "empty": "Nessun veicolo"
+      },
+      "vehicleEdit": {
+        "title": "Veicolo",
+        "titleNew": "Nuovo veicolo",
+        "noFringe": "Solo uso lavorativo",
+        "add": "Aggiungi",
+        "addAssegnazione": "Assegnazione a un dipendente",
+        "addScadenza": "Scadenza",
+        "addCosto": "Costo",
+        "addMulta": "Multa",
+        "confirmDelete": "Eliminare l'elemento selezionato?",
+        "confirmNotify": "Notificare la multa a {{nome}}?",
+        "contract": "Contratto",
+        "contractNote": "La scadenza del contratto di noleggio o leasing va nello scadenzario comune.",
+        "fringe": "Fringe benefit",
+        "fringeNote": "Il fringe benefit si calcola su 15.000 km convenzionali per il costo chilometrico ACI, con la percentuale dell'assegnazione (dalle emissioni: fino a 60 g/km 25%, fino a 160 30%, fino a 190 50%, oltre 60%). L'export per le paghe resta nelle Presenze.",
+        "section": {
+          "assegnazione": "Assegnazioni",
+          "scadenza": "Scadenze",
+          "costo": "Costi",
+          "multa": "Multe"
+        },
+        "assignmentNote": "Ogni assegnazione crea o aggiorna l'autovettura del dipendente usata dalle note spese delle Presenze per i rimborsi chilometrici.",
+        "totalYear": "Totale costi dell'anno: {{importo}}"
+      },
+      "vehicleItem": {
+        "assegnazione": "Assegnazione",
+        "assegnazioneNew": "Nuova assegnazione",
+        "scadenza": "Scadenza",
+        "scadenzaNew": "Nuova scadenza",
+        "costo": "Costo",
+        "costoNew": "Nuovo costo",
+        "multa": "Multa",
+        "multaNew": "Nuova multa",
+        "fringeNote": "Lasciare 0 per la percentuale dalle emissioni del veicolo ({{co2}} g/km).",
+        "carNote": "L'autovettura del dipendente con questo rimborso è usata dalle note spese delle Presenze.",
+        "deadlineNote": "La scadenza va nello scadenzario comune; indicando la data di esecuzione si chiude.",
+        "driverAuto": "Dall'assegnazione alla data dell'infrazione",
+        "fineNote": "Senza conducente indicato si propone chi aveva il veicolo il giorno dell'infrazione. La notifica al conducente si invia dall'elenco delle multe."
+      },
+      "mine": {
+        "title": "Le mie risorse",
+        "vehicles": "Veicolo assegnato",
+        "noVehicles": "Nessun veicolo assegnato",
+        "fringeNote": "Fringe benefit dell'anno in corso, a titolo informativo: il valore in busta paga lo calcolano le paghe.",
+        "fines": "Multe",
+        "noFines": "Nessuna multa",
+        "goods": "Beni in consegna",
+        "noGoods": "Nessun bene in consegna",
+        "goodsNote": "I verbali da confermare si aprono nella pagina delle prese visione.",
+        "reportToConfirm": "Verbale da confermare",
+        "reportConfirmed": "Verbale confermato"
+      },
+      "goodsList": {
+        "title": "Beni aziendali",
+        "add": "Aggiungi",
+        "newGood": "Nuovo bene",
+        "newCategory": "Nuova categoria",
+        "section": {
+          "beni": "Beni",
+          "restituire": "Da restituire",
+          "categorie": "Categorie"
+        },
+        "showDisposed": "Mostra i beni dismessi",
+        "empty": "Nessun bene",
+        "noReturns": "Nessun bene o veicolo da restituire",
+        "returnNote": "Beni e veicoli ancora in mano a dipendenti con una data di cessazione. Ogni notte gli amministratori ricevono l'avviso delle nuove cessazioni entro il preavviso e la restituzione va nello scadenzario; con Verifica ora il controllo parte subito.",
+        "checkNow": "Verifica ora",
+        "checkDone": "Verifica fatta: {{n}} nuove restituzioni avvisate.",
+        "confirmDelete": "Eliminare il bene {{nome}} con lo storico delle consegne?",
+        "confirmDeleteCategory": "Eliminare la categoria {{nome}}?"
+      },
+      "goodEdit": {
+        "title": "Bene",
+        "titleNew": "Nuovo bene",
+        "deliver": "Consegna a un dipendente",
+        "return": "Restituzione",
+        "deliveries": "Consegne",
+        "deliveriesNote": "Alla consegna e alla restituzione il dipendente riceve il verbale da confermare (con il documentale attivo, da firmare).",
+        "warrantyNote": "La fine della garanzia va nello scadenzario comune.",
+        "reportNone": "Non richiesto (dipendente senza utente)",
+        "reportPending": "Da confermare",
+        "reportConfirmed": "Confermato il {{data}}",
+        "confirmDeleteAssignment": "Annullare questa consegna? I verbali non ancora confermati vengono ritirati."
+      },
+      "goodItem": {
+        "categoria": "Categoria",
+        "categoriaNew": "Nuova categoria",
+        "consegna": "Consegna",
+        "restituzione": "Restituzione",
+        "deliveryNote": "Il dipendente riceve il verbale di consegna da confermare nelle prese visione (con il documentale attivo, da firmare). Senza utente si registra solo la consegna.",
+        "returnNote": "Il dipendente riceve il verbale di restituzione; l'eventuale scadenza della restituzione alla cessazione si chiude."
+      },
+      "resourceList": {
+        "title": "Risorse prenotabili",
+        "new": "Nuova risorsa",
+        "empty": "Nessuna risorsa prenotabile",
+        "showInactive": "Mostra le risorse disattivate",
+        "seats": "{{n}} posti",
+        "confirmDelete": "Eliminare la risorsa {{nome}} con lo storico delle prenotazioni?"
+      },
+      "resourceEdit": {
+        "title": "Risorsa prenotabile",
+        "titleNew": "Nuova risorsa prenotabile",
+        "poolNote": "Si possono scegliere i veicoli della flotta con uso \"pool\"."
+      },
+      "booking": {
+        "title": "Prenotazioni",
+        "new": "Nuova prenotazione",
+        "thisWeek": "Questa settimana",
+        "allResources": "Tutte",
+        "onlyMine": "Solo le mie",
+        "busy": "Occupato",
+        "empty": "Nessuna prenotazione nella settimana",
+        "confirmCancel": "Annullare la prenotazione di {{nome}}?",
+        "note": "Le tue prenotazioni compaiono anche nel tuo calendario personale (pulsante Calendario)."
+      },
+      "bookingEdit": {
+        "title": "Prenotazione",
+        "titleNew": "Nuova prenotazione",
+        "limits": "Durata massima {{ore}} ore, al massimo {{giorni}} giorni in anticipo. Una risorsa già prenotata nell'orario non si può prenotare."
+      }
+    },
+    "common": {
+      "none": "Nessuno",
+      "empty": "Nessun elemento"
+    },
+    "fields": {
+      "targa": "Targa",
+      "veicolo": "Veicolo",
+      "uso": "Uso",
+      "assegnatario": "Assegnato a",
+      "sede": "Sede",
+      "prossimaScadenza": "Prossima scadenza",
+      "dipendente": "Dipendente",
+      "dal": "Dal",
+      "al": "Al",
+      "fringeAnnuo": "Fringe benefit annuo",
+      "fringeAnno": "Fringe benefit anno in corso",
+      "data": "Data",
+      "tipo": "Tipo",
+      "km": "Km",
+      "eseguita": "Eseguita il",
+      "descrizione": "Descrizione",
+      "importo": "Importo",
+      "conducente": "Conducente",
+      "stato": "Stato",
+      "marca": "Marca",
+      "modello": "Modello",
+      "alimentazione": "Alimentazione",
+      "dataImmatricolazione": "Immatricolazione",
+      "kmAttuali": "Km attuali",
+      "possesso": "Possesso",
+      "fornitore": "Fornitore",
+      "numeroContratto": "Numero contratto",
+      "scadenzaContratto": "Scadenza contratto",
+      "kmInclusi": "Km inclusi",
+      "canoneMensile": "Canone mensile",
+      "costoKmAci": "Costo chilometrico ACI (€/km)",
+      "emissioniCO2": "Emissioni CO2 (g/km)",
+      "note": "Note",
+      "usoPromiscuo": "Uso promiscuo (lavoro e privato)",
+      "percentualeFringe": "Percentuale fringe benefit (%)",
+      "rimborsoKm": "Rimborso al km (note spese)",
+      "dataScadenza": "Data di scadenza",
+      "documento": "Documento",
+      "dataInfrazione": "Data e ora dell'infrazione",
+      "numeroVerbale": "Numero del verbale",
+      "luogo": "Luogo",
+      "dataPagamento": "Data di pagamento",
+      "codiceInventario": "Codice inventario",
+      "categoria": "Categoria",
+      "dataCessazione": "Cessazione",
+      "oggetto": "Bene o veicolo",
+      "dataAvviso": "Avvisato il",
+      "numeroBeni": "Beni",
+      "ordine": "Ordine",
+      "attivo": "Attiva",
+      "dataConsegna": "Consegna",
+      "verbaleConsegna": "Verbale di consegna",
+      "dataRestituzione": "Restituzione",
+      "verbaleRestituzione": "Verbale di restituzione",
+      "marcaModello": "Marca e modello",
+      "numeroSerie": "Numero di serie",
+      "dataAcquisto": "Data di acquisto",
+      "valore": "Valore",
+      "scadenzaGaranzia": "Fine garanzia",
+      "condizioni": "Condizioni",
+      "statoRientro": "Stato del bene al rientro",
+      "bene": "Bene",
+      "verbale": "Verbale",
+      "dettaglio": "Dettaglio",
+      "capienza": "Posti",
+      "attiva": "Attiva",
+      "quando": "Quando",
+      "risorsa": "Risorsa",
+      "prenotatoDa": "Prenotato da",
+      "titolo": "Titolo",
+      "inizio": "Inizio",
+      "fine": "Fine"
+    },
+    "enums": {
+      "uso": {
+        "0": "Assegnato",
+        "1": "Pool (prenotabile)"
+      },
+      "statoVeicolo": {
+        "0": "Attivo",
+        "1": "Dismesso"
+      },
+      "alimentazione": {
+        "0": "Benzina",
+        "1": "Diesel",
+        "2": "GPL",
+        "3": "Metano",
+        "4": "Ibrida",
+        "5": "Elettrica",
+        "6": "Altro"
+      },
+      "possesso": {
+        "0": "Proprietà",
+        "1": "Noleggio",
+        "2": "Leasing"
+      },
+      "tipoScadenza": {
+        "0": "Bollo",
+        "1": "Assicurazione",
+        "2": "Revisione",
+        "3": "Tagliando",
+        "4": "Altra scadenza"
+      },
+      "tipoCosto": {
+        "0": "Carburante",
+        "1": "Manutenzione",
+        "2": "Pedaggi",
+        "3": "Parcheggio",
+        "4": "Assicurazione",
+        "5": "Bollo",
+        "6": "Altro"
+      },
+      "statoMulta": {
+        "0": "Da notificare",
+        "1": "Notificata al conducente",
+        "2": "Pagata",
+        "3": "Contestata"
+      },
+      "statoBene": {
+        "0": "Disponibile",
+        "1": "Consegnato",
+        "2": "In riparazione",
+        "3": "Dismesso"
+      },
+      "tipoRestituzione": {
+        "bene": "Bene",
+        "veicolo": "Veicolo"
+      },
+      "tipoRisorsa": {
+        "0": "Postazione",
+        "1": "Sala",
+        "2": "Auto in pool"
       }
     }
   }

@@ -6,7 +6,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 {
     /*
      Repository di Risorse aziendali su un contesto creato dalla factory per lo schema di un'azienda, fuori da una richiesta HTTP
-     (cancellazione fisica): anche li' i dati si leggono e scrivono con i repository.
+     (cancellazione fisica, controllo delle cessazioni, feed del calendario): anche li' i dati si leggono e scrivono con i repository.
      Il contesto lo possiede chi lo ha creato (await using).
     */
     public sealed class AstRepositorySet
@@ -26,5 +26,24 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         private IAst_CfgRepository? _Ast_Cfg;
         public IAst_Az_AnagraficaReadRepository Az_Anagrafica => _Az_Anagrafica ??= new Ast_Az_AnagraficaReadRepository(_db, _sp, _http);
         private IAst_Az_AnagraficaReadRepository? _Az_Anagrafica;
+        public IAst_Dip_AnagraficaReadRepository Dip_Anagrafica => _Dip_Anagrafica ??= new Ast_Dip_AnagraficaReadRepository(_db, _sp, _http);
+        private IAst_Dip_AnagraficaReadRepository? _Dip_Anagrafica;
+
+        public IAst_VeicoloRepository Ast_Veicolo => _Ast_Veicolo ??= new Ast_VeicoloRepository(_db, _sp, _http);
+        private IAst_VeicoloRepository? _Ast_Veicolo;
+        public IAst_VeicoloAssegnazioneRepository Ast_VeicoloAssegnazione => _Ast_VeicoloAssegnazione ??= new Ast_VeicoloAssegnazioneRepository(_db, _sp, _http);
+        private IAst_VeicoloAssegnazioneRepository? _Ast_VeicoloAssegnazione;
+
+        public IAst_CategoriaRepository Ast_Categoria => _Ast_Categoria ??= new Ast_CategoriaRepository(_db, _sp, _http);
+        private IAst_CategoriaRepository? _Ast_Categoria;
+        public IAst_BeneRepository Ast_Bene => _Ast_Bene ??= new Ast_BeneRepository(_db, _sp, _http);
+        private IAst_BeneRepository? _Ast_Bene;
+        public IAst_BeneAssegnazioneRepository Ast_BeneAssegnazione => _Ast_BeneAssegnazione ??= new Ast_BeneAssegnazioneRepository(_db, _sp, _http);
+        private IAst_BeneAssegnazioneRepository? _Ast_BeneAssegnazione;
+
+        public IAst_RisorsaRepository Ast_Risorsa => _Ast_Risorsa ??= new Ast_RisorsaRepository(_db, _sp, _http);
+        private IAst_RisorsaRepository? _Ast_Risorsa;
+        public IAst_PrenotazioneRepository Ast_Prenotazione => _Ast_Prenotazione ??= new Ast_PrenotazioneRepository(_db, _sp, _http);
+        private IAst_PrenotazioneRepository? _Ast_Prenotazione;
     }
 }

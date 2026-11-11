@@ -1,0 +1,31 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-segment [(ngModel)]="sezione" (ionChange)="sezioneChanged()" [scrollable]="true">
+        @for (s of sezioni; track s) {
+          <ion-segment-button [value]="s"><ion-label>{{ 'ast.pages.goodsList.section.' + s | transloco }}</ion-label></ion-segment-button>
+        }
+      </ion-segment>
+      @switch (sezione) {
+        @case ('beni') {
+          <nvx-list-options [showDisabledLabel]="'ast.pages.goodsList.showDisposed' | transloco" [(showDisabled)]="showDisabled"></nvx-list-options>
+          <nvx-list [items]="beni" [columns]="colBene" [actions]="actBene" icon="cube-outline" [searchText]="searchText"
+            [rowDisabled]="beneDismesso" [disabledToggleExternal]="true" [(showDisabled)]="showDisabled"
+            [emptyText]="'ast.pages.goodsList.empty' | transloco"></nvx-list>
+        }
+        @case ('restituire') {
+          <ion-note class="nvx-nota-disabled">{{ 'ast.pages.goodsList.returnNote' | transloco }}</ion-note>
+          <nvx-list [items]="daRestituire" [columns]="colRestituire" [actions]="actRestituire" icon="return-down-back-outline" [searchText]="searchText"
+            trackKey="chiave" [highlight]="restituzioneScaduta" [emptyText]="'ast.pages.goodsList.noReturns' | transloco"></nvx-list>
+        }
+        @case ('categorie') {
+          <nvx-list [items]="categorie" [columns]="colCategoria" [actions]="actCategoria" icon="pricetag-outline" [searchText]="searchText"
+            [rowDisabled]="categoriaDisattiva" [emptyText]="'ast.common.empty' | transloco"></nvx-list>
+        }
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

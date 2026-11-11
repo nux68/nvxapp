@@ -20,6 +20,10 @@ namespace nvxapp.server.data.Entities.Tenant.Assets
         // il modulo invia notifiche e promemoria (servizio comune delle notifiche, preferenze per utente)
         public bool NotificheAttive { get; set; } = true;
 
+        // prenotazioni (AST-PREN): durata massima di una prenotazione (ore) e anticipo massimo (giorni); 0 = nessun limite
+        public int PrenotazioneDurataMaxOre { get; set; } = 10;
+        public int PrenotazioneAnticipoMaxGiorni { get; set; } = 60;
+
         // note interne della configurazione
         [MaxLength(2000)]
         public string? Note { get; set; }
