@@ -6,8 +6,8 @@ Documento generale (ramo **Infrastructure**). Ogni ramo applicativo ha il propri
 |---|---|---|
 | Infrastructure | questo documento (§6) | Chiedi all'assistente |
 | AttendanceTracking (Presenze) | `ANALISI_ATTENDANCETRACKING_WIDGET.md` | Dipendenti presenti/assenti, Richieste approvate/da approvare |
-| DocumentManagement (Documentale) | `ANALISI_WIDGET_DOCUMENTALE.md` | Spazio occupato/disponibile, Spazio per tipo documento |
-| CRM | `ANALISI_WIDGET_CRM.md` | nessuno per ora (punto di estensione pronto) |
+| DocumentManagement (Documentale) | `ANALISI_DOCUMENTMANAGEMENT_WIDGET.md` | Spazio occupato/disponibile, Spazio per tipo documento |
+| CRM | `ANALISI_CRM_WIDGET.md` | nessuno per ora (punto di estensione pronto) |
 
 ---
 

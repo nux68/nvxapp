@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 {
     /*
-     Archiviazione dei file degli applicativi fuori dal database (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.1).
+     Archiviazione dei file degli applicativi fuori dal database (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.1).
      Nel database restano solo i metadati e la chiave restituita da SaveAsync.
      Implementazione attuale: file system (decisione: su disco), cartella FileStorage:Root
      (in Docker il volume nvxapp_files montato su /app/Files). Si potranno aggiungere S3/MinIO o database
