@@ -17,6 +17,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
         public List<string[]> Riepilogo { get; set; } = new();
         public List<PaymentDocumentTable> Tabelle { get; set; } = new();
         public string? Nota { get; set; }
+        /// <summary>testi del pie' di pagina; vuoti = dai resx (nel job si valorizzano prima con TestiPiePagina)</summary>
+        public string? Generato { get; set; }
+        public string? Pagina { get; set; }
+
+        /// <summary>fissa i testi del pie' di pagina nella lingua corrente (da chiamare nella richiesta, prima del job)</summary>
+        public PaymentDocument TestiPiePagina()
+        {
+            Generato ??= InfrastructureMessages.Get("PaymentPdfGenerated", PaymentSettlementManager.Data(DateTime.Now));
+            Pagina ??= InfrastructureMessages.Get("PaymentPdfPage");
+            return this;
+        }
     }
 
     public class PaymentDocumentTable
@@ -64,9 +75,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             pie.Format.Font.Size = 8;
             pie.Format.Font.Color = Tenue;
             pie.Format.AddTabStop(Unit.FromCentimeter(LarghezzaUtile), TabAlignment.Right);
-            pie.AddText(doc.Titolo + " - " + InfrastructureMessages.Get("PaymentPdfGenerated", PaymentSettlementManager.Data(DateTime.Now)));
+            doc.TestiPiePagina();
+            pie.AddText(doc.Titolo + " - " + doc.Generato);
             pie.AddTab();
-            pie.AddText(InfrastructureMessages.Get("PaymentPdfPage") + " ");
+            pie.AddText(doc.Pagina + " ");
             pie.AddPageField();
 
             var titolo = section.AddParagraph(doc.Titolo);
@@ -151,28 +163,59 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
 
     /*
      Excel dei pagamenti di un periodo (un centro o tutti), con importi e date come valori veri.
+     I testi (intestazioni, nomi di funzioni e stati) si preparano nella lingua dell'utente con Testi.Correnti() prima del job:
+     nel job si scrive solo il file.
     */
     public static class PaymentReportExcel
     {
-        public static byte[] Crea(string titolo, List<PaymentRowModel> pagamenti, List<PaymentDealerSummaryModel> riepilogo)
+        public sealed class Testi
+        {
+            public string FoglioRiepilogo { get; init; } = string.Empty;
+            public string FoglioDettaglio { get; init; } = string.Empty;
+            public string[] IntestazioneRiepilogo { get; init; } = Array.Empty<string>();
+            public string[] IntestazioneDettaglio { get; init; } = Array.Empty<string>();
+            public string SenzaCentro { get; init; } = string.Empty;
+            public Dictionary<int, string> Funzioni { get; init; } = new();
+            public Dictionary<int, string> StatiPagamento { get; init; } = new();
+            public Dictionary<int, string> StatiRendiconto { get; init; } = new();
+
+            public static Testi Correnti() => new()
+            {
+                FoglioRiepilogo = InfrastructureMessages.Get("PaymentXlsSummary"),
+                FoglioDettaglio = InfrastructureMessages.Get("PaymentPdfDetail"),
+                IntestazioneRiepilogo = new[]
+                {
+                    InfrastructureMessages.Get("PaymentPdfDealer"), InfrastructureMessages.Get("PaymentPdfPayments"), InfrastructureMessages.Get("PaymentPdfCollected"),
+                    InfrastructureMessages.Get("PaymentPdfRefunded"), InfrastructureMessages.Get("PaymentPdfFee") + " %", InfrastructureMessages.Get("PaymentPdfFee"),
+                    InfrastructureMessages.Get("PaymentPdfDealerShareEstimated"), InfrastructureMessages.Get("PaymentPdfPaid"), InfrastructureMessages.Get("PaymentPdfToPay")
+                },
+                IntestazioneDettaglio = new[]
+                {
+                    InfrastructureMessages.Get("PaymentPdfColDate"), InfrastructureMessages.Get("PaymentPdfDealer"), InfrastructureMessages.Get("PaymentPdfColSubject"),
+                    InfrastructureMessages.Get("PaymentPdfColFunction"), InfrastructureMessages.Get("PaymentXlsLevel"), InfrastructureMessages.Get("PaymentXlsFrom"),
+                    InfrastructureMessages.Get("PaymentXlsTo"), InfrastructureMessages.Get("PaymentPdfColAmount"), InfrastructureMessages.Get("PaymentXlsCurrency"),
+                    InfrastructureMessages.Get("PaymentXlsPaymentState"), "Debug", InfrastructureMessages.Get("PaymentPdfSettlement")
+                },
+                SenzaCentro = InfrastructureMessages.Get("PaymentNoDealer"),
+                Funzioni = Enum.GetValues<AmbitoLicenza>().ToDictionary(a => (int)a, PaymentSettlementManager.NomeFunzione),
+                StatiPagamento = Enum.GetValues<StatoPagamento>().ToDictionary(x => (int)x, x => InfrastructureMessages.Get("PaymentState_" + (int)x)),
+                StatiRendiconto = Enum.GetValues<StatoRendiconto>().ToDictionary(x => (int)x, PaymentSettlementManager.NomeStato)
+            };
+        }
+
+        public static byte[] Crea(string titolo, List<PaymentRowModel> pagamenti, List<PaymentDealerSummaryModel> riepilogo, Testi testi)
         {
             using var wb = new XLWorkbook();
 
-            var ws = wb.Worksheets.Add(Foglio(InfrastructureMessages.Get("PaymentXlsSummary")));
+            var ws = wb.Worksheets.Add(Foglio(testi.FoglioRiepilogo));
             ws.Cell(1, 1).Value = titolo;
             ws.Cell(1, 1).Style.Font.Bold = true;
             ws.Cell(1, 1).Style.Font.FontSize = 14;
-            var intestazione = new[]
-            {
-                InfrastructureMessages.Get("PaymentPdfDealer"), InfrastructureMessages.Get("PaymentPdfPayments"), InfrastructureMessages.Get("PaymentPdfCollected"),
-                InfrastructureMessages.Get("PaymentPdfRefunded"), InfrastructureMessages.Get("PaymentPdfFee") + " %", InfrastructureMessages.Get("PaymentPdfFee"),
-                InfrastructureMessages.Get("PaymentPdfDealerShareEstimated"), InfrastructureMessages.Get("PaymentPdfPaid"), InfrastructureMessages.Get("PaymentPdfToPay")
-            };
-            Intestazione(ws, 3, intestazione);
+            Intestazione(ws, 3, testi.IntestazioneRiepilogo);
             int row = 4;
             foreach (var r in riepilogo)
             {
-                ws.Cell(row, 1).Value = r.Dealer ?? InfrastructureMessages.Get("PaymentNoDealer");
+                ws.Cell(row, 1).Value = r.Dealer ?? testi.SenzaCentro;
                 ws.Cell(row, 2).Value = r.NumeroPagamenti;
                 ws.Cell(row, 3).Value = r.Incassato;
                 ws.Cell(row, 4).Value = r.Rimborsato;
@@ -186,31 +229,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             ws.Range(4, 3, Math.Max(row - 1, 4), 9).Style.NumberFormat.Format = "#,##0.00";
             ws.Columns().AdjustToContents();
 
-            var wp = wb.Worksheets.Add(Foglio(InfrastructureMessages.Get("PaymentPdfDetail")));
-            Intestazione(wp, 1, new[]
-            {
-                InfrastructureMessages.Get("PaymentPdfColDate"), InfrastructureMessages.Get("PaymentPdfDealer"), InfrastructureMessages.Get("PaymentPdfColSubject"),
-                InfrastructureMessages.Get("PaymentPdfColFunction"), InfrastructureMessages.Get("PaymentXlsLevel"), InfrastructureMessages.Get("PaymentXlsFrom"),
-                InfrastructureMessages.Get("PaymentXlsTo"), InfrastructureMessages.Get("PaymentPdfColAmount"), InfrastructureMessages.Get("PaymentXlsCurrency"),
-                InfrastructureMessages.Get("PaymentXlsPaymentState"), "Debug", InfrastructureMessages.Get("PaymentPdfSettlement")
-            });
+            var wp = wb.Worksheets.Add(Foglio(testi.FoglioDettaglio));
+            Intestazione(wp, 1, testi.IntestazioneDettaglio);
             row = 2;
             foreach (var p in pagamenti)
             {
                 if (p.DataPagamento != null)
                     wp.Cell(row, 1).Value = p.DataPagamento.Value;
-                wp.Cell(row, 2).Value = p.Dealer ?? InfrastructureMessages.Get("PaymentNoDealer");
+                wp.Cell(row, 2).Value = p.Dealer ?? testi.SenzaCentro;
                 wp.Cell(row, 3).Value = p.Soggetto ?? string.Empty;
-                wp.Cell(row, 4).Value = PaymentSettlementManager.NomeFunzione((AmbitoLicenza)p.Ambito);
+                wp.Cell(row, 4).Value = testi.Funzioni.TryGetValue(p.Ambito, out var f) ? f : p.Ambito.ToString();
                 wp.Cell(row, 5).Value = ((LivelloLicenza)p.Livello).ToString();
                 wp.Cell(row, 6).Value = p.DataInizioCoperta;
                 wp.Cell(row, 7).Value = p.DataFineCoperta;
                 wp.Cell(row, 8).Value = p.Importo;
                 wp.Cell(row, 9).Value = p.Valuta;
-                wp.Cell(row, 10).Value = InfrastructureMessages.Get("PaymentState_" + p.Stato);
+                wp.Cell(row, 10).Value = testi.StatiPagamento.TryGetValue(p.Stato, out var sp) ? sp : p.Stato.ToString();
                 wp.Cell(row, 11).Value = p.Debug ? "x" : string.Empty;
-                wp.Cell(row, 12).Value = p.StatoRendiconto == null ? string.Empty
-                                         : PaymentSettlementManager.NomeStato((StatoRendiconto)p.StatoRendiconto.Value);
+                wp.Cell(row, 12).Value = p.StatoRendiconto != null && testi.StatiRendiconto.TryGetValue(p.StatoRendiconto.Value, out var sr) ? sr : string.Empty;
                 row++;
             }
             if (row > 2)
