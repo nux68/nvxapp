@@ -46,7 +46,7 @@ export class CrmOfferListPageComponent {
       { key: 'totale', title: t('crm.fields.totale'), align: 'end', value: x => crmImporto(x.totale, this.setupService.setup?.cfg.valuta), sortValue: x => x.totale },
     ];
     const bPdf = userInterfaceService.Btn_Pdf;
-    bPdf.event = (x: M.CrmOffertaListModel) => this.service.OffertaPdf(x.id);
+    bPdf.event = (x: M.CrmOffertaListModel) => this.setupService.pdfOfferta(x.id);
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: M.CrmOffertaListModel) => this.navCtrl.navigateForward('/crmofferedit', { state: { id: x.id } });
     this.actions = [{ button: bPdf }, { button: bEdit }];

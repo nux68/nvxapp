@@ -11,6 +11,12 @@
         @if (scheda.offerta.dataInvio) {
           <ion-note class="nvx-nota-disabled">{{ 'crm.pages.offerEdit.sentOn' | transloco: { data: (scheda.offerta.dataInvio | date: 'dd/MM/yyyy HH:mm') } }}</ion-note>
         }
+        @if (scheda.offerta.dataEsito) {
+          <ion-note class="nvx-nota-disabled"> {{ 'crm.pages.offerEdit.outcomeOn' | transloco: { stato: ('crm.enums.statoOfferta.' + scheda.offerta.stato | transloco), data: (scheda.offerta.dataEsito | date: 'dd/MM/yyyy') } }}</ion-note>
+        }
+        @if (scheda.offerta.idOrdineAmministrazione) {
+          <ion-note class="nvx-nota-disabled"> {{ 'crm.pages.offerEdit.order' | transloco: { id: scheda.offerta.idOrdineAmministrazione } }}</ion-note>
+        }
       }
       <div [hidden]="sezione !== 'dati'">
         <form [formGroup]="_editForm">
@@ -46,7 +52,7 @@
               <ion-row class="ion-align-items-center">
                 <ion-col size="12" size-md="3"><ion-item><ion-select [(ngModel)]="r.idCrm_Par_Prodotto" (ionChange)="prodotto(r)" [label]="'crm.fields.prodotto' | transloco" labelPlacement="floating" interface="popover">
                   <ion-select-option [value]="null">{{ 'crm.common.none' | transloco }}</ion-select-option>
-                  @for (p of setupService.attivi(setupService.setup?.prodotti, r.idCrm_Par_Prodotto); track p.id) { <ion-select-option [value]="p.id">{{ p.codice ? p.codice + ' - ' : '' }}{{ p.descrizione }}</ion-select-option> }
+                  @for (p of setupService.attivi(setupService.setup?.prodotti, r.idCrm_Par_Prodotto); track p.id) { <ion-select-option [value]="p.id">{{ p.codice ? p.codice + ' - ' : '' }}{{ p.descrizione }} ({{ 'crm.enums.tipoProdotto.' + p.tipoProdotto | transloco }})</ion-select-option> }
                 </ion-select></ion-item></ion-col>
                 <ion-col size="12" size-md="4"><ion-item><ion-input [(ngModel)]="r.descrizione" maxlength="500" [label]="'crm.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
                 <ion-col size="4" size-md="1"><ion-item><ion-input type="number" [(ngModel)]="r.quantita" [label]="'crm.fields.quantita' | transloco" labelPlacement="floating"></ion-input></ion-item></ion-col>
@@ -78,6 +84,7 @@
         <crm-attachments [allegati]="scheda.allegati" [idCrm_Offerta]="scheda.offerta.id" (changed)="ricarica()"></crm-attachments>
       }
     </ion-card-content>
+    <ion-note class="nvx-nota-disabled">{{ 'crm.pages.offerEdit.lifecycleNote' | transloco }}</ion-note>
   </ion-card>
 </ion-content>
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

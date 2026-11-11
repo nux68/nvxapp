@@ -26,6 +26,7 @@ export class MainMenuCrmService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 300300, group: 30, title: 'crm.menu.pipeline', roles: tutti, component: 'CrmPipelinePageComponent', url: '/crmpipeline', icon: 'git-network' },
       { menuType: MenuType.MenuItem, zorder: 300400, group: 30, title: 'crm.menu.activities', roles: tutti, component: 'CrmActivityListPageComponent', url: '/crmactivitylist', icon: 'calendar' },
       { menuType: MenuType.MenuItem, zorder: 300500, group: 30, title: 'crm.menu.offers', roles: tutti, component: 'CrmOfferListPageComponent', url: '/crmofferlist', icon: 'document-text' },
+      { menuType: MenuType.MenuItem, zorder: 300550, group: 30, title: 'crm.menu.requests', roles: tutti, component: 'CrmRequestListPageComponent', url: '/crmrequestlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem, zorder: 300600, group: 30, title: 'crm.menu.report', roles: tutti, component: 'CrmReportPageComponent', url: '/crmreport', icon: 'bar-chart' },
       { menuType: MenuType.MenuHeader, zorder: 310000, group: 31, title: 'crm.menu.settingsSection', roles: tutti, component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 310100, group: 31, title: 'crm.menu.tables', roles: ['CompanyPowerAdmin'], component: 'CrmParListPageComponent', url: '/crmparlist', icon: 'list' },
@@ -43,6 +44,7 @@ export class MainMenuCrmService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 320300, group: 32, title: 'crm.menu.leads', component: 'CrmLeadListPageComponent', url: '/crmleadlist', icon: 'person-add' },
       { menuType: MenuType.MenuItem, zorder: 320400, group: 32, title: 'crm.menu.pipeline', component: 'CrmPipelinePageComponent', url: '/crmpipeline', icon: 'git-network' },
       { menuType: MenuType.MenuItem, zorder: 320500, group: 32, title: 'crm.menu.offers', component: 'CrmOfferListPageComponent', url: '/crmofferlist', icon: 'document-text' },
+      { menuType: MenuType.MenuItem, zorder: 320550, group: 32, title: 'crm.menu.requests', component: 'CrmRequestListPageComponent', url: '/crmrequestlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem, zorder: 320600, group: 32, title: 'crm.menu.report', component: 'CrmReportPageComponent', url: '/crmreport', icon: 'bar-chart' },
     ];
   }

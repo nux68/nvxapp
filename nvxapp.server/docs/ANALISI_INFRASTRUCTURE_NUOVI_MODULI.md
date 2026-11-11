@@ -171,16 +171,16 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
-| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
-| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
-| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ⏳ |
-| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ⏳ |
-| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
+| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
-| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
-| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
+| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
@@ -236,8 +236,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-SVC.4` Notifiche: servizio unico (email con Brevo, notifiche nell'app con SignalR) e preferenze per utente — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/notifications` (paginata, non lette, apri, segna tutte lette, cancella lette), preferenze `/notificationpreference` (App/Email per categoria), voce di menu "Notifiche" per tutti con badge delle non lette (`NotificationNotifierService`, evento SignalR `NotificationNew`)
 - ✅ `INF-SVC.5` Promemoria automatici delle scadenze (job pianificato) — server fatto e provato su DB usa e getta con 24 controlli API; client: il promemoria apre `/deadlines` (o l'oggetto della scadenza)
 - ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
-- ⏳ `INF-SVC.7` Titolo delle categorie di notifica fornito dal modulo (oggi sta nei testi di Infrastructure: Compliance, Risorse Umane e Risorse aziendali usano per ora `generale`/`scadenze`)
-- ⏳ `INF-SVC.8` Alla creazione dell'account di un dipendente gia' presente, collegare l'utente alla `Dip_Anagrafica` esistente invece di crearne una nuova (oggi lo corregge Risorse Umane, `HR-ONB.4`)
+- ✅ `INF-SVC.7` Titolo delle categorie di notifica fornito dal modulo — mergiata il 12/11/2026: `NotificationCategory.TitoloText` (`Func<string>`, letta a ogni uso nella lingua della richiesta; null = resx di Infrastructure `NotificationCategory_<code>`, categorie esistenti invariate). Ogni modulo dichiara il proprio `INotificationCategoryProvider` con `Application` = applicativo (la pagina Preferenze mostra la categoria solo se è attivo) e codici con prefisso: Risorse Umane `hr.cedolini`, Compliance `cmp.gdpr`, Risorse aziendali `ast.flotta`, `ast.beni`, `ast.prenotazioni`; le scadenze restano `scadenze` e le prese visione `presevisione`. Provata sul ramo HR (DB usa e getta `nvx_test_svc78`, 42 controlli con `INF-SVC.8`): preferenze con `hr.cedolini` solo con HR attivo, titolo it/en, preferenza App/Email rispettata (email sul server SMTP finto, avviso a comparsa via SignalR)
+- ✅ `INF-SVC.8` Alla creazione dell'account di un dipendente gia' presente, collegare l'utente alla `Dip_Anagrafica` esistente invece di crearne una nuova — mergiata il 12/11/2026: `UserCompanyEditModel.IdDip_Anagrafica` (facoltativo, solo in creazione, anche nel modello del client). `Account/UserCompanyPut` verifica prima di creare l'utente che l'anagrafica sia dell'azienda corrente e senza utente (altrimenti `UserCompanyEmployeeNotLinkable`), poi la collega con un aggiornamento condizionato (`ICommonDipendenteUtility.AgganciaDip_AnagraficaAsync`) prima degli inizializzatori, che la trovano e non ne creano una nuova. Risorse Umane usa il parametro (`HR-ONB.4`). Senza il parametro comportamento invariato. Provata sul ramo HR (stesso DB): nessuna anagrafica nuova, rifiuti senza creare l'utente
 
 #### `INF-CAL` – Sincronizzazione dei calendari
 - ✅ `INF-CAL.1` (ridefinito con D9) Feed iCalendar personale per utente e azienda: tabella `CalendarioFeed` in `public` (token casuale di 32 byte base64url, date di creazione e ultimo accesso), migration `CalendarioFeed`
@@ -301,13 +301,13 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove
 
 #### `CRM-PREV` – Preventivi e offerte
-- ⏳ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati)
-- ⏳ `CRM-PREV.2` PDF e invio al cliente
-- ⏳ `CRM-PREV.3` Collegamento con le opportunità della pipeline
+- ✅ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati) — fatta, da mergiare: sulle offerte esistenti stato `Scaduta` (automatico), `DataEsito`, `IdOrdineAmministrazione` (predisposizione dell'ordine), listino con tipo articolo/servizio; scadenza `crm.preventivo` nello scadenzario (inviata → aperta, esito → chiusa, bozza → tolta); migration `Crm_PreventiviAssistenza`
+- ✅ `CRM-PREV.2` PDF e invio al cliente — fatta, da mergiare: PDF solo con job (`Crm_OffertaPdfJob`), invio al contatto con il PDF allegato, errore SMTP gestito, invio registrato come attività
+- ✅ `CRM-PREV.3` Collegamento con le opportunità della pipeline — fatta, da mergiare: accettata → opportunità aperta nella prima fase vinta con il valore dell'offerta e lo storico
 
 #### `CRM-ASS` – Assistenza ai clienti dell'azienda
-- ⏳ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi)
-- ⏳ `CRM-ASS.2` Storico nella scheda del cliente
+- ✅ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi) — fatta, da mergiare: `Crm_Richiesta` + `Crm_RichiestaMessaggio` (note interne ed eventi), priorità, canale, tempi di presa in carico e risoluzione, notifica all'assegnatario (`INotificationSender`, categoria `generale` in attesa di `INF-SVC.7`), permessi per ruolo; pagine `/crmrequestlist`, `/crmrequestedit`
+- ✅ `CRM-ASS.2` Storico nella scheda del cliente — fatta, da mergiare: sezione Assistenza (e Offerte) nella scheda cliente del CRM, "+" con la nuova richiesta
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
 - ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
@@ -395,6 +395,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ 11/11/2026 – Fase 1 (`INF-APP`, `INF-SVC`) mergiata; fase 2 (`INF-COM`+`AT-COM`, `INF-CAL`, `DM-FIRMA`, `CMP-BASE`, `HR-BASE`, `AST-BASE`, analisi `ANA.7`–`ANA.9`) mergiata dopo la prova completa della catena (8 rami compilati, AllFunction avviato con tutte le app: 15 controlli)
 
 - ✅ 11/11/2026 – Fase 3 mergiata: `CMP-81`, `CMP-GDPR`, `HR-CED`, `HR-FOR`, `HR-ONB`, `AST-FLO`, `AST-BENI`, `AST-PREN`, `INF-AI`, `CRM-CAL` (prova completa: 8 rami compilati, AllFunction avviato con tutte le app). `CMP-WB` fermo in attesa di `ANA.5`/`ANA.6`
+
+- ✅ 12/11/2026 – Fase 4 mergiata: `INF-SVC.7`, `INF-SVC.8` (con l'adeguamento di Risorse Umane, Compliance e Risorse aziendali), `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `CRM-PREV`, `CRM-ASS`. Restano: `DM-PEC` e `DM-CONS` (scelta dei fornitori), `CMP-WB` (`ANA.5`/`ANA.6`), `INF-CAL.4` (OAuth, D9), `ADM`
 
 ### Da fare (per fase, §8)
 - ⏳ **Fase 1**: `ANA.5`–`ANA.10`, `INF-APP`, `INF-COM`, `INF-SVC`; in parallelo, quando si vuole, `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `DM-PEC`, `DM-CONS`, `CRM-PREV`, `CRM-ASS`

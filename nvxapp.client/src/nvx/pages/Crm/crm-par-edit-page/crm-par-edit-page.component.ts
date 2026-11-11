@@ -25,6 +25,7 @@ export class CrmParEditPageComponent extends BasePageConfirmCancelComponent<M.Cr
 
   public tabella = M.CrmParTabella.Fase;
   public readonly tipiFase = [0, 1, 2];
+  public readonly tipiProdotto = [0, 1];
   public readonly colori = ['primary', 'secondary', 'tertiary', 'success', 'warning', 'danger', 'medium'];
 
   constructor(protected override navCtrl: NavController,
@@ -41,7 +42,7 @@ export class CrmParEditPageComponent extends BasePageConfirmCancelComponent<M.Cr
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(100)]], ordine: [0], attivo: [true],
       probabilita: [0, [Validators.min(0), Validators.max(100)]], tipo: [0], icona: [null, [Validators.maxLength(50)]], colore: [null],
-      durataMinuti: [30, [Validators.min(0)]], codice: [null, [Validators.maxLength(30)]], prezzo: [0], um: [null, [Validators.maxLength(10)]], aliquotaIva: [22, [Validators.min(0), Validators.max(100)]],
+      durataMinuti: [30, [Validators.min(0)]], codice: [null, [Validators.maxLength(30)]], prezzo: [0], um: [null, [Validators.maxLength(10)]], aliquotaIva: [22, [Validators.min(0), Validators.max(100)]], tipoProdotto: [0],
     });
   }
 
