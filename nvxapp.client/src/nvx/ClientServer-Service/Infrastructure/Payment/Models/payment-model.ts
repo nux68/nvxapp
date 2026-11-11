@@ -148,10 +148,12 @@ export class PaymentSettlementInvoicePutInModel { public id: number = 0; public 
 export class PaymentSettlementInvoicePutOutModel extends ModelResult { public rendiconto: PaymentSettlementModel = new PaymentSettlementModel(); }
 
 export class PaymentSummarySendInModel { public idDealer: number | null = null; public anno: number = 0; public mese: number | null = null; }
-export class PaymentSummarySendOutModel extends ModelResult { public destinatari: string | null = null; }
+// l'email parte con un job: l'esito arriva nella barra dei job
+export class PaymentSummarySendOutModel extends ModelResult { public jobId: string = ''; public destinatari: string | null = null; }
 
 export class PaymentExportInModel { public idDealer: number | null = null; public anno: number = 0; public mese: number | null = null; public formato: 'pdf' | 'xlsx' = 'pdf'; }
-export class PaymentExportOutModel extends ModelResult { public fileName: string = ''; public contentType: string = ''; public file: string | null = null; }
+// il file si prepara con un job: arriva nella barra dei job con il link di download
+export class PaymentExportOutModel extends ModelResult { public jobId: string = ''; }
 
 export class PaymentDealerConfigGetInModel { public idDealer: number | null = null; }
 export class PaymentDealerConfigGetOutModel extends ModelResult { public config: PaymentDealerConfigModel = new PaymentDealerConfigModel(); public canEditPercentuale: boolean = false; }

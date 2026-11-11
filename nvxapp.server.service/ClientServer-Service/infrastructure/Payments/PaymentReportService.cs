@@ -9,11 +9,14 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
+using Microsoft.Extensions.DependencyInjection;
+using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Email;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License.Payment;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Payments.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
@@ -29,6 +32,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
     */
     public class PaymentReportService : ServiceBase, IPaymentReportService
     {
+        // job degli export (barra dei job del client, come i manuali e gli export delle Presenze)
+        public const string JobTypePdf = "Payments.Pdf";
+        public const string JobTypeExcel = "Payments.Excel";
+        public const string JobTypeEmail = "Payments.SummaryEmail";
+
         private readonly IPaymentSettlementManager _manager;
         private readonly IPaymentSettingsProvider _settingsProvider;
         private readonly IPag_RendicontoRepository _rendicontoRepository;
@@ -227,15 +235,65 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             return await ExecuteAction(model, async () =>
             {
                 var accesso = await AccessoAsync();
-                ControllaPeriodo(model.Data.Anno, model.Data.Mese);
-                int idDealer = Centro(accesso, model.Data.IdDealer);
-                var esito = await _manager.InviaRiepilogoAsync(idDealer, model.Data.Anno, model.Data.Mese, false);
-                if (!esito.Esito)
-                    throw new UserMessageException(esito.Errore ?? InfrastructureMessages.Get("PaymentSendFailed"));
-                return new PaymentSummarySendOutModel { Destinatari = esito.Destinatari };
+                var d = model.Data;
+                ControllaPeriodo(d.Anno, d.Mese);
+                int idDealer = Centro(accesso, d.IdDealer);
+
+                // gli errori evidenti subito; PDF ed email nel job (come gli altri export), esito nella barra dei job
+                if (!_emailService.Configured)
+                    throw new UserMessageException(InfrastructureMessages.Get("PaymentEmailNotConfigured"));
+                var destinatari = string.Join("; ", await _manager.DestinatariAsync(idDealer));
+                if (destinatari.Length == 0)
+                    throw new UserMessageException(InfrastructureMessages.Get("PaymentNoRecipients"));
+                var userId = this.UserIdFirstConnection;
+                if (string.IsNullOrEmpty(userId))
+                    throw new UserMessageException(InfrastructureMessages.Get("PaymentJobUserNotIdentified"));
+
+                var jobId = Guid.NewGuid().ToString();
+                var payload = new { IdDealer = idDealer, d.Anno, d.Mese };
+                // il job lavora nella lingua della richiesta (testi dell'email e del PDF)
+                var cultura = System.Globalization.CultureInfo.CurrentCulture;
+                var culturaUi = System.Globalization.CultureInfo.CurrentUICulture;
+                var avviato = InfrastructureMessages.Get("PaymentSendStarted", destinatari);
+
+                RunInBackground(async scope =>
+                {
+                    System.Globalization.CultureInfo.CurrentCulture = cultura;
+                    System.Globalization.CultureInfo.CurrentUICulture = culturaUi;
+                    var notifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
+                    Task Notifica(int progress, string testo, MessageType tipo, bool fine = false) =>
+                        notifier.LongJobProgressAsync(userId, new LongJobProgressUpdate
+                        {
+                            JobId = jobId, JobType = JobTypeEmail, Payload = payload, Category = LongJobCategory.Calculation,
+                            ProgressPercentage = progress, Message = new Message { Text = testo, MsgType = tipo }, IsFinished = fine
+                        });
+                    try
+                    {
+                        await Notifica(10, avviato, MessageType.Information);
+                        var manager = scope.ServiceProvider.GetRequiredService<IPaymentSettlementManager>();
+                        var esito = await manager.InviaRiepilogoAsync(idDealer, d.Anno, d.Mese, false);
+                        if (esito.Esito)
+                            await Notifica(100, InfrastructureMessages.Get("PaymentSendDone", esito.Destinatari), MessageType.Information, true);
+                        else
+                            await Notifica(100, esito.Errore ?? InfrastructureMessages.Get("PaymentSendFailed"), MessageType.Warning, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Riepilogo dei pagamenti del centro {IdDealer}: job {JobId} non riuscito", idDealer, jobId);
+                        await Notifica(100, InfrastructureMessages.Get("PaymentSendFailed"), MessageType.Exception, true);
+                    }
+                });
+
+                await Task.Delay(DelayAsyncMethod);
+                return new PaymentSummarySendOutModel { JobId = jobId, Destinatari = destinatari };
             }, isSubProcess);
         }
 
+        /*
+         PDF (riepilogo di un centro) o Excel (un centro o, per il SuperUser, tutti) con un job in background, come gli altri
+         export: la richiesta controlla i permessi, raccoglie i dati e prepara i testi nella lingua dell'utente e restituisce
+         subito il JobId; il job scrive il file (NVXSystem.SalvaFileJob) e lo notifica con il link di download (ILongJobNotifier).
+        */
         public virtual async Task<GenericResult<PaymentExportOutModel>> PaymentExport(GenericRequest<PaymentExportInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -246,33 +304,73 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
                 bool excel = string.Equals(d.Formato, "xlsx", StringComparison.OrdinalIgnoreCase);
                 int? idDealer = accesso.SuperUser ? d.IdDealer ?? (excel ? null : accesso.IdDealer) : accesso.IdDealer;
 
+                var userId = this.UserIdFirstConnection;
+                if (string.IsNullOrEmpty(userId))
+                    throw new UserMessageException(InfrastructureMessages.Get("PaymentJobUserNotIdentified"));
+
+                // tutto cio' che serve al file, nella lingua della richiesta: nel job solo la scrittura
+                Func<byte[]> scrivi;
+                string nomeFile;
                 if (!excel)
                 {
                     int id = idDealer ?? throw new UserMessageException(InfrastructureMessages.Get("PaymentDealerRequired"));
-                    var doc = await _manager.DocumentoPeriodoAsync(id, d.Anno, d.Mese);
+                    var doc = (await _manager.DocumentoPeriodoAsync(id, d.Anno, d.Mese)).TestiPiePagina();
                     var nome = (await _dealerRepository.FindAll(x => x.Id == id).Select(x => x.Descrizione).FirstOrDefaultAsync()) ?? id.ToString();
-                    return new PaymentExportOutModel
-                    {
-                        FileName = PaymentSettlementManager.NomeFile(nome, d.Anno, d.Mese),
-                        ContentType = "application/pdf",
-                        File = PaymentReportPdf.Crea(doc)
-                    };
+                    nomeFile = PaymentSettlementManager.NomeFile(nome, d.Anno, d.Mese);
+                    scrivi = () => PaymentReportPdf.Crea(doc);
+                }
+                else
+                {
+                    var riepilogo = await _manager.RiepilogoAsync(d.Anno, d.Mese, idDealer);
+                    if (idDealer != null)
+                        riepilogo = riepilogo.Where(x => x.IdDealer == idDealer).ToList();
+                    var pagamenti = await _manager.PagamentiPeriodo(d.Anno, d.Mese, idDealer).OrderBy(x => x.DataPagamento).ToListAsync();
+                    var stati = await StatiRendicontoAsync(pagamenti);
+                    var righe = pagamenti.Select(p => RowModel(p, stati)).ToList();
+                    var titolo = InfrastructureMessages.Get(d.Mese == null ? "PaymentPdfTitleAnnual" : "PaymentPdfTitleMonthly", PaymentSettlementManager.NomePeriodo(d.Anno, d.Mese))
+                                 + (idDealer != null && riepilogo.Count > 0 ? " - " + riepilogo[0].Dealer : string.Empty);
+                    nomeFile = PaymentSettlementManager.NomeFile(idDealer != null && riepilogo.Count > 0 ? riepilogo[0].Dealer ?? "centro" : InfrastructureMessages.Get("PaymentAllDealers"), d.Anno, d.Mese);
+                    var testiExcel = PaymentReportExcel.Testi.Correnti();
+                    scrivi = () => PaymentReportExcel.Crea(titolo, righe, riepilogo, testiExcel);
                 }
 
-                var riepilogo = await _manager.RiepilogoAsync(d.Anno, d.Mese, idDealer);
-                if (idDealer != null)
-                    riepilogo = riepilogo.Where(x => x.IdDealer == idDealer).ToList();
-                var pagamenti = await _manager.PagamentiPeriodo(d.Anno, d.Mese, idDealer).OrderBy(x => x.DataPagamento).ToListAsync();
-                var stati = await StatiRendicontoAsync(pagamenti);
-                var titolo = InfrastructureMessages.Get(d.Mese == null ? "PaymentPdfTitleAnnual" : "PaymentPdfTitleMonthly", PaymentSettlementManager.NomePeriodo(d.Anno, d.Mese))
-                             + (idDealer != null && riepilogo.Count > 0 ? " - " + riepilogo[0].Dealer : string.Empty);
-                var file = PaymentSettlementManager.NomeFile(idDealer != null && riepilogo.Count > 0 ? riepilogo[0].Dealer ?? "centro" : InfrastructureMessages.Get("PaymentAllDealers"), d.Anno, d.Mese);
-                return new PaymentExportOutModel
+                var jobId = Guid.NewGuid().ToString();
+                var jobType = excel ? JobTypeExcel : JobTypePdf;
+                var estensione = excel ? "xlsx" : "pdf";
+                var nomeVisibile = Path.GetFileNameWithoutExtension(nomeFile);
+                var payload = new { IdDealer = idDealer, d.Anno, d.Mese, Formato = estensione };
+                var testi = new
                 {
-                    FileName = Path.ChangeExtension(file, ".xlsx"),
-                    ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    File = PaymentReportExcel.Crea(titolo, pagamenti.Select(p => RowModel(p, stati)).ToList(), riepilogo)
+                    Avviato = InfrastructureMessages.Get("PaymentExportStarted"),
+                    Pronto = InfrastructureMessages.Get("PaymentExportReady"),
+                    Errore = InfrastructureMessages.Get("PaymentExportFailed"),
                 };
+
+                RunInBackground(async scope =>
+                {
+                    var notifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
+                    Task Notifica(int progress, string testo, MessageType tipo, JobFile? file = null, bool fine = false) =>
+                        notifier.LongJobProgressAsync(userId, new LongJobProgressUpdate
+                        {
+                            JobId = jobId, JobType = jobType, Payload = payload, Category = LongJobCategory.FileGeneration,
+                            DownloadUrl = file?.DownloadUrl, FileName = file?.FileName, ProgressPercentage = progress,
+                            Message = new Message { Text = testo, MsgType = tipo }, IsFinished = fine
+                        });
+                    try
+                    {
+                        await Notifica(10, testi.Avviato, MessageType.Information);
+                        var file = NVXSystem.SalvaFileJob(jobId, userId, nomeVisibile, estensione, scrivi());
+                        await Notifica(100, testi.Pronto, MessageType.Information, file, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Export dei pagamenti ({Formato}): job {JobId} non riuscito", estensione, jobId);
+                        await Notifica(100, testi.Errore, MessageType.Exception, null, true);
+                    }
+                });
+
+                await Task.Delay(DelayAsyncMethod);
+                return new PaymentExportOutModel { JobId = jobId };
             }, isSubProcess);
         }
 

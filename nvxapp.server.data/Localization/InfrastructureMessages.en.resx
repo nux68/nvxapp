@@ -951,4 +951,28 @@ The statement is attached.</value>
     <value>Payment state</value>
     <comment>pagamenti</comment>
   </data>
+  <data name="PaymentExportStarted" xml:space="preserve">
+    <value>Preparing the payment report...</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentExportReady" xml:space="preserve">
+    <value>Payment report ready: click to download it.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentExportFailed" xml:space="preserve">
+    <value>Payment report failed.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentJobUserNotIdentified" xml:space="preserve">
+    <value>User not identified: the report cannot be started.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendStarted" xml:space="preserve">
+    <value>Sending the payment summary to {0}...</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendDone" xml:space="preserve">
+    <value>Payment summary sent to {0}.</value>
+    <comment>pagamenti</comment>
+  </data>
 </root>
