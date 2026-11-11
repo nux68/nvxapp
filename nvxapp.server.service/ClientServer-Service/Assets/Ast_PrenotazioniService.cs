@@ -246,7 +246,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                     p.ChangeUser = ctx.IdUtente;
                     await _Ast_Prenotazione.SaveChange();
                     if (p.IdAspNetUsers != ctx.IdUtente)
-                        await _utility.NotificaAsync(ctx, new[] { p.IdAspNetUsers },
+                        await _utility.NotificaAsync(ctx, AstNotificationCategoryProvider.Prenotazioni, new[] { p.IdAspNetUsers },
                                                      AssetsMessages.Get("BookingCancelledTitle", p.Ast_RisorsaNavigation!.Descrizione),
                                                      AssetsMessages.Get("BookingCancelledText", p.Ast_RisorsaNavigation.Descrizione, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")),
                                                      UrlPrenotazioni);
