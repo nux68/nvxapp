@@ -291,7 +291,7 @@ Implementata il 04/11/2026 (commit 846a9400 e seguenti su CRM_Dev; in Infrastruc
 - [x] riassegnazione in blocco di clienti, opportunità, lead e attività da fare di un commerciale
 - [x] `CrmCommonEntityUsage` (cliente usato da opportunità/offerte/attività/allegati non cancellabile) e `CrmDataDeleter` (utente rimosso: dati senza responsabile, attività annullate)
 - [x] menu, rotte, multilingua (`CrmMessages`, i18n `crm`) – site-name e showcase non servono per ora
-- [x] handler chat AI CRM (11/11/2026: vedi ANALISI_VOCALI_CRM.md)
+- [x] handler chat AI CRM (11/11/2026: vedi ANALISI_CRM_VOCALI.md)
 - [x] GDPR: consenso marketing con data (clienti e lead)
 - [ ] GDPR: esportazione e anonimizzazione di un contatto
 - [x] prove via API (42 controlli: visibilità, totali, PDF, conversione, riassegnazione, blocco della cancellazione) e nel browser sull'applicativo completo

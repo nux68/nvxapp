@@ -4,7 +4,7 @@ using static nvxapp.server.service.ClientServer_Service.Infrastructure.License.S
 
 namespace nvxapp.server.service.ClientServer_Service.Crm.Initializer.LicenseCatalog
 {
-    // Listini iniziali del CRM (ANALISI_LICENZE.md §15.5 [branch Infrastructure]): uno per gli studi (non esteso alle loro
+    // Listini iniziali del CRM (ANALISI_INFRASTRUCTURE_LICENZE.md §15.5 [branch Infrastructure]): uno per gli studi (non esteso alle loro
     // aziende) e uno per le aziende che si abbonano da sole. Limiti dei piani: i valori predefiniti della funzione (LicenseDefaults). Creati una sola volta all'avvio da LicenseCatalogSeeder (Infrastructure).
     public class CrmLicenseCatalogSeed : ILicenseCatalogSeed
     {

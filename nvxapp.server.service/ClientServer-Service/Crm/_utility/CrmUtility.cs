@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 {
     /*
-     Chi sta lavorando nel CRM (azienda e ruoli) e cosa vede (ANALISI_CRM.md §4):
+     Chi sta lavorando nel CRM (azienda e ruoli) e cosa vede (ANALISI_CRM_APPLICATIVO.md §4):
         - CompanyPowerAdmin: configurazione e tutto il resto
         - CompanyAdmin     : vede tutto, assegna i responsabili, report
         - User (commerciale): con la visibilita' "solo i propri" (predefinita) vede i clienti di cui e' responsabile,

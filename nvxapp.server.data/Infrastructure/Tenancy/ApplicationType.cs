@@ -9,7 +9,7 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
      Common (0) non e' un applicativo da attivare: sono i dati dell'azienda condivisi tra gli
      applicativi (anagrafica, clienti, contatti dei clienti). Il suo schema (tenant_<IdAzienda>_0)
      esiste SEMPRE, per ogni azienda, indipendentemente dagli applicativi attivi; non compare in
-     CompanyApplication. Vedi nvxapp.server/docs/ANALISI_CRM.md [branch CRM] §2.
+     CompanyApplication. Vedi nvxapp.server/docs/ANALISI_CRM_APPLICATIVO.md [branch CRM] §2.
 
      Il valore numerico finisce nel nome dello schema e nel database: non va mai cambiato
      per un applicativo esistente.

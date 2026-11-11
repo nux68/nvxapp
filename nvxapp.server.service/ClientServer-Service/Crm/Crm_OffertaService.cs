@@ -22,7 +22,7 @@ using System.Net;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Offerte (ANALISI_CRM.md §6.1): righe con prodotto, quantita', prezzo, sconto e IVA; totali calcolati qui.
+     Offerte (ANALISI_CRM_APPLICATIVO.md §6.1): righe con prodotto, quantita', prezzo, sconto e IVA; totali calcolati qui.
      Numerazione per anno (Crm_Cfg: prefisso, anno, ultimo numero) assegnata al primo salvataggio.
      PDF con MigraDoc (CrmOffertaPdf) e invio per email (IEmailService, PDF allegato): l'invio la segna "Inviata".
     */
