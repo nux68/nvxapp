@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
@@ -28,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "LeaveBalance",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryLeave"),
                 CategoryOrder = 300,
                 DisplayName = AttendanceTrackingMessages.Get("ChatLeaveBalanceDisplayName"),

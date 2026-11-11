@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -36,6 +37,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly IIntentCatalog _intentCatalog;
         private readonly IChatSessionStore _sessionStore;
         private readonly IChatUserContext _chatUserContext;
+        // applicativi attivi dell'azienda: i comandi degli altri non compaiono (IntentDefinition.Application)
+        private readonly ICompanyApplicationRepository? _companyApplicationRepository;
 
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
@@ -80,9 +83,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              ICommandRegistry commandRegistry,
                              IIntentCatalog intentCatalog,
                              IChatSessionStore sessionStore,
-                             IChatUserContext chatUserContext
+                             IChatUserContext chatUserContext,
+                             ICompanyApplicationRepository companyApplicationRepository
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _companyApplicationRepository = companyApplicationRepository;
             _rabbitMqConnection = rabbitMqConnection;
             _webApiService = webApiService;
             _commandRegistry = commandRegistry;
@@ -153,14 +158,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
                 }
 
+                // solo i comandi degli applicativi attivi per l'azienda (presenze, CRM, documentale)
+                var applications = ActiveApplications();
+                _intentCatalog.Filter4Applications(applications);
+
                 // utente corrente per gli handler: "@me", limiti per ruolo, help contestuale
                 _chatUserContext.UserId = CurrentUserId;
                 _chatUserContext.Roles = userRoles;
                 _chatUserContext.CurrentRoute = model.Data.CurrentRoute ?? string.Empty;
+                _chatUserContext.Applications = applications;
 
                 return await ProcessMessageAsync(model.Data);
 
             }, isSubProcess);
+        }
+
+        // Applicativi attivi dell'azienda della richiesta (claim "company"); nessuno se l'utente non ha
+        // un'azienda (centro, studio, superuser): restano i comandi comuni.
+        private IReadOnlyCollection<ApplicationType> ActiveApplications()
+        {
+            if (_companyApplicationRepository == null || !int.TryParse(CurrentCompany, out var idCompany) || idCompany <= 0)
+                return Array.Empty<ApplicationType>();
+            return _companyApplicationRepository.ActiveApplications(idCompany);
         }
 
         // Un turno di dialogo: comandi di controllo, conferma, chiamata al LLM, avanzamento del piano.
