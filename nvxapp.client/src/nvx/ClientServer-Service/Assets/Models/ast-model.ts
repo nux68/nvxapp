@@ -8,6 +8,8 @@ export class AstPermessiModel { public powerAdmin = false; public admin = false;
 export class AstCfgModel {
   public giorniPreavviso = 30;
   public notificheAttive = true;
+  public prenotazioneDurataMaxOre = 10;
+  public prenotazioneAnticipoMaxGiorni = 60;
   public note: string | null = null;
 }
 

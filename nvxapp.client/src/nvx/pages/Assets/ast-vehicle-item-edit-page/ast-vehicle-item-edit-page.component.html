@@ -1,0 +1,71 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        @switch (kind) {
+          @case ('assegnazione') {
+            <ion-item><ion-select formControlName="idDip_Anagrafica" [label]="'ast.fields.dipendente' | transloco" labelPlacement="floating" interface="popover">
+              @for (d of dipendenti; track d.id) { <ion-select-option [value]="d.id">{{ d.nominativo }}</ion-select-option> }
+            </ion-select></ion-item>
+            <ion-item><ion-input type="date" formControlName="dataInizio" [label]="'ast.fields.dal' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-item><ion-input type="date" formControlName="dataFine" [label]="'ast.fields.al' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-item><ion-toggle formControlName="usoPromiscuo">{{ 'ast.fields.usoPromiscuo' | transloco }}</ion-toggle></ion-item>
+            @if (_editForm.value.usoPromiscuo) {
+              <ion-item><ion-input type="number" formControlName="percentualeFringe" [label]="'ast.fields.percentualeFringe' | transloco" labelPlacement="floating"></ion-input></ion-item>
+              <ion-note class="nvx-nota-disabled">{{ 'ast.pages.vehicleItem.fringeNote' | transloco: { co2: veicolo.emissioniCO2 ?? '-' } }}</ion-note>
+            }
+            <ion-item><ion-input type="number" formControlName="rimborsoKm" [label]="'ast.fields.rimborsoKm' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-note class="nvx-nota-disabled">{{ 'ast.pages.vehicleItem.carNote' | transloco }}</ion-note>
+          }
+          @case ('scadenza') {
+            <ion-item><ion-select formControlName="tipo" [label]="'ast.fields.tipo' | transloco" labelPlacement="floating" interface="popover">
+              @for (t of tipiScadenza; track t) { <ion-select-option [value]="t">{{ 'ast.enums.tipoScadenza.' + t | transloco }}</ion-select-option> }
+            </ion-select></ion-item>
+            @if (_editForm.value.tipo === 4) {
+              <ion-item><ion-input formControlName="descrizione" maxlength="100" [label]="'ast.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            }
+            <ion-item><ion-input type="date" formControlName="dataScadenza" [label]="'ast.fields.dataScadenza' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-item><ion-input type="number" formControlName="km" [label]="'ast.fields.km' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input type="number" formControlName="importo" [label]="'ast.fields.importo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input type="date" formControlName="dataEsecuzione" [label]="'ast.fields.eseguita' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-note class="nvx-nota-disabled">{{ 'ast.pages.vehicleItem.deadlineNote' | transloco }}</ion-note>
+          }
+          @case ('costo') {
+            <ion-item><ion-input type="date" formControlName="data" [label]="'ast.fields.data' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-item><ion-select formControlName="tipo" [label]="'ast.fields.tipo' | transloco" labelPlacement="floating" interface="popover">
+              @for (t of tipiCosto; track t) { <ion-select-option [value]="t">{{ 'ast.enums.tipoCosto.' + t | transloco }}</ion-select-option> }
+            </ion-select></ion-item>
+            <ion-item><ion-input type="number" formControlName="importo" [label]="'ast.fields.importo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input type="number" formControlName="km" [label]="'ast.fields.km' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input formControlName="descrizione" maxlength="200" [label]="'ast.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input formControlName="documento" maxlength="50" [label]="'ast.fields.documento' | transloco" labelPlacement="floating"></ion-input></ion-item>
+          }
+          @case ('multa') {
+            <ion-item><ion-input type="datetime-local" formControlName="dataInfrazione" [label]="'ast.fields.dataInfrazione' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            <ion-item><ion-input formControlName="numeroVerbale" maxlength="50" [label]="'ast.fields.numeroVerbale' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input formControlName="luogo" maxlength="200" [label]="'ast.fields.luogo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input formControlName="descrizione" maxlength="500" [label]="'ast.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-input type="number" formControlName="importo" [label]="'ast.fields.importo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+            <ion-item><ion-select formControlName="idConducente" [label]="'ast.fields.conducente' | transloco" labelPlacement="floating" interface="popover">
+              <ion-select-option [value]="null">{{ 'ast.pages.vehicleItem.driverAuto' | transloco }}</ion-select-option>
+              @for (d of dipendenti; track d.id) { <ion-select-option [value]="d.id">{{ d.nominativo }}</ion-select-option> }
+            </ion-select></ion-item>
+            <ion-item><ion-select formControlName="stato" [label]="'ast.fields.stato' | transloco" labelPlacement="floating" interface="popover">
+              @for (s of statiMulta; track s) { <ion-select-option [value]="s">{{ 'ast.enums.statoMulta.' + s | transloco }}</ion-select-option> }
+            </ion-select></ion-item>
+            @if (_editForm.value.stato === 2) {
+              <ion-item><ion-input type="date" formControlName="dataPagamento" [label]="'ast.fields.dataPagamento' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+            }
+            <ion-note class="nvx-nota-disabled">{{ 'ast.pages.vehicleItem.fineNote' | transloco }}</ion-note>
+          }
+        }
+        @if (kind !== 'costo') {
+          <ion-item><ion-textarea formControlName="note" rows="3" maxlength="500" [autoGrow]="true" [label]="'ast.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+        }
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

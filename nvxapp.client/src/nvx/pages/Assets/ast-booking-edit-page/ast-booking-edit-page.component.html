@@ -1,0 +1,21 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-select formControlName="idAst_Risorsa" [label]="'ast.fields.risorsa' | transloco" labelPlacement="floating" interface="popover">
+          @for (r of risorse; track r.id) {
+            <ion-select-option [value]="r.id">{{ r.descrizione }} ({{ 'ast.enums.tipoRisorsa.' + r.tipo | transloco }}){{ r.sede ? ' - ' + r.sede : '' }}</ion-select-option>
+          }
+        </ion-select></ion-item>
+        <ion-item><ion-input type="datetime-local" formControlName="inizio" [label]="'ast.fields.inizio' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+        <ion-item><ion-input type="datetime-local" formControlName="fine" [label]="'ast.fields.fine' | transloco" labelPlacement="stacked"></ion-input></ion-item>
+        <ion-item><ion-input formControlName="titolo" maxlength="200" [label]="'ast.fields.titolo' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-textarea formControlName="note" rows="3" maxlength="500" [autoGrow]="true" [label]="'ast.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'ast.pages.bookingEdit.limits' | transloco: { ore: durataMaxOre || '-', giorni: anticipoMaxGiorni || '-' } }}</ion-note>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

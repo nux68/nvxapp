@@ -3,7 +3,7 @@
 Branch: **Assets_Dev** (riceve i merge da Infrastructure, si mergia in Assets).
 Documento generale: `ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md` (§4.3, aree `AST-*` in §10.2), punto `ANA.9`.
 
-Stato (11/11/2026): **analisi scritta, scheletro del modulo fatto** (`AST-BASE`, ramo di lavoro `Assets_Dev_ast-base`). Le aree funzionali (`AST-FLO`, `AST-BENI`, `AST-PREN`) sono da fare; decisioni aperte in §8.
+Stato (11/11/2026): **modulo base (`AST-BASE`) e aree funzionali `AST-FLO`, `AST-BENI`, `AST-PREN` fatti** (ramo di lavoro `Assets_Dev_f3`, provati su DB usa e getta, da mergiare); dettagli in §7.1, scelte provvisorie in §8.
 
 ---
 
@@ -71,8 +71,8 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 | Notifiche `INotificationSender` | `ClientServer-Service/infrastructure/Notification` | Multa da notificare al conducente, bene da restituire, prenotazione confermata o annullata. Rispettare `Ast_Cfg.NotificheAttive` |
 | Presa visione `IAcknowledgementService` | `ClientServer-Service/infrastructure/Acknowledgement` | Verbali di consegna e restituzione di beni e veicoli (`ast.consegna`, `ast.restituzione`). Con il Documentale (`DM-FIRMA.2`) diventano firma FES |
 | Dati Common | `Dip_Anagrafica`, `Az_Sedi` (`INF-COM.1`), `Dip_RapportoAutovetture` (`INF-COM.3`), data di cessazione (`INF-COM.4`) | Sola lettura con `Ast_<Entità>ReadRepository`; scritture delle assegnazioni dell'auto con i repository di `Repositories/Tenant/Common` |
-| Calendari (`INF-CAL`) | da fare | Pubblicazione delle prenotazioni sul calendario personale (facoltativa, `AST-PREN.3`) |
-| Cancellazione `IApplicationDataDeleter` | `AstDataDeleter` | Oggi solo `Ast_Cfg` in modalità singola. Con i dati: conteggi (veicoli, beni, prenotazioni), cancellazione per azienda in modalità singola; utente rimosso: prenotazioni future annullate, assegnazioni chiuse (i beni restano all'azienda) |
+| Calendari (`INF-CAL`) | `ICalendarEventProvider` | `AstCalendarEventProvider`: le prenotazioni confermate dell'utente nel suo feed .ics (`AST-PREN.3`) |
+| Cancellazione `IApplicationDataDeleter` | `AstDataDeleter` | Conteggi (veicoli, beni, prenotazioni), cancellazione per azienda in modalità singola; utente rimosso: prenotazioni future annullate. Le assegnazioni sono del dipendente (Common), non dell'utente: restano fino alla restituzione |
 
 ## 6. Integrazioni facoltative
 
@@ -88,14 +88,30 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 - Widget e comandi vocali: nessuno per ora.
 - Prova su DB usa e getta: azienda, attivazione come SuperUser (non bloccata dalle licenze), schema `tenant_<id>_7` con `Ast_Cfg`, Get/Put del CompanyPowerAdmin, Put rifiutata al CompanyAdmin (12 controlli, tutti ok).
 
+### 7.1 Fatto in `AST-FLO`, `AST-BENI`, `AST-PREN` (11/11/2026, ramo `Assets_Dev_f3`)
+
+- **Flotta** (`AST-FLO`, migration `AstFlotta`): `Ast_Veicolo` (targa unica per azienda), `Ast_VeicoloAssegnazione`, `Ast_VeicoloScadenza`, `Ast_VeicoloCosto`, `Ast_Multa`; `Dip_Anagrafica`, `Az_Sedi`, `Dip_RapportoAutovetture` in sola lettura nel contesto (`Ast_*ReadRepository`). Servizio `Ast_FlottaService` / `api/Ast_Flotta/*`.
+  - Assegnazione (un dipendente per volta, non sui veicoli in pool): crea o aggiorna l'autovettura del dipendente in Common (`Dip_RapportoAutovettureCommonRepository`: descrizione, targa, rimborso al km) usata dalle note spese delle Presenze; il riferimento sta nella tabella ponte (`IdDip_RapportoAutovetture`). A fine assegnazione l'autovettura resta (note spese già registrate).
+  - Fringe benefit informativo: 15.000 km × costo ACI × percentuale (da emissioni CO2 se non indicata: 25/30/50/60%), annuo e quota dell'anno in corso.
+  - Scadenzario: `ast.veicolo.scadenza` (chiusa con la data di esecuzione o con il veicolo dismesso) e `ast.veicolo.contratto` (noleggio/leasing). Multa: conducente proposto dal periodo di assegnazione, notifica al conducente (`Ast_MultaNotifica`).
+- **Beni** (`AST-BENI`, migration `AstBeni`): `Ast_Categoria` (5 predefinite all'attivazione), `Ast_Bene` (codice di inventario unico), `Ast_BeneAssegnazione` (indice unico filtrato: una sola consegna aperta per bene). Servizio `Ast_BeniService` / `api/Ast_Beni/*`.
+  - Consegna e restituzione con presa visione al dipendente (`ast.beni.consegna`, `ast.beni.restituzione`: la fonte contiene "beni"/"consegna", con il documentale attivo diventa il verbale di consegna beni da firmare); dipendente senza utente: solo registrazione. Garanzia nello scadenzario (`ast.bene.garanzia`).
+  - `AST-BENI.3`: `AstRestituzioni` trova beni e veicoli ancora assegnati a dipendenti con `DataCessazione` (Common) entro il preavviso: scadenza `ast.restituzione` / `ast.restituzione.veicolo` alla data di cessazione (chiusa alla restituzione o a fine assegnazione) e una notifica agli amministratori; `AstRestituzioniMaintenanceService` (registrato in `Installers4Assets`) la esegue ogni giorno, la pagina la lancia a richiesta.
+- **Prenotazioni** (`AST-PREN`, migration `AstPrenotazioni`): `Ast_Risorsa` (postazione, sala con capienza, auto in pool legata a un veicolo con uso "pool"), `Ast_Prenotazione`; `Ast_Cfg` con durata massima (10 h) e anticipo massimo (60 giorni). Servizio `Ast_PrenotazioniService` / `api/Ast_Prenotazioni/*`.
+  - Conflitti: `Ast_PrenotazioneRepository.SalvaSeLiberaAsync` (transazione + `pg_advisory_xact_lock` sulla risorsa): vale anche per richieste concorrenti. Gli utenti vedono le prenotazioni altrui solo come "occupato"; gli amministratori vedono i nomi e annullano (con notifica all'interessato).
+  - `AstCalendarEventProvider`: prenotazioni dell'utente nel feed .ics (contesto dalla factory, senza utente collegato).
+- **Client**: pagine `/astvehicles`, `/astvehicleedit`, `/astvehicleitemedit`, `/astgoods` (beni / da restituire / categorie), `/astgoodedit`, `/astgooditemedit`, `/astbookings`, `/astbookingedit`, `/astresources`, `/astresourceedit`, `/astmine` (le mie risorse: beni e verbali, veicolo, multe); impostazioni con i limiti delle prenotazioni; menu (amministratori: Veicoli, Beni, Prenotazioni, Risorse prenotabili, Le mie risorse, Impostazioni; utenti: Prenotazioni, Le mie risorse), i18n it/en, manuale.
+- **Notifiche**: categoria "generale" (le categorie hanno il titolo nei testi di Infrastructure), rispettano `Ast_Cfg.NotificheAttive`.
+- **Prova** su DB usa e getta multi-tenant (60 controlli, tutti ok): azienda, attivazione Assets, CRUD e permessi, autovettura in Common, scadenze nello scadenzario (aperte/chiuse), multa notificata, verbale di consegna creato, restituzioni alla cessazione (scadenze e notifica), conflitti di prenotazione rifiutati anche con 6 richieste concorrenti, prenotazione nel feed .ics dell'utente, conteggi nell'anteprima di cancellazione.
+
 ## 8. Decisioni aperte
 
 | # | Decisione | Note |
 |---|---|---|
 | AST-D1 | Livelli Free/Standard/Pro e prezzi (D8, `ANA.10`) | Oggi listini con la struttura del CRM e **prezzi segnaposto**, nessun limite |
-| AST-D2 | Fringe benefit: calcolo in Assets o solo dati per le Presenze | Proposta: Assets tiene valore ACI e periodi, l'export resta nelle Presenze |
-| AST-D3 | Legame tra `Dip_RapportoAutovetture` (Common) e `Ast_Veicolo` | Common non può riferire tabelle di un applicativo: targa come chiave logica o tabella ponte in Assets |
-| AST-D4 | Auto in pool: prenotazione con o senza approvazione | Proposta: senza approvazione, con limiti in `Ast_Cfg` |
+| AST-D2 | Fringe benefit: calcolo in Assets o solo dati per le Presenze | **Scelta provvisoria** (la proposta): Assets tiene costo ACI, percentuale e periodi e mostra il valore a titolo informativo; l'export resta nelle Presenze |
+| AST-D3 | Legame tra `Dip_RapportoAutovetture` (Common) e `Ast_Veicolo` | **Scelta provvisoria**: tabella ponte in Assets (`Ast_VeicoloAssegnazione.IdDip_RapportoAutovetture`); l'assegnazione crea/aggiorna l'autovettura in Common, che a fine assegnazione resta |
+| AST-D4 | Auto in pool: prenotazione con o senza approvazione | **Scelta provvisoria** (la proposta): senza approvazione, con durata massima e anticipo massimo in `Ast_Cfg` |
 | AST-D5 | Inventario con codici a barre/QR | Utile con `AT-TIMB.1` (QR); da valutare |
 | AST-D6 | Cartella i18n e `i18n-folders.ts` | Come per HR: riga aggiunta in `i18n-folders.ts` (file di Infrastructure), conflitto banale nel merge di AllFunction, oppure stub `i18n-assets.ts` in Infrastructure |
 
@@ -109,19 +125,20 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `AST-BASE.3` Menu, rotta, manuale e i18n; widget e comandi vocali: nessuno per ora
 
 #### `AST-FLO` – Flotta
-- ⏳ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
-- ⏳ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario
-- ⏳ `AST-FLO.3` Multe e costi
+- ✅ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
+- ✅ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario
+- ✅ `AST-FLO.3` Multe e costi
 
 #### `AST-BENI` – Beni assegnati
-- ⏳ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature)
-- ⏳ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`)
-- ⏳ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common)
+- ✅ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature)
+- ✅ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`)
+- ✅ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common)
 
 #### `AST-PREN` – Prenotazioni
-- ⏳ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
-- ⏳ `AST-PREN.2` Calendario delle prenotazioni e conflitti
-- ⏳ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa)
+- ✅ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
+- ✅ `AST-PREN.2` Calendario delle prenotazioni e conflitti
+- ✅ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa)
 
 #### Decisioni
-- 🔍 `AST-D1`…`AST-D6` (§8)
+- 🔍 `AST-D1`, `AST-D5`, `AST-D6` (§8)
+- 🔍 `AST-D2`, `AST-D3`, `AST-D4`: scelte provvisorie applicate in `AST-FLO`/`AST-PREN`, da confermare
