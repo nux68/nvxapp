@@ -6,7 +6,7 @@ import { GenericRequest } from '../ModelsBase/generic-request';
 import { GenericResult } from '../ModelsBase/generic-result';
 import { DocSpazioPerTipoGetInModel, DocSpazioPerTipoGetOutModel } from './Models/doc-widget-model';
 
-// Dati dei widget della dashboard del documentale (ANALISI_WIDGET_DOCUMENTALE.md)
+// Dati dei widget della dashboard del documentale (ANALISI_DOCUMENTMANAGEMENT_WIDGET.md)
 @Injectable({
   providedIn: 'root'
 })

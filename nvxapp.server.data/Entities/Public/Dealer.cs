@@ -13,7 +13,7 @@ namespace nvxapp.server.data.Entities.Public
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        // il centro puo' definire i propri listini delle licenze (ANALISI_LICENZE.md §3.3); lo abilita il SuperUser
+        // il centro puo' definire i propri listini delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §3.3); lo abilita il SuperUser
         public bool PuoGestireListini { get; set; }
 
         public ICollection<FinancialAdvisor>? FinancialAdvisor { get; set; }

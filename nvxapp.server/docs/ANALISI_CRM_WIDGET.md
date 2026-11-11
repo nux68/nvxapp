@@ -1,7 +1,7 @@
 # Widget della dashboard — CRM
 
 Dettaglio del ramo **CRM**. Il funzionamento generale (catalogo per ramo, configurazione per utente, tabella
-`UserDashboard`, stili comuni) è in `ANALISI_WIDGET.md` (Infrastructure).
+`UserDashboard`, stili comuni) è in `ANALISI_INFRASTRUCTURE_WIDGET.md` (Infrastructure).
 
 ## 1. Stato
 
@@ -35,7 +35,7 @@ Nella pagina di configurazione il gruppo "CRM" non compare finché il ramo non d
 
 | Chiave proposta | Titolo | Ruoli | Contenuto |
 |---|---|---|---|
-| `crm.clients` | Clienti | CompanyPowerAdmin, CompanyAdmin | numero di clienti e, con licenza a limite, clienti usati / massimo del piano (ANALISI_LICENZE.md §5.1) |
+| `crm.clients` | Clienti | CompanyPowerAdmin, CompanyAdmin | numero di clienti e, con licenza a limite, clienti usati / massimo del piano (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1) |
 | `crm.activities` | Attività di oggi | tutti | attività e scadenze del giorno assegnate all'utente |
 | `crm.opportunities` | Opportunità | CompanyPowerAdmin, CompanyAdmin | opportunità aperte per fase |
 

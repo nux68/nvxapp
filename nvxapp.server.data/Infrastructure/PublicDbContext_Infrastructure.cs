@@ -20,7 +20,7 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<CompanyStorage> CompanyStorage { get; set; }
         public DbSet<CompanyStorageHistory> CompanyStorageHistory { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
-        // widget della dashboard scelti da ogni utente (ANALISI_WIDGET.md)
+        // widget della dashboard scelti da ogni utente (ANALISI_INFRASTRUCTURE_WIDGET.md)
         public DbSet<UserDashboard> UserDashboard { get; set; }
         public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
@@ -47,7 +47,7 @@ namespace nvxapp.server.data.Infrastructure
         // registro delle cancellazioni fisiche (centri, studi, aziende, utenti)
         public DbSet<DeletionLog> DeletionLog { get; set; }
 
-        // licenze d'uso degli applicativi (ANALISI_LICENZE.md)
+        // licenze d'uso degli applicativi (ANALISI_INFRASTRUCTURE_LICENZE.md)
         public DbSet<Lic_Listino> Lic_Listino { get; set; }
         public DbSet<Lic_Piano> Lic_Piano { get; set; }
         public DbSet<Lic_Abbonamento> Lic_Abbonamento { get; set; }
@@ -78,7 +78,7 @@ namespace nvxapp.server.data.Infrastructure
         }
 
         /*
-         Licenze d'uso (ANALISI_LICENZE.md).
+         Licenze d'uso (ANALISI_INFRASTRUCTURE_LICENZE.md).
          Impostazioni (AppSetting):
             - Licenze_Attive          : "true" = le regole delle licenze si applicano; altrimenti ILicenseGuard risponde
                                         in modo neutro (come Pro, utenti illimitati) e nessuno viene bloccato (§8.1.1).
@@ -176,7 +176,7 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany()
                       .HasForeignKey(e => e.IdAbbonamento)
                       .OnDelete(DeleteBehavior.SetNull);
-                // ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md)
+                // ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md)
                 entity.HasIndex(e => new { e.IdDealer, e.DataPagamento });
                 entity.HasIndex(e => e.IdRendiconto);
                 entity.HasIndex(e => e.IdRendicontoRettifica);
@@ -206,7 +206,7 @@ namespace nvxapp.server.data.Infrastructure
         }
 
         /*
-         Ripartizione degli incassi delle licenze ai centri (ANALISI_PAGAMENTI_CENTRI.md).
+         Ripartizione degli incassi delle licenze ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md).
          Impostazioni (AppSetting):
             - Pagamenti_PercentualePiattaforma : trattenuta della piattaforma (0-100) per i centri senza una propria
             - Pagamenti_RiepilogoAutomatico    : "true" = la manutenzione genera i rendiconti e invia i riepiloghi
@@ -300,8 +300,8 @@ namespace nvxapp.server.data.Infrastructure
             });
         }
         /*
-         Spazio dei file delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3).
-         La quota e' quella della licenza Documentale (ANALISI_LICENZE.md §5.1): i pacchetti di spazio e la dimensione
+         Spazio dei file delle aziende (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3).
+         La quota e' quella della licenza Documentale (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): i pacchetti di spazio e la dimensione
          massima del file sono stati eliminati. Dato iniziale: soglia di avviso all'80%.
         */
         public const string Key_StorageWarningPercent = "Storage_WarningPercent";

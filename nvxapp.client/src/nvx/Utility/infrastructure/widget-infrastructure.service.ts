@@ -3,7 +3,7 @@ import { iWidgetProvider, WidgetDefinition } from './widget.model';
 import { AskAssistantWidgetComponent } from '../../shared/components/infrastructure/widgets/ask-assistant-widget/ask-assistant-widget.component';
 
 /*
- Widget delle funzioni base (ANALISI_WIDGET.md), disponibili in ogni ramo e per ogni utente.
+ Widget delle funzioni base (ANALISI_INFRASTRUCTURE_WIDGET.md), disponibili in ogni ramo e per ogni utente.
 */
 @Injectable({
   providedIn: 'root'

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm
 {
-    // Parti comuni dei comandi CRM della chat (ANALISI_VOCALI_CRM.md): ruoli, formati, slot ricorrenti,
+    // Parti comuni dei comandi CRM della chat (ANALISI_CRM_VOCALI.md): ruoli, formati, slot ricorrenti,
     // ricerca di clienti e tipi di attività. La visibilità dei dati resta nei servizi del CRM.
     public static class ChatCrmHelper
     {

@@ -22,7 +22,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_WidgetService
 {
     /*
-     Dati dei widget della dashboard delle presenze (ANALISI_WIDGET_PRESENZE.md).
+     Dati dei widget della dashboard delle presenze (ANALISI_ATTENDANCETRACKING_WIDGET.md).
        - Presenti oggi (CompanyPowerAdmin, CompanyAdmin): dipendenti (ruolo User) in servizio oggi; il CompanyAdmin vede
          solo quelli dei reparti che amministra (come report ed export). Presente = l'ultima timbratura valida di oggi
          non e' un'uscita (stessa regola della pagina "Personale presente"); tra gli assenti si contano a parte quelli

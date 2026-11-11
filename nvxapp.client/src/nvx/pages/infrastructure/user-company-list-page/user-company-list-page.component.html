@@ -8,7 +8,7 @@
 
   <ion-card>
     <ion-card-content>
-      <!-- utenti attivi e limite della licenza (ANALISI_LICENZE.md §5.1) -->
+      <!-- utenti attivi e limite della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1) -->
       @if (limiteUtenti != null && userCompanyList) {
         <p [class.nvx-nota-disabled]="utentiAttivi < limiteUtenti" [style.color]="utentiAttivi >= limiteUtenti ? 'var(--ion-color-warning-shade)' : null">
           {{ 'pages.userCompanyList.activeUsersOfLimit' | transloco: { attivi: utentiAttivi, limite: limiteUtenti } }}

@@ -24,7 +24,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Clienti nel CRM (ANALISI_CRM.md §6.1): anagrafica comune (Az_Cliente, scritta con i repository di Infrastructure)
+     Clienti nel CRM (ANALISI_CRM_APPLICATIVO.md §6.1): anagrafica comune (Az_Cliente, scritta con i repository di Infrastructure)
      + dati del CRM (Crm_ClienteDati, tag) + scheda con contatti, opportunita', attivita', offerte, note e allegati.
      Ognuno lavora sui clienti che vede (CrmUtility.ClientiVisibili); un commerciale che crea un cliente ne diventa
      responsabile, e solo gli amministratori cambiano il responsabile di un cliente gia' assegnato ad altri.
@@ -152,7 +152,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 cliente.CodiceDestinatario = Pulito(d.CodiceDestinatario)?.ToUpperInvariant();
                 cliente.Note = Pulito(d.Note);
 
-                // limite clienti della licenza CRM (ANALISI_LICENZE.md [branch Infrastructure] §5.1): cliente nuovo, riattivato
+                // limite clienti della licenza CRM (ANALISI_INFRASTRUCTURE_LICENZE.md [branch Infrastructure] §5.1): cliente nuovo, riattivato
                 // o che smette di essere solo fornitore
                 if (_licenseGuard.ContaComeCliente(cliente) && !contavaPrima && int.TryParse(this.CurrentCompany, out var idCompany))
                     await _licenseGuard.EnsureCanAddClientAsync(idCompany);

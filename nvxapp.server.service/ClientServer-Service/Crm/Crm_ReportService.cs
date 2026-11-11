@@ -20,7 +20,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Report del CRM (ANALISI_CRM.md §6.2), sui dati visibili all'utente: pipeline aperta per fase e per responsabile
+     Report del CRM (ANALISI_CRM_APPLICATIVO.md §6.2), sui dati visibili all'utente: pipeline aperta per fase e per responsabile
      (valore e valore pesato con la probabilita'), opportunita' vinte e perse nel periodo, conversione dei lead,
      attivita' fatte per utente. Tabelle semplici (le pagine le mostrano con barre).
     */

@@ -1,7 +1,7 @@
 # Widget della dashboard — Presenze
 
 Dettaglio del ramo **AttendanceTracking**. Il funzionamento generale (catalogo per ramo, configurazione per
-utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_WIDGET.md` (Infrastructure).
+utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_INFRASTRUCTURE_WIDGET.md` (Infrastructure).
 
 ## 1. Widget
 
@@ -10,7 +10,7 @@ utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_WIDGET.md` (Infras
 | `attendance.presentToday` | Presenti oggi | small (1/3) | CompanyPowerAdmin, CompanyAdmin | sì | `Dip_Widget/Widget_PresenzeOggiGet` |
 | `attendance.requests` | Richieste | small (1/3) | CompanyPowerAdmin, CompanyAdmin, User | sì | `Dip_Widget/Widget_RichiesteGet` |
 
-- Compaiono solo se le **presenze sono attive** per l'azienda (applicativo attivo e licenza: ANALISI_LICENZE.md §15.6).
+- Compaiono solo se le **presenze sono attive** per l'azienda (applicativo attivo e licenza: ANALISI_INFRASTRUCTURE_LICENZE.md §15.6).
 - Dichiarazione: `Utility/infrastructure/widget-attendance-tracking.service.ts` (in Infrastructure è vuoto).
 - Servizio server comune: `Dip_WidgetService` (`ClientServer-Service/GestionePresenze/Dip_WidgetService/`),
   controller `Dip_WidgetController`.

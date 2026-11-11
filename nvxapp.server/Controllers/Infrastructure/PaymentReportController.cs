@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.Infrastructure
 {
-    // Pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): SuperUser e utenti del centro.
+    // Pagamenti delle licenze e ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): SuperUser e utenti del centro.
     // I ruoli li controlla il servizio.
     [ApiController]
     [Route("api/[controller]")]

@@ -1,7 +1,7 @@
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Livelli dei ticket di assistenza (vedi nvxapp.server.service/ANALISI_TICKET.md).
+     Livelli dei ticket di assistenza (vedi nvxapp.server.service/ANALISI_INFRASTRUCTURE_TICKET.md).
      Il numero cresce scendendo nella gerarchia: un livello "sopra" ha un valore piu' basso.
      I valori finiscono nel database: non vanno cambiati.
     */

@@ -6,7 +6,7 @@ using Serilog;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Seed
 {
     /*
-     Crea all'avvio i listini iniziali dichiarati dai rami (ILicenseCatalogSeed), ANALISI_LICENZE.md §15.5.
+     Crea all'avvio i listini iniziali dichiarati dai rami (ILicenseCatalogSeed), ANALISI_INFRASTRUCTURE_LICENZE.md §15.5.
      Ogni listino (tipo soggetto + funzione) si crea UNA sola volta, segnata in AppSetting
      (Licenze_ListinoIniziale_<TipoSoggetto>_<Ambito>):
         - se esiste gia' un listino globale per quel tipo e quella funzione (attivo o no), non si tocca e si segna come fatto

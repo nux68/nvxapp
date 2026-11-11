@@ -16,7 +16,7 @@ import {
 } from '../../../ClientServer-Service/GestionePresenze/Par_Formule/Models/par-formule-model';
 
 /*
- Modifica di una formula personalizzata del calcolo giornata (ANALISI_FORMULE.md).
+ Modifica di una formula personalizzata del calcolo giornata (ANALISI_ATTENDANCETRACKING_FORMULE.md).
  La formula e' JavaScript eseguito SUL SERVER (Jint) durante il calcolo: qui si scrive, si controlla,
  si prova su un dipendente e un giorno senza salvare nulla, e si leggono i log dei calcoli.
 */

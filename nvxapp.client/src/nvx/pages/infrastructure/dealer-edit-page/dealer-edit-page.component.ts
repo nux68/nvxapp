@@ -42,7 +42,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
 
       descrizione: [null, [Validators.required, Validators.maxLength(20)]],
       disabled: [false],
-      // vuota = trattenuta generale (ANALISI_PAGAMENTI_CENTRI.md)
+      // vuota = trattenuta generale (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md)
       percentualePiattaforma: [null, [Validators.min(0), Validators.max(100)]],
 
     });

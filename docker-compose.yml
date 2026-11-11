@@ -1,4 +1,4 @@
-# nvxapp in Docker: app + PostgreSQL + RabbitMQ (punto 9 di nvxapp.server/docs/ANALISI_DOCKER.md).
+# nvxapp in Docker: app + PostgreSQL + RabbitMQ (punto 9 di nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md).
 #
 # File base, comune a tutti gli ambienti. Si usa sempre insieme a un override:
 #   docker-compose.local.yml  PC di sviluppo: costruisce l'immagine, app su http://localhost:8080 e https://LAN_IP:8443 (Caddy)
@@ -33,7 +33,7 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      # segreti e valori per ambiente dal file di ambiente (sezione 8 di ANALISI_DOCKER.md)
+      # segreti e valori per ambiente dal file di ambiente (sezione 8 di ANALISI_INFRASTRUCTURE_DOCKER.md)
       NVXAPP_ConnectionStrings__nvxappDbContext: "Server=postgres;Port=5432;Database=${POSTGRES_DB:-nvxapp};User Id=postgres;Password=${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env)};"
       NVXAPP_JwtParameter__Key: ${NVXAPP_JwtParameter__Key:?impostare NVXAPP_JwtParameter__Key nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env), almeno 32 caratteri}
       NVXAPP_RabbitQm__Connection__HostName: rabbitmq

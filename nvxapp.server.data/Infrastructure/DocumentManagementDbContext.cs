@@ -7,7 +7,7 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 namespace nvxapp.server.data.Infrastructure
 {
     /*
-     Applicativo 4 - DocumentManagement (documentale), ANALISI_DOCUMENTALE.md.
+     Applicativo 4 - DocumentManagement (documentale), ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md.
      multi-tenant: tenant_<IdAzienda>_4     modalita' singola: public
      Migration in Migrations/DocumentManagement.
 

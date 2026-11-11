@@ -2,7 +2,7 @@
 
 Branch di sviluppo: **Infrastructure_Dev** (funzione condivisa: tabelle in `public`, cartelle `Infrastructure`).
 Documento di sola analisi: nessun codice è stato scritto.
-Riferimento: `nvxapp.server.service/ANALISI_TICKET.md` (livelli, passaggi, §4.1 risoluzione AI).
+Riferimento: `nvxapp.server.service/ANALISI_INFRASTRUCTURE_TICKET.md` (livelli, passaggi, §4.1 risoluzione AI).
 
 ---
 
@@ -38,7 +38,7 @@ Il punto debole della tabella unica (l'integrità) si copre così:
   - `Level = Company` → solo `IdCompany`.
 
   A differenza di `Ticket` si salva **solo** l'id del nodo proprietario, non tutto il percorso: se l'azienda passa a un altro studio (`CompanyMove`) i documenti la seguono senza riallineamenti.
-- Cancellazione del nodo → cascade sui suoi documenti (sono "suoi", non c'è storia da conservare). Vedi anche `ANALISI_CANCELLAZIONE.md`.
+- Cancellazione del nodo → cascade sui suoi documenti (sono "suoi", non c'è storia da conservare). Vedi anche `ANALISI_INFRASTRUCTURE_CANCELLAZIONE.md`.
 
 ---
 
@@ -300,7 +300,7 @@ Decisioni tecniche prese nell'implementazione:
 - `Utility/infrastructure`: route e voci di menu sotto "Assistenza"
 - `assets/i18n/infrastructure`
 
-**Documentazione:** aggiornare `ANALISI_TICKET.md` §3.1, §3.5, §4.1, §5 (riapertura) quando l'analisi è approvata.
+**Documentazione:** aggiornare `ANALISI_INFRASTRUCTURE_TICKET.md` §3.1, §3.5, §4.1, §5 (riapertura) quando l'analisi è approvata.
 
 ---
 

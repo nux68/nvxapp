@@ -5,7 +5,7 @@ using nvxapp.server.data.Entities.Public;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Payment
 {
     /*
-     Pagamenti delle licenze (ANALISI_LICENZE.md §7).
+     Pagamenti delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §7).
      Il servizio licenze parla solo con IPaymentGateway: non conosce i dettagli del provider.
         - DebugPaymentGateway: giro completo senza transazione reale (§7.2), attivo con Payments:Debug = true
           (appsettings.json, o variabile d'ambiente NVXAPP_Payments__Debug). Per ora e' acceso ovunque, anche in

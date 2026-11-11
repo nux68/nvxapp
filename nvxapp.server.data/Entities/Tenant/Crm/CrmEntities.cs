@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace nvxapp.server.data.Entities.Tenant.Crm
 {
     /*
-     CRM (ANALISI_CRM.md §5), schema tenant_<IdAzienda>_3 (o public in modalita' singola). Tabelle con prefisso Crm_.
+     CRM (ANALISI_CRM_APPLICATIVO.md §5), schema tenant_<IdAzienda>_3 (o public in modalita' singola). Tabelle con prefisso Crm_.
      Le tabelle comuni (Az_Anagrafica, Az_Cliente, Az_ClienteContatto) stanno nello schema Common e sono mappate in
      sola lettura in CrmDbContext: i dati del CRM su un cliente stanno nell'estensione 1-1 Crm_ClienteDati.
      Gli allegati stanno fuori dal database (IFileStorage): qui solo i metadati e la chiave del file.

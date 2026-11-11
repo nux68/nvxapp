@@ -7,7 +7,7 @@ import { CompanyStorageGetInModel, CompanyStorageModel } from '../../../../../Cl
 import { formatBytes, QUOTA_ILLIMITATA_MB } from '../doc-widget-format';
 
 /*
- Widget "Spazio documenti" (Documentale, ANALISI_WIDGET_DOCUMENTALE.md): spazio occupato e disponibile dell'azienda,
+ Widget "Spazio documenti" (Documentale, ANALISI_DOCUMENTMANAGEMENT_WIDGET.md): spazio occupato e disponibile dell'azienda,
  dalla quota della licenza Documentale, illimitata senza licenza (CompanyStorageGet, Infrastructure).
 */
 @Component({

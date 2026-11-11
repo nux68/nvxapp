@@ -120,7 +120,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
         /// <summary>
-        /// Export verso le paghe (analisi ANALISI_EXPORT_AI.md, par. 3): job in background.
+        /// Export verso le paghe (analisi ANALISI_ATTENDANCETRACKING_EXPORT_AI.md, par. 3): job in background.
         /// Metadati JSON dei dipendenti scelti (solo quelli che l'amministratore puo' vedere); se il modello ha documentazione
         /// la ricetta dell'AI (salvata o rigenerata) li scrive nel formato del programma paghe, altrimenti il file e' il JSON.
         /// Se la ricetta non si puo' ottenere (AI non raggiungibile, ricetta non valida) si scarica comunque il JSON, con un avviso.

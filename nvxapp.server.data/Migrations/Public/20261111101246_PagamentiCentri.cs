@@ -152,7 +152,7 @@ namespace nvxapp.server.data.Migrations.Public
                     { "Pagamenti_RiepilogoAutomatico", null, "false" }
                 });
 
-            // pagamenti gia' presenti (ANALISI_PAGAMENTI_CENTRI.md §2): centro del cliente oggi (azienda -> studio -> centro
+            // pagamenti gia' presenti (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §2): centro del cliente oggi (azienda -> studio -> centro
             // oppure studio -> centro) e data di incasso = ultima modifica per quelli andati a buon fine (Completato, Debug).
             // Per i soggetti gia' cancellati il centro resta vuoto: la quota rimane alla piattaforma.
             migrationBuilder.Sql(@"

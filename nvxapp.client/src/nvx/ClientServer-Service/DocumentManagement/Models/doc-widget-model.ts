@@ -1,6 +1,6 @@
 import { ModelResult } from "../../ModelsBase/model-result";
 
-// spazio occupato per tipo documento (widget "Spazio per tipo documento", ANALISI_WIDGET_DOCUMENTALE.md)
+// spazio occupato per tipo documento (widget "Spazio per tipo documento", ANALISI_DOCUMENTMANAGEMENT_WIDGET.md)
 export class DocSpazioPerTipoGetInModel { }
 
 export class DocSpazioPerTipoModel {

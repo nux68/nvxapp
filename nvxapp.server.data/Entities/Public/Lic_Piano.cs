@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Piano di un listino (ANALISI_LICENZE.md §3.1, §5): uno per livello (Free, Standard, Pro).
+     Piano di un listino (ANALISI_INFRASTRUCTURE_LICENZE.md §3.1, §5): uno per livello (Free, Standard, Pro).
         - Codice, Descrizione: etichette modificabili da chi gestisce il listino
         - PrezzoMensile, PrezzoAnnuale: Free sempre 0
         - limiti del piano, null = illimitati (§5.1): MaxUtenti (Presenze), MaxClienti (CRM), MaxSpazioMB (Documentale);

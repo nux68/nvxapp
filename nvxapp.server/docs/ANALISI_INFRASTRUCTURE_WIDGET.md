@@ -5,9 +5,9 @@ Documento generale (ramo **Infrastructure**). Ogni ramo applicativo ha il propri
 | Ramo | Documento | Widget |
 |---|---|---|
 | Infrastructure | questo documento (§6) | Chiedi all'assistente |
-| AttendanceTracking (Presenze) | `ANALISI_WIDGET_PRESENZE.md` | Dipendenti presenti/assenti, Richieste approvate/da approvare |
-| DocumentManagement (Documentale) | `ANALISI_WIDGET_DOCUMENTALE.md` | Spazio occupato/disponibile, Spazio per tipo documento |
-| CRM | `ANALISI_WIDGET_CRM.md` | nessuno per ora (punto di estensione pronto) |
+| AttendanceTracking (Presenze) | `ANALISI_ATTENDANCETRACKING_WIDGET.md` | Dipendenti presenti/assenti, Richieste approvate/da approvare |
+| DocumentManagement (Documentale) | `ANALISI_DOCUMENTMANAGEMENT_WIDGET.md` | Spazio occupato/disponibile, Spazio per tipo documento |
+| CRM | `ANALISI_CRM_WIDGET.md` | nessuno per ora (punto di estensione pronto) |
 
 ---
 
@@ -59,7 +59,7 @@ I file dei rami non entrano in conflitto nei merge: ognuno modifica solo il prop
 `WidgetService.Disponibili` filtra il catalogo del ramo:
 
 1. **Applicativo attivo**: un widget di un applicativo compare solo se l'applicativo è attivo per l'azienda dell'utente
-   (`AuthService.hasApplication`, che tiene già conto delle **licenze**: ANALISI_LICENZE.md §15.6).
+   (`AuthService.hasApplication`, che tiene già conto delle **licenze**: ANALISI_INFRASTRUCTURE_LICENZE.md §15.6).
    I widget di Infrastructure ci sono sempre.
 2. **Ruoli**: ogni widget può limitare i ruoli che lo usano (`roles`); senza indicazione vale per tutti.
 

@@ -19,7 +19,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 {
     /*
-     Gestione delle licenze (ANALISI_LICENZE.md §4, §6, §10, §12).
+     Gestione delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §4, §6, §10, §12).
         - impostazioni e abilitazione dei centri a gestire i listini: solo SuperUser
         - listini globali: SuperUser; listini del centro: SuperUser o DealerPowerAdmin del centro abilitato (PuoGestireListini);
           gli altri utenti del centro vedono in sola lettura i listini globali e quelli del proprio centro
@@ -569,7 +569,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     retVal.Messages.Add(new Message(InfrastructureMessages.Get(retVal.Debug ? "LicenseSubscribedDebug" : "LicenseSubscribed"), MessageType.Information));
 
                 // azienda che si sottoscrive da se' la licenza: si attivano gli applicativi coperti, con schema e dati iniziali
-                // come in companyedit (ANALISI_LICENZE.md §15.6). Un errore non annulla la sottoscrizione: si avvisa.
+                // come in companyedit (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6). Un errore non annulla la sottoscrizione: si avvisa.
                 if (soggetto.Tipo == TipoSoggettoLicenza.Company && esito.Abbonamento.Stato == StatoAbbonamento.Attivo)
                 {
                     try
