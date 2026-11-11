@@ -17,8 +17,8 @@ in un contesto dedicato. Gli applicativi sono l'enum ApplicationType
 
 COMMON (dati comuni dell'azienda, vedi nvxapp.server/docs/ANALISI_CRM_APPLICATIVO.md [branch CRM] §2)
     Tabelle condivise tra gli applicativi: Az_Anagrafica (una riga per azienda), Az_Cliente, Az_ClienteContatto,
-    Dip_Anagrafica (utente facoltativo). Le entita' comuni sono partial: un ramo puo' aggiungere navigazioni
-    verso le proprie tabelle, che CommonDbContext ignora.
+    Dip_Anagrafica (utente facoltativo), Az_Sedi, Az_SediReparto, Par_Competenza, Dip_Competenza, Dip_RapportoAutovetture.
+    Le entita' comuni sono partial: un ramo puo' aggiungere navigazioni verso le proprie tabelle, che CommonDbContext ignora.
     Non si attiva in CompanyApplication: lo schema tenant_<IdAzienda>_0 esiste per ogni azienda ed e' migrato
     per primo (gli applicativi hanno chiavi esterne verso le sue tabelle).
     Gli applicativi le mappano con ExcludeFromMigrations() SENZA schema (sola lettura): il search_path dei loro
@@ -93,6 +93,8 @@ storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica)
+          CommonSediCompetenzeAutovetture (11/11/2026, INF-COM): Az_Sedi, Az_SediReparto, Par_Competenza, Dip_Competenza,
+          Dip_RapportoAutovetture (legata a Dip_Anagrafica) e Dip_Anagrafica.DataAssunzione; i dati delle presenze li sposta AT-COM
   Moke:   InitMoke
 
 

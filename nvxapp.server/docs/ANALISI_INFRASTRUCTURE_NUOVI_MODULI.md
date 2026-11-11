@@ -77,7 +77,7 @@ Adempimenti normativi. È il modulo che lo studio può proporre a tutte le sue a
 
 ### 4.3 Risorse aziendali (Assets)
 Cosa possiede l'azienda e a chi lo assegna.
-- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. `Dip_RapportoAutovetture` si sposta in Common (D5): Assets lo gestisce e le Presenze continuano a leggerlo per l'export paghe.
+- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. `Dip_RapportoAutovetture` si sposta in Common (D5): Assets lo gestisce e le Presenze continuano a leggerlo per le note spese (rimborsi chilometrici, `Dip_GG_NotaSpesa.IdDip_RapportoAutovetture`).
 - **Beni assegnati**: PC, telefoni, badge e attrezzature, con consegna e restituzione (verbale firmato tramite il Documentale) e collegamento all'offboarding di HR.
 - **Prenotazioni**: postazioni, sale e auto in pool, con calendario e sincronizzazione (§5).
 
@@ -106,8 +106,8 @@ Le entità delle Presenze esistono solo nel branch AttendanceTracking: lo sposta
 | Sedi e reparti (`Az_Sedi`, `Az_SediReparto`) | Presenze | HR, Compliance (sicurezza per sede), Assets (beni per sede) | Spostarli in Common. Le tabelle di collegamento proprie delle Presenze (`Az_SediRepartoUser`, `Az_SediAttivita`…) restano nelle Presenze |
 | Commesse (`Az_Commessa`, `Az_SubCommessa`) | Presenze | CRM (opportunità vinta che diventa commessa), in futuro Amministrazione | Restano nelle Presenze, dove sta il controllo di gestione (D2). Da rivalutare quando si avvia Amministrazione |
 | Competenze (`Par_Competenza`, `Dip_Competenza`) | Presenze | HR, Compliance | Spostarle prima di avviare HR |
-| Autovetture del dipendente (`Dip_RapportoAutovetture`) | Presenze | Assets (flotta), Presenze (export paghe) | **Deciso (D5)**: in Common |
-| Rapporto di lavoro | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | **Deciso (D6)**: in Common vanno **solo le date di assunzione e cessazione**. Il resto del rapporto resta nelle Presenze |
+| Autovetture del dipendente (`Dip_RapportoAutovetture`) | Presenze | Assets (flotta), Presenze (note spese, rimborsi km) | **Deciso (D5)**: in Common, legata a `Dip_Anagrafica` (`IdDip_Anagrafica`) invece che al rapporto di lavoro, che resta nelle Presenze |
+| Rapporto di lavoro | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | **Deciso (D6)**: in Common vanno **solo le date di assunzione e cessazione**, come campi di `Dip_Anagrafica` (`DataAssunzione`, `DataCessazione`). Il resto del rapporto resta nelle Presenze |
 
 ## 7. Cosa serve per aggiungere un gruppo nuovo
 
@@ -165,7 +165,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 |---|---|---|---|---|---|---|
 | `ANA` | Analisi di dettaglio e decisioni | Infrastructure_Dev (+ rami dei moduli) | `wt_ana` | – | 1 | 🔄 |
 | `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ⏳ |
-| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ⏳ |
+| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | 🔄 fatto, merge solo insieme ad `AT-COM` |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ⏳ |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
@@ -221,12 +221,12 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `INF-APP.7` CLAUDE.md: nuovi gruppi nell'elenco dei branch e nella catena di AllFunction (Infrastructure, AttendanceTracking, CRM, DocumentManagement, HumanResources, Compliance, Assets)
 
 #### `INF-COM` – Dati in Common, lato Infrastructure (§6)
-- ⏳ `INF-COM.1` Entità Common `Az_Sedi`, `Az_SediReparto` e migration del contesto Common
-- ⏳ `INF-COM.2` Entità Common `Par_Competenza`, `Dip_Competenza`
-- ⏳ `INF-COM.3` Entità Common `Dip_RapportoAutovetture` (D5)
-- ⏳ `INF-COM.4` Date di assunzione e cessazione in Common (campi di `Dip_Anagrafica` o tabella dedicata) (D6)
-- ⏳ `INF-COM.5` Servizi e pagine comuni di sola lettura per i moduli che non sono le Presenze (sedi, reparti, competenze)
-- ⏳ `INF-COM.6` `CommonDataDeleter` aggiornato per le nuove tabelle
+- ✅ `INF-COM.1` Entità Common `Az_Sedi`, `Az_SediReparto` e migration del contesto Common — entità partial in `Entities/Tenant/Common` senza le collection verso le Presenze, configurate in `CommonDbContext`; migration `CommonSediCompetenzeAutovetture` (solo le nuove tabelle e `DataAssunzione`); repository `*CommonRepository`
+- ✅ `INF-COM.2` Entità Common `Par_Competenza`, `Dip_Competenza` — indice univoco (`IdDip_Anagrafica`, `IdPar_Competenza`); la collection `Dip_Anagrafica.Dip_Competenza` è nella classe comune (AT-COM la toglie da `Dip_Anagrafica.Presenze.cs`)
+- ✅ `INF-COM.3` Entità Common `Dip_RapportoAutovetture` (D5) — legata a `Dip_Anagrafica` (FK Cascade) invece che a `Dip_RapportoLavoro`; AT-COM converte i dati
+- ✅ `INF-COM.4` Date di assunzione e cessazione in Common (campi di `Dip_Anagrafica` o tabella dedicata) (D6) — aggiunto `Dip_Anagrafica.DataAssunzione` (`DataCessazione` c'era già)
+- ✅ `INF-COM.5` Servizi e pagine comuni di sola lettura per i moduli che non sono le Presenze (sedi, reparti, competenze) — `CommonOrganizzazioneService`/`CommonOrganizzazioneController` (`SediGetAll` con albero dei reparti, `CompetenzeGetAll`) e servizio client in `ClientServer-Service/Infrastructure/Common`; nessuna pagina
+- ✅ `INF-COM.6` `CommonDataDeleter` aggiornato per le nuove tabelle — tutte in cascata da `Az_Anagrafica` (documentato); prima si scollegano i reparti dal padre (FK Restrict); conteggi invariati
 
 #### `INF-SVC` – Servizi comuni (§5)
 - ⏳ `INF-SVC.1` Scadenzario: modello dati (fonte, modulo, riferimento, data, responsabile, stato), da decidere se in `public` o in Common
@@ -250,7 +250,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common
 - ⏳ `AT-COM.2` Migrazione dei dati esistenti dallo schema `tenant_<id>_2` al `tenant_<id>_0`
 - ⏳ `AT-COM.3` Date di assunzione e cessazione lette da Common, il resto di `Dip_RapportoLavoro` resta nelle Presenze (D6)
-- ⏳ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti ed export paghe (autovetture) ai dati in Common
+- ⏳ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti, note spese e rimborsi km (autovetture) ai dati in Common (l'export paghe legge invece le date del rapporto)
 - ⏳ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati
 
 #### `AT-TURNI` – Turni e pianificazione
