@@ -6,6 +6,7 @@ This chapter shows where to begin depending on your role. The document managemen
 2. Look for the documents with a dot next to the title: those are the ones you have not opened yet.
 3. Press **Download** to save the file or **Open** to see its details.
 4. If the **Acknowledgement** column shows "To acknowledge", read the document and press **Acknowledge**.
+5. If the **Signature** column shows "To sign", first press **Download** and read the document, then press **Sign** and confirm.
 
 > You only see the documents published in your name: draft documents and those of other employees are never shown to you.
 
@@ -44,6 +45,11 @@ Each document has a current version and may have previous versions. The employee
 
 ### Acknowledgement
 If the type **Requires acknowledgement**, the employee must confirm they have read the document. The date and time of the confirmation are recorded and the administrator sees them among the document **Recipients**, together with the date of the first opening and of the last download. When a **New version** is uploaded, the acknowledgement and the first opening are reset: the employee will have to confirm again.
+
+### Signature
+A type can suggest **Requires signature** (personnel only). It is only a suggested value: when you upload or edit a document you can remove or add the signature request for that document, even after sending it. The employee signs with **Sign** after downloading the document: it is a simple electronic signature that records date and time, version, SHA-256 fingerprint of the file, IP address and browser. Signing also counts as acknowledgement. The administrator sees the signature among the **Recipients** and, in the **Archive**, the **Signature** column shows the status of each document: "Signed on …", "Signed x of y", "To be signed" or "Signature request not active". A **New version** resets the signature (it must be signed again), but previous signatures stay in the **Access log** and the versions of signed documents are never deleted.
+
+> A simple electronic signature is freely assessed by a court: it fits confirmations and acceptances (rules, privacy notices, deliveries). Contracts and deeds that require written form need an advanced or qualified signature.
 
 ### Permissions: sees and uploads
 Personnel documents are confidential. The CompanyPowerAdmin always sees and uploads them; a CompanyAdmin only if enabled on the **Permissions** page.
@@ -165,6 +171,7 @@ Fields of the **Document type** page.
 | Has a period (month/year) | The document shows Month and Year (for example payslips, tax certificates, F24). |
 | Has an expiry date | The document shows the Expiry date (for example DURC, certificates). |
 | Requires acknowledgement | The employee must confirm reading the documents of this type. |
+| Requires signature | Personnel category only. Suggests the signature request when a document is uploaded; whoever sends it can remove or add it. |
 | Order | Position of the type in the lists. |
 | Active | An inactive type is not offered for new documents. |
 
@@ -183,6 +190,7 @@ The default personnel types are Payslip (5 years, period, acknowledgement), Tax 
 - The category cannot be changed if the type is already used by documents, because it decides who can see them.
 - **Delete** removes the type only if no document uses it; otherwise it deactivates it. Inactive types are shown again with **Also show inactive**.
 - Changing the acknowledgement of a type applies to the documents uploaded from then on.
+- Changing **Requires signature** on a type does not affect documents already uploaded: the request is changed on the single document.
 
 => /doclist /docfolderlist /docsettings
 

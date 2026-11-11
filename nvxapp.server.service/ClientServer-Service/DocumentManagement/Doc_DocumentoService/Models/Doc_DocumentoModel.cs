@@ -30,6 +30,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         // per l'utente corrente come destinatario: presa visione richiesta e fatta
         public bool PresaVisioneRichiesta { get; set; }
         public DateTime? DataPresaVisione { get; set; }
+        // per l'utente corrente come destinatario: firma richiesta e fatta (sulla versione corrente)
+        public bool FirmaRichiesta { get; set; }
+        public DateTime? DataFirma { get; set; }
+        // stato della firma del documento (archivio): richiesta all'invio, destinatari che devono firmare, quanti hanno firmato
+        public bool FirmaDocumento { get; set; }
+        public int Firmatari { get; set; }
+        public int Firmati { get; set; }
+        public DateTime? UltimaFirma { get; set; }
         public bool Nuovo { get; set; }
         // oltre gli anni di conservazione della tipologia (solo segnalazione)
         public bool OltreConservazione { get; set; }
@@ -64,6 +72,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         public int? Mese { get; set; }
         public DateTime? DataScadenza { get; set; }
         public Doc_Stato Stato { get; set; } = Doc_Stato.Pubblicato;
+        // richiesta di firma ai destinatari: null = quella proposta dalla tipologia; si puo' togliere o aggiungere
+        public bool? FirmaRichiesta { get; set; }
         // note della versione (solo caricamento)
         public string? NoteVersione { get; set; }
     }
@@ -89,6 +99,11 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         public DateTime? DataPrimaApertura { get; set; }
         public DateTime? DataPresaVisione { get; set; }
         public DateTime? DataDownload { get; set; }
+        public bool FirmaRichiesta { get; set; }
+        public DateTime? DataFirma { get; set; }
+        public int? FirmaVersione { get; set; }
+        public string? FirmaHash { get; set; }
+        public string? FirmaIp { get; set; }
     }
 
     public class Doc_LogModel
@@ -143,6 +158,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
 
     public class Doc_DocumentoIdInModel { public int Id { get; set; } }
     public class Doc_DocumentoIdOutModel : ModelResult { public int Id { get; set; } }
+
+    // firma del destinatario: versione che ha davanti (se nel frattempo ne e' arrivata un'altra la firma si rifiuta)
+    public class Doc_DocumentoFirmaInModel { public int Id { get; set; } public int Versione { get; set; } }
 
     public class Doc_SvuotaCestinoInModel { }
     public class Doc_SvuotaCestinoOutModel : ModelResult { public int Eliminati { get; set; } }

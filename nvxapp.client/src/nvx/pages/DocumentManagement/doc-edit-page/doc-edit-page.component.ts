@@ -8,13 +8,14 @@ import { UserInterfaceService } from '../../../Utility/infrastructure/user-inter
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DocumentManagementService } from '../../../ClientServer-Service/DocumentManagement/document-management.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
-import { DocCartellaModel, DocCategoria, DocClienteModel, DocDettaglioModel, DocDipendenteModel, DocDocumentoEditModel, DocDocumentoPutInModel, DocDocumentoUploadMultiploModel, DocEmptyInModel, DocIdInModel, DocPermessiModel, DocTipoInvio, DocTipoModel, docDateInput, docSize } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
+import { DocCartellaModel, DocCategoria, DocClienteModel, DocDettaglioModel, DocDipendenteModel, DocDocumentoEditModel, DocDocumentoPutInModel, DocDocumentoUploadMultiploModel, DocEmptyInModel, DocFirmaInModel, DocIdInModel, DocPermessiModel, DocTipoInvio, DocTipoModel, docDateInput, docSize } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
 import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 
 /*
  Documento: nuovo (dati + file) o esistente (dati, versioni, destinatari e prese visione, cestino).
  I campi dipendente/cliente dipendono dalla categoria della tipologia; competenza e scadenza dalla tipologia.
- Chi non puo' modificare vede i dati in sola lettura, scarica il file e conferma la presa visione.
+ Chi non puo' modificare vede i dati in sola lettura, scarica il file e conferma la presa visione o firma.
+ Richiesta di firma: la tipologia la propone, chi invia la puo' togliere o aggiungere (anche dopo l'invio).
 */
 @Component({
   selector: 'app-doc-edit-page',
@@ -55,7 +56,8 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   get Nuovo(): boolean { return !this._editModel?.id; }
   get Tipo(): DocTipoModel | undefined { return this.tipi.find(t => t.id === this._editForm?.get('idDoc_Par_Tipo')?.value); }
   get SolaLettura(): boolean { return !this.Nuovo && !(this.dettaglio?.modificabile ?? false); }
-  get PresaVisioneDaFare(): boolean { const r = this.dettaglio?.riepilogo; return !!r && r.presaVisioneRichiesta && !r.dataPresaVisione; }
+  get PresaVisioneDaFare(): boolean { const r = this.dettaglio?.riepilogo; return !!r && r.presaVisioneRichiesta && !r.dataPresaVisione && !this.FirmaDaFare; }
+  get FirmaDaFare(): boolean { const r = this.dettaglio?.riepilogo; return !!r && r.firmaRichiesta && !r.dataFirma; }
   // scelta multipla del dipendente: solo per un documento nuovo con tipologia Personale a invio multiplo
   get Multiplo(): boolean { return this.Nuovo && this.Tipo?.categoria === DocCategoria.Personale && this.Tipo?.tipoInvio === DocTipoInvio.Multiplo; }
   // riepilogo nella pagina: il nome del dipendente scelto; con l'invio multiplo e piu' dipendenti solo quanti sono
@@ -80,6 +82,7 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
       mese: [null, [Validators.min(1), Validators.max(12)]],
       dataScadenza: [null],
       stato: [1],
+      firmaRichiesta: [false],
       noteVersione: [null],
     });
   }
@@ -135,6 +138,7 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
   SaveData = (editModel: DocDocumentoEditModel): Observable<boolean> => {
     const dati: DocDocumentoEditModel = {
       ...editModel,
+      firmaRichiesta: !!editModel.firmaRichiesta,
       anno: editModel.anno ? Number(editModel.anno) : null,
       mese: editModel.mese ? Number(editModel.mese) : null,
       dataDocumento: editModel.dataDocumento || null,
@@ -217,6 +221,12 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
     }
   }
 
+  // cambio di tipologia su un documento nuovo: si ripropone la richiesta di firma della tipologia (poi modificabile)
+  onTipo() {
+    if (this.Nuovo)
+      this._editForm.patchValue({ firmaRichiesta: this.Tipo?.categoria === DocCategoria.Personale && !!this.Tipo?.firmaRichiesta });
+  }
+
   // titolo proposto dal nome del file
   onFile(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -245,6 +255,25 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
     request.data.id = this._editModel.id;
     this.service.PresaVisione(request).subscribe(res => {
       if (res.success && this.dettaglio) this.dettaglio.riepilogo.dataPresaVisione = new Date().toISOString();
+    });
+  }
+
+  // firma elettronica semplice della versione corrente (il server richiede che sia stata scaricata)
+  async firma() {
+    const r = this.dettaglio?.riepilogo;
+    if (!this._editModel || !r)
+      return;
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('documents.pages.edit.confirmSign', { title: r.titolo, versione: r.versioneCorrente })))
+      return;
+    const request = new GenericRequest<DocFirmaInModel>(DocFirmaInModel);
+    request.data.id = this._editModel.id;
+    request.data.versione = r.versioneCorrente;
+    this.service.Firma(request).subscribe(res => {
+      if (res.success && this.dettaglio) {
+        const now = new Date().toISOString();
+        this.dettaglio.riepilogo.dataFirma = now;
+        this.dettaglio.riepilogo.dataPresaVisione ??= now;
+      }
     });
   }
 

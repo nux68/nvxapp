@@ -7,9 +7,9 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { DocumentManagementService } from '../../../ClientServer-Service/DocumentManagement/document-management.service';
-import { DocDocumentoListInModel, DocDocumentoListModel, DocIdInModel } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
+import { DocDocumentoListInModel, DocDocumentoListModel, DocFirmaInModel, DocIdInModel } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
 
-// "I miei documenti" del dipendente (§7.3): documenti propri e di cui e' destinatario, presa visione con un clic
+// "I miei documenti" del dipendente (§7.3): documenti propri e di cui e' destinatario, presa visione con un clic, firma (FES)
 @Component({
   selector: 'app-doc-mine-page',
   templateUrl: './doc-mine-page.component.html',
@@ -40,6 +40,8 @@ export class DocMinePageComponent {
         value: d => d.anno ? (d.mese ? String(d.mese).padStart(2, '0') + '/' : '') + d.anno : (d.dataCaricamento ?? '').substring(0, 10) },
       { key: 'presaVisione', title: this.transloco.translate('documents.fields.acknowledgement'),
         value: d => d.presaVisioneRichiesta ? (d.dataPresaVisione ? '✓ ' + d.dataPresaVisione.substring(0, 10) : this.transloco.translate('documents.pages.mine.toAcknowledge')) : '' },
+      { key: 'firma', title: this.transloco.translate('documents.fields.signature'),
+        value: d => d.firmaRichiesta ? (d.dataFirma ? '✓ ' + d.dataFirma.substring(0, 10) : this.transloco.translate('documents.pages.mine.toSign')) : '' },
     ];
     const btnScarica = userInterfaceService.Btn_Export;
     btnScarica.text = this.transloco.translate('documents.buttons.download');
@@ -47,9 +49,15 @@ export class DocMinePageComponent {
     const btnPresa = userInterfaceService.Btn_Approva;
     btnPresa.text = this.transloco.translate('documents.buttons.acknowledge');
     btnPresa.event = (d: DocDocumentoListModel) => this.presaVisione(d);
+    const btnFirma = userInterfaceService.Btn_Approva;
+    btnFirma.text = this.transloco.translate('documents.buttons.sign');
+    btnFirma.event = (d: DocDocumentoListModel) => this.firma(d);
     const btnApri = userInterfaceService.Btn_Apri;
     btnApri.event = (d: DocDocumentoListModel) => this.navCtrl.navigateForward('/docedit', { state: { id: d.id } });
-    this.actions = [{ button: btnPresa, visible: d => d.presaVisioneRichiesta && !d.dataPresaVisione }, { button: btnScarica }, { button: btnApri }];
+    this.actions = [
+      { button: btnFirma, visible: d => d.firmaRichiesta && !d.dataFirma },
+      { button: btnPresa, visible: d => d.presaVisioneRichiesta && !d.dataPresaVisione && !(d.firmaRichiesta && !d.dataFirma) },
+      { button: btnScarica }, { button: btnApri }];
   }
 
   ionViewWillEnter() {
@@ -68,6 +76,16 @@ export class DocMinePageComponent {
     const request = new GenericRequest<DocIdInModel>(DocIdInModel);
     request.data.id = d.id;
     this.service.PresaVisione(request).subscribe(() => this.load());
+  }
+
+  // firma della versione corrente: il server la accetta solo se il documento e' stato scaricato
+  private async firma(d: DocDocumentoListModel) {
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('documents.pages.edit.confirmSign', { title: d.titolo, versione: d.versioneCorrente })))
+      return;
+    const request = new GenericRequest<DocFirmaInModel>(DocFirmaInModel);
+    request.data.id = d.id;
+    request.data.versione = d.versioneCorrente;
+    this.service.Firma(request).subscribe(() => this.load());
   }
 
   Filter(CurrFilter: any) {

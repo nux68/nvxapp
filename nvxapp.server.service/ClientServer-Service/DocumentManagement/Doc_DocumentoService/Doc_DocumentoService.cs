@@ -30,6 +30,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         - modifica: documenti del personale con l'abilitazione "carica", gli altri CompanyPowerAdmin e CompanyAdmin
         - file: IFileStorage (su disco), spazio controllato a ogni caricamento (IStorageQuotaService: oltre quota si blocca)
         - testo estratto dal file per la ricerca; nessun contenuto viene inviato all'AI (decisione del 04/11/2026)
+        - firma elettronica semplice (ANALISI_FIRMA_DIGITALE.md §4.2): la tipologia propone la richiesta, l'invio la decide
+          (si puo' togliere o aggiungere, anche dopo); la firma vale per la versione corrente e una nuova versione la azzera
     */
     public class Doc_DocumentoService : ServiceBase, IDoc_DocumentoService
     {
@@ -248,7 +250,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         {
             IdDoc_Par_Tipo = d.IdDoc_Par_Tipo, IdDoc_Cartella = d.IdDoc_Cartella, IdDip_Anagrafica = d.IdDip_Anagrafica, IdAz_Cliente = d.IdAz_Cliente,
             Titolo = d.Titolo, Descrizione = d.Descrizione, DataDocumento = d.DataDocumento, Anno = d.Anno, Mese = d.Mese,
-            DataScadenza = d.DataScadenza, Stato = d.Stato, NoteVersione = d.NoteVersione
+            DataScadenza = d.DataScadenza, Stato = d.Stato, FirmaRichiesta = d.FirmaRichiesta, NoteVersione = d.NoteVersione
         };
 
         // documento nuovo con la prima versione, destinatario, spazio confermato, registro e avviso (caricamento singolo e multiplo)
@@ -306,9 +308,13 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                     await _quota.ConfirmAsync(ctx.IdCompany, caricato.Dimensione);
                     caricato.Confermato = true;
 
-                    // la nuova versione va riletta: si azzerano le prese visione
+                    // la nuova versione va riletta (e rifirmata): si azzerano prese visione e firme.
+                    // La prova delle firme precedenti resta nel registro (azione Firma, con versione e hash)
                     await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id)
-                             .ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPresaVisione, (DateTime?)null).SetProperty(r => r.DataPrimaApertura, (DateTime?)null));
+                             .ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPresaVisione, (DateTime?)null).SetProperty(r => r.DataPrimaApertura, (DateTime?)null)
+                                                       .SetProperty(r => r.DataFirma, (DateTime?)null).SetProperty(r => r.FirmaVersione, (int?)null)
+                                                       .SetProperty(r => r.FirmaHash, (string?)null).SetProperty(r => r.FirmaIp, (string?)null)
+                                                       .SetProperty(r => r.FirmaUserAgent, (string?)null).SetProperty(r => r.IdAspNetUsersFirma, (string?)null));
 
                     await PotaVersioniAsync(ctx, doc.Id);
                     await _utility.LogAsync(ctx, Doc_LogAzione.NuovaVersione, doc.Id, numero, caricato.NomeFile);
@@ -330,6 +336,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 var doc = await DocumentoModificabileAsync(ctx, dati.Id);
                 var tipo = await ValidaAsync(ctx, dati, nuovo: false);
 
+                var firmaPrima = doc.FirmaRichiesta;
                 Applica(doc, dati, tipo);
                 doc.ModifiedDate = DateTime.Now;
                 doc.ChangeUser = ctx.IdUtente;
@@ -337,6 +344,9 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
 
                 await AggiornaDestinatarioDipendenteAsync(doc, tipo);
                 await _utility.LogAsync(ctx, Doc_LogAzione.Modifica, doc.Id);
+                if (doc.FirmaRichiesta != firmaPrima)
+                    await _utility.LogAsync(ctx, Doc_LogAzione.RichiestaFirma, doc.Id, doc.VersioneCorrente,
+                                            DocumentManagementMessages.Get(doc.FirmaRichiesta ? "SignRequestAdded" : "SignRequestRemoved"));
                 return new Doc_DocumentoPutOutModel { Dettaglio = await DettaglioAsync(ctx, doc.Id) };
             }, isSubProcess);
         }
@@ -438,6 +448,52 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             }, isSubProcess);
         }
 
+        /*
+         Firma elettronica semplice del destinatario sulla versione che ha davanti (FES, ANALISI_FIRMA_DIGITALE.md §4.2).
+         Si registrano data, versione, hash SHA-256 del file, IP, user agent e utente; firmare vale anche come presa visione.
+         Se nel frattempo e' arrivata una nuova versione la firma si rifiuta: va riaperto il documento.
+        */
+        public virtual async Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoFirma(GenericRequest<Doc_DocumentoFirmaInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ctx = await _utility.ContestoAsync();
+                var doc = await _utility.Visibili(ctx).FirstOrDefaultAsync(x => x.Id == model.Data.Id && !x.NelCestino)
+                          ?? throw new UserMessageException(DocumentManagementMessages.Get("DocumentNotFound"));
+                if (model.Data.Versione != doc.VersioneCorrente)
+                    throw new UserMessageException(DocumentManagementMessages.Get("SignVersionChanged"));
+                var versione = await _versioneRepository.FindAll(v => v.IdDoc_Documento == doc.Id && v.Numero == doc.VersioneCorrente).FirstOrDefaultAsync()
+                               ?? throw new UserMessageException(DocumentManagementMessages.Get("VersionNotFound"));
+
+                // si firma solo cio' che si e' aperto: download della versione corrente da parte di chi firma
+                var idUtenteLog = ctx.IdUtente;
+                if (!await _logRepository.FindAll(l => l.IdDoc_Documento == doc.Id && l.Versione == doc.VersioneCorrente
+                                                       && l.Azione == Doc_LogAzione.Download && l.IdAspNetUsers == idUtenteLog).AnyAsync())
+                    throw new UserMessageException(DocumentManagementMessages.Get("SignDownloadFirst"));
+
+                var http = _httpContextAccessor.HttpContext;
+                var ip = http?.Connection?.RemoteIpAddress?.ToString();
+                var userAgent = http?.Request.Headers.UserAgent.ToString();
+                if (userAgent != null && userAgent.Length > 300) userAgent = userAgent[..300];
+                var now = DateTime.Now;
+                var idDip = ctx.IdDip_Anagrafica;
+                var idUtente = ctx.IdUtente;
+                var numero = versione.Numero;
+                var hash = versione.Hash;
+                var aggiornati = await _destinatarioRepository
+                    .FindAll(r => r.IdDoc_Documento == doc.Id && (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip))
+                                  && r.FirmaRichiesta && r.DataFirma == null)
+                    .ExecuteUpdateAsync(s => s.SetProperty(r => r.DataFirma, now).SetProperty(r => r.FirmaVersione, numero)
+                                              .SetProperty(r => r.FirmaHash, hash).SetProperty(r => r.FirmaIp, ip)
+                                              .SetProperty(r => r.FirmaUserAgent, userAgent).SetProperty(r => r.IdAspNetUsersFirma, idUtente)
+                                              .SetProperty(r => r.DataPresaVisione, r => r.DataPresaVisione ?? now));
+                if (aggiornati == 0)
+                    throw new UserMessageException(DocumentManagementMessages.Get("NotSignatory"));
+                await _utility.LogAsync(ctx, Doc_LogAzione.Firma, doc.Id, numero, "FES sha256:" + hash);
+                return new Doc_DocumentoIdOutModel { Id = doc.Id };
+            }, isSubProcess);
+        }
+
         public virtual async Task<GenericResult<Doc_LogListOutModel>> Doc_LogList(GenericRequest<Doc_LogListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -502,6 +558,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 NelCestino = x.NelCestino,
                 PresaVisioneRichiesta = x.Doc_Destinatario!.Any(r => (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.PresaVisioneRichiesta),
                 DataPresaVisione = x.Doc_Destinatario!.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)).Select(r => r.DataPresaVisione).FirstOrDefault(),
+                FirmaRichiesta = x.Doc_Destinatario!.Any(r => (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.FirmaRichiesta),
+                DataFirma = x.Doc_Destinatario!.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)).Select(r => r.DataFirma).FirstOrDefault(),
+                FirmaDocumento = x.FirmaRichiesta,
+                Firmatari = x.Doc_Destinatario!.Count(r => r.FirmaRichiesta),
+                Firmati = x.Doc_Destinatario!.Count(r => r.FirmaRichiesta && r.DataFirma != null),
+                UltimaFirma = x.Doc_Destinatario!.Where(r => r.FirmaRichiesta).Max(r => r.DataFirma),
                 Nuovo = x.Doc_Destinatario!.Any(r => (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.DataPrimaApertura == null),
             });
         }
@@ -539,7 +601,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 {
                     Id = doc.Id, IdDoc_Par_Tipo = doc.IdDoc_Par_Tipo, IdDoc_Cartella = doc.IdDoc_Cartella, IdDip_Anagrafica = doc.IdDip_Anagrafica,
                     IdAz_Cliente = doc.IdAz_Cliente, Titolo = doc.Titolo, Descrizione = doc.Descrizione, DataDocumento = doc.DataDocumento,
-                    Anno = doc.Anno, Mese = doc.Mese, DataScadenza = doc.DataScadenza, Stato = doc.Stato
+                    Anno = doc.Anno, Mese = doc.Mese, DataScadenza = doc.DataScadenza, Stato = doc.Stato, FirmaRichiesta = doc.FirmaRichiesta
                 },
                 // versioni precedenti: solo chi puo' modificare
                 Versioni = versioni.Where(v => modificabile || v.Numero == doc.VersioneCorrente)
@@ -566,7 +628,12 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                     PresaVisioneRichiesta = d.r.PresaVisioneRichiesta,
                     DataPrimaApertura = d.r.DataPrimaApertura,
                     DataPresaVisione = d.r.DataPresaVisione,
-                    DataDownload = d.r.DataDownload
+                    DataDownload = d.r.DataDownload,
+                    FirmaRichiesta = d.r.FirmaRichiesta,
+                    DataFirma = d.r.DataFirma,
+                    FirmaVersione = d.r.FirmaVersione,
+                    FirmaHash = d.r.FirmaHash,
+                    FirmaIp = d.r.FirmaIp
                 }).ToList();
             }
             return retVal;
@@ -645,11 +712,22 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             doc.Mese = tipo.HaCompetenza ? dati.Mese : null;
             doc.DataScadenza = tipo.HaScadenza ? dati.DataScadenza?.Date : null;
             doc.Stato = dati.Stato;
+            // richiesta di firma: scelta all'invio; se non indicata, quella della tipologia (documento nuovo) o quella gia' presente
+            if (dati.FirmaRichiesta.HasValue)
+                doc.FirmaRichiesta = dati.FirmaRichiesta.Value;
+            else if (doc.Id == 0)
+                doc.FirmaRichiesta = tipo.FirmaRichiesta;
         }
 
-        // il dipendente del documento del personale e' sempre destinatario (con la presa visione della tipologia)
+        // il dipendente del documento del personale e' sempre destinatario (con la presa visione della tipologia
+        // e la richiesta di firma del documento)
         private async Task AggiornaDestinatarioDipendenteAsync(Doc_Documento doc, Doc_Par_Tipo tipo)
         {
+            // richiesta di firma tolta o aggiunta: vale per tutti i destinatari (le firme gia' fatte restano come prova)
+            var firma = doc.FirmaRichiesta;
+            await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id && r.FirmaRichiesta != firma)
+                     .ExecuteUpdateAsync(s => s.SetProperty(r => r.FirmaRichiesta, firma));
+
             // destinatari "dipendente" non piu' validi (dipendente cambiato o tolto)
             await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica != null && r.IdDip_Anagrafica != doc.IdDip_Anagrafica).ExecuteDeleteAsync();
             if (!doc.IdDip_Anagrafica.HasValue || await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == doc.Id && r.IdDip_Anagrafica == doc.IdDip_Anagrafica).AnyAsync())
@@ -662,6 +740,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 IdDip_Anagrafica = doc.IdDip_Anagrafica,
                 IdAspNetUsers = idUtente,
                 PresaVisioneRichiesta = tipo.PresaVisioneRichiesta,
+                FirmaRichiesta = doc.FirmaRichiesta,
                 CreationDate = DateTime.Now
             });
         }
@@ -677,11 +756,14 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 await q.ExecuteUpdateAsync(s => s.SetProperty(r => r.DataDownload, now));
         }
 
-        // conserva solo le ultime N versioni (impostazione dell'azienda), tranne nei documenti con presa visione richiesta
+        // conserva solo le ultime N versioni (impostazione dell'azienda), tranne nei documenti con presa visione o firma
+        // richiesta e in quelli firmati almeno una volta (le versioni firmate sono prova: non si eliminano mai)
         private async Task PotaVersioniAsync(DocContesto ctx, int idDocumento)
         {
             var cfg = await _cfgRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstAsync();
-            if (cfg.VersioniDaConservare <= 0 || await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == idDocumento && r.PresaVisioneRichiesta).AnyAsync())
+            if (cfg.VersioniDaConservare <= 0
+                || await _destinatarioRepository.FindAll(r => r.IdDoc_Documento == idDocumento && (r.PresaVisioneRichiesta || r.FirmaRichiesta)).AnyAsync()
+                || await _logRepository.FindAll(l => l.IdDoc_Documento == idDocumento && l.Azione == Doc_LogAzione.Firma).AnyAsync())
                 return;
             var vecchie = await _versioneRepository.FindAll(v => v.IdDoc_Documento == idDocumento)
                                    .OrderByDescending(v => v.Numero).Skip(cfg.VersioniDaConservare).ToListAsync();
@@ -706,7 +788,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                     return;
 
                 var oggetto = DocumentManagementMessages.Get("NotifySubject", tipo.Descrizione);
-                var testo = DocumentManagementMessages.Get(tipo.PresaVisioneRichiesta ? "NotifyTextAcknowledge" : "NotifyText", $"{dip.Cognome} {dip.Nome}".Trim(), doc.Titolo);
+                var chiave = doc.FirmaRichiesta ? "NotifyTextSign" : tipo.PresaVisioneRichiesta ? "NotifyTextAcknowledge" : "NotifyText";
+                var testo = DocumentManagementMessages.Get(chiave, $"{dip.Cognome} {dip.Nome}".Trim(), doc.Titolo);
                 await _emailService.SendAsync(email, oggetto, System.Net.WebUtility.HtmlEncode(testo), testo);
             }
             catch (Exception ex)
@@ -827,6 +910,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         Task<GenericResult<Doc_SvuotaCestinoOutModel>> Doc_SvuotaCestino(GenericRequest<Doc_SvuotaCestinoInModel> model, Boolean isSubProcess);
         Task<Doc_FileDownload> Doc_DocumentoDownload(int idDocumento, int? numeroVersione);
         Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoPresaVisione(GenericRequest<Doc_DocumentoIdInModel> model, Boolean isSubProcess);
+        Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoFirma(GenericRequest<Doc_DocumentoFirmaInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_LogListOutModel>> Doc_LogList(GenericRequest<Doc_LogListInModel> model, Boolean isSubProcess);
     }
 }

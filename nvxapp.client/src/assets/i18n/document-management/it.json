@@ -17,6 +17,7 @@
     "buttons": {
       "download": "Scarica",
       "acknowledge": "Presa visione",
+      "sign": "Firma",
       "newVersion": "Nuova versione",
       "trash": "Cestino",
       "restore": "Ripristina"
@@ -40,7 +41,9 @@
       "5": "Presa visione",
       "6": "Cestino",
       "7": "Ripristino",
-      "8": "Eliminazione"
+      "8": "Eliminazione",
+      "9": "Firma",
+      "10": "Richiesta di firma"
     },
     "fields": {
       "title": "Titolo",
@@ -61,6 +64,7 @@
       "status": "Stato",
       "versionNote": "Note della versione",
       "acknowledgement": "Presa visione",
+      "signature": "Firma",
       "code": "Codice",
       "category": "Categoria",
       "retention": "Anni di conservazione",
@@ -68,6 +72,7 @@
       "hasPeriod": "Ha competenza (mese/anno)",
       "hasExpiry": "Ha una scadenza",
       "requiresAcknowledgement": "Richiede la presa visione",
+      "requiresSignature": "Richiede la firma",
       "order": "Ordine",
       "active": "Attivo",
       "visibleToUsers": "Visibile ai dipendenti",
@@ -101,7 +106,11 @@
         "all": "Tutti",
         "showDisabled": "Mostra anche i disattivati",
         "trashNote": "Cestino: i documenti si eliminano definitivamente dopo i giorni indicati nelle impostazioni, o subito con \"Elimina\".",
-        "truncated": "Mostrati i primi 500 documenti: affina i filtri."
+        "truncated": "Mostrati i primi 500 documenti: affina i filtri.",
+        "signNotActive": "Richiesta firma non attiva",
+        "signPending": "Da firmare",
+        "signedPartial": "Firmati {{firmati}} su {{firmatari}}",
+        "signedOn": "Firmato il {{date}}"
       },
       "edit": {
         "title": "Documento",
@@ -122,12 +131,17 @@
         "opened": "Aperto",
         "downloaded": "Scaricato",
         "acknowledged": "Presa visione",
+        "signed": "Firmato",
+        "signedOn": "Firmato il {{date}}",
+        "signatureNote": "Proposta dalla tipologia: puoi toglierla o aggiungerla per questo documento. Il dipendente firma con un clic (firma elettronica semplice) dopo averlo scaricato; una nuova versione va firmata di nuovo.",
+        "confirmSign": "Firmando \"{{title}}\" (versione {{versione}}) dichiari di averlo letto e di accettarlo. Verranno registrati data e ora, indirizzo IP e impronta del file. Confermi?",
         "confirmTrash": "Spostare il documento nel cestino?",
         "retentionExpired": "Il documento ha superato gli anni di conservazione della tipologia: valuta se eliminarlo."
       },
       "mine": {
         "title": "I miei documenti",
         "toAcknowledge": "Da confermare",
+        "toSign": "Da firmare",
         "confirmAcknowledge": "Confermi di aver letto \"{{title}}\"?"
       },
       "typeList": {
@@ -140,7 +154,8 @@
         "info": "Tipologia",
         "categoryNote": "Personale: visibile al dipendente e a chi è abilitato ai documenti del personale. Azienda e Cliente: agli amministratori.",
         "multiSendNote": "Se attivo, quando si carica un documento si possono scegliere più dipendenti insieme: viene creato un documento per ciascuno con lo stesso file. Se spento si sceglie un solo dipendente.",
-        "retentionNote": "Oltre questo periodo i documenti vengono solo segnalati, mai eliminati in automatico. Vuoto = senza limite."
+        "retentionNote": "Oltre questo periodo i documenti vengono solo segnalati, mai eliminati in automatico. Vuoto = senza limite.",
+        "signatureNote": "Valore proposto quando si carica un documento di questa tipologia: chi lo invia può sempre togliere o aggiungere la richiesta di firma."
       },
       "folderList": {
         "title": "Cartelle",

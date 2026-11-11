@@ -60,7 +60,7 @@ Types define how the documents in the archive behave. Each type has a code, a de
 - **Company**: company archive, for administrators;
 - **Customer**: file of a customer of the shared registry.
 
-For each type choose the **retention years** (empty = no limit), whether it has an **expiry**, whether it requires a **read confirmation** and whether it has a **period** (month/year, for example payslips). For personnel types, **Staff multiple send** lets you choose several employees at once when uploading a document (one document each, same file).
+For each type choose the **retention years** (empty = no limit), whether it has an **expiry**, whether it requires a **read confirmation**, whether it suggests a **signature** (changeable at each send) and whether it has a **period** (month/year, for example payslips). For personnel types, **Staff multiple send** lets you choose several employees at once when uploading a document (one document each, same file).
 
 At the first activation the most common types are ready (payslip, tax statement, contract, medical certificate, training, notice, tax payment form, compliance certificate, registry extract, customer contract, generic). A type used by documents cannot be deleted: it is deactivated.
 

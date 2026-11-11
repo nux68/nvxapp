@@ -6,6 +6,7 @@ Questo capitolo indica da dove cominciare in base al tuo ruolo. Le voci del docu
 2. Cerca i documenti con il pallino accanto al titolo: sono quelli che non hai ancora aperto.
 3. Premi **Scarica** per salvare il file oppure **Apri** per vederne i dati.
 4. Se nella colonna **Presa visione** compare "Da confermare", leggi il documento e premi **Presa visione**.
+5. Se nella colonna **Firma** compare "Da firmare", premi prima **Scarica** e leggi il documento, poi premi **Firma** e conferma.
 
 > Vedi solo i documenti pubblicati a tuo nome: i documenti in bozza e quelli degli altri dipendenti non ti sono mai mostrati.
 
@@ -44,6 +45,11 @@ Ogni documento ha una versione corrente e può avere versioni precedenti. Il dip
 
 ### Presa visione
 Se la tipologia **Richiede la presa visione**, il dipendente deve confermare la lettura. Data e ora della conferma restano registrate e l'amministratore le vede tra i **Destinatari** del documento, insieme alla data della prima apertura e dell'ultimo download. Quando si carica una **Nuova versione**, la presa visione e la prima apertura vengono azzerate: il dipendente dovrà confermare di nuovo.
+
+### Firma
+La tipologia può proporre **Richiede la firma** (solo per il personale). È solo un valore proposto: quando carichi o modifichi un documento puoi togliere o aggiungere la richiesta di firma per quel documento, anche dopo averlo inviato. Il dipendente firma con **Firma** dopo aver scaricato il documento: è una firma elettronica semplice, che registra data e ora, versione, impronta SHA-256 del file, indirizzo IP e browser. Firmare vale anche come presa visione. L'amministratore vede la firma tra i **Destinatari** e, nell'**Archivio**, la colonna **Firma** mostra lo stato di ogni documento: "Firmato il …", "Firmati x su y", "Da firmare" oppure "Richiesta firma non attiva". Una **Nuova versione** azzera la firma (va firmata di nuovo), ma le firme precedenti restano nel **Registro accessi** e le versioni dei documenti firmati non vengono mai eliminate.
+
+> La firma elettronica semplice è valutata liberamente dal giudice: va bene per conferme e accettazioni (regolamenti, informative, consegne). Per contratti e atti che richiedono la forma scritta serve una firma avanzata o qualificata.
 
 ### Abilitazioni: vede e carica
 I documenti del personale sono riservati. Il CompanyPowerAdmin vede e carica sempre; un CompanyAdmin solo se abilitato nella pagina **Abilitazioni**.
@@ -165,6 +171,7 @@ Campi della pagina **Tipologia di documento**.
 | Ha competenza (mese/anno) | Nel documento compaiono Mese e Anno (per esempio cedolini, CU, F24). |
 | Ha una scadenza | Nel documento compare la data di Scadenza (per esempio DURC, certificati). |
 | Richiede la presa visione | Il dipendente deve confermare la lettura dei documenti di questa tipologia. |
+| Richiede la firma | Solo per la categoria Personale. Propone la richiesta di firma quando si carica un documento; chi lo invia può toglierla o aggiungerla. |
 | Ordine | Posizione della tipologia negli elenchi. |
 | Attivo | Una tipologia non attiva non si propone per i nuovi documenti. |
 
@@ -183,6 +190,7 @@ Le tipologie predefinite per il personale sono Cedolino (5 anni, competenza, pre
 - La categoria non si può cambiare se la tipologia è già usata da documenti, perché deciderebbe chi può vederli.
 - **Cancella** elimina la tipologia solo se nessun documento la usa; altrimenti la disattiva. Le tipologie disattivate si rivedono con **Mostra anche i disattivati**.
 - Cambiare la presa visione di una tipologia vale per i documenti caricati da quel momento in poi.
+- Cambiare **Richiede la firma** di una tipologia non tocca i documenti già caricati: la richiesta si cambia nel singolo documento.
 
 => /doclist /docfolderlist /docsettings
 
