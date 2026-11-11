@@ -1,0 +1,20 @@
+{
+  "hr": {
+    "menu": {
+      "section": "Human Resources",
+      "settings": "Settings",
+      "manual": "Human Resources manual"
+    },
+    "pages": {
+      "settings": {
+        "title": "Human Resources settings",
+        "general": "General",
+        "noticeDays": "Deadline notice days",
+        "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
+        "notifications": "Notifications on",
+        "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
+        "note": "Notes"
+      }
+    }
+  }
+}
