@@ -70,11 +70,11 @@ All the users of the application, with their links to dealers, financial advisor
 @@ /companymove
 Moves a company from one financial advisor to another, with its users and data.
 
-@@ /storageplanlist
-The storage packages of the document management (for example 1, 5 and 20 GB), with the default package assigned to new companies.
+@@ /storagesettings
+The document management storage settings: the default warning threshold and the space used by all companies. Each company's space is the one of its Document management licence.
 
 @@ /companystoragelist
-The document management space used by each company: package, used space and warnings. From here you assign a different package to a company.
+The document management space used by each company: licence, used space and warnings. From here you change a company's warning threshold; the space changes with the licence.
 
 @@ /poweradmin
 The page of the installation PowerAdmin.
