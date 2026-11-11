@@ -98,24 +98,59 @@ L'alternativa, cioè generare timbrature come fa `GeneraTimbratureMancanti`, è 
 - se i parametri della pausa cambiano, le timbrature generate restano;
 - confonde l'HR, che non distingue più una timbratura reale da una fittizia.
 
-### 3.3 Uscite intermedie: verso per sequenza, non per posizione fissa (prerequisito)
+### 3.3 Interpretare la sequenza con gli intervalli di riconoscimento (prerequisito)
 
-Prima di qualsiasi logica di pausa va corretto il difetto della §1.2 (U9). Regola proposta in `AssegnaVersoTimbrature`, dopo l'abbinamento alle timbrature attese:
+Prima di qualsiasi logica di pausa va corretto il difetto della §1.2 (U9). Lo strumento c'è già: ogni coppia dell'orario ha gli **intervalli di riconoscimento** `Dalle_Limite_SX/DX` e `Alle_Limite_SX/DX` (seed `DIURNO8H`: ±15', `GestionePresenzeParametriDefault.cs:139-146`).
 
-- una coppia di timbrature libere che cade **dentro** una coppia abbinata (tra la sua E e la sua U) è un'**uscita intermedia**: la prima diventa `Uscita`, la seconda `Entrata`, senza arrotondamento;
-- le timbrature libere **fuori** dalle coppie abbinate restano lavoro fuori orario, come oggi (`AccoppiaTimbratureFuoriOrario`);
-- se dopo la riassegnazione la sequenza cronologica non alterna E/U (numero dispari dentro una coppia), il giorno va in anomalia invece di perdere ore in silenzio.
+**Come li usa oggi il motore.** Solo per **agganciare** una timbratura all'ora attesa: nel primo passaggio la timbratura va alla prima ora attesa libera il cui intervallo la contiene (`AssegnaVersoTimbrature`, 1626-1628), nel secondo all'ora attesa più vicina, anche fuori intervallo (1658-1663). Lo stesso schema c'è in `GeneraTimbratureMancanti` (1784). Le timbrature che restano fuori diventano lavoro fuori orario **senza guardare dove cadono**.
 
-Con questa regola la sequenza del caso U9 diventa E 09:00, U 10:30, E 10:45, U 13:00, E 14:00, U 18:00 e i cicli di `CalcolaOreLavorate` e `GeneraCausali` (che leggono le coppie per posizione) danno 7h45 senza altre modifiche. La correzione è **indipendente** dalla nuova funzione e può essere rilasciata da sola.
+**Proposta.** Usare gli intervalli per dividere la giornata in **zone** e interpretare l'intera sequenza:
+
+```
+ prima    [Dalle1]   LAVORO 1   [Alle1]   PAUSA 1-2   [Dalle2]   LAVORO 2   [Alle2]    dopo
+ ------|  SX....DX |----------| SX....DX |-----------| SX....DX |----------| SX....DX |------
+fuori      ancora     uscite      ancora     pausa       ancora     uscite      ancora    fuori
+orario     E          intermedie  U          pranzo      E          intermedie  U         orario
+```
+
+Algoritmo in `AssegnaVersoTimbrature`, in quest'ordine:
+
+1. **Pulizia delle doppie timbrature.** Due timbrature a distanza inferiore a una soglia (es. 2') nello stesso intervallo valgono come una: la seconda viene ignorata nel calcolo, non cancellata, e il giorno riceve un avviso.
+2. **Abbinamento ordinato alle ancore.** Le ore attese (`Dalle`/`Alle` con `*_Use_4_Match`) sono le ancore, in ordine cronologico. L'abbinamento rispetta l'ordine: se una timbratura va a un'ancora, quelle successive possono andare solo alle ancore successive. Si massimizza il numero di ancore abbinate dentro il loro intervallo e, a parità, si minimizza la distanza dall'ora attesa. Con poche timbrature al giorno basta una programmazione dinamica O(timbrature × ancore). Così funzionano anche gli intervalli larghi e sovrapposti di un pranzo flessibile (es. `Alle1` 12:00-14:30 e `Dalle2` 12:30-15:00), che con il "primo intervallo libero" di oggi sono ambigui.
+3. **Classificazione per zona delle timbrature non abbinate:**
+   - zona **lavoro** k (tra l'ancora E e l'ancora U della coppia k) → **uscita intermedia**: a coppie, la prima `Uscita` e la seconda `Entrata`, senza arrotondamento. Sono le pause brevi (U9, U10);
+   - zona **pausa** tra la coppia k e la k+1 → se `Alle(k)` o `Dalle(k+1)` non hanno trovato una timbratura nel loro intervallo, la timbratura ne prende il posto **fuori intervallo**, con un avviso (uscita anticipata o rientro in ritardo), invece del "più vicino" alla cieca di oggi. Altrimenti è un'ulteriore uscita e rientro durante la pausa, senza effetto sul lavorato;
+   - zona **prima** o **dopo** l'orario → lavoro fuori orario, come oggi (`AccoppiaTimbratureFuoriOrario`).
+4. **Ancore mancanti.** Se `Alle(k)` e `Dalle(k+1)` restano entrambe vuote e l'orario ha una pausa `Automatica`, sono facoltative (§6.2). In ogni altro caso: `Err_TimbratureMancanti`, come oggi.
+5. **Controllo finale.** La sequenza cronologica dei versi deve alternare E/U. Se non è così (uscita senza rientro dentro una fascia), il giorno va in anomalia invece di perdere ore in silenzio.
+
+| Timbrature (`DIURNO8H`, ±15') | Oggi | Con l'interpretazione per zone |
+|---|---|---|
+| 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 | 4h (§1.2) | 10:30/10:45 in zona lavoro 1 → U/E: **7h45**, pausa breve 15' |
+| 08:58, 08:59, 13:02, 13:57, 18:03 | 08:59 diventa fuori orario e va in coppia con un'altra timbratura libera, se c'è | 08:59 è doppia e viene ignorata: 8h, avviso |
+| 09:00, 11:30, 14:00, 18:00 (uscita anticipata senza giustificativo) | 11:30 agganciata a `Alle1` come "più vicina" | 11:30 in zona lavoro 1 con `Alle1` vuota → `Alle1` fuori intervallo: 6h30, avviso esplicito |
+| 09:00, 18:00 con pausa automatica | `Err_TimbratureMancanti` | `Alle1`/`Dalle2` vuote e facoltative → detrazione automatica (§3.4) |
+| 09:00, 13:00, 14:00, 18:00, 20:00, 22:00 | 8h + 2h fuori orario | invariato (zona dopo) |
+| 09:00, 10:30, 13:00, 14:00, 18:00 | risultato incoerente | anomalia esplicita (dispari in zona lavoro 1) |
+
+Con questa regola i cicli di `CalcolaOreLavorate` e `GeneraCausali`, che leggono le coppie per posizione, ricevono una sequenza E/U già corretta e non vanno toccati. La correzione è **indipendente** dalla nuova funzione e può essere rilasciata da sola.
+
+**Le zone danno anche la finestra della pausa.** Se `Par_OrarioPausa` non indica `FinestraDalle`/`FinestraAlle`, la finestra predefinita del pranzo tra le coppie k e k+1 va da `Alle_Limite_SX(k)` a `Dalle_Limite_DX(k+1)` (in `DIURNO8H` 12:45-14:15). Per una pausa flessibile basta allargare gli intervalli di riconoscimento, senza un secondo parametro da tenere allineato.
+
+**Validazione degli intervalli (oggi assente).** Né il servizio `Par_OrarioIntervalloHHService` né il dialog `edit-par-orario-dettaglio-orario-intervallo-hhdialog` controllano la coerenza dei limiti (il client li rende solo obbligatori e li sposta insieme all'ora). Per l'interpretazione per zone servono:
+- `Limite_SX <= ora <= Limite_DX` per ogni ancora;
+- intervalli **in ordine**: l'inizio di ogni intervallo non precede l'inizio del precedente. La sovrapposizione è ammessa, perché la gestisce l'abbinamento ordinato;
+- una zona lavoro non vuota: `Dalle_Limite_DX(k) < Alle_Limite_SX(k)`.
 
 ### 3.4 Una sola formula per pausa timbrata e automatica
 
 Per ogni giorno e per ogni pausa configurata:
 
 ```
-PausaRilevata  = Pranzo: somma dei buchi tra un'Uscita e l'Entrata successiva che cadono nella finestra
-                         (senza finestra: il buco più lungo tra le coppie timbrate)
-                 Breve:  somma delle uscite intermedie non attribuite al pranzo
+PausaRilevata  = Pranzo: buco tra l'ancora Alle(k) e l'ancora Dalle(k+1) (zona pausa, §3.3), ristretto alla finestra
+                         (finestra predefinita: Alle_Limite_SX(k) .. Dalle_Limite_DX(k+1));
+                         su orario a coppia unica: le uscite intermedie che cadono nella finestra
+                 Breve:  somma delle uscite intermedie in zona lavoro non attribuite al pranzo
 LavoratoLordo  = somma delle coppie E/U (come oggi, dopo la correzione §3.3)
 PausaDovuta    = LavoratoLordo > SogliaMin ? DurataMin : 0
 Detrazione     = Modalita == Automatica
@@ -154,7 +189,11 @@ Gli slot di avviso proposti nella prima versione vanno rivisti, perché nel frat
 | `Warning_2` | avviso delle formule (`FormuleRunner.StatoWarningFormula`) | — |
 | `Warning_3` | libero | **pausa insufficiente o non fruita** |
 | `Warning_4` | libero | **pausa oltre la durata massima** |
+| `Warning_5` | libero | **timbratura doppia ignorata o ancora fuori intervallo** (§3.3) |
 | `Err_4` | anomalia delle formule | — |
+| `Err_5` | libero (definito, mai impostato dal motore) | **sequenza non interpretabile**: uscita senza rientro in zona lavoro (§3.3, passo 5) |
+
+`Warning_5` (`1 << 29`) sta ancora nei 31 bit gestiti dal client.
 
 `Warning_3` (`1 << 27`) e `Warning_4` (`1 << 28`) stanno ancora nei 31 bit gestiti dagli operatori bitwise di TypeScript, quindi sul client basta aggiungerli alla maschera `ALL_WARNING_DETAILS` senza passare a `BigInt`.
 
@@ -175,8 +214,8 @@ Gli slot di avviso proposti nella prima versione vanno rivisti, perché nel frat
 | `DurataMin` | int | durata minima o standard in minuti (es. 60); per `Breve` può essere 0 |
 | `DurataMaxMin` | int? | oltre questa durata: avviso `Warning_4` (informativo; i minuti in più sono già ore mancanti) |
 | `SogliaMin` | int | la pausa è dovuta se il lavorato lordo supera questi minuti (default 360 = 6h) |
-| `FinestraDalle` | TimeOnly? | inizio della finestra in cui la pausa è riconosciuta e collocata |
-| `FinestraAlle` | TimeOnly? | fine della finestra. Se `FinestraAlle < FinestraDalle`, la finestra finisce il giorno dopo (turni notturni) |
+| `FinestraDalle` | TimeOnly? | inizio della finestra in cui la pausa è riconosciuta e collocata. Vuota: `Alle_Limite_SX` della coppia che precede la pausa (§3.3) |
+| `FinestraAlle` | TimeOnly? | fine della finestra. Vuota: `Dalle_Limite_DX` della coppia che segue. Se `FinestraAlle < FinestraDalle`, la finestra finisce il giorno dopo (turni notturni). Obbligatoria su orario a coppia unica |
 | `RetribuitaMin` | int | minuti della pausa che restano pagati (default 0) |
 | `IdCausale_Pausa` | int? | facoltativa: causale informativa per i minuti detratti, se servono nell'export paghe |
 
@@ -211,11 +250,14 @@ Vincoli di validazione nel servizio (messaggi localizzati in `AttendanceTracking
 
 ## 5. Modifiche al motore: correzione preliminare (U9)
 
-In `AssegnaVersoTimbrature` (1532) e `AccoppiaTimbratureFuoriOrario` (1706): applicare la regola della §3.3. Dopo la correzione:
+In `AssegnaVersoTimbrature` (1532), `AccoppiaTimbratureFuoriOrario` (1706) e nell'abbinamento di `GeneraTimbratureMancanti` (1784): applicare l'interpretazione per zone della §3.3. La logica va in una funzione pura `GestionePresenzeSequenza.Interpreta(ancore, timbrature) → (versi, arrotondamenti, avvisi)`, usata da entrambi i metodi e coperta dai casi della tabella §3.3.
 
 - 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 su `DIURNO8H` → 7h45, causali della mattina 3h45;
 - 09:00, 13:00, 14:00, 18:00, 20:00, 22:00 (rientro serale) → invariato: 8h + 2h fuori orario;
-- 09:00, 10:30, 13:00, 14:00, 18:00 (uscita senza rientro, dispari) → anomalia esplicita invece del risultato attuale.
+- 09:00, 10:30, 13:00, 14:00, 18:00 (uscita senza rientro, dispari) → anomalia esplicita invece del risultato attuale;
+- doppia timbratura e ancora fuori intervallo → avviso (slot da assegnare, §3.6).
+
+Nuovi controlli di coerenza degli intervalli in `Par_OrarioIntervalloHHService` (messaggi it/en) e nel dialog `edit-par-orario-dettaglio-orario-intervallo-hhdialog` (§3.3, ultimo paragrafo).
 
 ---
 
@@ -322,7 +364,7 @@ Una modifica a orario o profilo **non** innesca il ricalcolo (commento in testa 
 
 | Fase | Contenuto | File principali |
 |---|---|---|
-| 0. Correzione | Uscite intermedie (§3.3, §5), rilasciabile da sola | `TimeSheet_EngineService.cs` |
+| 0. Sequenza | Interpretazione delle timbrature per zone con gli intervalli di riconoscimento (§3.3, §5) e validazione degli intervalli, rilasciabile da sola | `TimeSheet_EngineService.cs`, nuovo `GestionePresenzeSequenza.cs`, `Par_OrarioIntervalloHHService.cs`, dialog coppie |
 | 1. Dati | Entità `Par_OrarioPausa`, enum, campi in `Dip_GG_Result`/`Dip_Periodo`, configurazione EF, migrazione, seed | `Entities/Tenant/GestionePresenze/`, `AttendanceTrackingDbContext.cs`, `GestionePresenzeParametriDefault.cs` |
 | 2. Servizi e API | Repository, servizio, controller, caricamento in `Get_OrariSchema_4User` | `Repositories/Tenant/GestionePresenze/`, `ClientServer-Service/GestionePresenze/`, `Controllers/GestionePresenze/` |
 | 3. Motore | Helper unico delle ore teoriche, timbrature interne facoltative, `GeneraTimbratureMancanti`, `SegmentiLavorati`/`ApplicaPausa`, flag e totali | `TimeSheet_EngineService.cs`, `GestionePresenzeOreTeoriche.cs`, nuovo `GestionePresenzePause.cs` |
@@ -343,6 +385,9 @@ Una modifica a orario o profilo **non** innesca il ricalcolo (commento in testa 
 7. **Statistiche attività**: la detrazione automatica va riflessa sulle ore per attività?
 8. **Piano di licenza**: la gestione pause è nel piano base o nel Pro?
 9. **Correzione uscite intermedie**: va rilasciata subito (fase 0) indipendentemente dal resto? Cambia il risultato dei giorni già calcolati con uscite intermedie al prossimo ricalcolo.
+10. **Doppie timbrature**: soglia fissa (2') o parametro aziendale (`Az_Cfg`)?
+11. **Ancora fuori intervallo** (uscita anticipata o rientro in ritardo senza giustificativo): basta l'avviso `Warning_5` o deve essere un errore che blocca la giornata finché l'HR non la sistema?
+12. **Intervalli esistenti incoerenti**: con i nuovi controlli, gli orari già salvati con limiti fuori ordine vanno solo segnalati all'apertura o corretti con una migrazione dati?
 
 ---
 
@@ -353,12 +398,16 @@ Una modifica a orario o profilo **non** innesca il ricalcolo (commento in testa 
 - [x] Casi d'uso pausa pranzo (U1-U8)
 - [x] Verifica del difetto sulle uscite intermedie e casi d'uso pause brevi (U9-U10)
 - [x] Riferimenti al codice aggiornati dopo le formule personalizzate; slot di stato rivisti (`Warning_3`/`Warning_4`)
+- [x] Interpretazione della sequenza con gli intervalli di riconoscimento (zone, abbinamento ordinato, finestra pausa predefinita, §3.3)
+- [x] Verifica dell'assenza di validazione degli intervalli (server e client); slot `Warning_5`/`Err_5` verificati liberi
 - [ ] Risposte alle domande aperte (§11)
 
-### Fase 0: correzione uscite intermedie
-- [ ] Regola §3.3 in `AssegnaVersoTimbrature` / `AccoppiaTimbratureFuoriOrario`
-- [ ] Anomalia esplicita per uscita senza rientro dentro una coppia
-- [ ] Verifica casi §5 (uscita intermedia, rientro serale, dispari)
+### Fase 0: interpretazione della sequenza per zone
+- [ ] Funzione pura `GestionePresenzeSequenza.Interpreta` (doppie, abbinamento ordinato, zone, ancore mancanti, controllo alternanza)
+- [ ] Uso in `AssegnaVersoTimbrature`, `AccoppiaTimbratureFuoriOrario` e `GeneraTimbratureMancanti`
+- [ ] Avviso `Warning_5` (doppia / ancora fuori intervallo) ed errore `Err_5` (sequenza non interpretabile), testi client
+- [ ] Validazione degli intervalli in `Par_OrarioIntervalloHHService` e nel dialog delle coppie
+- [ ] Verifica dei casi della tabella §3.3
 
 ### Fase 1: dati
 - [ ] Entità `Par_OrarioPausa` ed enum `PausaTipo`, `PausaModalita`
