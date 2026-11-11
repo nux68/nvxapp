@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Licenza sottoscritta da un soggetto (ANALISI_LICENZE.md §3.2): IdCompany oppure IdFinancialAdvisor.
+     Licenza sottoscritta da un soggetto (ANALISI_INFRASTRUCTURE_LICENZE.md §3.2): IdCompany oppure IdFinancialAdvisor.
      Conserva la fotografia del piano al momento della sottoscrizione o dell'ultimo rinnovo (ambito, livello, prezzo,
      limite utenti, DisponibileSuCompany, descrizione), cosi' resta valida anche se il listino cambia o viene eliminato
      (IdListino e IdPiano diventano null).

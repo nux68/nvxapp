@@ -7,7 +7,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.Infrastructure
 {
-    // Widget della dashboard dell'utente corrente (ANALISI_WIDGET.md)
+    // Widget della dashboard dell'utente corrente (ANALISI_INFRASTRUCTURE_WIDGET.md)
     [ApiController]
     [Route("api/[controller]")]
     public class UserDashboardController : NvxControllerBase

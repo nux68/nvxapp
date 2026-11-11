@@ -97,7 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_Cl
                 var az_Cliente = _mapper.Map<nvxapp.server.data.Entities.Tenant.Az_Cliente>(model.Data.Az_Cliente);
                 az_Cliente.IdAz_Anagrafica = az_Anagrafica.Id;
 
-                // limite clienti della licenza CRM (ANALISI_LICENZE.md §5.1): conta un cliente nuovo, riattivato o che smette di
+                // limite clienti della licenza CRM (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): conta un cliente nuovo, riattivato o che smette di
                 // essere solo fornitore; quelli gia' contati restano
                 if (_licenseGuard.ContaComeCliente(az_Cliente) && !_licenseGuard.ContaComeCliente(precedente) && int.TryParse(this.CurrentCompany, out var idCompany))
                     await _licenseGuard.EnsureCanAddClientAsync(idCompany);

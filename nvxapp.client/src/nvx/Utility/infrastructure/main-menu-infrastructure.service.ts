@@ -39,7 +39,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' },
       { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storageSettings', component: "StorageSettingsPageComponent", url: '/storagesettings', icon: 'server' },
       { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.companyStorage', component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' },
-      // pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md)
+      // pagamenti delle licenze e ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md)
       { menuType: MenuType.MenuItem, zorder: 700, group: 0, title: 'menu.payments', component: "PaymentReportPageComponent", url: '/paymentreport', icon: 'wallet' }
     ];
   }
@@ -62,7 +62,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.dealerUsers'     , component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.companyStorage'                , component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' },
-      // incassi delle licenze dei clienti del centro e quote liquidate dal SuperUser (ANALISI_PAGAMENTI_CENTRI.md)
+      // incassi delle licenze dei clienti del centro e quote liquidate dal SuperUser (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md)
       { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.dealerPayments', roles: ['DealerPowerAdmin', 'DealerAdmin'], component: "PaymentDealerPageComponent", url: '/paymentdealer', icon: 'wallet' }
     ];
   }
@@ -105,7 +105,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.preferences', component: "UserPageComponent", url: '/user', icon: 'options', nonConfigurabile: true },
-      // licenze (ANALISI_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
+      // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
       // gestione delle licenze per studio e azienda
       { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },
       { menuType: MenuType.MenuItem,   zorder: 610, group: 0, title: 'menu.licenseManagement', roles: RUOLI_LICENZE_SOGGETTO, component: "LicenseManagementPageComponent", url: '/licensemanagement', icon: 'ribbon' }

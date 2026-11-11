@@ -8,7 +8,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
 {
-    /// <summary>contenuto di un rendiconto o di un riepilogo, gia' nella lingua dell'utente (ANALISI_PAGAMENTI_CENTRI.md §5)</summary>
+    /// <summary>contenuto di un rendiconto o di un riepilogo, gia' nella lingua dell'utente (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §5)</summary>
     public class PaymentDocument
     {
         public string Titolo { get; set; } = string.Empty;

@@ -17,7 +17,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserDashboard
 {
     /*
-     Dashboard dell'utente corrente nell'azienda corrente (ANALISI_WIDGET.md).
+     Dashboard dell'utente corrente nell'azienda corrente (ANALISI_INFRASTRUCTURE_WIDGET.md).
      Il catalogo dei widget lo dichiara il client di ogni ramo: il server salva solo le chiavi scelte, nell'ordine,
      dopo il controllo del formato. I dati mostrati dai widget arrivano dai servizi di ogni applicativo, che
      ricontrollano i permessi come per le loro pagine.

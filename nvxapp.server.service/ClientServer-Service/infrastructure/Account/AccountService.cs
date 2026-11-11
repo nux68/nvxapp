@@ -302,7 +302,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             retVal.UserData.UserName = applicationUser.UserName;
 
                             // applicativi abilitati dello studio dell'utente (funzioni lato studio, es. area studio del documentale)
-                            // con il sistema licenze acceso restano solo quelli coperti da licenza (ANALISI_LICENZE.md §15.6)
+                            // con il sistema licenze acceso restano solo quelli coperti da licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6)
                             if (int.TryParse(financialAdvisor, out var idFinancialAdvisorActive))
                             {
                                 var applicativiStudio = new List<ApplicationType>();
@@ -529,7 +529,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                 }
 
-                // trattenuta della piattaforma del centro (ANALISI_PAGAMENTI_CENTRI.md): solo il SuperUser; vuota = quella generale
+                // trattenuta della piattaforma del centro (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): solo il SuperUser; vuota = quella generale
                 if (await _authorizer.IsSuperUserAsync())
                     await _paymentSettlementManager.SalvaPercentualeAsync(dealer.Id, model.Data.DealerEdit.PercentualePiattaforma);
 
@@ -820,7 +820,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         Descrizione = company.Descrizione,
                         IdCompany = company.Id,
                         Disabled = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id && x.MainUser).Any(x => x.Disabled),
-                        // applicativi con licenza e diritto di cambiarli (ANALISI_LICENZE.md §15.6)
+                        // applicativi con licenza e diritto di cambiarli (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6)
                         Applications = await _companyApplicationService.ApplicationsWithRightsAsync(company.Id)
                     };
                     retVal.CompanyEdit.ApplicationsReadOnly = !retVal.CompanyEdit.Applications.Any(x => x.CanChange);
@@ -936,7 +936,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 // applicativi dell'azienda:
                 //  - spuntato: attivato se serve e schema verificato a ogni salvataggio (creato se manca)
                 //  - tolto: solo disattivato, lo schema e i dati restano
-                // - chi puo' cambiare lo stato lo decide CompanyApplicationService.CanChangeAsync (licenza, ANALISI_LICENZE.md §15.6):
+                // - chi puo' cambiare lo stato lo decide CompanyApplicationService.CanChangeAsync (licenza, ANALISI_INFRASTRUCTURE_LICENZE.md §15.6):
                 //   gli applicativi che l'utente non puo' cambiare restano come sono, senza bloccare il salvataggio dell'azienda
                 if (company != null && model.Data.CompanyEdit.Applications != null)
                 {
@@ -1118,7 +1118,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     if (model.Data.UserCompanyEdit.Disabled != null)
                     {
-                        // riabilitare un utente conta come aggiungerlo: limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                        // riabilitare un utente conta come aggiungerlo: limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1)
                         if (userCompany.Disabled && !model.Data.UserCompanyEdit.Disabled.Value)
                             await VerificaLimiteUtentiAzienda(userCompany.IdCompany);
                         userCompany.Disabled = model.Data.UserCompanyEdit.Disabled.Value;
@@ -1158,7 +1158,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     int IdCompany;
                     int.TryParse(this.CurrentCompany, out IdCompany);
 
-                    // limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                    // limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1)
                     await VerificaLimiteUtentiAzienda(IdCompany);
 
                     //DealerPowerAdmin
@@ -1604,7 +1604,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     int IdFinancialAdvisor;
                     int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
 
-                    // limite utenti della licenza (ANALISI_LICENZE.md §5.1)
+                    // limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1)
                     await VerificaLimiteUtentiStudio(IdFinancialAdvisor);
 
                     //FinancialAdvisorPowerAdmin
@@ -1648,7 +1648,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             }, isSubProcess);
         }
 
-        // stato delle licenze per il client (ANALISI_LICENZE.md §8.1.1, §8.1.2); il server ricontrolla sempre con ILicenseGuard
+        // stato delle licenze per il client (ANALISI_INFRASTRUCTURE_LICENZE.md §8.1.1, §8.1.2); il server ricontrolla sempre con ILicenseGuard
         private async Task<UserLicenseModel> UserLicenseAsync(int? idCompany, int? idFinancialAdvisor)
         {
             var retVal = new UserLicenseModel { Enabled = await _licenseGuard.EnabledAsync() };
@@ -1690,7 +1690,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             return retVal;
         }
 
-        // limite utenti della licenza (ANALISI_LICENZE.md §5.1): gli utenti gia' attivi restano, si bloccano solo i nuovi
+        // limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): gli utenti gia' attivi restano, si bloccano solo i nuovi
         private async Task VerificaLimiteUtentiAzienda(int idCompany)
         {
             if (idCompany > 0 && !await _licenseGuard.CanAddUserAsync(idCompany))

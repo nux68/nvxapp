@@ -12,7 +12,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
- Listini delle licenze (ANALISI_LICENZE.md §4, §10.2): SuperUser (listini globali e dei centri) e utenti del centro
+ Listini delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §4, §10.2): SuperUser (listini globali e dei centri) e utenti del centro
  (listini globali in sola lettura, propri modificabili dal DealerPowerAdmin se il centro e' abilitato).
  Un listino usato da licenze non si elimina: il server lo disattiva. Dal menu della pagina (SuperUser): impostazioni.
 */
