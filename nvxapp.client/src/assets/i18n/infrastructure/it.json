@@ -97,6 +97,7 @@
     "registry": "Anagrafiche",
     "customers": "Clienti",
     "manualInfrastructure": "Manuale funzioni base",
+    "manualVoiceCommands": "Comandi vocali",
     "licenseManagement": "Gestione licenze",
     "licenseCatalogs": "Listini licenze",
     "preferences": "Preferenze"
@@ -773,6 +774,11 @@
         "infrastructure": {
           "title": "Manuale delle funzioni di base",
           "description": "Accesso, menu, utenti e ruoli, impersonificazione, clienti e anagrafiche comuni, assistenza e lavori in background."
+        },
+        "voicecommands": {
+          "title": "Comandi vocali dell’assistente",
+          "description": "Elenco dei comandi che l’assistente riconosce, a voce o scritti, con la funzione abbinata e frasi di esempio, organizzati per applicativo e per argomento.",
+          "note": "L’elenco contiene solo i comandi disponibili per te: quelli dei tuoi ruoli e degli applicativi attivi per la tua azienda. Premi Scarica: il PDF si prepara in pochi secondi e compare in alto, nella barra dei lavori, con il pulsante per scaricarlo."
         }
       },
       "download": "Scarica",

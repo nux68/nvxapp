@@ -97,6 +97,7 @@
     "registry": "Registry",
     "customers": "Customers",
     "manualInfrastructure": "Basic functions manual",
+    "manualVoiceCommands": "Voice commands",
     "licenseManagement": "Licence management",
     "licenseCatalogs": "Licence price lists",
     "preferences": "Preferences"
@@ -773,6 +774,11 @@
         "infrastructure": {
           "title": "Basic functions manual",
           "description": "Access, menu, users and roles, impersonation, customers and shared registries, support and background jobs."
+        },
+        "voicecommands": {
+          "title": "Assistant voice commands",
+          "description": "List of the commands the assistant recognises, spoken or typed, with the function they perform and sample phrases, organised by application and topic.",
+          "note": "The list only contains the commands available to you: those for your roles and for the applications active for your company. Press Download: the PDF is prepared in a few seconds and appears at the top, in the jobs bar, with the download button."
         }
       },
       "download": "Download",
