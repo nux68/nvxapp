@@ -356,4 +356,37 @@
   <data name="SignDownloadFirst" xml:space="preserve">
     <value>Prima di firmare apri il documento con "Scarica" e leggilo.</value>
   </data>
+  <data name="DefaultTypeAcknowledgement" xml:space="preserve">
+    <value>Verbali e prese visione</value>
+  </data>
+  <data name="AckLogDetail" xml:space="preserve">
+    <value>Richiesta di presa visione ({0}): {1}</value>
+  </data>
+  <data name="AckPdfRecipient" xml:space="preserve">
+    <value>Destinatario: {0}</value>
+  </data>
+  <data name="AckPdfDate" xml:space="preserve">
+    <value>Data: {0}</value>
+  </data>
+  <data name="AckPdfFooter" xml:space="preserve">
+    <value>Documento generato dall'applicazione il {0} per la presa visione del destinatario</value>
+  </data>
+  <data name="AckDeclarationGeneric" xml:space="preserve">
+    <value>Il destinatario dichiara di aver ricevuto e letto il presente documento.</value>
+  </data>
+  <data name="AckDeclarationGoods" xml:space="preserve">
+    <value>Il destinatario dichiara di aver ricevuto in consegna i beni sopra indicati, in buono stato, e si impegna a custodirli con diligenza, a usarli solo per l'attività lavorativa e a restituirli su richiesta o alla cessazione del rapporto.</value>
+  </data>
+  <data name="AckDeclarationPpe" xml:space="preserve">
+    <value>Il destinatario dichiara di aver ricevuto i dispositivi di protezione individuale sopra indicati e le informazioni sul loro corretto uso, e si impegna a utilizzarli e conservarli con cura e a segnalare subito difetti o inconvenienti (D.Lgs. 81/2008, artt. 20 e 78).</value>
+  </data>
+  <data name="AckDeclarationAgreement" xml:space="preserve">
+    <value>Il destinatario dichiara di aver letto e di accettare l'accordo sopra riportato.</value>
+  </data>
+  <data name="AckPdfHowSign" xml:space="preserve">
+    <value>La firma elettronica semplice si appone nell'applicazione, in "I miei documenti": si registrano data, versione e impronta del documento, indirizzo IP e browser.</value>
+  </data>
+  <data name="AckPdfHowAcknowledge" xml:space="preserve">
+    <value>La presa visione si conferma nell'applicazione, in "I miei documenti".</value>
+  </data>
 </root>
