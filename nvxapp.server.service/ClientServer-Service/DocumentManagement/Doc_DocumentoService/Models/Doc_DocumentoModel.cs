@@ -33,6 +33,11 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         // per l'utente corrente come destinatario: firma richiesta e fatta (sulla versione corrente)
         public bool FirmaRichiesta { get; set; }
         public DateTime? DataFirma { get; set; }
+        // stato della firma del documento (archivio): richiesta all'invio, destinatari che devono firmare, quanti hanno firmato
+        public bool FirmaDocumento { get; set; }
+        public int Firmatari { get; set; }
+        public int Firmati { get; set; }
+        public DateTime? UltimaFirma { get; set; }
         public bool Nuovo { get; set; }
         // oltre gli anni di conservazione della tipologia (solo segnalazione)
         public bool OltreConservazione { get; set; }

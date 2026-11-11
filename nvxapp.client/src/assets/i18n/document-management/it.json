@@ -106,7 +106,11 @@
         "all": "Tutti",
         "showDisabled": "Mostra anche i disattivati",
         "trashNote": "Cestino: i documenti si eliminano definitivamente dopo i giorni indicati nelle impostazioni, o subito con \"Elimina\".",
-        "truncated": "Mostrati i primi 500 documenti: affina i filtri."
+        "truncated": "Mostrati i primi 500 documenti: affina i filtri.",
+        "signNotActive": "Richiesta firma non attiva",
+        "signPending": "Da firmare",
+        "signedPartial": "Firmati {{firmati}} su {{firmatari}}",
+        "signedOn": "Firmato il {{date}}"
       },
       "edit": {
         "title": "Documento",
