@@ -168,11 +168,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasData(
                         new
                         {
-                            Key = "Storage_MaxFileMB",
-                            Value = "50"
-                        },
-                        new
-                        {
                             Key = "Storage_WarningPercent",
                             Value = "80"
                         },
@@ -545,9 +540,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int>("IdCompany")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdStoragePlan")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("LastRecalc")
                         .HasColumnType("timestamp without time zone");
 
@@ -555,9 +547,6 @@ namespace nvxapp.server.data.Migrations.Public
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("LastWarningPercent")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("MaxFileMB")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -576,8 +565,6 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.HasIndex("IdCompany")
                         .IsUnique();
-
-                    b.HasIndex("IdStoragePlan");
 
                     b.ToTable("CompanyStorage", "public");
                 });
@@ -1241,56 +1228,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("Lic_Piano", "public");
                 });
 
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.StoragePlan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int?>("MaxFileMB")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Ordine")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Predefinito")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("QuotaMB")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Descrizione")
-                        .IsUnique();
-
-                    b.HasIndex("Predefinito")
-                        .IsUnique()
-                        .HasFilter("\"Predefinito\"");
-
-                    b.ToTable("StoragePlan", "public");
-                });
-
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
                 {
                     b.Property<int>("Id")
@@ -1948,15 +1885,7 @@ namespace nvxapp.server.data.Migrations.Public
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("nvxapp.server.data.Entities.Public.StoragePlan", "StoragePlanNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdStoragePlan")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("CompanyNavigation");
-
-                    b.Navigation("StoragePlanNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Document", b =>

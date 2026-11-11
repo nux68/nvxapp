@@ -69,7 +69,7 @@ AttendanceTrackingDbContext, CrmDbContext, DocumentManagementDbContext...): lett
     date e utente della modifica). Modifiche massive: `ExecuteUpdateAsync` / `ExecuteDeleteAsync` sull'IQueryable di `FindAll(where)`.
  5. **Operazioni particolari** (SQL atomico, UPDATE condizionali, chiavi non intere, salvataggi che richiedono una transazione)
     sono **metodi del repository**, dichiarati nella sua interfaccia (es. `ICompanyStorageRepository.ReserveAsync`,
-    `IStoragePlanRepository.SaveAsync`, `IAppSettingRepository.GetValueAsync/SetValueAsync`).
+    `IAppSettingRepository.GetValueAsync/SetValueAsync`).
  6. **Transazioni**: `BeginTransactionAsync()` di un repository; vale per tutti i repository dello stesso contesto nella stessa
     richiesta (es. tutti quelli di public, insieme a UserManager).
  7. **Tabelle comuni (schema Common)**:
