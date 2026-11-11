@@ -1,0 +1,403 @@
+# Presenze: gestione delle pause (pranzo e pause brevi)
+
+Analisi di come il programma tratta oggi le pause, quali casi d'uso servono e come estendere modello dati, motore di calcolo e interfaccia per gestire:
+
+- la **pausa pranzo timbrata**, con controllo di durata minima, durata massima e finestra;
+- la **pausa pranzo automatica**, cioè la detrazione della pausa quando il dipendente non la timbra;
+- le **pause brevi** (caffè, uscite intermedie) timbrate dentro una coppia dell'orario, con eventuale quota retribuita.
+
+Il documento segue lo stesso schema di `GestionePresenze_Straordinario.md` (`nvxapp.server/Note/`). Prima versione: commit `958040c2` (solo pausa pranzo, in `Note/GestionePresenze_PausaPranzo.md`); questa revisione la sposta tra le analisi `ANALISI_ATTENDANCETRACKING_*`, aggiorna i riferimenti al codice dopo l'introduzione delle formule personalizzate e aggiunge le pause brevi.
+
+Riferimenti nel codice (branch `AttendanceTracking_Dev`, revisione `b964eaf6`):
+
+- `nvxapp.server.service/ClientServer-Service/GestionePresenze/TimeSheet_EngineService/TimeSheet_EngineService.cs`: il motore. Metodi coinvolti: `AggiornaCartellinoMese` (1044), `CalcolaGiorno` (1094), `CalcolaOreTeoriche` (1425), `CalcolaOreLavorate` (1475), `AssegnaVersoTimbrature` (1532), `AccoppiaTimbratureFuoriOrario` (1706), `GeneraTimbratureMancanti` (1720), `GeneraCausali` (2090), `Sovrapposizione` (2423), `OreNotturne` (2450), `Get_Timbrature_Giorno` (2467). Aggancio delle formule: fase Giorno in `CalcolaGiorno` (1139-1146), fase Finale nella fase di periodo (997-1010), dati per le formule in `DatiFormule` (1278).
+- `nvxapp.server.service/ClientServer-Service/GestionePresenze/_utility/GestionePresenzeOreTeoriche.cs:86-99`: un secondo calcolo delle ore teoriche, usato da contatori e piano ferie.
+- `nvxapp.server.service/ClientServer-Service/GestionePresenze/_utility/GestionePresenzeParametriDefault.cs:120-165`: l'orario di default `DIURNO8H` e il profilo `DAY7H8`.
+- `nvxapp.server.service/ClientServer-Service/GestionePresenze/FormuleEngine/`: formule personalizzate (`FormuleRunner.cs:51-52` usa `Warning_2` ed `Err_4`; `FormulaContext.cs` espone `x.Result`, `x.Orario`, `x.Timbrate`).
+- `nvxapp.server.data/Entities/Tenant/GestionePresenze/`: le entità `Par_Orario`, `Par_OrarioIntervalloHH`, `Dip_GG_Timbratura` (`TipoTimbratura`: `Entrata`, `Uscita`, `SenzaVerso`), `Dip_GG_Result` (`GG_ResultStato`) e `Dip_Periodo`.
+- `nvxapp.server.data/Infrastructure/AttendanceTrackingDbContext.cs`: la configurazione EF (`Par_Orario` riga 557, `Par_OrarioIntervalloHH` riga 644).
+- Client: `ClientServer-Service/GestionePresenze/Dip_GG_Result/dip-ggresult.service.ts:56-58` (maschera degli avvisi, oggi solo `Warning_1 | Warning_2`) e `Utility/GestionePresenze/time-sheet.service.ts:1030-1033` (testi degli avvisi).
+
+---
+
+## 1. Situazione attuale
+
+### 1.1 La pausa esiste solo come "buco" tra due coppie
+
+Nel modulo presenze non c'è nessun concetto esplicito di pausa: niente entità, campi, enum, parametri, servizi, testi i18n o elementi di interfaccia per pausa, pranzo, mensa o buono pasto (verificato su tutto il codice server e client).
+
+La pausa pranzo è rappresentata **implicitamente** come l'intervallo tra due coppie dell'orario (`Par_OrarioIntervalloHH`). L'orario di default `DIURNO8H` ha le coppie 09:00-13:00 e 14:00-18:00, con tolleranza ±15' e arrotondamento a 15'. Il buco 13:00-14:00 è di fatto la pausa pranzo:
+
+| Calcolo | Come lo fa oggi | Effetto sulla pausa |
+|---|---|---|
+| Ore teoriche (`CalcolaOreTeoriche`) | Somma delle durate delle coppie | Il buco non è mai teorico, quindi 8h |
+| Ore lavorate (`CalcolaOreLavorate`, `GeneraCausali`) | Timbrature con verso ordinate per ora arrotondata, prese **a due a due per posizione** (0-1, 2-3, ...); una coppia che non è E poi U viene scartata | Il tempo tra l'uscita delle 13 e l'entrata delle 14 non conta |
+| Accoppiamento (`AssegnaVersoTimbrature`) | Una timbratura attesa per ogni `Dalle`/`Alle` con `*_Use_4_Match = true`, cercata nella sua tolleranza; il verso dipende dalla posizione della timbratura attesa (pari = E, dispari = U). Le timbrature rimaste libere vanno ad `AccoppiaTimbratureFuoriOrario`, che le accoppia E/U in ordine cronologico come **lavoro fuori orario** | Servono **4 timbrature** |
+
+### 1.2 Cosa succede nei casi reali
+
+| Caso | Timbrature | Esito oggi |
+|---|---|---|
+| Pausa timbrata regolare | 08:58, 13:02, 13:57, 18:03 | Corretto: 8h lavorate |
+| Pausa breve timbrata (20 min) | 09:00, 13:00, 13:20, 18:00 | 8h40 lavorate. I 40 minuti in più diventano eccedenza o straordinario. Nessun controllo di pausa minima |
+| Pausa lunga timbrata (90 min) | 09:00, 13:00, 14:30, 18:00 | 7h30 lavorate, 30 minuti mancanti (`Err_2`). Corretto |
+| **Pausa non timbrata** | 09:00, 18:00 | Le timbrature sono meno di quelle attese, quindi `Err_TimbratureMancanti`. Con l'opzione "Genera timbrature mancanti" il motore **inventa** le timbrature 13:00 e 14:00 |
+| **Pausa caffè timbrata dentro la mattina** | 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 | **Errato: 4h lavorate.** Le 4 timbrature attese si abbinano a 09, 13, 14, 18; 10:30 e 10:45 restano libere e `AccoppiaTimbratureFuoriOrario` le marca E/U. In ordine la sequenza è E, E, U, U, E, U: le prime due coppie per posizione (E-E, U-U) vengono scartate e resta solo 14-18. Ci si aspetterebbe 7h45 (o 8h con 15' retribuiti) |
+| Orario continuato a coppia unica (08:30-17:30) | 08:30, 17:30 | 9h lavorate su 9h teoriche. Nessuna pausa e nessuna detrazione |
+| Orari a monte ore (`MonteOre`, `MonteOreValore`) | valori orari | La pausa non è applicabile |
+
+### 1.3 Limiti
+
+1. Non c'è **detrazione automatica**: chi non timbra la pausa non ottiene un risultato corretto senza correzioni manuali o timbrature generate.
+2. Non c'è il controllo di **pausa minima**. Il D.Lgs. 66/2003, art. 8, prevede una pausa quando l'orario giornaliero supera le 6 ore. Durata e modalità sono fissate dal CCNL, con un minimo di 10 minuti in mancanza di regole contrattuali. Oggi una pausa insufficiente non viene segnalata e il tempo in più diventa eccedenza.
+3. Non c'è il concetto di **finestra della pausa** (per esempio tra le 12:00 e le 14:30) né di pausa flessibile.
+4. Non c'è la **pausa retribuita** (per esempio mensa interna retribuita o 10 minuti di pausa contrattuale pagati).
+5. In `Dip_GG_Result` e `Dip_Periodo` non c'è nessun dato sulla pausa. L'HR non vede né la pausa fatta né quella detratta.
+6. Le ore teoriche si calcolano in **due punti** (motore e `GestionePresenzeOreTeoriche`) con la stessa regola duplicata.
+7. **Difetto**: le uscite intermedie dentro una coppia (pausa caffè, uscita breve) rompono l'accoppiamento per posizione e fanno perdere intere ore lavorate (§1.2). È un errore di calcolo che esiste già oggi, indipendente dalla nuova funzione.
+8. Le formule personalizzate non hanno dati sulla pausa: chi oggi volesse simularla dovrebbe ricostruirla da `x.Timbrate`, e comunque una formula modifica i minuti delle causali ma non può spostare i segmenti lavorati (notturno, fasce).
+
+---
+
+## 2. Casi d'uso da coprire
+
+| # | Caso | Esempio | Regola richiesta |
+|---|---|---|---|
+| U1 | Pausa timbrata con durata minima | Orario 09-13 / 14-18, pausa minima 60' | Se la pausa timbrata è di 30', detrarre 30' ("integrazione pausa") oppure solo segnalare |
+| U2 | **Pausa automatica su orario a due coppie** | Il dipendente timbra solo 09:00 e 18:00 | Le 2 timbrature sono accettate senza errore e si detrae 1h |
+| U3 | **Pausa automatica su orario continuato** | Coppia unica 08:30-17:30, pausa 60' | Teorico 8h. Lavorato = presenza meno 60' se si superano le 6h |
+| U4 | Pausa flessibile in finestra | Pausa tra 12:00 e 14:30, durata 30'-90' | Conta come pausa solo il buco che cade nella finestra |
+| U5 | Pausa automatica solo oltre soglia | Mezza giornata 08:00-13:00 (permesso pomeridiano) | Nessuna detrazione se il lavorato non supera la soglia (es. 6h) |
+| U6 | Pausa retribuita, in tutto o in parte | Mensa con 30' pagati su 60' | Si detraggono solo i minuti non retribuiti |
+| U7 | Turni notturni | Turno 22:00-06:00 con pausa 02:00-02:30 | Finestra a cavallo della mezzanotte, coerente con `GiornoCompetenza` |
+| U8 | (fase 2) Buono pasto | Buono pasto se lavorato ≥ 6h con pausa | Genera una causale o un giustificativo a importo |
+| **U9** | **Pausa breve timbrata** | 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 | Le due timbrature intermedie sono un'uscita e un rientro: 15' non lavorati (oggi il giorno vale 4h, §1.2) |
+| **U10** | **Pausa breve retribuita** | CCNL con 10' di pausa pagata al giorno | Le uscite brevi fino a 10' complessivi restano lavorate; oltre, si detraggono |
+
+---
+
+## 3. Scelte di progetto
+
+### 3.1 Dove configurare la pausa: nell'**orario** (proposta)
+
+| Opzione | Pro | Contro |
+|---|---|---|
+| **A. Orario (`Par_Orario`)**, proposta | Un profilo contiene giorni con e senza pausa (sabato a mezza giornata, part-time 4h). La pausa dipende dalla forma della giornata | La configurazione va ripetuta su ogni orario (mitigato dai default di seed e dalla copia orario) |
+| B. Profilo orario (`Par_ProfiloOrario`) | Stesso schema dei parametri dello straordinario | Non distingue i giorni del profilo. Bisognerebbe comunque escludere gli orari corti |
+| C. Azienda (`Az_Cfg`) con override per orario | Un default unico per azienda | Due livelli da gestire. Il precedente `Par_Arrotondamenti` è rimasto non collegato al motore |
+| D. Solo formule personalizzate | Nessuna modifica al modello | Solo piano Pro; la formula non sposta i segmenti (notturno, fasce); ogni azienda riscrive la stessa regola |
+
+La proposta è la A, con una tabella figlia **`Par_OrarioPausa`** (da 0 a n righe per orario) sul modello di `Par_OrarioIntervalloHH`, invece di molte colonne su `Par_Orario`. La tabella figlia regge sia il pranzo sia le pause brevi (una riga ciascuno) e i turni lunghi con due pause (U7). La prima versione dell'interfaccia gestisce al massimo una riga per tipo.
+
+### 3.2 Non generare timbrature fittizie
+
+La pausa automatica **non crea record in `Dip_GG_Timbratura`**. È un calcolo che il motore ripete a ogni ricalcolo.
+
+L'alternativa, cioè generare timbrature come fa `GeneraTimbratureMancanti`, è scartata per tre motivi:
+- sporca il dato originale del dipendente;
+- se i parametri della pausa cambiano, le timbrature generate restano;
+- confonde l'HR, che non distingue più una timbratura reale da una fittizia.
+
+### 3.3 Uscite intermedie: verso per sequenza, non per posizione fissa (prerequisito)
+
+Prima di qualsiasi logica di pausa va corretto il difetto della §1.2 (U9). Regola proposta in `AssegnaVersoTimbrature`, dopo l'abbinamento alle timbrature attese:
+
+- una coppia di timbrature libere che cade **dentro** una coppia abbinata (tra la sua E e la sua U) è un'**uscita intermedia**: la prima diventa `Uscita`, la seconda `Entrata`, senza arrotondamento;
+- le timbrature libere **fuori** dalle coppie abbinate restano lavoro fuori orario, come oggi (`AccoppiaTimbratureFuoriOrario`);
+- se dopo la riassegnazione la sequenza cronologica non alterna E/U (numero dispari dentro una coppia), il giorno va in anomalia invece di perdere ore in silenzio.
+
+Con questa regola la sequenza del caso U9 diventa E 09:00, U 10:30, E 10:45, U 13:00, E 14:00, U 18:00 e i cicli di `CalcolaOreLavorate` e `GeneraCausali` (che leggono le coppie per posizione) danno 7h45 senza altre modifiche. La correzione è **indipendente** dalla nuova funzione e può essere rilasciata da sola.
+
+### 3.4 Una sola formula per pausa timbrata e automatica
+
+Per ogni giorno e per ogni pausa configurata:
+
+```
+PausaRilevata  = Pranzo: somma dei buchi tra un'Uscita e l'Entrata successiva che cadono nella finestra
+                         (senza finestra: il buco più lungo tra le coppie timbrate)
+                 Breve:  somma delle uscite intermedie non attribuite al pranzo
+LavoratoLordo  = somma delle coppie E/U (come oggi, dopo la correzione §3.3)
+PausaDovuta    = LavoratoLordo > SogliaMin ? DurataMin : 0
+Detrazione     = Modalita == Automatica
+                   ? max(0, PausaDovuta - PausaRilevata - RetribuitaMin)
+                   : 0
+Riaccredito    = min(PausaRilevata, RetribuitaMin)      // minuti di pausa timbrata pagati (U6, U10)
+Lavorato       = LavoratoLordo - Detrazione + Riaccredito
+```
+
+Con questa formula i casi della §2 si risolvono tutti nello stesso modo:
+
+| Caso | Rilevata | Dovuta | Detrazione | Riaccredito | Lavorato |
+|---|---|---|---|---|---|
+| 09:00-18:00, nessuna pausa timbrata (U2) | 0' | 60' | 60' | 0' | 8h |
+| 09:00-13:00 / 13:30-18:00 (U1) | 30' | 60' | 30' | 0' | 8h |
+| 09:00-13:00 / 14:30-18:00 | 90' | 60' | 0' | 0' | 7h30 (30' mancanti, come oggi) |
+| 08:00-13:00, permesso pomeridiano (U5) | 0' | 0' (5h < 6h) | 0' | 0' | 5h |
+| Continuato 08:30-17:30 con 30' retribuiti (U6) | 0' | 60' | 30' | 0' | 8h30 (teorico 8h30, §6.1) |
+| Pausa caffè 10:30-10:45, pausa breve con 10' retribuiti (U9, U10) | 15' | — | 0' | 10' | 7h55 |
+
+Con la modalità **Rilevata** la detrazione è sempre 0. Se però la pausa dovuta supera quella rilevata, il giorno riceve l'avviso di pausa insufficiente. Il riaccredito si applica in entrambe le modalità (da confermare, domanda aperta 4).
+
+### 3.5 Dove collocare i minuti detratti
+
+Le ore lavorate vengono attribuite alle causali per sovrapposizione con le coppie (`GeneraCausali` → `Sovrapposizione`), e le ore notturne per fascia (`OreNotturne`). Per questo la detrazione deve cadere in un punto preciso della giornata.
+
+**Regola proposta:** la pausa virtuale inizia a `FinestraDalle`. Senza finestra inizia alla `Alle` della coppia che precede il buco. Su un orario a coppia unica, senza finestra, cade a metà della presenza. I minuti `[inizio, inizio + Detrazione]` vengono tolti dal segmento E/U che li contiene. Se il segmento è più corto, la parte restante passa al segmento successivo. Il riaccredito si aggiunge invece al segmento che precede l'uscita.
+
+### 3.6 Stati del giorno
+
+Gli slot di avviso proposti nella prima versione vanno rivisti, perché nel frattempo le formule hanno occupato `Warning_2`:
+
+| Slot | Uso attuale | Uso proposto |
+|---|---|---|
+| `Warning_1` | ore in più (motore, riga 2334) | — |
+| `Warning_2` | avviso delle formule (`FormuleRunner.StatoWarningFormula`) | — |
+| `Warning_3` | libero | **pausa insufficiente o non fruita** |
+| `Warning_4` | libero | **pausa oltre la durata massima** |
+| `Err_4` | anomalia delle formule | — |
+
+`Warning_3` (`1 << 27`) e `Warning_4` (`1 << 28`) stanno ancora nei 31 bit gestiti dagli operatori bitwise di TypeScript, quindi sul client basta aggiungerli alla maschera `ALL_WARNING_DETAILS` senza passare a `BigInt`.
+
+---
+
+## 4. Modello dati
+
+### 4.1 Nuova entità `Par_OrarioPausa` (schema tenant presenze)
+
+| Campo | Tipo | Note |
+|---|---|---|
+| `Id`, campi `BaseEntity` | | |
+| `IdPar_Orario` | int, FK | cascade come `Par_OrarioIntervalloHH` |
+| `NumPausa` | int | ordine (1 = pranzo) |
+| `Tipo` | `PausaTipo` | `Pranzo` = buco tra/entro le coppie nella finestra; `Breve` = uscite intermedie dentro le coppie |
+| `Descrizione` | string(50) | "Pausa pranzo", "Pausa caffè" |
+| `Modalita` | `PausaModalita` | `Rilevata` = solo controllo e avviso; `Automatica` = detrae la differenza (solo `Pranzo`) |
+| `DurataMin` | int | durata minima o standard in minuti (es. 60); per `Breve` può essere 0 |
+| `DurataMaxMin` | int? | oltre questa durata: avviso `Warning_4` (informativo; i minuti in più sono già ore mancanti) |
+| `SogliaMin` | int | la pausa è dovuta se il lavorato lordo supera questi minuti (default 360 = 6h) |
+| `FinestraDalle` | TimeOnly? | inizio della finestra in cui la pausa è riconosciuta e collocata |
+| `FinestraAlle` | TimeOnly? | fine della finestra. Se `FinestraAlle < FinestraDalle`, la finestra finisce il giorno dopo (turni notturni) |
+| `RetribuitaMin` | int | minuti della pausa che restano pagati (default 0) |
+| `IdCausale_Pausa` | int? | facoltativa: causale informativa per i minuti detratti, se servono nell'export paghe |
+
+Enum `PausaTipo { Pranzo = 0, Breve = 1 }` e `PausaModalita { Rilevata = 0, Automatica = 1 }`. Se un orario non ha righe di pausa, il comportamento resta **esattamente quello di oggi** (a parte la correzione §3.3).
+
+Vincoli di validazione nel servizio (messaggi localizzati in `AttendanceTrackingMessages`):
+- `DurataMin >= 0`, e `> 0` per `Tipo = Pranzo`;
+- `RetribuitaMin <= DurataMin` per `Pranzo`;
+- `DurataMaxMin`, se valorizzata, `>= DurataMin`;
+- `Modalita = Automatica` ammessa solo per `Tipo = Pranzo`;
+- la pausa è ammessa solo se `Par_Orario.TimbratureTipo == IntervalloOrario`;
+- al massimo una riga `Pranzo` per orario nella prima versione.
+
+### 4.2 Risultati
+
+| Entità | Nuovi campi | Uso |
+|---|---|---|
+| `Dip_GG_Result` | `int Min_PausaRilevata`, `int Min_PausaDetratta`, `int Min_PausaRetribuita` | Dettaglio del giorno nel cartellino |
+| `Dip_GG_Result.Stato` | `Warning_3`, `Warning_4` (§3.6) | Avvisi |
+| `Dip_Periodo` | `int Min_PausaDetratta` | Totale mensile in `AggiornaCartellinoMese` |
+
+### 4.3 Migrazione e seed
+
+- Nuova migrazione in `nvxapp.server.data/Migrations/AttendanceTracking/`, con una tabella e sei colonne.
+- Accesso solo tramite repository (`Par_OrarioPausaRepository` in `Repositories/Tenant/GestionePresenze/`), come da `nvxapp.server.service/CLAUDE.md`.
+- `GestionePresenzeParametriDefault`:
+  - `DIURNO8H` riceve una pausa `Pranzo`/`Rilevata` di 60', finestra 12:00-15:00 e soglia 6h. Il calcolo non cambia, si aggiungono solo gli avvisi.
+  - Nuovo orario `CONTINUATO8H`: coppia unica 08:30-17:30 con pausa `Pranzo`/`Automatica` di 60', finestra 12:30-14:30, soglia 6h. È il caso tipico della pausa automatica.
+- I dati esistenti senza righe di pausa mantengono il comportamento attuale.
+
+---
+
+## 5. Modifiche al motore: correzione preliminare (U9)
+
+In `AssegnaVersoTimbrature` (1532) e `AccoppiaTimbratureFuoriOrario` (1706): applicare la regola della §3.3. Dopo la correzione:
+
+- 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 su `DIURNO8H` → 7h45, causali della mattina 3h45;
+- 09:00, 13:00, 14:00, 18:00, 20:00, 22:00 (rientro serale) → invariato: 8h + 2h fuori orario;
+- 09:00, 10:30, 13:00, 14:00, 18:00 (uscita senza rientro, dispari) → anomalia esplicita invece del risultato attuale.
+
+---
+
+## 6. Modifiche al motore: pause
+
+Tutte in `TimeSheet_EngineService.cs` salvo dove indicato.
+
+### 6.1 Ore teoriche (U3)
+
+`CalcolaOreTeoriche` e `GestionePresenzeOreTeoriche` sottraggono `DurataMin - RetribuitaMin` per ogni pausa `Pranzo` **che cade dentro una coppia**, nella misura della sovrapposizione tra la finestra (o la pausa collocata) e la coppia:
+
+- coppia unica 08:30-17:30 con pausa di 60' → teorico 8h;
+- orario a due coppie con la pausa nel buco → la sovrapposizione è 0, quindi il teorico resta 8h come oggi.
+
+Le pause `Breve` non toccano il teorico. Per non duplicare ancora la regola, il calcolo va spostato in un unico helper statico in `GestionePresenzeOreTeoriche`, chiamato anche dal motore.
+
+### 6.2 Accoppiamento: timbrature interne facoltative (U2)
+
+In `AssegnaVersoTimbrature`, se l'orario ha una pausa `Automatica` e il buco tra la coppia k e la coppia k+1 cade nella finestra, le timbrature attese `Alle(k)` e `Dalle(k+1)` diventano **facoltative**:
+
+- non concorrono al conteggio che produce `Err_TimbratureMancanti` (riga 1595);
+- se ci sono solo 2 timbrature, la prima si abbina a `Dalle(1)` e l'ultima a `Alle(n)`, con le loro tolleranze e i loro arrotondamenti;
+- se le timbrature interne ci sono, si abbinano come oggi e la pausa diventa "rilevata".
+
+### 6.3 Niente timbrature generate per la pausa
+
+`GeneraTimbratureMancanti` (1720) non deve generare `Alle(k)` e `Dalle(k+1)` quando sono facoltative per la regola §6.2. Altrimenti il motore inventerebbe 13:00 e 14:00, la pausa risulterebbe "rilevata" e il dato verrebbe sporcato.
+
+### 6.4 Nuovo passo `ApplicaPausa` e segmenti lavorati unici
+
+Oggi `CalcolaOreLavorate` e `GeneraCausali` (ciclo sulle coppie E/U, riga 2213) scorrono le coppie **ognuno per conto proprio**. Va introdotto un metodo unico:
+
+```csharp
+List<(DateTime Dalle, DateTime Alle)> SegmentiLavorati(allData, idRapporto, giorno, out PausaEsito esito)
+```
+
+Il metodo:
+1. costruisce i segmenti dalle coppie E/U arrotondate (la logica attuale, dopo la correzione §5);
+2. per ogni `Par_OrarioPausa` dell'orario base calcola `PausaRilevata`, `PausaDovuta`, `Detrazione` e `Riaccredito` (§3.4);
+3. applica detrazione e riaccredito nella posizione della §3.5;
+4. restituisce i segmenti netti e l'esito (minuti rilevati, detratti, retribuiti, avvisi).
+
+`CalcolaOreLavorate` diventa la somma dei segmenti. `GeneraCausali` usa gli stessi segmenti per sovrapposizione con le coppie, fascia notturna, ore ordinarie ed eccedenze. In questo modo **straordinario, notturno e supplementare restano coerenti** senza toccare `GestionePresenzeEccedenze`. In `CalcolaGiorno` l'esito viene scritto in `Dip_GG_Result.Min_Pausa*` e nei flag `Warning_3` e `Warning_4`, **prima** della fase Giorno delle formule (1139), così le formule vedono il dato già netto.
+
+La logica di `ApplicaPausa` va scritta come funzione pura (input: segmenti e parametri; output: segmenti netti ed esito), come `GestionePresenzeEccedenze`, in `_utility/GestionePresenzePause.cs`. Così si può coprire con test unitari quando verrà creato il progetto xUnit previsto da `piano-security.md`.
+
+### 6.5 Ricalcolo
+
+Una modifica a orario o profilo **non** innesca il ricalcolo (commento in testa al motore). Va bene anche per la pausa: dopo una modifica dei parametri l'HR rilancia il calcolo del periodo, come per gli altri parametri. In alternativa, `Par_OrarioPausaService` può proporre il ricalcolo dei giorni non bloccati (`Locked`).
+
+---
+
+## 7. Integrazione con le altre funzioni
+
+| Funzione | Impatto | Proposta |
+|---|---|---|
+| **Formule personalizzate** (`FormuleEngine/`) | Le formule non conoscono la pausa | `FormulaDatiGiorno` riceve le pause dell'orario; `x.Result` espone `PausaRilevata`, `PausaDetratta`, `PausaRetribuita`; `x.Orario` espone le pause configurate. Aggiornare `FormuleCatalogo` (documentazione per l'AI e per l'editor) e l'analisi `ANALISI_ATTENDANCETRACKING_FORMULE.md` |
+| **Personale presente / widget "presenti oggi"** (`PresentStaffService`, `Dip_WidgetService`) | Presente = ultima timbratura di oggi in entrata: chi è in pausa timbrata risulta assente | Fase 2: stato "In pausa" se l'ultima timbratura è un'uscita dentro la finestra di una pausa. Con la pausa automatica non cambia nulla |
+| **Statistiche attività** (`ActivityStatisticsService`) | Calcola le ore per attività dalle timbrature: non vede la detrazione automatica | Domanda aperta 7: lasciare le ore di presenza o applicare la detrazione all'attività del segmento che la contiene |
+| **Timbratura da chat AI / comandi vocali** (`RegisterClockingHandler`) | Registra timbrature `SenzaVerso`: compatibile | Nessuna modifica. Facoltativo: frasi "inizio pausa" / "fine pausa" come sinonimi di timbratura |
+| **Export paghe / export AI** | I minuti detratti non hanno causale | Se `IdCausale_Pausa` è valorizzata, i minuti detratti finiscono in quella causale (informativa) e quindi nell'export; aggiornare i metadati di `TimeSheet_ExportService` |
+| **Licenze / piani** | — | Domanda aperta 8: funzione nel piano base o nel Pro (le formule sono Pro) |
+
+---
+
+## 8. API e client
+
+### 8.1 Server
+
+- `Par_OrarioPausa`: entità, repository, servizio (derivato da `ServiceBase`) e controller `Par_OrarioPausaController` (`GetAll`, `Get`, `Put`, `Delete`), sul modello di `Par_OrarioIntervalloHHController`.
+- `Par_OrarioGet` e `Get_OrariSchema_4User` caricano anche le pause, che servono al motore in `OrariSchema_4User_OutModel`.
+- Registrazione DI in `nvxapp.server/Utility/Installers4AttendanceTracking.cs`.
+- I modelli di `Dip_GG_Result` e `Dip_Periodo` espongono i nuovi campi.
+- Messaggi di validazione in it/en (`AttendanceTrackingMessages`).
+
+### 8.2 Client
+
+| Dove | Modifica |
+|---|---|
+| `orari-edit-page` | Nuova scheda **"Pause"**, visibile solo per orari `IntervalloOrario`: una sezione Pranzo (modalità, durata, soglia, finestra, retribuita, causale) e una sezione Pause brevi (retribuita, durata massima) |
+| Modelli TS | `par-orario-pausa-model.ts`, campi nuovi in `dip-gg-result` e `dip-periodo` |
+| `dip-ggresult.service.ts:56-58` | `ALL_WARNING_DETAILS` include `Warning_3` e `Warning_4` |
+| `time-sheet.service.ts:1032-1033` | Testi "Pausa insufficiente" e "Pausa oltre il massimo" al posto di `avvertimentoN` |
+| Cartellino (`time-sheet-*-page`) | Nel popup del giorno: "Pausa 1:00 (automatica)" o "Pausa 0:30 timbrata, 0:30 detratti"; icona di avviso per `Warning_3`/`Warning_4` |
+| `quadratura-mensile-page` | Riga "Pausa detratta" nei totali mensili |
+| `time-clock-user-page` | Nessuna modifica: la timbratura resta `SenzaVerso`. Facoltativo: un avviso del tipo "la pausa pranzo è detratta automaticamente" |
+| `formule-edit-page` | Aiuto contestuale con i nuovi campi `x.Result.Pausa*` (dal catalogo) |
+| i18n | Nuove chiavi in `assets/i18n/attendance-tracking/it.json` e `en.json` |
+| Manuale | Nuovo paragrafo in `Manuals/attendance.guide.it.md` e `.en.md` (e `attendance.it/en.md`) |
+
+---
+
+## 9. Fase 2: buono pasto (U8)
+
+È fuori dal perimetro iniziale, ma il modello lo prevede.
+
+- Si aggiungono a `Par_OrarioPausa` (o al profilo) i campi `BuonoPasto_SogliaMin` e `IdCausale_BuonoPasto`, quest'ultima a importo.
+- Dopo `ApplicaPausa`, se `Lavorato >= soglia` e c'è una pausa rilevata o detratta, il motore scrive la causale a importo come oggi i giustificativi a importo (`GeneraCausali`, righe 2132-2135).
+- In alternativa, per le aziende Pro, il buono pasto si può già ottenere con una formula della fase Giorno usando `x.Result.PausaRilevata`/`PausaDetratta`.
+
+---
+
+## 10. Piano di lavoro
+
+| Fase | Contenuto | File principali |
+|---|---|---|
+| 0. Correzione | Uscite intermedie (§3.3, §5), rilasciabile da sola | `TimeSheet_EngineService.cs` |
+| 1. Dati | Entità `Par_OrarioPausa`, enum, campi in `Dip_GG_Result`/`Dip_Periodo`, configurazione EF, migrazione, seed | `Entities/Tenant/GestionePresenze/`, `AttendanceTrackingDbContext.cs`, `GestionePresenzeParametriDefault.cs` |
+| 2. Servizi e API | Repository, servizio, controller, caricamento in `Get_OrariSchema_4User` | `Repositories/Tenant/GestionePresenze/`, `ClientServer-Service/GestionePresenze/`, `Controllers/GestionePresenze/` |
+| 3. Motore | Helper unico delle ore teoriche, timbrature interne facoltative, `GeneraTimbratureMancanti`, `SegmentiLavorati`/`ApplicaPausa`, flag e totali | `TimeSheet_EngineService.cs`, `GestionePresenzeOreTeoriche.cs`, nuovo `GestionePresenzePause.cs` |
+| 4. Integrazioni | Formule, export, (fase 2) presenti e statistiche | `FormuleEngine/`, `TimeSheet_ExportService` |
+| 5. Client | Scheda Pause, cartellino, quadratura, avvisi, i18n, manuali | `pages/GestionePresenze/`, `Utility/GestionePresenze/time-sheet.service.ts` |
+| 6. Verifica | Scenari della tabella §3.4 più U4, U7, U9, poi ricalcolo di un mese con orari senza pausa per confermare che **i risultati non cambiano** (salvo i giorni con uscite intermedie, che vanno confrontati a mano) | DB di prova (vedi note di test API in locale) |
+
+---
+
+## 11. Domande aperte
+
+1. **Livello di configurazione**: la proposta è l'orario (§3.1). Serve anche un default per azienda?
+2. **Collocazione della pausa automatica**: inizio finestra (proposta) o metà della presenza? Conta solo per attribuire le causali nei giorni con causali diverse tra mattina e pomeriggio, o con lavoro notturno.
+3. **Soglia**: la soglia va confrontata con il lavorato lordo (proposta) o con quello netto? Per esempio, con 6h15 di presenza e 60' di pausa il lavorato scende a 5h15. Va accettato o la detrazione va limitata in modo da non scendere sotto la soglia?
+4. **Pausa retribuita in modalità Rilevata**: i minuti retribuiti della pausa timbrata vanno riaccreditati come lavorato (proposta, §3.4)?
+5. **Pausa insufficiente in modalità Rilevata**: basta l'avviso, o serve anche una terza modalità "Rilevata con integrazione" (detrae la differenza solo se la pausa è stata timbrata)? Con la formula della §3.4, `Automatica` copre già entrambi i casi.
+6. **Buono pasto**: va incluso nella prima fase?
+7. **Statistiche attività**: la detrazione automatica va riflessa sulle ore per attività?
+8. **Piano di licenza**: la gestione pause è nel piano base o nel Pro?
+9. **Correzione uscite intermedie**: va rilasciata subito (fase 0) indipendentemente dal resto? Cambia il risultato dei giorni già calcolati con uscite intermedie al prossimo ricalcolo.
+
+---
+
+## 12. Checklist
+
+### Analisi
+- [x] Verifica dello stato attuale nel codice (nessuna gestione esplicita delle pause)
+- [x] Casi d'uso pausa pranzo (U1-U8)
+- [x] Verifica del difetto sulle uscite intermedie e casi d'uso pause brevi (U9-U10)
+- [x] Riferimenti al codice aggiornati dopo le formule personalizzate; slot di stato rivisti (`Warning_3`/`Warning_4`)
+- [ ] Risposte alle domande aperte (§11)
+
+### Fase 0: correzione uscite intermedie
+- [ ] Regola §3.3 in `AssegnaVersoTimbrature` / `AccoppiaTimbratureFuoriOrario`
+- [ ] Anomalia esplicita per uscita senza rientro dentro una coppia
+- [ ] Verifica casi §5 (uscita intermedia, rientro serale, dispari)
+
+### Fase 1: dati
+- [ ] Entità `Par_OrarioPausa` ed enum `PausaTipo`, `PausaModalita`
+- [ ] Campi `Min_Pausa*` in `Dip_GG_Result`, `Min_PausaDetratta` in `Dip_Periodo`
+- [ ] Configurazione EF in `AttendanceTrackingDbContext` e migrazione
+- [ ] Seed: pausa su `DIURNO8H`, nuovo orario `CONTINUATO8H`
+
+### Fase 2: servizi e API
+- [ ] Repository, servizio (con validazioni e messaggi it/en) e controller `Par_OrarioPausa`
+- [ ] Caricamento pause in `Par_OrarioGet` e `Get_OrariSchema_4User`
+- [ ] Registrazione DI in `Installers4AttendanceTracking`
+- [ ] Nuovi campi nei modelli `Dip_GG_Result` e `Dip_Periodo`
+
+### Fase 3: motore
+- [ ] Helper unico ore teoriche con pausa (motore + `GestionePresenzeOreTeoriche`)
+- [ ] Timbrature interne facoltative con pausa automatica (§6.2)
+- [ ] `GeneraTimbratureMancanti` non genera le timbrature della pausa (§6.3)
+- [ ] `GestionePresenzePause.ApplicaPausa` (funzione pura) e `SegmentiLavorati`
+- [ ] `CalcolaOreLavorate` e `GeneraCausali` sui segmenti netti
+- [ ] Esito in `Dip_GG_Result` (`Min_Pausa*`, `Warning_3`, `Warning_4`) e totale in `AggiornaCartellinoMese`
+
+### Fase 4: integrazioni
+- [ ] Formule: dati pausa in `FormulaDatiGiorno`, `x.Result`, `x.Orario`, catalogo e analisi formule
+- [ ] Export: causale `IdCausale_Pausa` e metadati export
+- [ ] (fase 2) Stato "In pausa" in personale presente e widget
+- [ ] (fase 2) Statistiche attività, secondo la risposta alla domanda 7
+- [ ] (fase 2) Buono pasto
+
+### Fase 5: client
+- [ ] Modello TS `par-orario-pausa-model.ts` e servizio API
+- [ ] Scheda "Pause" in `orari-edit-page`
+- [ ] Maschera avvisi (`Warning_3`, `Warning_4`) e testi in `time-sheet.service.ts`
+- [ ] Dettaglio pausa nel popup del giorno del cartellino
+- [ ] Riga "Pausa detratta" nella quadratura mensile
+- [ ] Chiavi i18n it/en
+- [ ] Manuali `attendance.guide.it/en.md` e `attendance.it/en.md`
+
+### Fase 6: verifica
+- [ ] Build server e client
+- [ ] Scenari della tabella §3.4, U4 (finestra), U7 (notturno), U9/U10 (pause brevi)
+- [ ] Ricalcolo di un mese con orari senza pausa: risultati invariati
+- [ ] Catena dei merge (AttendanceTracking_Dev → AttendanceTracking → AllFunction_Dev → AllFunction), previa conferma
