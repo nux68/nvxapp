@@ -169,7 +169,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ✅ mergiata l'11/11/2026 insieme ad `AT-COM` |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ mergiata l'11/11/2026 (server provato su DB usa e getta, client compilato) |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
-| `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
 | `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
 | `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
@@ -178,22 +178,22 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
-| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ svolta l'11/11/2026 nel ramo `DocumentManagement_Dev_dm-firma`, da mergiare (server provato su DB usa e getta con 35 controlli API, client compilato senza modifiche) |
+| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
-| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 |
-| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
+| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | 🔍 bloccata: serve la verifica legale (`ANA.5`) e l'analisi di sicurezza (`ANA.6`) |
-| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ✅ mergiata l'11/11/2026 |
-| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ✅ mergiata l'11/11/2026 |
-| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ✅ mergiata l'11/11/2026 |
+| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
+| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
+| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
+| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `ADM` | Amministrazione (fatturazione) | Administration_Dev (più avanti) | `wt_adm` | `INF-APP`, scelta dell'intermediario SdI | – | ⏳ |
 
 I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`, `HumanResources`, `Assets`) nascono in `INF-APP.6`, creati da Infrastructure dopo il merge di `INF-APP`.
