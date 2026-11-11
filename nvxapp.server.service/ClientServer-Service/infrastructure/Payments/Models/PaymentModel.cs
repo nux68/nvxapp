@@ -238,8 +238,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments.Mod
         public int? Mese { get; set; }
     }
 
+    /// <summary>l'email parte con un job: l'esito arriva nella barra dei job</summary>
     public class PaymentSummarySendOutModel : ModelResult
     {
+        public string JobId { get; set; } = string.Empty;
         public string? Destinatari { get; set; }
     }
 
@@ -253,11 +255,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments.Mod
         public string Formato { get; set; } = "pdf";
     }
 
+    /// <summary>il file si prepara con un job: arriva nella barra dei job con il link di download</summary>
     public class PaymentExportOutModel : ModelResult
     {
-        public string FileName { get; set; } = string.Empty;
-        public string ContentType { get; set; } = string.Empty;
-        public byte[]? File { get; set; }
+        public string JobId { get; set; } = string.Empty;
     }
 
     // ---------------------------------------------------------------------------

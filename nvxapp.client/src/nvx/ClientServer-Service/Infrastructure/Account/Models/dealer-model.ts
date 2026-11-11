@@ -30,6 +30,10 @@ export class DealerListOutModel extends ModelResult {
 export class DealerEditModel {
   /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
   public disabled: boolean = false;
+  /** trattenuta della piattaforma del centro: null = vale quella generale; la cambia solo il SuperUser */
+  public percentualePiattaforma: number | null = null;
+  public percentualeGenerale: number = 0;
+  public canEditPercentuale: boolean = false;
 
 
   constructor(

@@ -408,7 +408,11 @@
       "password": "Password",
       "confirmPassword": "Conferma Password",
       "disabled": "Disabilitato",
-      "disabledNote": "Le righe disabilitate non compaiono nelle liste, salvo \"Mostra anche i disabilitati\"."
+      "disabledNote": "Le righe disabilitate non compaiono nelle liste, salvo \"Mostra anche i disabilitati\".",
+      "platformFee": "Trattenuta della piattaforma",
+      "platformFeePercent": "Trattenuta del centro in %",
+      "platformFeeNote": "Vuota = vale la trattenuta generale ({{generale}}%). Se indicata, comanda questa per i rendiconti del centro generati da ora in poi.",
+      "platformFeeInvalid": "La trattenuta va da 0 a 100."
     },
     "financialAdvisorEdit": {
       "applicationsReadOnly": "Gli applicativi dello studio li abilitano solo il SuperUser e il DealerPowerAdmin del centro.",
@@ -947,7 +951,8 @@
       "settlementState3": "Annullato",
       "emailType1": "Rendiconto/riepilogo",
       "emailType2": "Riepilogo annuale",
-      "emailType3": "Liquidazione"
+      "emailType3": "Liquidazione",
+      "exportStarted": "Report in preparazione: quando è pronto lo scarichi dalla barra dei lavori in alto."
     },
     "paymentReport": {
       "title": "Pagamenti ai centri",
@@ -991,7 +996,7 @@
       "dealerData": "Dati di liquidazione",
       "generated": "Bozza del rendiconto pronta: controllala e confermala.",
       "confirmSend": "Inviare al centro il riepilogo dei pagamenti di {{periodo}}?",
-      "sent": "Riepilogo inviato a {{destinatari}}.",
+      "sent": "Invio del riepilogo a {{destinatari}} avviato: l'esito compare nella barra dei lavori in alto.",
       "confirmConfirm": "Confermare il rendiconto? I pagamenti vengono bloccati sul rendiconto e il centro riceve l'email con il dettaglio.",
       "confirmedSent": "Rendiconto confermato e inviato al centro.",
       "confirmedNotSent": "Rendiconto confermato, ma l'email non è partita: controlla lo storico degli invii.",
