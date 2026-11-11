@@ -1,0 +1,50 @@
+@use '../widget-common' as wc;
+
+@include wc.widget-common;
+
+// prime scadenze: data e descrizione, cliccabili
+.nvx-dlw-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+
+  li + li {
+    border-top: 1px solid var(--nvx-border);
+  }
+
+  button {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    align-items: baseline;
+    padding: 6px 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover .nvx-dlw-desc {
+      text-decoration: underline;
+    }
+  }
+}
+
+.nvx-dlw-date {
+  flex: none;
+  min-width: 80px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--nvx-text-muted);
+
+  &.warning { color: var(--ion-color-warning-shade); }
+  &.danger  { color: var(--ion-color-danger); }
+}
+
+.nvx-dlw-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}

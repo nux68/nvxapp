@@ -5,6 +5,7 @@ import { RoleGuard4CompanyAdmin } from '../../pages/RoleGuard/infrastructure/rol
 import { RoleGuard4CompanyEdit } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-edit';
 import { RoleGuard4CompanyList } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-list';
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
+import { RoleGuard4CompanyUser } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-user';
 import { RoleGuard4DealerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-dealer-admin';
 import { RoleGuard4DealerEdit } from '../../pages/RoleGuard/infrastructure/role-guard-4-dealer-edit';
 import { RoleGuard4DealerList } from '../../pages/RoleGuard/infrastructure/role-guard-4-dealer-list';
@@ -106,6 +107,13 @@ export class RouteInfrastructureService {
       { path: 'aidocumentlist', loadChildren: () => import('../../pages/infrastructure/ai-document-list-page/ai-document-list-page.module').then(m => m.AiDocumentListPageModule), canActivate: [authenticatedGuard] },
       { path: 'aidocumentedit', loadChildren: () => import('../../pages/infrastructure/ai-document-edit-page/ai-document-edit-page.module').then(m => m.AiDocumentEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'tickettypeaisetting', loadChildren: () => import('../../pages/infrastructure/ticket-type-ai-setting-page/ticket-type-ai-setting-page.module').then(m => m.TicketTypeAiSettingPageModule), canActivate: [authenticatedGuard] },
+      // servizi comuni (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC): scadenzario e prese visione per chi lavora in un'azienda,
+      // notifiche e preferenze per tutti gli utenti collegati (gli url /deadlines e /acknowledgements li usa il server nelle notifiche)
+      { path: 'deadlines', loadChildren: () => import('../../pages/infrastructure/deadline-list-page/deadline-list-page.module').then(m => m.DeadlineListPageModule), canActivate: [RoleGuard4CompanyUser] },
+      { path: 'deadlineedit', loadChildren: () => import('../../pages/infrastructure/deadline-edit-page/deadline-edit-page.module').then(m => m.DeadlineEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'notifications', loadChildren: () => import('../../pages/infrastructure/notification-list-page/notification-list-page.module').then(m => m.NotificationListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'notificationpreference', loadChildren: () => import('../../pages/infrastructure/notification-preference-page/notification-preference-page.module').then(m => m.NotificationPreferencePageModule), canActivate: [authenticatedGuard] },
+      { path: 'acknowledgements', loadChildren: () => import('../../pages/infrastructure/acknowledgement-list-page/acknowledgement-list-page.module').then(m => m.AcknowledgementListPageModule), canActivate: [RoleGuard4CompanyUser] },
 
 
     ];

@@ -166,7 +166,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `ANA` | Analisi di dettaglio e decisioni | Infrastructure_Dev (+ rami dei moduli) | `wt_ana` | – | 1 | 🔄 |
 | `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ⏳ |
 | `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ⏳ |
-| `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ⏳ |
+| `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ server e client fatti (server provato su DB usa e getta, client compilato), da mergiare |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ⏳ |
@@ -229,12 +229,12 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `INF-COM.6` `CommonDataDeleter` aggiornato per le nuove tabelle
 
 #### `INF-SVC` – Servizi comuni (§5)
-- ⏳ `INF-SVC.1` Scadenzario: modello dati (fonte, modulo, riferimento, data, responsabile, stato), da decidere se in `public` o in Common
-- ⏳ `INF-SVC.2` Scadenzario: servizio con cui i moduli registrano e chiudono le proprie scadenze
-- ⏳ `INF-SVC.3` Scadenzario: pagina e widget "In scadenza"
-- ⏳ `INF-SVC.4` Notifiche: servizio unico (email con Brevo, notifiche nell'app con SignalR) e preferenze per utente
-- ⏳ `INF-SVC.5` Promemoria automatici delle scadenze (job pianificato)
-- ⏳ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`)
+- ✅ `INF-SVC.1` Scadenzario: modello dati (fonte, modulo, riferimento, data, responsabile, stato), da decidere se in `public` o in Common — server fatto e provato su DB usa e getta con 24 controlli API (tabella `Scadenza` in `public`, migration `ServiziComuni`); client: servizi e modelli `ClientServer-Service/Infrastructure/Deadline`
+- ✅ `INF-SVC.2` Scadenzario: servizio con cui i moduli registrano e chiudono le proprie scadenze — server fatto e provato su DB usa e getta con 24 controlli API (`DeadlineRegistry`); lato client nulla da fare (le scadenze dei moduli compaiono nello scadenzario con il link all'oggetto)
+- ✅ `INF-SVC.3` Scadenzario: pagina e widget "In scadenza" — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/deadlines` (filtri stato / entro n giorni / testo / solo mie, scadute e in scadenza evidenziate, apri oggetto, completa/riapri, + nel fab per gli amministratori), modifica della scadenza manuale `/deadlineedit` con cancellazione, voce di menu "Scadenzario" (ruoli dell'azienda), widget `infrastructure.deadlines` (non predefinito)
+- ✅ `INF-SVC.4` Notifiche: servizio unico (email con Brevo, notifiche nell'app con SignalR) e preferenze per utente — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/notifications` (paginata, non lette, apri, segna tutte lette, cancella lette), preferenze `/notificationpreference` (App/Email per categoria), voce di menu "Notifiche" per tutti con badge delle non lette (`NotificationNotifierService`, evento SignalR `NotificationNew`)
+- ✅ `INF-SVC.5` Promemoria automatici delle scadenze (job pianificato) — server fatto e provato su DB usa e getta con 24 controlli API; client: il promemoria apre `/deadlines` (o l'oggetto della scadenza)
+- ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
 
 #### `INF-CAL` – Sincronizzazione dei calendari
 - ⏳ `INF-CAL.1` Collegamento OAuth con Google e Microsoft per utente
