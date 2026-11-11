@@ -356,6 +356,56 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("AspNetUsers", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CalendarioFeed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataCreazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataUltimoAccesso")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("IdAspNetUsers", "IdCompany")
+                        .IsUnique();
+
+                    b.ToTable("CalendarioFeed", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
                 {
                     b.Property<int>("Id")
@@ -2369,6 +2419,21 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CalendarioFeed", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
