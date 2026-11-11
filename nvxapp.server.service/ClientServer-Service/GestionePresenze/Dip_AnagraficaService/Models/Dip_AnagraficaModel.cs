@@ -82,6 +82,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
 
+        /// <summary>Profili formule dei rapporti (storicizzati Dal/Al, formule personalizzate del piano Pro).</summary>
+        public List<nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloFormuleService.Dip_ProfiloFormuleModel> Dip_ProfiloFormule { get; set; } = new();
+
         /// <summary>Riporti (mese 0) per i 5 anni: anno corrente e i 4 precedenti.</summary>
         public List<Contatori_Riporto_Model> Dip_Contatori_Riporto { get; set; } = new List<Contatori_Riporto_Model>();
 

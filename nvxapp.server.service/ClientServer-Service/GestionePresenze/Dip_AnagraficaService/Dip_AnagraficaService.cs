@@ -46,6 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         private readonly IDip_RapportoLavoroService                              _dip_RapportoLavoroService;
         private readonly IDip_ProfiloOrarioService                               _dip_ProfiloOrarioService;
+        private readonly Dip_ProfiloFormuleService.IDip_ProfiloFormuleService    _dip_ProfiloFormuleService;
         private readonly IContatoriService                                       _contatoriService;
         private readonly IDip_Rapporto_Giustificativi_MaturazioneService         _maturazioneService;
         private readonly IDip_CompetenzaService                                  _dip_CompetenzaService;
@@ -64,6 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
                                   IDip_RapportoLavoroService dip_RapportoLavoroService,
                                   IDip_ProfiloOrarioService dip_ProfiloOrarioService,
+                                  Dip_ProfiloFormuleService.IDip_ProfiloFormuleService dip_ProfiloFormuleService,
                                   IContatoriService contatoriService,
                                   IDip_Rapporto_Giustificativi_MaturazioneService maturazioneService,
                                   IDip_CompetenzaService dip_CompetenzaService,
@@ -85,6 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _userCompanyRepository = userCompanyRepository;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
             _dip_ProfiloOrarioService  = dip_ProfiloOrarioService;
+            _dip_ProfiloFormuleService = dip_ProfiloFormuleService;
             _contatoriService          = contatoriService;
             _maturazioneService        = maturazioneService;
             _dip_CompetenzaService     = dip_CompetenzaService;
@@ -231,6 +234,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         {
                                             retVal.Dip_Anagrafica.Dip_ProfiloOrario.AddRange( res_3.Data.Dip_ProfiloOrario);
                                         }
+
+                                        // profili formule del rapporto
+                                        var req_PF = new GenericRequest<Dip_ProfiloFormuleService.Dip_ProfiloFormule_Get_InModel>();
+                                        req_PF.Data.Id = item.Id;
+                                        var res_PF = await _dip_ProfiloFormuleService.Dip_ProfiloFormuleGet(req_PF, true);
+                                        if (res_PF.Success && res_PF.Data != null)
+                                            retVal.Dip_Anagrafica.Dip_ProfiloFormule.AddRange(res_PF.Data.Dip_ProfiloFormule);
                                     }
 
                                     // ── Riporti (mese 0) per 5 anni ──────────────────────────────────
@@ -392,6 +402,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         {
                                             retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
                                         }
+
+                                        // profili formule del rapporto (quelli dei rapporti nuovi, id negativo, vanno sul rapporto appena creato)
+                                        if (model.Data.Dip_Anagrafica.Dip_RapportoLavoro.Where(x => x.Id < 0).Any())
+                                        {
+                                            foreach (var itemProfF in model.Data.Dip_Anagrafica.Dip_ProfiloFormule.Where(x => x.IdDip_RapportoLavoro < 0))
+                                                itemProfF.IdDip_RapportoLavoro = itemRapp.Id;
+                                        }
+                                        var req_PF = new GenericRequest<Dip_ProfiloFormuleService.Dip_ProfiloFormule_Put_InModel>();
+                                        req_PF.Data.Id = itemRapp.Id;
+                                        req_PF.Data.Dip_ProfiloFormule = model.Data.Dip_Anagrafica.Dip_ProfiloFormule.Where(x => x.IdDip_RapportoLavoro == itemRapp.Id).ToList();
+                                        var res_PF = await _dip_ProfiloFormuleService.Dip_ProfiloFormulePut(req_PF, true);
+                                        if (!res_PF.Success)
+                                            throw new UserMessageException(string.Join(" ", res_PF.Messages.Select(x => x.Text)));
 
                                         // ── Salvataggio riporti (mese 0) ─────────────────────────────
                                         var riportiInInput = model.Data.Dip_Anagrafica.Dip_Contatori_Riporto

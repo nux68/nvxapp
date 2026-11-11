@@ -52,6 +52,7 @@
     }
   },
   "menu": {
+    "richiedeLicenza": "Disponibile con il piano {{livello}}",
     "superUser": "SuperUser",
     "superUserPage": "SuperUser Page",
     "dealers": "Centri",

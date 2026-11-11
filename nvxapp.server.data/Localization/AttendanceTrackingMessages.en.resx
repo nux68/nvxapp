@@ -1385,4 +1385,56 @@
     <value>Data reserved to the company administrators.</value>
     <comment>widget della dashboard</comment>
   </data>
+  <data name="FormulaSoloPowerAdmin" xml:space="preserve">
+    <value>Function reserved to the company administrator.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaPianoPro" xml:space="preserve">
+    <value>Custom formulas are available with the Pro plan.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaCodiceObbligatorio" xml:space="preserve">
+    <value>Code and title are required.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaCodiceDuplicato" xml:space="preserve">
+    <value>A formula with code {0} already exists.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaInUso" xml:space="preserve">
+    <value>The formula is used in {0} formula profile rows: it cannot be deleted.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaNonValida" xml:space="preserve">
+    <value>The formula contains errors: {0}</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaProvaRapporto" xml:space="preserve">
+    <value>Employee or employment relationship not found.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaAIRispostaNonValida" xml:space="preserve">
+    <value>The AI did not produce a valid formula: {0}</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleCodiceObbligatorio" xml:space="preserve">
+    <value>Code and description are required.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleCodiceDuplicato" xml:space="preserve">
+    <value>A formula profile with code {0} already exists.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleInUso" xml:space="preserve">
+    <value>The formula profile is assigned to {0} employment periods: it cannot be deleted.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleRigaNonValida" xml:space="preserve">
+    <value>Invalid profile row: a formula, an order greater than zero and the From-To period are required.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleSovrapposti" xml:space="preserve">
+    <value>The formula profile periods overlap ({0} and {1}).</value>
+    <comment>formule personalizzate</comment>
+  </data>
 </root>
