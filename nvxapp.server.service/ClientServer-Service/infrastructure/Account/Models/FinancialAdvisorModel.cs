@@ -47,6 +47,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
+        // solo in creazione: nomi degli amministratori (vuoti = Descrizione + "_PowerAdmin" / "_Admin")
+        public string? PowerAdminUserName { get; set; }
+        public string? AdminUserName { get; set; }
 
         // applicativi abilitati dello studio (funzioni lato studio); null = non modificare
         public List<FinancialAdvisorApplicationModel>? Applications { get; set; }

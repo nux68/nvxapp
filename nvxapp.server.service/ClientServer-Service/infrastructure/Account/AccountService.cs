@@ -680,7 +680,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = financialAdvisor.Descrizione + "_PowerAdmin", //FinancialAdvisorPowerAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.FinancialAdvisorEdit.PowerAdminUserName) ? financialAdvisor.Descrizione + "_PowerAdmin" : model.Data.FinancialAdvisorEdit.PowerAdminUserName.Trim(), //FinancialAdvisorPowerAdmin
                         Email = model.Data.FinancialAdvisorEdit.Mail
                     };
 
@@ -701,7 +701,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = financialAdvisor.Descrizione + "_Admin", //FinancialAdvisorAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.FinancialAdvisorEdit.AdminUserName) ? financialAdvisor.Descrizione + "_Admin" : model.Data.FinancialAdvisorEdit.AdminUserName.Trim(), //FinancialAdvisorAdmin
                         Email = model.Data.FinancialAdvisorEdit.Mail
                     };
 
@@ -736,6 +736,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         await _financialAdvisorApplicationService.FinancialAdvisorApplicationPut(reqApp, true);
                     }
                 }
+
+                // id dello studio salvato (serve a chi lo crea, es. la registrazione dallo showcase)
+                if (financialAdvisor != null)
+                    retVal.FinancialAdvisorEdit.IdFinancialAdvisor = financialAdvisor.Id;
 
 
 

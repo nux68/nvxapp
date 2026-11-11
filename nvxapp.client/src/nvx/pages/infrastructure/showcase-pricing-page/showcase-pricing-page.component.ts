@@ -154,17 +154,16 @@ export class ShowcasePricingPageComponent implements OnInit {
 
   // ---------------------------------------------------------------- pulsanti
 
-  /** aziende: registrazione (si parte dal Free e si sceglie il piano dopo il login); studi: contatto */
+  /** registrazione dell'azienda o dello studio del listino scelto (si parte dal Free e si sceglie il piano dopo il login) */
   public cta(p: LicensePlanModel): string {
-    if (this.tipo === TipoSoggettoLicenza.FinancialAdvisor)
-      return this.transloco.translate('showcase.pricingPage.contactUs');
     if (this.prezzoPeriodo(p) === 0)
       return this.transloco.translate('showcase.pricingPage.start');
     return this.transloco.translate('pages.licenseSubscribe.choose', { piano: this.nome(p) });
   }
 
+  /** registrazione con il tipo gia' scelto: listino degli studi -> Studio, altrimenti Azienda */
   public scegli(): void {
-    this.vai(this.tipo === TipoSoggettoLicenza.FinancialAdvisor ? '/contact' : '/register');
+    this.navCtrl.navigateRoot('/register', { queryParams: { tipo: this.tipo === TipoSoggettoLicenza.FinancialAdvisor ? 'studio' : 'azienda' } });
   }
 
   public vai(url: string): void {
