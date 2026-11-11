@@ -1,0 +1,22 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      @if (dati && !dati.dipendente) {
+        <ion-note class="nvx-nota-disabled">{{ 'cmp.pages.mine.notEmployee' | transloco }}</ion-note>
+      }
+      @else {
+        <ion-segment [value]="sezione" (ionChange)="sezioneChanged($event.detail.value)" [scrollable]="true">
+          @for (s of sezioni; track s) {
+            <ion-segment-button [value]="s"><ion-label>{{ 'cmp.pages.mine.' + s | transloco }}</ion-label></ion-segment-button>
+          }
+        </ion-segment>
+        <ion-note class="nvx-nota-disabled">{{ 'cmp.pages.mine.note_' + sezione | transloco }}</ion-note>
+        <nvx-list [items]="items" [columns]="columns" trackKey="id" [highlight]="highlight" [rowDisabled]="isDisabled"
+          [searchText]="searchText" [emptyText]="'cmp.pages.list.empty' | transloco"></nvx-list>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

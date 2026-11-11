@@ -9,6 +9,15 @@
         <ion-note class="nvx-nota-disabled">{{ 'cmp.pages.settings.noticeDaysNote' | transloco }}</ion-note>
         <ion-item><ion-toggle formControlName="notificheAttive">{{ 'cmp.pages.settings.notifications' | transloco }}</ion-toggle></ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'cmp.pages.settings.notificationsNote' | transloco }}</ion-note>
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'cmp.pages.settings.health' | transloco }}</ion-label></ion-item>
+        <ion-item>
+          <ion-select formControlName="utentiDatiSanitari" [multiple]="true" [label]="'cmp.pages.settings.healthUsers' | transloco" labelPlacement="floating">
+            @for (u of utenti; track u.id) {
+              <ion-select-option [value]="u.id">{{ u.nome }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'cmp.pages.settings.healthUsersNote' | transloco }}</ion-note>
         <ion-item><ion-textarea formControlName="note" rows="4" maxlength="2000" [autoGrow]="true" [label]="'cmp.pages.settings.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
       </form>
     </ion-card-content>

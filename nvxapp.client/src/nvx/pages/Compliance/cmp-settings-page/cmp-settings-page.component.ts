@@ -16,8 +16,11 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-// Impostazioni di Compliance (CompanyPowerAdmin): preavviso delle scadenze, notifiche, note
+// Impostazioni di Compliance (CompanyPowerAdmin): preavviso delle scadenze, notifiche, note, abilitati ai dati sanitari delle visite
 export class CmpSettingsPageComponent extends BasePageConfirmCancelComponent<M.CmpCfgModel> {
+
+  /** utenti dell'azienda (abilitati ai dati sanitari delle visite, CMP-81.2) */
+  public utenti: M.CmpUtenteModel[] = [];
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
@@ -34,17 +37,21 @@ export class CmpSettingsPageComponent extends BasePageConfirmCancelComponent<M.C
       giorniPreavviso: [30, [Validators.required, Validators.min(0), Validators.max(365)]],
       notificheAttive: [true],
       note: [null, [Validators.maxLength(2000)]],
+      utentiDatiSanitari: [[]],
     });
   }
 
   LoadData = (): Observable<M.CmpCfgModel> => {
     const request = new GenericRequest<M.CmpEmptyInModel>(M.CmpEmptyInModel);
-    return this.service.CfgGet(request).pipe(map(res => res.data?.cfg ?? new M.CmpCfgModel()), catchError(() => of(new M.CmpCfgModel())));
+    return this.service.CfgGet(request).pipe(map(res => {
+      this.utenti = res.data?.utenti ?? [];
+      return res.data?.cfg ?? new M.CmpCfgModel();
+    }), catchError(() => of(new M.CmpCfgModel())));
   };
 
   SaveData = (editModel: M.CmpCfgModel): Observable<boolean> => {
     const request = new GenericRequest<M.CmpCfgPutInModel>(M.CmpCfgPutInModel);
-    request.data.cfg = { ...editModel, giorniPreavviso: Number(editModel.giorniPreavviso) || 0 };
+    request.data.cfg = { ...editModel, giorniPreavviso: Number(editModel.giorniPreavviso) || 0, utentiDatiSanitari: editModel.utentiDatiSanitari ?? [] };
     return this.service.CfgPut(request).pipe(map(res => res.success), catchError(() => of(false)));
   };
 
