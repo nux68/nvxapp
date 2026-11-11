@@ -350,4 +350,241 @@ Cordiali saluti
     <value>Il CRM si sta preparando per l'azienda: riprova tra un istante.</value>
     <comment>EnsureDefaults: richiesta contemporanea</comment>
   </data>
+  <data name="ChatCategoryAgenda" xml:space="preserve">
+    <value>Agenda CRM</value>
+  </data>
+  <data name="ChatCategorySales" xml:space="preserve">
+    <value>Vendite (CRM)</value>
+  </data>
+  <data name="ChatAgendaDisplayName" xml:space="preserve">
+    <value>Agenda</value>
+  </data>
+  <data name="ChatAgendaDescription" xml:space="preserve">
+    <value>le mie attività CRM da fare in un giorno o periodo (default oggi), con quelle scadute</value>
+  </data>
+  <data name="ChatAgendaNone" xml:space="preserve">
+    <value>Nessuna attività da fare {0}.</value>
+  </data>
+  <data name="ChatAgendaTitle" xml:space="preserve">
+    <value>{0} attività da fare {1}:</value>
+  </data>
+  <data name="ChatAgendaOverdue" xml:space="preserve">
+    <value>Attenzione, {0} attività scadute:</value>
+  </data>
+  <data name="ChatOpportunitiesDisplayName" xml:space="preserve">
+    <value>Opportunità aperte</value>
+  </data>
+  <data name="ChatOpportunitiesDescription" xml:space="preserve">
+    <value>opportunità aperte, filtrabili per chiusura prevista (es. questo mese) e per cliente</value>
+  </data>
+  <data name="ChatOpportunitiesNone" xml:space="preserve">
+    <value>Nessuna opportunità aperta{0}.</value>
+  </data>
+  <data name="ChatOpportunitiesNoneCustomer" xml:space="preserve">
+    <value>Nessuna opportunità aperta per "{0}".</value>
+  </data>
+  <data name="ChatOpportunitiesTitle" xml:space="preserve">
+    <value>{0} opportunità aperte{1}, valore {2} (pesato {3}):</value>
+  </data>
+  <data name="ChatClosingOn" xml:space="preserve">
+    <value>chiusura prevista il {0}</value>
+  </data>
+  <data name="ChatClosingBy" xml:space="preserve">
+    <value>entro il {0}</value>
+  </data>
+  <data name="ChatPipelineDisplayName" xml:space="preserve">
+    <value>Pipeline</value>
+  </data>
+  <data name="ChatPipelineDescription" xml:space="preserve">
+    <value>valore della pipeline per fase e opportunità vinte e perse nel mese</value>
+  </data>
+  <data name="ChatPipelineEmpty" xml:space="preserve">
+    <value>La pipeline è vuota: nessuna opportunità aperta.</value>
+  </data>
+  <data name="ChatPipelineTitle" xml:space="preserve">
+    <value>Pipeline: {0} opportunità aperte, valore {1} (pesato {2}).</value>
+  </data>
+  <data name="ChatPipelineRow" xml:space="preserve">
+    <value>{0}: {1}, valore {2}</value>
+  </data>
+  <data name="ChatPipelineMonth" xml:space="preserve">
+    <value>Questo mese: {0} vinte per {1}, {2} perse.</value>
+  </data>
+  <data name="ChatCustomerInfoDisplayName" xml:space="preserve">
+    <value>Scheda cliente</value>
+  </data>
+  <data name="ChatCustomerInfoDescription" xml:space="preserve">
+    <value>situazione di un cliente del CRM: stato, recapiti, responsabile, opportunità e attività</value>
+  </data>
+  <data name="ChatCustomerInfoStatus" xml:space="preserve">
+    <value>Stato: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoCity" xml:space="preserve">
+    <value>Città: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoPhone" xml:space="preserve">
+    <value>Telefono: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoEmail" xml:space="preserve">
+    <value>Email: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoOwner" xml:space="preserve">
+    <value>Responsabile: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoOpportunities" xml:space="preserve">
+    <value>{0} opportunità aperte per {1}</value>
+  </data>
+  <data name="ChatCustomerInfoNoOpportunities" xml:space="preserve">
+    <value>Nessuna opportunità aperta</value>
+  </data>
+  <data name="ChatCustomerInfoLastActivity" xml:space="preserve">
+    <value>Ultima attività: {0}</value>
+  </data>
+  <data name="ChatCustomerInfoNextActivity" xml:space="preserve">
+    <value>Prossima attività: {0}</value>
+  </data>
+  <data name="ChatNewActivityDisplayName" xml:space="preserve">
+    <value>Nuova attività</value>
+  </data>
+  <data name="ChatNewActivityDescription" xml:space="preserve">
+    <value>pianifica una chiamata, un appuntamento, una email o un'attività con un cliente, in un giorno e a un'ora</value>
+  </data>
+  <data name="ChatNewActivitySummary" xml:space="preserve">
+    <value>{activityType} con {customerName} il {date} alle {time}</value>
+  </data>
+  <data name="ChatNewActivityDone" xml:space="preserve">
+    <value>Attività registrata: {0} con {1} il {2} alle {3}.</value>
+  </data>
+  <data name="ChatActivityTypeNotFound" xml:space="preserve">
+    <value>Tipo di attività "{0}" non trovato. Tipi disponibili: {1}.</value>
+  </data>
+  <data name="ChatCompleteActivityDisplayName" xml:space="preserve">
+    <value>Completa attività</value>
+  </data>
+  <data name="ChatCompleteActivityDescription" xml:space="preserve">
+    <value>segna come fatta (o annulla) un'attività da fare con un cliente, con l'esito</value>
+  </data>
+  <data name="ChatCompleteActivitySummary" xml:space="preserve">
+    <value>attività con {customerName} {date} da chiudere, esito: {outcome}</value>
+  </data>
+  <data name="ChatCompleteActivityNone" xml:space="preserve">
+    <value>Non hai attività da fare con {0}.</value>
+  </data>
+  <data name="ChatCompleteActivityAmbiguous" xml:space="preserve">
+    <value>Hai {0} attività da fare con {1}: {2}. Dimmi il tipo o il giorno.</value>
+  </data>
+  <data name="ChatCompleteActivityDone" xml:space="preserve">
+    <value>{0} con {1} del {2} segnata come fatta.</value>
+  </data>
+  <data name="ChatCompleteActivityCancelled" xml:space="preserve">
+    <value>{0} con {1} del {2} annullata.</value>
+  </data>
+  <data name="ChatAddNoteDisplayName" xml:space="preserve">
+    <value>Nota sul cliente</value>
+  </data>
+  <data name="ChatAddNoteDescription" xml:space="preserve">
+    <value>aggiunge una nota alla scheda di un cliente del CRM</value>
+  </data>
+  <data name="ChatAddNoteSummary" xml:space="preserve">
+    <value>nota per {customerName}: {text}</value>
+  </data>
+  <data name="ChatAddNoteDone" xml:space="preserve">
+    <value>Nota aggiunta alla scheda di {0}.</value>
+  </data>
+  <data name="ChatNoteTextQuestion" xml:space="preserve">
+    <value>Cosa scrivo nella nota?</value>
+  </data>
+  <data name="ChatNoteTextLabel" xml:space="preserve">
+    <value>Nota</value>
+  </data>
+  <data name="ChatCustomerQuestion" xml:space="preserve">
+    <value>Per quale cliente?</value>
+  </data>
+  <data name="ChatCustomerLabel" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="ChatCustomerNotFound" xml:space="preserve">
+    <value>Non trovo il cliente "{0}" tra quelli che puoi vedere. Dimmi il nome esatto.</value>
+  </data>
+  <data name="ChatCustomerAmbiguous" xml:space="preserve">
+    <value>Ci sono {0} clienti per "{1}": {2}. Quale?</value>
+  </data>
+  <data name="ChatActivityTypeQuestion" xml:space="preserve">
+    <value>Che tipo di attività? (chiamata, appuntamento, email, attività)</value>
+  </data>
+  <data name="ChatActivityTypeLabel" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="ChatDateQuestion" xml:space="preserve">
+    <value>Per che giorno?</value>
+  </data>
+  <data name="ChatDateLabel" xml:space="preserve">
+    <value>Giorno</value>
+  </data>
+  <data name="ChatTimeQuestion" xml:space="preserve">
+    <value>A che ora?</value>
+  </data>
+  <data name="ChatTimeLabel" xml:space="preserve">
+    <value>Ora</value>
+  </data>
+  <data name="ChatSubjectQuestion" xml:space="preserve">
+    <value>Qual è l'oggetto?</value>
+  </data>
+  <data name="ChatSubjectLabel" xml:space="preserve">
+    <value>Oggetto</value>
+  </data>
+  <data name="ChatOutcomeQuestion" xml:space="preserve">
+    <value>Qual è l'esito?</value>
+  </data>
+  <data name="ChatOutcomeLabel" xml:space="preserve">
+    <value>Esito</value>
+  </data>
+  <data name="ChatCancelledQuestion" xml:space="preserve">
+    <value>La segno come fatta o la annullo?</value>
+  </data>
+  <data name="ChatCancelledLabel" xml:space="preserve">
+    <value>Annullata</value>
+  </data>
+  <data name="ChatFromQuestion" xml:space="preserve">
+    <value>Da che giorno?</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>Dal</value>
+  </data>
+  <data name="ChatToQuestion" xml:space="preserve">
+    <value>Fino a che giorno?</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>Al</value>
+  </data>
+  <data name="ChatPeriodDay" xml:space="preserve">
+    <value>il {0}</value>
+  </data>
+  <data name="ChatPeriodRange" xml:space="preserve">
+    <value>dal {0} al {1}</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>"{0}" non è una data valida. Che giorno?</value>
+  </data>
+  <data name="ChatInvalidTime" xml:space="preserve">
+    <value>"{0}" non è un orario valido. A che ora?</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>e altri {0}</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Operazione non riuscita: {0}</value>
+  </data>
+  <data name="ChatOpenCustomerLabel" xml:space="preserve">
+    <value>Scheda cliente</value>
+  </data>
+  <data name="ChatOpenOpportunityLabel" xml:space="preserve">
+    <value>Opportunità</value>
+  </data>
+  <data name="ChatOpenLeadLabel" xml:space="preserve">
+    <value>Lead</value>
+  </data>
+  <data name="ChatOpenOfferLabel" xml:space="preserve">
+    <value>Offerta</value>
+  </data>
 </root>
