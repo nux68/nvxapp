@@ -70,16 +70,28 @@ Per ogni sottocommessa `s` e periodo:
 | Report | `ReportService` (`ReportTipo.MarginalitaCommesse`) |
 | Client | `ClientServer-Service/GestionePresenze/Az_CommessaCdg/`, pagina `pages/GestionePresenze/cdg-commesse-page/`, widget `shared/components/GestionePresenze/widgets/job-hours-widget`, catalogo, menu, route, i18n |
 
+## 7. Prova (11/11/2026)
+
+Stesso DB usa e getta di AT-AI (`nvx_test_atan`). Seconda commessa "Progetto B" con sottocommessa "Fase 1"; pomeriggi su
+Fase 1 per Verdi (5-9/10) e Bianchi (19-23/10). Periodo settembre-ottobre, costo predefinito 20 €/h, Verdi 30 €/h,
+ricavo di Fase 1 = 1000 €. Valori calcolati a mano e confrontati:
+- minuti di Verdi: 8880 su Default (16 x 480 + 5 x 240) e 1200 su Fase 1; Rossi 8280 (16 x 480 + 600, giornate in errore escluse);
+- Fase 1: 2400 min, costo personale 600 + 400 = 1000,00, nota di Verdi (100 €) ripartita 88,10 su Default e 11,90 su
+  Fase 1 (8880/10080 e resto), costo 1011,90, margine -11,90, -1,19 %;
+- Default: costo personale 4440,00 + ore Bianchi e Rossi x 20 €/h, note 88,10 + 30,00 (Bianchi, settembre senza ore:
+  sottocommessa predefinita) + 50,00; nessun margine senza ricavo; nota rifiutata esclusa; totali e margine totale;
+- filtro commessa, periodo oltre 12 mesi rifiutato, CompanyAdmin escluso, widget del mese, report PDF tramite job.
+
 ---
 
-## 7. Checklist
+## 8. Checklist
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 
-- ⏳ `AT-CDG.1` Costo orario del dipendente: impostabile nella pagina (predefinito + per dipendente), non persistente (CDG1)
-- ⏳ `AT-CDG.2` Costi della commessa: ore del timesheet × costo orario + note spese ripartite (CDG3)
-- ⏳ `AT-CDG.3` Report di marginalità per commessa/sottocommessa e periodo (pagina + PDF tramite job) e widget
-- ⏳ Testi it/en
-- ⏳ Verifica: build server e client, nessuna migration, prova su DB usa e getta con valori calcolati a mano
+- ✅ `AT-CDG.1` Costo orario del dipendente: impostabile nella pagina (predefinito + per dipendente), non persistente (CDG1), ricordato dal browser
+- ✅ `AT-CDG.2` Costi della commessa: ore del timesheet × costo orario + note spese ripartite (CDG3) — `CdgCalcolo`, `Az_CommessaCdgService`/`Az_CommessaCdgController` (`CdgGet`)
+- ✅ `AT-CDG.3` Report di marginalità per commessa/sottocommessa e periodo: pagina `/jobmargins` (menu Gestione commesse), PDF tramite job (`ReportTipo.MarginalitaCommesse`), widget `attendance.jobHours`
+- ✅ Testi it/en
+- ✅ Verifica: build server e client ok, `has-pending-model-changes` = "No changes", prova su DB usa e getta con valori calcolati a mano (§7)
 - 🔍 Costo orario e ricavo persistenti (campo su `Dip_RapportoLavoro` e su `Az_SubCommessa`, con migration) quando il contesto sarà libero
 - 🔍 Collegamento diretto della nota spese alla commessa (colonna `IdAz_SubCommessa` facoltativa su `Dip_GG_NotaSpesa`)

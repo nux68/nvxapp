@@ -99,7 +99,7 @@ così il calcolo si può verificare a mano.
 
 | Elemento | Dettaglio |
 |---|---|
-| Widget `attendance.daysToFix` | "Giornate da sistemare" del mese corrente fino a ieri: da sistemare (rosso), da verificare (arancione), dipendenti coinvolti; link alla pagina. CompanyPowerAdmin, CompanyAdmin. Non predefinito |
+| Widget `attendance.daysToFix` | "Giornate da sistemare" fino a ieri, dal primo del mese corrente (nei primi 10 giorni del mese dal primo del mese precedente, tempo di export paghe): da sistemare (rosso), da verificare (arancione), dipendenti coinvolti; link alla pagina. CompanyPowerAdmin, CompanyAdmin. Non predefinito |
 | Widget `attendance.absenceForecast` | Assenze previste nei prossimi 7 giorni (media, giorno di picco, pianificate). CompanyPowerAdmin, CompanyAdmin. Non predefinito |
 | Chat/voce | intento `DaysToFix` ("giornate da sistemare", "cosa devo sistemare prima delle paghe di ottobre"), slot mese facoltativo (default mese corrente), ruolo HR |
 | Riepilogo AI | `AttendanceTrackingDigestProvider` (`Application = AttendanceTracking`): anomalie del periodo del riepilogo (giornate da sistemare = critica, avvisi, ritardi ricorrenti) e assenze pianificate nella settimana successiva. Legge con `IApplicationDbContextFactory` e i repository costruiti sul contesto dello schema dell'azienda (fuori dalla richiesta) |
@@ -128,16 +128,39 @@ così il calcolo si può verificare a mano.
 | Report | `ReportService` (`ReportTipo.GiornateDaSistemare`) |
 | Client | servizio `ClientServer-Service/GestionePresenze/Dip_Anomalie/`, pagina `pages/GestionePresenze/anomalie-page/`, widget `shared/components/GestionePresenze/widgets/days-to-fix-widget`, `absence-forecast-widget`, catalogo `widget-attendance-tracking.service.ts`, menu, route, `assets/i18n/attendance-tracking/{it,en}.json` |
 
+## 9. Prova (11/11/2026)
+
+DB usa e getta `nvx_test_atan`, server su porta 5333; azienda con Presenze, tre dipendenti (ruolo User) con profilo
+DIURNO8H (09-13, 14-18, limiti ±15', pausa pranzo rilevata), timbrature di ottobre 2026 inserite apposta, calcolo con
+`TimeSheet_Engine/Calculate`. **77 controlli ok**, tra cui:
+- dispari (06/10: 3 timbrature), fuori orario (07/10: 07:00 prima delle 08:45), giornata vuota (08/10), tre ritardi di
+  30' (ritardo ricorrente, media 30') con ore mancanti del motore, richiesta in attesa (15/10), sabato con timbrature
+  (giorno non lavorativo); ferie del 16/10 non segnalate come giornata vuota; totali 7 da sistemare, 2 da verificare;
+  filtro "solo da sistemare", filtro dipendente, periodo troppo lungo, utente semplice escluso, CompanyAdmin (vede i
+  dipendenti del reparto predefinito che amministra, nessuno senza reparti amministrati), testi in inglese;
+- giornate di novembre senza ricalcolo (`Init`): giornata vuota e non calcolata (widget 21 = 7 feriali x 3);
+- spiegazione con l'AI (provider configurato) e ripiego senza AI (`AI:AnomalieLLM=none`) con i fatti;
+- previsione su storico finto (Verdi assente tutti i lunedi' da novembre 2025): giornate dello storico, tasso medio,
+  tasso del lunedi', fattore di novembre e previsione del 16/11 (3 attesi, 2 pianificate, statistica 2,4 = 3 x T(lun) x F(nov))
+  confrontati con lo stesso calcolo fatto in Python sui dati del DB; picco; sabato senza attesi;
+- riepilogo AI: sezione `presenze.anomalie` critica (12 giornate = 4 feriali x 3 dipendenti, solo ruolo User),
+  assenze pianificate della settimana dopo (4); nessuna sezione per il CompanyAdmin senza reparti; riepilogo dello studio;
+- report PDF "Giornate da sistemare" tramite job; comando chat "giornate da sistemare di ottobre 2026".
+
+Nota: con giustificativi di giornata inseriti a mano (SQL) il motore segna comunque `Err_TimbratureMancanti` sulla giornata
+di ferie senza timbrature: la regola lo riporta come "Errore del calcolo: timbrature mancanti" (non come giornata vuota).
+Da verificare con i giustificativi inseriti dalle pagine.
+
 ---
 
-## 9. Checklist
+## 10. Checklist
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 
-- ⏳ `AT-AI.1` Regole deterministiche delle anomalie (§3), servizio e API, spiegazione con AI e ripiego senza AI
-- ⏳ `AT-AI.2` Giornate da sistemare: pagina, filtri, Calendario HR, report PDF tramite job
-- ⏳ `AT-AI.3` Previsione delle assenze (§5): servizio, API, sezione nella pagina
-- ⏳ `AT-AI.4` Widget `attendance.daysToFix` e `attendance.absenceForecast`, comando chat "giornate da sistemare", provider del riepilogo AI
-- ⏳ Testi it/en (server resx e client)
-- ⏳ Verifica: build server e client, nessuna migration (`has-pending-model-changes` = "No changes"), prova su DB usa e getta
+- ✅ `AT-AI.1` Regole deterministiche delle anomalie (§3), servizio e API, spiegazione con AI e ripiego senza AI — `GestionePresenzeAnomalie`, `GestionePresenzeAnomalieWriter`, `Dip_AnomalieService`/`Dip_AnomalieController` (`AnomalieGet`, `AnomalieSpiega`)
+- ✅ `AT-AI.2` Giornate da sistemare: pagina `/attendanceanomalies` (menu "Anomalie presenze", CompanyPowerAdmin e CompanyAdmin), filtri, Calendario HR, report PDF tramite job (`ReportTipo.GiornateDaSistemare`)
+- ✅ `AT-AI.3` Previsione delle assenze (§5): `PrevisioneAssenzeGet`, sezione "Previsione assenze" della pagina con il metodo e i tassi
+- ✅ `AT-AI.4` Widget `attendance.daysToFix` e `attendance.absenceForecast`, comando chat/voce `DaysToFix` (+ route "anomalie presenze"), `AttendanceTrackingDigestProvider`
+- ✅ Testi it/en (server resx e client)
+- ✅ Verifica: `dotnet build` e `ng build --configuration development` ok, `has-pending-model-changes` = "No changes", prova su DB usa e getta (§9, 77 controlli insieme ad AT-CDG)
 - 🔍 Soglie configurabili per azienda (AN1): richiede una migration, da fare quando il contesto sarà libero

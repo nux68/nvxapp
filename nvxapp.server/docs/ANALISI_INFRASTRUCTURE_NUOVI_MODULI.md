@@ -174,8 +174,8 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
 | `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
 | `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ⏳ |
-| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ⏳ |
-| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
+| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-an` | – | 1 | ✅ fatta, da mergiare (ramo `AttendanceTracking_Dev_an`, nessuna migration; provata su DB usa e getta) |
+| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-an` | – | 1 | ✅ fatta, da mergiare (ramo `AttendanceTracking_Dev_an`, costi e ricavi impostati nella pagina, non salvati) |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
@@ -275,15 +275,15 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata
 
 #### `AT-AI` – Analisi AI delle timbrature
-- ⏳ `AT-AI.1` Segnalazione delle timbrature anomale
-- ⏳ `AT-AI.2` Giornate da sistemare prima dell'export paghe
-- ⏳ `AT-AI.3` Previsione delle assenze
-- ⏳ `AT-AI.4` Widget e comandi vocali
+- ✅ `AT-AI.1` Segnalazione delle timbrature anomale — fatta, da mergiare: regole deterministiche (`GestionePresenzeAnomalie`: dispari, giornata vuota, errori del calcolo, non calcolata, richieste in attesa, fuori orario, giorno non lavorativo, pause, ritardi ricorrenti), spiegazione con l'AI solo dai fatti (`AI:AnomalieLLM`) e ripiego senza AI (`ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md`)
+- ✅ `AT-AI.2` Giornate da sistemare prima dell'export paghe — fatta, da mergiare: pagina `/attendanceanomalies` e report PDF tramite job
+- ✅ `AT-AI.3` Previsione delle assenze — fatta, da mergiare: tassi per giorno della settimana x fattore del mese sullo storico, massimo con il piano ferie
+- ✅ `AT-AI.4` Widget e comandi vocali — fatta, da mergiare: widget `attendance.daysToFix`, `attendance.absenceForecast`, comando `DaysToFix`, `AttendanceTrackingDigestProvider` per il riepilogo AI (INF-AI)
 
 #### `AT-CDG` – Controllo di gestione sulle commesse (D2)
-- ⏳ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro
-- ⏳ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese
-- ⏳ `AT-CDG.3` Report di marginalità e widget
+- ✅ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro — fatta, da mergiare con scelta provvisoria: `Dip_RapportoLavoro` non ha un campo di costo e la migration non era possibile, quindi costo predefinito e per dipendente impostati nella pagina (non salvati, ricordati dal browser); campo persistente da aggiungere con una migration (`ANALISI_ATTENDANCETRACKING_CONTROLLO_GESTIONE.md`)
+- ✅ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese — fatta, da mergiare: note spese ripartite in proporzione alle ore del mese (senza ore: sottocommessa predefinita del rapporto)
+- ✅ `AT-CDG.3` Report di marginalità e widget — fatta, da mergiare: pagina `/jobmargins` (ricavi per sottocommessa impostati nella pagina), PDF tramite job, widget `attendance.jobHours`
 
 #### `DM-PEC` – Acquisizione delle PEC
 - ⏳ `DM-PEC.1` Configurazione della casella PEC per azienda (credenziali protette)
