@@ -1,4 +1,5 @@
 import { I18N_FOLDER_ATTENDANCE_TRACKING } from './i18n-attendance-tracking';
+import { I18N_FOLDER_HUMAN_RESOURCES } from './i18n-human-resources';
 import { I18N_FOLDER_DOCUMENT_MANAGEMENT } from './i18n-document-management';
 import { I18N_FOLDER_CRM } from './i18n-crm';
 import { I18N_FOLDER_ALL_FUNCTION } from './i18n-all-function';
@@ -12,6 +13,7 @@ import { I18N_FOLDER_ALL_FUNCTION } from './i18n-all-function';
 export const I18N_FOLDERS: string[] = [
   'infrastructure',
   I18N_FOLDER_ATTENDANCE_TRACKING,
+  I18N_FOLDER_HUMAN_RESOURCES,
   I18N_FOLDER_DOCUMENT_MANAGEMENT,
   I18N_FOLDER_CRM,
   I18N_FOLDER_ALL_FUNCTION,
