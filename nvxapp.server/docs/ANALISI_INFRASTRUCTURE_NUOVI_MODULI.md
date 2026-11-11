@@ -186,7 +186,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | ⏳ |
 | `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ⏳ |
-| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
+| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_hr-base`, provata su DB usa e getta), da mergiare |
 | `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ⏳ |
 | `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ⏳ |
@@ -208,7 +208,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `ANA.5` Verifica legale del whistleblowing (D.Lgs 24/2023)
 - ⏳ `ANA.6` Analisi della sicurezza dei dati riservati (segnalazioni, dati sanitari delle visite), collegata a `piano-security.md`
 - ⏳ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev)
-- ⏳ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev)
+- ✅ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - ⏳ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev)
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
 
@@ -334,9 +334,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende
 
 #### `HR-BASE` – Avvio del modulo Risorse Umane
-- ⏳ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `HR-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli, compresa l'area del dipendente
-- ⏳ `HR-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale — `HumanResourcesDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitHumanResources` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `HR-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli, compresa l'area del dipendente — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/hrsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); area del dipendente prevista nei ruoli, pagine con `HR-CED`; dettagli in `ANALISI_HUMANRESOURCES_APPLICATIVO.md`
+- ✅ `HR-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `HR-CED` – Portale con cedolini e CU
 - ⏳ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda
