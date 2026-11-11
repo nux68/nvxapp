@@ -310,7 +310,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CRM-ASS.2` Storico nella scheda del cliente
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
-- ⏳ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`)
+- ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
 
 #### `CMP-BASE` – Avvio del modulo Compliance
 - ✅ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale — `ComplianceDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitCompliance` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
