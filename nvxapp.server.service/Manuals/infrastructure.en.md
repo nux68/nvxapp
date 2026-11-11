@@ -74,7 +74,7 @@ Moves a company from one financial advisor to another, with its users and data.
 The document management storage settings: the default warning threshold and the space used by all companies. Each company's space is the one of its Document management licence.
 
 @@ /companystoragelist
-The document management space used by each company: licence, used space and warnings. From here you change a company's warning threshold; the space changes with the licence.
+The document management space used by each company with an active Document management licence: licence, used space and warnings. From here you change a company's warning threshold; the space changes with the licence.
 
 @@ /poweradmin
 The page of the installation PowerAdmin.

@@ -326,8 +326,8 @@ Rossi Spa has the Free Document management licence (1 GB), is at 85% and receive
 ### Watch out
 - Beyond 100% the company can no longer upload documents until it frees space or moves to a licence with more space.
 - The space is not changed from this page: it depends on the company's Document management licence (or on the financial advisor covering it).
-- The list shows only the companies with document management active.
-- "No licence": the licence system is on and the company has no valid Document management licence; it cannot upload documents until it subscribes or renews.
+- The list shows only the companies with document management active and a valid Document management licence (their own, the financial advisor's or cumulative); with the licence system off, all those with document management active.
+- A company without a Document management licence is not listed and cannot upload documents until it subscribes or renews; it is listed again as soon as it is covered.
 
 => /storagesettings /companylist
 
