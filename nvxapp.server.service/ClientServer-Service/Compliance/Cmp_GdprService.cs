@@ -261,7 +261,7 @@ namespace nvxapp.server.service.ClientServer_Service.Compliance
                     {
                         UserIds = amministratori.Where(x => x != ctx.IdUtente),
                         IdCompany = ctx.IdCompany,
-                        Categoria = NotificationCategory.Scadenze.Code,
+                        Categoria = CmpNotificationCategoryProvider.Gdpr.Code,
                         Titolo = ComplianceMessages.Get("BreachNotifyTitle"),
                         Messaggio = ComplianceMessages.Get("BreachNotifyText", riga.DataScoperta.ToString("dd/MM/yyyy HH:mm"), termine.ToString("dd/MM/yyyy HH:mm")),
                         Url = CmpUrl.Gdpr,
