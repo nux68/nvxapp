@@ -152,6 +152,8 @@ namespace nvxapp.server.Utility
             builder.Services.AddHostedService<PaymentMaintenanceService>();
             // scadenzario: promemoria giornalieri (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC.5)
             builder.Services.AddHostedService<DeadlineMaintenanceService>();
+            // riepilogo AI settimanale per aziende e studi (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-AI.2)
+            builder.Services.AddHostedService<DigestMaintenanceService>();
 
 
             return builder.Services;

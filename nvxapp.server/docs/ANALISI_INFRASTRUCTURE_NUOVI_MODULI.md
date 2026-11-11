@@ -169,7 +169,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ✅ mergiata l'11/11/2026 insieme ad `AT-COM` |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ mergiata l'11/11/2026 (server provato su DB usa e getta, client compilato) |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
-| `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
+| `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
 | `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
 | `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
@@ -181,19 +181,19 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (canale `doc.fes`) |
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
-| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ⏳ |
+| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
-| `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | ⏳ |
-| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ⏳ |
+| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | 🔍 bloccata: serve la verifica legale (`ANA.5`) e l'analisi di sicurezza (`ANA.6`) |
+| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ✅ mergiata l'11/11/2026 |
 | `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ⏳ |
-| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
-| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ⏳ |
+| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ✅ mergiata l'11/11/2026 |
 | `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
-| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
-| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ⏳ |
-| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ⏳ |
+| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ✅ mergiata l'11/11/2026 |
 | `ADM` | Amministrazione (fatturazione) | Administration_Dev (più avanti) | `wt_adm` | `INF-APP`, scelta dell'intermediario SdI | – | ⏳ |
 
 I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`, `HumanResources`, `Assets`) nascono in `INF-APP.6`, creati da Infrastructure dopo il merge di `INF-APP`.
@@ -236,6 +236,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-SVC.4` Notifiche: servizio unico (email con Brevo, notifiche nell'app con SignalR) e preferenze per utente — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/notifications` (paginata, non lette, apri, segna tutte lette, cancella lette), preferenze `/notificationpreference` (App/Email per categoria), voce di menu "Notifiche" per tutti con badge delle non lette (`NotificationNotifierService`, evento SignalR `NotificationNew`)
 - ✅ `INF-SVC.5` Promemoria automatici delle scadenze (job pianificato) — server fatto e provato su DB usa e getta con 24 controlli API; client: il promemoria apre `/deadlines` (o l'oggetto della scadenza)
 - ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
+- ⏳ `INF-SVC.7` Titolo delle categorie di notifica fornito dal modulo (oggi sta nei testi di Infrastructure: Compliance, Risorse Umane e Risorse aziendali usano per ora `generale`/`scadenze`)
+- ⏳ `INF-SVC.8` Alla creazione dell'account di un dipendente gia' presente, collegare l'utente alla `Dip_Anagrafica` esistente invece di crearne una nuova (oggi lo corregge Risorse Umane, `HR-ONB.4`)
 
 #### `INF-CAL` – Sincronizzazione dei calendari
 - ✅ `INF-CAL.1` (ridefinito con D9) Feed iCalendar personale per utente e azienda: tabella `CalendarioFeed` in `public` (token casuale di 32 byte base64url, date di creazione e ultimo accesso), migration `CalendarioFeed`
@@ -244,9 +246,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `INF-CAL.4` (futuro, D9) Sincronizzazione bidirezionale via OAuth con Google e Microsoft (richiede app registrate e credenziali)
 
 #### `INF-AI` – Riepilogo AI periodico
-- ⏳ `INF-AI.1` Interfaccia con cui ogni modulo fornisce i dati del riepilogo
-- ⏳ `INF-AI.2` Generazione settimanale con il provider AI configurato, per azienda e per studio
-- ⏳ `INF-AI.3` Invio tramite `INF-SVC.4` e consultazione nell'app
+- ✅ `INF-AI.1` Interfaccia con cui ogni modulo fornisce i dati del riepilogo — `IDigestProvider` (`Application`, `SectionAsync(idCompany, idAspNetUsers?, dal, al)`) con `DigestSection` (codice, titolo, critica, righe) e `DigestFact` (testo, numero, critico, dettagli), registrati dallo scanner; idAspNetUsers null = vista dell'azienda (studio). Provider di Infrastructure: `DeadlineDigestProvider` (scadute ancora aperte = critica, nei prossimi 14 giorni, chiuse nel periodo), `AcknowledgementDigestProvider` (in attesa nell'azienda, critica se oltre 7 giorni, e proprie), `NotificationDigestProvider` (non lette dell'utente per categoria). I moduli con tabelle negli schemi delle aziende leggono con `IApplicationDbContextFactory`
+- ✅ `INF-AI.2` Generazione settimanale con il provider AI configurato, per azienda e per studio — `DigestMaintenanceService` (lunedì dopo `Digest:Hour` = 7, stato `Riepilogo_UltimaSettimana` in `AppSetting`, `Digest:Weekly` = false lo spegne); `DigestGenerator`: un riepilogo per ogni amministratore dell'azienda (solo applicativi attivi) e uno per studio con le sole aziende che hanno sezioni critiche; `DigestWriter`: testo dall'AI (`ILlmClient`, `AI:DigestLLM`, vuoto = `UseLLM`, `none` = senza AI) solo dai fatti JSON con prompt che vieta di inventare, ripiego sul testo semplice generato dai fatti; categoria di notifica `riepilogo` (app ed email di default)
+- ✅ `INF-AI.3` Invio tramite `INF-SVC.4` e consultazione nell'app — tabella `public.Riepilogo` (tipo azienda/studio, IdCompany, IdFinancialAdvisor, IdAspNetUsers, periodo, testo, fatti JSON, AI sì/no, manuale; migration `Riepilogo`), notifica `riepilogo` con link a `/digestdetail`; `DigestService`/`DigestController` (`DigestList`, `DigestGet`, `DigestGenerate`); client: pagine `/digests` (elenco, "Genera ora" per CompanyPowerAdmin nell'azienda e FinancialAdvisorPowerAdmin nello studio) e `/digestdetail` (testo e fatti), voce di menu "Riepiloghi" per amministratori dell'azienda e utenti dello studio, testi it/en
 
 #### `AT-COM` – Dati in Common, lato Presenze
 - ⏳ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common. Le classi Presenze hanno lo stesso nome di quelle Common: vanno cancellate nello stesso merge in cui arriva `INF-COM` (altrimenti il ramo non compila); va tolta anche la collection `Dip_Competenza` da `Dip_Anagrafica.Presenze.cs` (ora e' nella classe Common). Nel contesto Presenze le tabelle Common si mappano con `ExcludeFromMigrations()` come `Dip_Anagrafica`; le collection verso le tabelle Presenze (Az_SediAttivita, Az_SediRepartoUser, Dip_GG_NotaSpesa...) vanno nei partial Presenze
@@ -308,7 +310,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CRM-ASS.2` Storico nella scheda del cliente
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
-- ⏳ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`)
+- ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
 
 #### `CMP-BASE` – Avvio del modulo Compliance
 - ⏳ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale
@@ -391,6 +393,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ 11/11/2026 – Divisione in aree con etichetta e punti numerati per il lavoro su più worktree (`ANA.4`), seconda catena dei merge
 
 - ✅ 11/11/2026 – Fase 1 (`INF-APP`, `INF-SVC`) mergiata; fase 2 (`INF-COM`+`AT-COM`, `INF-CAL`, `DM-FIRMA`, `CMP-BASE`, `HR-BASE`, `AST-BASE`, analisi `ANA.7`–`ANA.9`) mergiata dopo la prova completa della catena (8 rami compilati, AllFunction avviato con tutte le app: 15 controlli)
+
+- ✅ 11/11/2026 – Fase 3 mergiata: `CMP-81`, `CMP-GDPR`, `HR-CED`, `HR-FOR`, `HR-ONB`, `AST-FLO`, `AST-BENI`, `AST-PREN`, `INF-AI`, `CRM-CAL` (prova completa: 8 rami compilati, AllFunction avviato con tutte le app). `CMP-WB` fermo in attesa di `ANA.5`/`ANA.6`
 
 ### Da fare (per fase, §8)
 - ⏳ **Fase 1**: `ANA.5`–`ANA.10`, `INF-APP`, `INF-COM`, `INF-SVC`; in parallelo, quando si vuole, `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `DM-PEC`, `DM-CONS`, `CRM-PREV`, `CRM-ASS`

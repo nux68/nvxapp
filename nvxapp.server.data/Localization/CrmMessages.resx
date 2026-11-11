@@ -587,4 +587,28 @@ Cordiali saluti
   <data name="ChatOpenOfferLabel" xml:space="preserve">
     <value>Offerta</value>
   </data>
+  <data name="CalendarActivityTitle" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
+  <data name="CalendarActivityDone" xml:space="preserve">
+    <value>{0} (fatta)</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
+  <data name="CalendarActivityCustomer" xml:space="preserve">
+    <value>Cliente: {0}</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
+  <data name="CalendarActivityContact" xml:space="preserve">
+    <value>Contatto: {0}</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
+  <data name="CalendarActivityOpportunity" xml:space="preserve">
+    <value>Opportunità: {0}</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
+  <data name="CalendarActivityLead" xml:space="preserve">
+    <value>Lead: {0}</value>
+    <comment>calendario (CRM-CAL.1)</comment>
+  </data>
 </root>
