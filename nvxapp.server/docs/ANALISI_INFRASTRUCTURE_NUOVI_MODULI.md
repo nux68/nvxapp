@@ -143,6 +143,7 @@ Amministrazione arriva più avanti, solo con la fatturazione (D1, D2).
 | D6 | Quali dati del rapporto di lavoro spostare in Common | **Solo le date di assunzione e cessazione** |
 | D7 | Whistleblowing nel modulo Compliance o venduto a parte | **Nel modulo Compliance**, senza una licenza separata |
 | D8 | Livelli Free/Standard/Pro per i nuovi moduli | **Da definire con i listini**. Se serve si aggiungeranno in seguito; per ora nessun livello specifico |
+| D9 | Sincronizzazione dei calendari: OAuth con Google/Microsoft o feed iCalendar | **Da confermare con l'utente.** Per ora **feed iCalendar (.ics) personale in sola lettura**, sottoscritto via URL da Google Calendar, Outlook e Apple Calendar: OAuth richiede la registrazione di app e credenziali che non abbiamo. La sincronizzazione bidirezionale via OAuth resta un punto futuro (`INF-CAL.4`) |
 
 ---
 
@@ -167,7 +168,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ✅ mergiata l'11/11/2026 |
 | `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | 🔄 fatta (ramo `Infrastructure_Dev_inf-com`), merge solo insieme ad `AT-COM` |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ mergiata l'11/11/2026 (server provato su DB usa e getta, client compilato) |
-| `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
+| `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | 🔄 feed .ics fatto (ramo `Infrastructure_Dev_inf-cal`, server provato su DB usa e getta, client compilato), da mergiare; OAuth (`INF-CAL.4`) futuro (D9) |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ⏳ |
 | `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
@@ -237,9 +238,10 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
 
 #### `INF-CAL` – Sincronizzazione dei calendari
-- ⏳ `INF-CAL.1` Collegamento OAuth con Google e Microsoft per utente
-- ⏳ `INF-CAL.2` Modello comune degli eventi pubblicati dai moduli
-- ⏳ `INF-CAL.3` Sincronizzazione (invio e aggiornamento) e gestione degli errori
+- ✅ `INF-CAL.1` (ridefinito con D9) Feed iCalendar personale per utente e azienda: tabella `CalendarioFeed` in `public` (token casuale di 32 byte base64url, date di creazione e ultimo accesso), migration `CalendarioFeed`
+- ✅ `INF-CAL.2` Modello comune degli eventi pubblicati dai moduli: `ICalendarEventProvider` + `CalendarEvent` (registrati dallo scanner, più implementazioni); per Infrastructure `DeadlineCalendarEventProvider` (scadenze aperte visibili all'utente, stesse regole dello scadenzario, come eventi tutto il giorno). I moduli (`CRM-CAL`, `AST-PREN.3`, Presenze) aggiungono il proprio provider
+- ✅ `INF-CAL.3` Feed anonimo `GET api/CalendarFeed/{token}.ics` (RFC 5545, eventi da oggi-90 a oggi+365 giorni, 404 per token sconosciuto, calendario vuoto se l'utente non lavora più nell'azienda), gestione del proprio feed (crea, nuovo indirizzo, elimina; indirizzo da `App:ApiPublicUrl` / `App:PublicUrl`), pagina client `/calendarfeed` (menu "Calendario" e bottone nello Scadenzario) — server provato su DB usa e getta con 52 controlli API e parser `icalendar`; client compilato
+- ⏳ `INF-CAL.4` (futuro, D9) Sincronizzazione bidirezionale via OAuth con Google e Microsoft (richiede app registrate e credenziali)
 
 #### `INF-AI` – Riepilogo AI periodico
 - ⏳ `INF-AI.1` Interfaccia con cui ogni modulo fornisce i dati del riepilogo

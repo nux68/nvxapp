@@ -93,6 +93,7 @@ storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
   Public: ServiziComuni (11/11/2026: Scadenza, Notifica, NotificaPreferenza, PresaVisione)
+  Public: CalendarioFeed (11/11/2026: CalendarioFeed, feed iCalendar personale - INF-CAL)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica)
           CommonSediCompetenzeAutovetture (11/11/2026, INF-COM): Az_Sedi, Az_SediReparto, Par_Competenza, Dip_Competenza,
           Dip_RapportoAutovetture (legata a Dip_Anagrafica) e Dip_Anagrafica.DataAssunzione; i dati delle presenze li sposta AT-COM
