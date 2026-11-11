@@ -1,0 +1,20 @@
+{
+  "ast": {
+    "menu": {
+      "section": "Company assets",
+      "settings": "Settings",
+      "manual": "Company assets manual"
+    },
+    "pages": {
+      "settings": {
+        "title": "Company assets settings",
+        "general": "General",
+        "noticeDays": "Deadline notice days",
+        "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
+        "notifications": "Notifications on",
+        "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
+        "note": "Notes"
+      }
+    }
+  }
+}
