@@ -1,7 +1,7 @@
 # Analisi – Applicativo Documentale (gestione documentale)
 
 Branch: **DocumentManagement_Dev** (riceve i merge da Infrastructure, si mergia in DocumentManagement).
-Il modello delle **tabelle condivise** (schema "dati comuni dell'azienda", `Common`) è descritto in `ANALISI_CRM.md` §2 e va realizzato in **Infrastructure_Dev** prima di entrambi gli applicativi. Qui si riprendono solo i punti specifici del documentale.
+Il modello delle **tabelle condivise** (schema "dati comuni dell'azienda", `Common`) è descritto in `ANALISI_CRM_APPLICATIVO.md` §2 e va realizzato in **Infrastructure_Dev** prima di entrambi gli applicativi. Qui si riprendono solo i punti specifici del documentale.
 
 Stato: analisi completa, **tutte le decisioni prese** (§10, 03-04/11/2026). Lavori fatti e da fare: §11.
 
@@ -12,9 +12,9 @@ Stato: analisi completa, **tutte le decisioni prese** (§10, 03-04/11/2026). Lav
 - **Gerarchia**: Dealer → FinancialAdvisor (studio) → Company (azienda) → utenti (`UserDealer`, `UserFinancialAdvisor`, `UserCompany`). Il documentale è il punto d'incontro naturale **studio ↔ azienda ↔ dipendente**.
 - **File oggi**: sempre nel database come `byte[]` (`TicketAttach.File`, `Document.File`, `Dip_GG_NotaSpesa_Allegato.Contenuto`, `Par_ExportCau_Docs.Contenuto`). Va bene per pochi allegati, non per un archivio (cedolini mensili × dipendenti × anni).
 - **Estrazione testo**: `Helpers/FileText.Estrai` (PdfPig per PDF, docx, odt, xlsx, html, testo). Le scansioni non hanno testo (niente OCR).
-- **Tabella `public.Document`**: è la documentazione per le risposte AI ai ticket (`ANALISI_DOCUMENTAZIONE_AI.md`), **non** c'entra con il documentale. Le tabelle nuove usano il prefisso `Doc_` per non collidere (il controllo dei nomi all'avvio lo bloccherebbe).
+- **Tabella `public.Document`**: è la documentazione per le risposte AI ai ticket (`ANALISI_DOCUMENTMANAGEMENT_DOCUMENTAZIONE_AI.md`), **non** c'entra con il documentale. Le tabelle nuove usano il prefisso `Doc_` per non collidere (il controllo dei nomi all'avvio lo bloccherebbe).
 - **Dipendenti**: `Dip_Anagrafica` (presenze) con `IdAspNetUsers` **obbligatorio**, Cognome, Nome, Matricola, CodiceFiscale (unici per azienda). Decisa la sua uscita dalle presenze verso Common (§2.1).
-- **Schema Common** (dati comuni dell'azienda, `tenant_<id>_0`): predisposto il 03/11/2026 con `Az_Anagrafica`, `Az_Cliente`, `Az_ClienteContatto` (`ANALISI_CRM.md` §10).
+- **Schema Common** (dati comuni dell'azienda, `tenant_<id>_0`): predisposto il 03/11/2026 con `Az_Anagrafica`, `Az_Cliente`, `Az_ClienteContatto` (`ANALISI_CRM_APPLICATIVO.md` §10).
 - **Cancellazione fisica** (`IApplicationDataDeleter`): togliendo un utente dall'azienda, le presenze cancellano il dipendente con i suoi dati.
 - **Infrastruttura utile**: RabbitMQ (lavori lunghi), SignalR (`job-notifier`, `long-job-notifier`, `ticket-notifier`), servizio email, chat AI con handler per applicativo, `CompanyMenuRestriction`.
 
@@ -22,7 +22,7 @@ Stato: analisi completa, **tutte le decisioni prese** (§10, 03-04/11/2026). Lav
 
 ## 2. Tabelle condivise che riguardano il documentale
 
-Riferimento: `ANALISI_CRM.md` §2 (schema `tenant_<id>_<Common>` sempre presente, entità comuni in sola lettura dagli applicativi, estensioni 1-1 nello schema dell'applicativo, integrazioni via interfacce in Infrastructure).
+Riferimento: `ANALISI_CRM_APPLICATIVO.md` §2 (schema `tenant_<id>_<Common>` sempre presente, entità comuni in sola lettura dagli applicativi, estensioni 1-1 nello schema dell'applicativo, integrazioni via interfacce in Infrastructure).
 
 | Tabella comune | Perché serve al documentale |
 |---|---|
@@ -129,7 +129,7 @@ Nel database restano solo i **metadati**: chiave, nome, tipo, dimensione, **hash
 
 ### 5.3 Spazio a disposizione: configurazione e gestione
 
-> **11/11/2026:** i pacchetti di spazio (`StoragePlan`) e la dimensione massima del file (`Storage_MaxFileMB`, `MaxFileMB`) sono stati **eliminati** (branch Infrastructure, ANALISI_LICENZE.md §15.7): lo spazio di un'azienda è quello della sua licenza Documentale, illimitato con il sistema licenze spento e zero (caricamenti bloccati) con le licenze accese e senza licenza; resta la soglia di avviso. Il testo sotto descrive la configurazione originaria.
+> **11/11/2026:** i pacchetti di spazio (`StoragePlan`) e la dimensione massima del file (`Storage_MaxFileMB`, `MaxFileMB`) sono stati **eliminati** (branch Infrastructure, ANALISI_INFRASTRUCTURE_LICENZE.md §15.7): lo spazio di un'azienda è quello della sua licenza Documentale, illimitato con il sistema licenze spento e zero (caricamenti bloccati) con le licenze accese e senza licenza; resta la soglia di avviso. Il testo sotto descrive la configurazione originaria.
 
 **Cosa si misura.** Lo spazio occupato da un'azienda è la somma delle dimensioni di **tutte le versioni** dei suoi file nello storage (`Doc_Versione.Dimensione`), compresi i documenti nel **cestino** finché non viene svuotato. Non contano i metadati e il testo estratto (stanno nel database). Lo spazio è **solo per azienda** (nessuno spazio condiviso a livello di studio) e conta **solo i file del documentale**: i file degli altri applicativi, anche quando useranno `IFileStorage`, non entrano nel conteggio *(deciso il 03/11/2026)*.
 
@@ -244,7 +244,7 @@ Stesso flusso per CU e altri documenti per dipendente; un tracciato diverso (es.
 ## 8. Integrazioni con gli altri applicativi (facoltative, via interfacce in Infrastructure)
 
 - **Presenze**: dalla scheda dipendente delle presenze, sezione "Documenti" (se documentale attivo). Allegati di note spese e giustificativi (certificati medici) archiviabili nel fascicolo del dipendente: le presenze chiamano `IDocumentArchiver` se registrato e attivo, altrimenti continuano a usare le proprie tabelle allegati.
-- **CRM**: fascicolo del cliente (documenti del documentale con `IdAz_Cliente`) mostrato in lettura nella scheda cliente del CRM. Gli allegati e le offerte del CRM **restano nel CRM** (`Crm_Allegato`) e non si archiviano nel documentale (deciso il 04/11/2026, `ANALISI_CRM.md` §9 punto 6).
+- **CRM**: fascicolo del cliente (documenti del documentale con `IdAz_Cliente`) mostrato in lettura nella scheda cliente del CRM. Gli allegati e le offerte del CRM **restano nel CRM** (`Crm_Allegato`) e non si archiviano nel documentale (deciso il 04/11/2026, `ANALISI_CRM_APPLICATIVO.md` §9 punto 6).
 - **Ticket**: nessuna dipendenza (gli allegati dei ticket restano nel loro flusso).
 
 ---
@@ -284,7 +284,7 @@ Legenda: [x] fatto · [ ] da fare.
 
 ### Fase 0 – Prerequisiti comuni (Infrastructure_Dev, poi merge fino ad AttendanceTracking)
 
-**Dati comuni (schema Common)** – checklist completa in `ANALISI_CRM.md` §10, Fase 0. In sintesi:
+**Dati comuni (schema Common)** – checklist completa in `ANALISI_CRM_APPLICATIVO.md` §10, Fase 0. In sintesi:
 - [x] schema Common (`Common = 0`) con `Az_Anagrafica`, `Az_Cliente`, `Az_ClienteContatto`, API comuni, `ICommonEntityUsage`, deleter, migration azzerate e database ricreato (03/11/2026)
 - [x] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript) – 04/11/2026
 - [x] `Az_Cliente`: `Default` → `Az_Cfg.IdAz_ClienteDefault`, nuovi `Attivo` e `Tipo` – 04/11/2026
@@ -312,7 +312,7 @@ Legenda: [x] fatto · [ ] da fare.
 
 **Archiviazione su disco** (§5.1) – fatto il 04/11/2026
 - [x] `IFileStorage` con implementazione **FileSystem** (`<idCompany>/<aaaa>/<mm>/<guid>`, scrittura atomica, chiave validata), hash SHA-256 nel documentale
-- [x] volume Docker `nvxapp_files` in `docker-compose.yml` e nelle istruzioni di backup (`ANALISI_DOCKER.md` §9.4); file eliminati con la cancellazione fisica dell'azienda
+- [x] volume Docker `nvxapp_files` in `docker-compose.yml` e nelle istruzioni di backup (`ANALISI_INFRASTRUCTURE_DOCKER.md` §9.4); file eliminati con la cancellazione fisica dell'azienda
 - [x] lista bianca dei tipi di file e dimensione massima del file
 - [ ] (facoltativo, dopo) implementazioni S3/MinIO e database; cifratura (decisa: per ora no)
 
@@ -347,7 +347,7 @@ Legenda: [x] fatto · [ ] da fare.
 - [x] `DocumentManagementDataDeleter` (i documenti del personale restano all'uscita del dipendente), `ICommonEntityUsage` (clienti usati da documenti), spazio reale per il riallineamento notturno
 - [x] menu, rotte, multilingua (`DocumentManagementMessages`, i18n `document-management`)
 - [ ] site-name e showcase del documentale
-- [x] (11/11/2026, vedi ANALISI_VOCALI_DOCUMENTALE.md) handler chat che cerca per titolo, tipologia e metadati, **senza leggere i contenuti** (§7.6)
+- [x] (11/11/2026, vedi ANALISI_DOCUMENTMANAGEMENT_VOCALI.md) handler chat che cerca per titolo, tipologia e metadati, **senza leggere i contenuti** (§7.6)
 - [x] prove: API (permessi, caricamento, ricerca, versioni, presa visione, cestino, spazio) e pagine nel browser (CompanyPowerAdmin e dipendente) su database temporaneo
 
 ### Fase 2 – Studio e flussi
@@ -365,5 +365,5 @@ Legenda: [x] fatto · [ ] da fare.
 - [ ] CRM: fascicolo del cliente in lettura nella scheda cliente
 - [ ] AI sui contenuti (classificazione, domande sui documenti), quando si deciderà quali tipologie ammettere (oggi: nessuna)
 - [ ] OCR delle scansioni
-- [ ] firma elettronica tramite provider – analisi in `ANALISI_FIRMA_DIGITALE.md`
+- [ ] firma elettronica tramite provider – analisi in `ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md`
 - [ ] archivio proprio dello studio (escluso dalla prima versione)

@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.DocumentManagement
 {
-    // Dati dei widget della dashboard del documentale (ANALISI_WIDGET_DOCUMENTALE.md): i permessi li controlla il servizio
+    // Dati dei widget della dashboard del documentale (ANALISI_DOCUMENTMANAGEMENT_WIDGET.md): i permessi li controlla il servizio
     [ApiController]
     [Route("api/[controller]")]
     public class Doc_WidgetController : NvxControllerBase

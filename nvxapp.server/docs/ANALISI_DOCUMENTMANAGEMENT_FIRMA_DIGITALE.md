@@ -1,7 +1,7 @@
 # Analisi – Firma digitale ed elettronica nel Documentale
 
 Branch: **DocumentManagement_Dev** (riceve i merge da Infrastructure, si mergia in DocumentManagement).
-Riferimenti: `ANALISI_DOCUMENTALE.md` (modello `Doc_*`, storage, ruoli, §11 Fase 3 "firma elettronica tramite provider"), `piano-security.md` (autorizzazione lato server).
+Riferimenti: `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` (modello `Doc_*`, storage, ruoli, §11 Fase 3 "firma elettronica tramite provider"), `piano-security.md` (autorizzazione lato server).
 
 Stato: **analisi, decisioni da prendere** (§12). Realizzata (11/11/2026) la **richiesta di firma FES con un clic** (§7.1, §8.2): parametro sulla tipologia, scelta a ogni invio, firma del destinatario con registrazione delle prove. Il resto è ancora da fare.
 
@@ -29,7 +29,7 @@ Stato: **analisi, decisioni da prendere** (§12). Realizzata (11/11/2026) la **r
 
 Nessuna traccia nel codice di firme, certificati, OTP/2FA (Identity 2FA non usato) o SMS. Il caricamento accetta già `.p7m` e `.xml` tra le estensioni ammesse. Client: Angular 22 + Ionic 9 (Capacitor), Transloco, nessuna libreria di componenti.
 
-**Mancano**: un visualizzatore PDF nel client (l'anteprima è ancora "da fare" in `ANALISI_DOCUMENTALE.md` §11), un servizio di **verifica** delle firme con le liste di fiducia europee, qualunque integrazione con un prestatore di servizi fiduciari (QTSP), OTP via SMS.
+**Mancano**: un visualizzatore PDF nel client (l'anteprima è ancora "da fare" in `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §11), un servizio di **verifica** delle firme con le liste di fiducia europee, qualunque integrazione con un prestatore di servizi fiduciari (QTSP), OTP via SMS.
 
 ---
 
@@ -112,7 +112,7 @@ Costo: alto. Copre U3 con certificati propri. Da valutare dopo C.
 ### 4.5 Fuori ambito
 - **firma con smart card dal browser**: il browser non accede ai dispositivi senza un software locale; si copre con la firma esterna (§4.1);
 - **firma grafometrica** (tablet): hardware dedicato e obblighi FEA; eventualmente tramite il provider;
-- **conservazione a norma**: i documenti firmati sono i primi candidati, ma resta un'integrazione separata con un conservatore accreditato (`ANALISI_DOCUMENTALE.md` §3).
+- **conservazione a norma**: i documenti firmati sono i primi candidati, ma resta un'integrazione separata con un conservatore accreditato (`ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §3).
 
 ### 4.6 Raccomandazione
 Le interfacce generiche (`ISignatureValidator`, `ISignatureProvider`, `IOtpService`, tabelle in `public`) vanno sviluppate in **Infrastructure_Dev** e arrivano nel documentale con il merge; nel ramo DocumentManagement_Dev restano tabelle `Doc_*`, servizi, API e pagine del documentale.
@@ -302,7 +302,7 @@ Multilingua: chiavi in `DocumentManagementMessages.resx/.en.resx` e i18n `docume
 - facoltativo **`gotenberg`** per la conversione in PDF.
 - `appsettings`: sezione `Signature` (`Provider`, `Validator`, `DssUrl`, `WebhookPath`, `EnvelopeTimeoutDays`, `PollingMinutes`); segreti vuoti in `appsettings.json` e valorizzati con le variabili d'ambiente `NVXAPP_Signature__ApiKey`, `NVXAPP_Signature__WebhookSecret` (come gli altri, `docs/imposta-variabili-nvxapp.ps1`, `DockerVps.env`), mai nel repository.
 - **memoria**: `docker-compose.prod.yml` limita oggi il VPS a 2 GB; il container DSS (Java) ne chiede circa 1. Va previsto più spazio sul VPS, oppure DSS su un'altra macchina, oppure la verifica del provider (decisione §12.8).
-- aggiornare `ANALISI_DOCKER.md` (servizi, backup del volume DSS non necessario: si ricostruisce).
+- aggiornare `ANALISI_INFRASTRUCTURE_DOCKER.md` (servizi, backup del volume DSS non necessario: si ricostruisce).
 
 ---
 

@@ -24,13 +24,13 @@ using System.Security.Cryptography;
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_DocumentoService
 {
     /*
-     Documenti dell'azienda (ANALISI_DOCUMENTALE.md §6-§7): elenco con ricerca nel testo, dettaglio, caricamento con
+     Documenti dell'azienda (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §6-§7): elenco con ricerca nel testo, dettaglio, caricamento con
      versioni, metadati, cestino ed eliminazione definitiva, download con registro, presa visione.
         - visibilita': IDocumentManagementUtility.Visibili (documenti del personale solo con abilitazione o al dipendente)
         - modifica: documenti del personale con l'abilitazione "carica", gli altri CompanyPowerAdmin e CompanyAdmin
         - file: IFileStorage (su disco), spazio controllato a ogni caricamento (IStorageQuotaService: oltre quota si blocca)
         - testo estratto dal file per la ricerca; nessun contenuto viene inviato all'AI (decisione del 04/11/2026)
-        - firma elettronica semplice (ANALISI_FIRMA_DIGITALE.md §4.2): la tipologia propone la richiesta, l'invio la decide
+        - firma elettronica semplice (ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md §4.2): la tipologia propone la richiesta, l'invio la decide
           (si puo' togliere o aggiungere, anche dopo); la firma vale per la versione corrente e una nuova versione la azzera
     */
     public class Doc_DocumentoService : ServiceBase, IDoc_DocumentoService
@@ -449,7 +449,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         }
 
         /*
-         Firma elettronica semplice del destinatario sulla versione che ha davanti (FES, ANALISI_FIRMA_DIGITALE.md §4.2).
+         Firma elettronica semplice del destinatario sulla versione che ha davanti (FES, ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md §4.2).
          Si registrano data, versione, hash SHA-256 del file, IP, user agent e utente; firmare vale anche come presa visione.
          Se nel frattempo e' arrivata una nuova versione la firma si rifiuta: va riaperto il documento.
         */

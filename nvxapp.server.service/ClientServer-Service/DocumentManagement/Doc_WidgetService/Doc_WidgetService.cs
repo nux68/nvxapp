@@ -18,7 +18,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_WidgetService
 {
     /*
-     Dati dei widget della dashboard del documentale (ANALISI_WIDGET_DOCUMENTALE.md).
+     Dati dei widget della dashboard del documentale (ANALISI_DOCUMENTMANAGEMENT_WIDGET.md).
      Lo spazio occupato/disponibile usa CompanyStorageGet (Infrastructure); qui c'e' solo la ripartizione per tipo.
      Spazio per tipo documento: somma di Doc_Versione.Dimensione (tutte le versioni) per tipologia, con il cestino a parte,
      come il ricalcolo notturno dello spazio (DocumentManagementStorageUsage). Riservato a chi amministra l'archivio

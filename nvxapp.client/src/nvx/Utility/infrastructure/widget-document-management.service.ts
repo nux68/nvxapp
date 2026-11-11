@@ -7,7 +7,7 @@ import { DocTypeSpaceWidgetComponent } from '../../shared/components/DocumentMan
 const RUOLI_ARCHIVIO = ['CompanyPowerAdmin', 'CompanyAdmin'];
 
 /*
- Widget della dashboard del Documentale (ANALISI_WIDGET.md, dettaglio in ANALISI_WIDGET_DOCUMENTALE.md).
+ Widget della dashboard del Documentale (ANALISI_INFRASTRUCTURE_WIDGET.md, dettaglio in ANALISI_DOCUMENTMANAGEMENT_WIDGET.md).
  Compaiono solo se il documentale e' attivo per l'azienda (WidgetService).
 */
 @Injectable({
