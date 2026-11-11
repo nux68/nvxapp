@@ -107,8 +107,8 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 **Prova su DB usa e getta** (`nvx_test_hrf3`, 80 controlli, tutti ok): azienda e attivazione HumanResources = 5, abilitazione dello studio; dipendenti con codice fiscale e matricola (duplicato rifiutato), account creato senza anagrafiche doppie; PDF di 7 pagine generato al volo: Rossi pagine 1–2 e Bianchi 3 per codice fiscale, Verdi 4 per matricola, scarti 5–7 con la proposta su Neri e il motivo "più dipendenti", assegnazione e scarto, PDF diviso di 2 pagine; pubblicazione (job), notifica, presa visione, "I miei cedolini", download proprio sì / altrui no, conferma e report (1 su 4, 2 senza account); studio: rifiutato senza licenza (licenze attive), aziende dello studio, caricamento delle CU per l'azienda, rifiuto senza azienda o su azienda non sua, cancellazione; corso con competenza, edizione con scadenza +12 mesi nello scadenzario, competenza in Common, attestato, rinnovo che chiude la scadenza precedente, piano 1 su 2; modelli (rifiutati al CompanyAdmin), checklist di assunzione generata dalla data e spostata al cambio di data, scadenze delle voci, documento con presa visione confermata che completa la voce, cessazione con disattivazione dell'account (ruoli conservati) e checklist completata.; manuale del modulo generato (job).
 
 **Problemi aperti**
-- Creazione dell'account: l'inizializzatore comune degli utenti (`InfrastructureUserInitializer` → `CommonDipendenteUtility`) crea un'anagrafica nuova per l'utente; HR la scollega e la cancella e collega l'utente al dipendente esistente. Se un altro applicativo ha già agganciato dati a quell'anagrafica (es. inizializzatore delle Presenze) resta disattivata e senza utente. Soluzione pulita: in Infrastructure un modo per creare l'utente indicando l'anagrafica esistente (da decidere).
-- Categoria di notifica propria (`INotificationCategoryProvider`, es. `hr`): il titolo della categoria si legge da `InfrastructureMessages` (`NotificationCategory_<code>`), file di Infrastructure: per ora la notifica "nuovo documento" usa la categoria `generale` (scelta provvisoria).
+- ~~Creazione dell'account con anagrafica doppia~~ risolto con `INF-SVC.8`/`HR-ONB.4`: `Hr_AccountCrea` passa `IdDip_Anagrafica` ad `Account/UserCompanyPut`, che collega l'utente al dipendente esistente prima degli inizializzatori (nessuna anagrafica nuova, niente più scollegamento e cancellazione).
+- ~~Categoria di notifica propria~~ risolto con `INF-SVC.7`/`HR-SEG.2`: categoria `hr.cedolini` (`HrNotificationCategoryProvider`, titolo `NotificationCategory_Cedolini` nei testi di HR, email predefinita), visibile nelle preferenze solo con Risorse Umane attivo.
 - Area del dipendente per corsi e attestati ("I miei corsi"): l'attestato si scarica già anche dal dipendente (`Hr_AttestatoDownload`), la pagina non c'è.
 - Pagine scansionate (senza testo): restano tutte scarti; niente OCR né AI.
 - Scadenza della presa visione non confermata entro n giorni: non registrata.
@@ -139,7 +139,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `HR-CED` – Portale con cedolini e CU
 - ✅ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda (`Hr_DocCaricamento`, job) — pagine lato studio con la scelta dell'azienda (§7.1)
 - ✅ `HR-CED.2` Divisione per dipendente (codice fiscale o matricola, con l'AI come aiuto) e verifica degli scarti (`Hr_DocScarto`) — proposta per cognome e nome al posto dell'AI (HR-D3)
-- ✅ `HR-CED.3` Pubblicazione nell'area del dipendente e notifica (`INF-SVC.4`) — "I miei cedolini", notifica in categoria `generale` (§7.1, problemi aperti)
+- ✅ `HR-CED.3` Pubblicazione nell'area del dipendente e notifica (`INF-SVC.4`) — "I miei cedolini", notifica in categoria `hr.cedolini` (`HR-SEG.2`)
 - ✅ `HR-CED.4` Presa visione (`INF-SVC.6`) e report delle conferme
 
 #### `HR-FOR` – Formazione e competenze
@@ -149,12 +149,12 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `HR-ONB` – Onboarding e offboarding
 - ✅ `HR-ONB.1` Checklist di assunzione e cessazione, basate sulle date in Common (D6, dopo `INF-COM.4`)
 - ✅ `HR-ONB.2` Documenti da consegnare o firmare (`INF-SVC.6`)
-- ✅ `HR-ONB.3` Creazione e disattivazione dell'account — anagrafica doppia creata dall'inizializzatore comune: vedi i problemi aperti (§7.1)
-- ⏳ `HR-ONB.4` Creazione dell'utente su un'anagrafica esistente senza passare dall'anagrafica nuova dell'inizializzatore (Infrastructure, da decidere)
+- ✅ `HR-ONB.3` Creazione e disattivazione dell'account — l'utente si collega al dipendente esistente con `HR-ONB.4`
+- ✅ `HR-ONB.4` Creazione dell'utente su un'anagrafica esistente senza passare dall'anagrafica nuova dell'inizializzatore — fatta, da mergiare (`INF-SVC.8`): `Hr_AccountCrea` passa `IdDip_Anagrafica` a `Account/UserCompanyPut`, tolta la correzione (scollegamento e cancellazione dell'anagrafica doppia). Provata su DB usa e getta (`nvx_test_svc78`, 42 controlli con `INF-SVC.7`): nessuna anagrafica nuova, anche dopo il login; rifiutate anagrafica già collegata, inesistente o di un'altra azienda, senza creare l'utente
 
 #### Seguiti delle aree (da fare)
 - ⏳ `HR-SEG.1` Pagina "I miei corsi" del dipendente (corsi e attestati)
-- ⏳ `HR-SEG.2` Categoria di notifica propria del modulo (titolo in Infrastructure)
+- ✅ `HR-SEG.2` Categoria di notifica propria del modulo — fatta, da mergiare (`INF-SVC.7`): `hr.cedolini` per "nuovo cedolino/CU" (email predefinita); formazione e checklist restano nello scadenzario (`scadenze`), i documenti in `presevisione`. Provata: visibile nelle preferenze solo con HR attivo (sparisce disattivandolo, non salvabile da un'azienda senza HR), titolo it/en, preferenza rispettata (App ed Email disattivate: notifica conservata, nessuna email né avviso a comparsa; predefinita: email e avviso)
 - ⏳ `HR-SEG.3` Scadenza delle prese visione non confermate entro n giorni
 
 #### Decisioni

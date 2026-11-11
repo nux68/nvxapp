@@ -1,0 +1,23 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="dati.daSistemare > 0" [class.success]="dati.daSistemare === 0" (click)="apri()">
+      <div class="valore">{{ dati.daSistemare }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.daysToFix.toFix' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dati.daVerificare > 0" (click)="apri()">
+      <div class="valore">{{ dati.daVerificare }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.daysToFix.toCheck' | transloco }}</div>
+    </div>
+  </div>
+  <div class="nvx-w-muted nvx-dtf-info">
+    {{ 'attendance.widgets.daysToFix.period' | transloco: { dal: (dati.dal | date: 'dd/MM'), al: (dati.al | date: 'dd/MM'), n: dati.dipendenti } }}
+  </div>
+  @for (c of dati.conteggi; track c.tipo) {
+    <div class="nvx-w-muted">{{ c.descrizione }}: {{ c.numero }}</div>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'attendance.widgets.daysToFix.open' | transloco }}</button>
+}

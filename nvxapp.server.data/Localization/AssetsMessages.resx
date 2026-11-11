@@ -216,4 +216,16 @@
   <data name="DeletionCountBookings" xml:space="preserve">
     <value>Prenotazioni</value>
   </data>
+  <data name="NotificationCategory_Flotta" xml:space="preserve">
+    <value>Risorse aziendali: flotta e multe</value>
+    <comment>categoria di notifica</comment>
+  </data>
+  <data name="NotificationCategory_Beni" xml:space="preserve">
+    <value>Risorse aziendali: beni e veicoli da restituire</value>
+    <comment>categoria di notifica</comment>
+  </data>
+  <data name="NotificationCategory_Prenotazioni" xml:space="preserve">
+    <value>Risorse aziendali: prenotazioni</value>
+    <comment>categoria di notifica</comment>
+  </data>
 </root>

@@ -54,6 +54,9 @@ POWERADMIN
 
 
 
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorkingService;
+
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService
 {
 
@@ -82,6 +85,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
         private readonly IGestionePresenzeOreTeoriche _gestionePresenzeOreTeoriche;
         private readonly IRichiestaNotifier _richiestaNotifier;
+        private readonly IDip_TurnoScambioHandler _turnoScambioHandler;
+        private readonly ILavoroAgileUtility _lavoroAgileUtility;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -108,7 +113,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
                                   IContatoriService contatoriService,
                                   IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche,
-                                  IRichiestaNotifier richiestaNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IRichiestaNotifier richiestaNotifier,
+                                  IDip_TurnoScambioHandler turnoScambioHandler,
+                                  ILavoroAgileUtility lavoroAgileUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _az_CfgService = az_CfgService;
@@ -129,6 +136,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _contatoriService = contatoriService;
             _gestionePresenzeOreTeoriche = gestionePresenzeOreTeoriche;
             _richiestaNotifier = richiestaNotifier;
+            _turnoScambioHandler = turnoScambioHandler;
+            _lavoroAgileUtility = lavoroAgileUtility;
 
         }
 
@@ -475,6 +484,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 {
                                     retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("RequestedPeriodNoWorkingDays"), MessageType.Exception));
                                     return retVal;
+                                }
+
+                                // lavoro agile (AT-SW.2): accordo valido e firmato, giorni consentiti e limite settimanale
+                                var bodyGiust = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(dip_GG_Richiesta.Dati);
+                                if (bodyGiust != null && _lavoroAgileUtility.IsGiustificativoLavoroAgile(bodyGiust.IdPar_Giustificativi))
+                                {
+                                    int.TryParse(this.CurrentCompany, out int idCompanySW);
+                                    var erroreSW = await _lavoroAgileUtility.ValidaRichiestaAsync(idCompanySW, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, orePerGiorno.Keys);
+                                    if (erroreSW != null)
+                                    {
+                                        retVal.Messages.Add(new Message(erroreSW, MessageType.Exception));
+                                        return retVal;
+                                    }
                                 }
 
                                 var validazione = await ValidaContatoriAsync(
@@ -891,6 +913,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                     }
 
                                                     break;
+                                                case TipoRichiesta.ScambioTurno:
+                                                    // AT-TURNI.3: approvazione completa -> scambio dei turni
+                                                    var esitoScambio = await _turnoScambioHandler.ApplicaAsync(curr_richiesta);
+                                                    if (esitoScambio != null)
+                                                        retVal.Messages.Add(new Message(esitoScambio, MessageType.Warning));
+                                                    break;
                                             }
                                         }
                                         else
@@ -1054,6 +1082,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         await _dip_GG_NotaSpesaRepository.UpsertAsync(spesa);
                     }
 
+                    break;
+                case TipoRichiesta.ScambioTurno:
+                    // AT-TURNI.3: rifiutata/annullata -> stato dello scambio; revoca approvata -> turni rimessi come prima
+                    var esitoScambio = await _turnoScambioHandler.EsitoNegativoAsync(item);
+                    if (esitoScambio != null)
+                        Log.Warning("Richiesta {Id}: {Esito}", item.Id, esitoScambio);
                     break;
             }
         }

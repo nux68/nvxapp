@@ -22,8 +22,9 @@ import { CrmOfferSendDialogComponent } from '../../../shared/components/Crm/crm-
   standalone: false
 })
 /*
- Offerta: testata (cliente, contatto, opportunita', date, stato, oggetto, note) e righe (prodotto, quantita', prezzo,
+ Offerta (preventivo): testata (cliente, contatto, opportunita', date, stato, oggetto, note) e righe (prodotto, quantita', prezzo,
  sconto, IVA). I totali mostrati sono un'anteprima: li ricalcola il server. Salvando si resta sulla pagina (per PDF e invio).
+ PDF con un job (barra dei job); l'esito "accettata" chiude la scadenza e porta l'opportunita' collegata in una fase vinta (server).
 */
 export class CrmOfferEditPageComponent extends BasePageConfirmCancelComponent<M.CrmOffertaModel> {
 
@@ -34,7 +35,7 @@ export class CrmOfferEditPageComponent extends BasePageConfirmCancelComponent<M.
   public contatti: M.CrmContattoModel[] = [];
   public opportunitaCliente: M.CrmOpportunitaListModel[] = [];
   public righe: M.CrmOffertaRigaModel[] = [];
-  public readonly stati = [0, 1, 2, 3];
+  public readonly stati = [0, 1, 2, 3, 4];
   private btnPdf: ButtonItem;
   private btnInvia: ButtonItem;
 
@@ -48,7 +49,7 @@ export class CrmOfferEditPageComponent extends BasePageConfirmCancelComponent<M.
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
     this.btnPdf = userInterfaceService.Btn_Pdf;
-    this.btnPdf.event = () => this.service.OffertaPdf(this.id);
+    this.btnPdf.event = () => this.setupService.pdfOfferta(this.id);
     this.btnInvia = userInterfaceService.Btn_Invia;
     this.btnInvia.event = () => this.invia();
   }

@@ -55,6 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
         public decimal Prezzo { get; set; }
         public string? Um { get; set; }
         public decimal AliquotaIva { get; set; }
+        public Crm_TipoProdotto TipoProdotto { get; set; }
     }
 
     public class Crm_SetupGetOutModel : ModelResult
@@ -180,6 +181,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
         public List<Crm_OffertaListModel> Offerte { get; set; } = new();
         public List<Crm_NotaModel> Note { get; set; } = new();
         public List<Crm_AllegatoModel> Allegati { get; set; } = new();
+        // richieste di assistenza del cliente (CRM-ASS.2)
+        public List<Crm_RichiestaListModel> Richieste { get; set; } = new();
         // il cliente si puo' modificare (visibilita' e ruolo)
         public bool Modificabile { get; set; }
     }
@@ -373,6 +376,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
         public string? Oggetto { get; set; }
         public decimal Totale { get; set; }
         public int? IdCrm_Opportunita { get; set; }
+        public DateTime? DataEsito { get; set; }
     }
     public class Crm_OffertaListOutModel : ModelResult { public List<Crm_OffertaListModel> Offerte { get; set; } = new(); }
 
@@ -407,6 +411,9 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
         public decimal Iva { get; set; }
         public decimal Totale { get; set; }
         public DateTime? DataInvio { get; set; }
+        public DateTime? DataEsito { get; set; }
+        // predisposizione dell'ordine dell'Amministrazione (sola lettura)
+        public int? IdOrdineAmministrazione { get; set; }
         public List<Crm_OffertaRigaModel> Righe { get; set; } = new();
     }
     public class Crm_OffertaGetOutModel : ModelResult
@@ -424,6 +431,84 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
         public string Email { get; set; } = string.Empty;
         public string? Messaggio { get; set; }
     }
+    // PDF dell'offerta preparato da un job: il file arriva nella barra dei job
+    public class Crm_OffertaPdfJobOutModel : ModelResult { public string JobId { get; set; } = string.Empty; }
+
+    // ------------------------------------------------------------------------------------------------ assistenza (CRM-ASS)
+    public class Crm_RichiestaListInModel
+    {
+        public int? IdAz_Cliente { get; set; }
+        // solo le aperte (Nuova, In carico, In attesa del cliente)
+        public bool SoloAperte { get; set; }
+        // solo quelle assegnate all'utente corrente
+        public bool SoloMie { get; set; }
+    }
+
+    public class Crm_RichiestaListModel
+    {
+        public int Id { get; set; }
+        public string NumeroCompleto { get; set; } = string.Empty;
+        public int IdAz_Cliente { get; set; }
+        public string Cliente { get; set; } = string.Empty;
+        public string Oggetto { get; set; } = string.Empty;
+        public Crm_PrioritaRichiesta Priorita { get; set; }
+        public Crm_StatoRichiesta Stato { get; set; }
+        public string? IdAssegnatario { get; set; }
+        public string? Assegnatario { get; set; }
+        public DateTime DataApertura { get; set; }
+        public DateTime? DataPresaInCarico { get; set; }
+        public DateTime? DataRisoluzione { get; set; }
+        // ore dall'apertura alla presa in carico e alla risoluzione
+        public double? OrePresaInCarico { get; set; }
+        public double? OreRisoluzione { get; set; }
+    }
+    public class Crm_RichiestaListOutModel : ModelResult { public List<Crm_RichiestaListModel> Richieste { get; set; } = new(); }
+
+    public class Crm_RichiestaModel
+    {
+        public int Id { get; set; }
+        public string NumeroCompleto { get; set; } = string.Empty;
+        public int IdAz_Cliente { get; set; }
+        public int? IdAz_ClienteContatto { get; set; }
+        public string Oggetto { get; set; } = string.Empty;
+        public string? Descrizione { get; set; }
+        public Crm_CanaleRichiesta Canale { get; set; }
+        public Crm_PrioritaRichiesta Priorita { get; set; } = Crm_PrioritaRichiesta.Normale;
+        public Crm_StatoRichiesta Stato { get; set; }
+        public string? IdAssegnatario { get; set; }
+        public DateTime DataApertura { get; set; }
+        public DateTime? DataPresaInCarico { get; set; }
+        public DateTime? DataRisoluzione { get; set; }
+        public DateTime? DataChiusura { get; set; }
+        public double? OrePresaInCarico { get; set; }
+        public double? OreRisoluzione { get; set; }
+        public string? Soluzione { get; set; }
+        public int? IdCrm_Opportunita { get; set; }
+    }
+
+    public class Crm_RichiestaMessaggioModel
+    {
+        public int Id { get; set; }
+        public DateTime Data { get; set; }
+        public string? Autore { get; set; }
+        public string Testo { get; set; } = string.Empty;
+        public bool Sistema { get; set; }
+    }
+
+    public class Crm_RichiestaGetOutModel : ModelResult
+    {
+        public Crm_RichiestaModel Richiesta { get; set; } = new();
+        public string Cliente { get; set; } = string.Empty;
+        public List<Crm_ContattoModel> Contatti { get; set; } = new();
+        public List<Crm_OpportunitaListModel> OpportunitaCliente { get; set; } = new();
+        public List<Crm_RichiestaMessaggioModel> Messaggi { get; set; } = new();
+        // l'utente puo' lavorarla (stato, soluzione); riassegnarla ad altri e cancellarla solo gli amministratori
+        public bool Modificabile { get; set; }
+    }
+    public class Crm_RichiestaPutInModel { public Crm_RichiestaModel Richiesta { get; set; } = new(); }
+    public class Crm_RichiestaPutOutModel : ModelResult { public Crm_RichiestaModel Richiesta { get; set; } = new(); }
+    public class Crm_RichiestaMessaggioPutInModel { public int IdCrm_Richiesta { get; set; } public string Testo { get; set; } = string.Empty; }
+    public class Crm_RichiestaMessaggioPutOutModel : ModelResult { public List<Crm_RichiestaMessaggioModel> Messaggi { get; set; } = new(); }
 
     // ------------------------------------------------------------------------------------------------ note e allegati
     public class Crm_NotaModel

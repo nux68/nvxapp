@@ -105,6 +105,9 @@ storico migrazioni create
                       AttendanceTracking_CommonTables (11/11/2026, AT-COM): sui DB multi-tenant esistenti copia sedi, reparti,
                       competenze e autovetture da tenant_<id>_2 a tenant_<id>_0 (stessi Id), ripunta le FK e toglie le vecchie
                       tabelle; allinea Dip_Anagrafica.DataAssunzione/DataCessazione ai rapporti di lavoro
+                      AttendanceTracking_Turni (11/11/2026, AT-TURNI): Par_Turno, Az_SediRepartoTurno, Dip_Turno, Dip_TurnoScambio
+                      AttendanceTracking_Timbratura (11/11/2026, AT-TIMB): Az_SediTimbratura, Dip_GG_TimbraturaInfo, Dip_TimbraturaPin
+                      AttendanceTracking_SmartWorking (11/11/2026, AT-SW): Dip_AccordoSW e Par_Giustificativi.LavoroAgile
 
 
 aggiorna db

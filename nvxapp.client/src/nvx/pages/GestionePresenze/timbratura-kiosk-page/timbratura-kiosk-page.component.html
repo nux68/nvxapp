@@ -1,0 +1,36 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  @if (!token) {
+    <ion-card>
+      <ion-card-content>
+        <ion-select interface="popover" [(ngModel)]="idAz_Sedi" [label]="'attendance.pages.timbraturaKiosk.site' | transloco" labelPlacement="stacked">
+          @for (s of sedi; track s.idAz_Sedi) {
+            <ion-select-option [value]="s.idAz_Sedi">{{ s.sede }}</ion-select-option>
+          }
+        </ion-select>
+        @if (sedi.length === 0) {
+          <ion-note class="nvx-blocco">{{ 'attendance.pages.timbraturaKiosk.noSites' | transloco }}</ion-note>
+        }
+        <ion-note class="nvx-blocco">{{ 'attendance.pages.timbraturaKiosk.registerNote' | transloco }}</ion-note>
+        <ion-button expand="block" [disabled]="!idAz_Sedi" (click)="registra()">{{ 'attendance.pages.timbraturaKiosk.register' | transloco }}</ion-button>
+      </ion-card-content>
+    </ion-card>
+  } @else {
+    <div class="nvx-kiosk">
+      <div class="nvx-sede">{{ sedeNome }}</div>
+      <div class="nvx-ora">{{ ora | date: 'HH:mm:ss' }}</div>
+      <div class="nvx-pin">{{ pin ? '•'.repeat(pin.length) : ('attendance.pages.timbraturaKiosk.pinPrompt' | transloco) }}</div>
+      <div class="nvx-tastiera">
+        @for (t of tasti; track t) {
+          <ion-button size="large" [color]="t === 'OK' ? 'success' : (t === 'C' ? 'medium' : 'primary')" (click)="tasto(t)">{{ t }}</ion-button>
+        }
+      </div>
+      <ion-input class="nvx-badge" [(ngModel)]="badge" (keyup.enter)="invia()" [placeholder]="'attendance.pages.timbraturaKiosk.badgePrompt' | transloco"></ion-input>
+      @if (esito) {
+        <div class="nvx-esito" [class.nvx-ok]="esito.ok" [class.nvx-ko]="!esito.ok">{{ esito.testo }}</div>
+      }
+      <ion-button fill="clear" size="small" (click)="schermoIntero()">{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}</ion-button>
+    </div>
+  }
+</ion-content>

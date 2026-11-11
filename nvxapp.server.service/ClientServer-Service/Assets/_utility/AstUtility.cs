@@ -58,7 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         Task<List<Ast_LookupModel>> SediAsync(AstContesto ctx);
 
         /// <summary>Notifica del modulo (categoria "generale"): non parte se le notifiche del modulo sono disattivate.</summary>
-        Task<bool> NotificaAsync(AstContesto ctx, IEnumerable<string> userIds, string titolo, string? messaggio, string? url, object? urlState = null);
+        Task<bool> NotificaAsync(AstContesto ctx, NotificationCategory categoria, IEnumerable<string> userIds, string titolo, string? messaggio, string? url, object? urlState = null);
     }
 
     public class AstUtility : IAstUtility
@@ -178,7 +178,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                              .Select(x => new Ast_LookupModel { Id = x.Id, Descrizione = x.Descrizione ?? string.Empty })
                              .ToListAsync();
 
-        public async Task<bool> NotificaAsync(AstContesto ctx, IEnumerable<string> userIds, string titolo, string? messaggio, string? url, object? urlState = null)
+        public async Task<bool> NotificaAsync(AstContesto ctx, NotificationCategory categoria, IEnumerable<string> userIds, string titolo, string? messaggio, string? url, object? urlState = null)
         {
             var utenti = userIds.Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
             if (utenti.Count == 0 || !(await CfgAsync(ctx)).NotificheAttive)
@@ -187,7 +187,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             {
                 UserIds = utenti,
                 IdCompany = ctx.IdCompany,
-                Categoria = NotificationCategory.Generale.Code,
+                Categoria = categoria.Code,
                 Titolo = titolo,
                 Messaggio = messaggio,
                 Url = url,
