@@ -374,7 +374,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_Anagrafica");
 
-                    b.ToTable("Az_Sedi");
+                    b.ToTable("Az_Sedi", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediAttivita", b =>
@@ -448,7 +451,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_SediReparto");
 
-                    b.ToTable("Az_SediReparto");
+                    b.ToTable("Az_SediReparto", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediRepartoAttivita", b =>
@@ -641,6 +647,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("DataAssunzione")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("DataCessazione")
                         .HasColumnType("timestamp without time zone");
 
@@ -702,11 +711,15 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdDip_Anagrafica");
-
                     b.HasIndex("IdPar_Competenza");
 
-                    b.ToTable("Dip_Competenza");
+                    b.HasIndex("IdDip_Anagrafica", "IdPar_Competenza")
+                        .IsUnique();
+
+                    b.ToTable("Dip_Competenza", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Contatori_Riporto", b =>
@@ -1427,7 +1440,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("IdDip_RapportoLavoro")
+                    b.Property<int>("IdDip_Anagrafica")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1442,9 +1455,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdDip_RapportoLavoro");
+                    b.HasIndex("IdDip_Anagrafica");
 
-                    b.ToTable("Dip_RapportoAutovetture");
+                    b.ToTable("Dip_RapportoAutovetture", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
@@ -2398,7 +2414,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_Anagrafica");
 
-                    b.ToTable("Par_Competenza");
+                    b.ToTable("Par_Competenza", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Formule", b =>
@@ -3103,13 +3122,13 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
-                        .WithMany("Dip_RapportoAutovetture")
-                        .HasForeignKey("IdDip_RapportoLavoro")
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Dip_RapportoLavoroNavigation");
+                    b.Navigation("Dip_AnagraficaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
@@ -3631,8 +3650,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_Periodo");
 
                     b.Navigation("Dip_ProfiloOrario");
-
-                    b.Navigation("Dip_RapportoAutovetture");
 
                     b.Navigation("Dip_Rapporto_Giustificativi_Maturazione");
                 });

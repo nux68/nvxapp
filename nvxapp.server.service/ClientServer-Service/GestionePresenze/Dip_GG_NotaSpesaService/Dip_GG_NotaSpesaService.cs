@@ -16,6 +16,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Richies
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService
 {
@@ -40,7 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
-        private readonly IDip_RapportoAutovettureRepository _dip_RapportoAutovettureRepository;
+        private readonly IDip_RapportoAutovettureCommonRepository _dip_RapportoAutovettureRepository;
 
         public Dip_GG_NotaSpesaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -56,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
-                                  IDip_RapportoAutovettureRepository dip_RapportoAutovettureRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_RapportoAutovettureCommonRepository dip_RapportoAutovettureRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_GG_NotaSpesa_AllegatoRepository = dip_GG_NotaSpesa_AllegatoRepository;

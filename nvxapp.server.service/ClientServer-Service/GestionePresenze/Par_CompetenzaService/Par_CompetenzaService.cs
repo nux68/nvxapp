@@ -16,12 +16,13 @@ using nvxapp.server.service.ServerModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CompetenzaService
 {
     public class Par_CompetenzaService : ServiceBase, IPar_CompetenzaService
     {
-        private readonly IPar_CompetenzaRepository _par_CompetenzaRepository;
+        private readonly IPar_CompetenzaCommonRepository _par_CompetenzaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
         public Par_CompetenzaService(IMapper mapper,
@@ -31,7 +32,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IPar_CompetenzaRepository az_CompetenzaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_CompetenzaCommonRepository az_CompetenzaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_CompetenzaRepository = az_CompetenzaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;

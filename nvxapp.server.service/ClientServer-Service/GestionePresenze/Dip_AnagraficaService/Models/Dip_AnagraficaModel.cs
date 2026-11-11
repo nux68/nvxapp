@@ -95,7 +95,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
 
         /// <summary>
-        /// Autovetture dei rapporti di lavoro (sezione "Spesa", rimborsi km).
+        /// Autovetture del dipendente (sezione "Spesa", rimborsi km; tabella comune legata al dipendente, AT-COM).
         /// null = sezione non gestita dal client: al salvataggio le autovetture restano come sono.
         /// </summary>
         public List<Dip_RapportoAutovettureModel>? Dip_RapportoAutovetture { get; set; }
