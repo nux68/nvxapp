@@ -112,6 +112,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 520, group: 0, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
         badge: this.notificationNotifierService.nonLette },
       { menuType: MenuType.MenuItem,   zorder: 530, group: 0, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number' },
+      // calendario personale (INF-CAL.3): feed .ics da sottoscrivere in Google / Outlook / Apple
+      { menuType: MenuType.MenuItem,   zorder: 535, group: 0, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar' },
       { menuType: MenuType.MenuItem,   zorder: 540, group: 0, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
         badge: this.notificationNotifierService.daConfermare },
       // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,

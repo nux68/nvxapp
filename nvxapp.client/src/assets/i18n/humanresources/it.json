@@ -1,0 +1,20 @@
+{
+  "hr": {
+    "menu": {
+      "section": "Risorse Umane",
+      "settings": "Impostazioni",
+      "manual": "Manuale Risorse Umane"
+    },
+    "pages": {
+      "settings": {
+        "title": "Impostazioni Risorse Umane",
+        "general": "Generale",
+        "noticeDays": "Giorni di preavviso delle scadenze",
+        "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
+        "notifications": "Notifiche attive",
+        "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
+        "note": "Note"
+      }
+    }
+  }
+}

@@ -77,7 +77,7 @@ Adempimenti normativi. È il modulo che lo studio può proporre a tutte le sue a
 
 ### 4.3 Risorse aziendali (Assets)
 Cosa possiede l'azienda e a chi lo assegna.
-- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. `Dip_RapportoAutovetture` si sposta in Common (D5): Assets lo gestisce e le Presenze continuano a leggerlo per l'export paghe.
+- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. `Dip_RapportoAutovetture` si sposta in Common (D5): Assets lo gestisce e le Presenze continuano a leggerlo per le note spese (rimborsi chilometrici, `Dip_GG_NotaSpesa.IdDip_RapportoAutovetture`).
 - **Beni assegnati**: PC, telefoni, badge e attrezzature, con consegna e restituzione (verbale firmato tramite il Documentale) e collegamento all'offboarding di HR.
 - **Prenotazioni**: postazioni, sale e auto in pool, con calendario e sincronizzazione (§5).
 
@@ -106,8 +106,8 @@ Le entità delle Presenze esistono solo nel branch AttendanceTracking: lo sposta
 | Sedi e reparti (`Az_Sedi`, `Az_SediReparto`) | Presenze | HR, Compliance (sicurezza per sede), Assets (beni per sede) | Spostarli in Common. Le tabelle di collegamento proprie delle Presenze (`Az_SediRepartoUser`, `Az_SediAttivita`…) restano nelle Presenze |
 | Commesse (`Az_Commessa`, `Az_SubCommessa`) | Presenze | CRM (opportunità vinta che diventa commessa), in futuro Amministrazione | Restano nelle Presenze, dove sta il controllo di gestione (D2). Da rivalutare quando si avvia Amministrazione |
 | Competenze (`Par_Competenza`, `Dip_Competenza`) | Presenze | HR, Compliance | Spostarle prima di avviare HR |
-| Autovetture del dipendente (`Dip_RapportoAutovetture`) | Presenze | Assets (flotta), Presenze (export paghe) | **Deciso (D5)**: in Common |
-| Rapporto di lavoro | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | **Deciso (D6)**: in Common vanno **solo le date di assunzione e cessazione**. Il resto del rapporto resta nelle Presenze |
+| Autovetture del dipendente (`Dip_RapportoAutovetture`) | Presenze | Assets (flotta), Presenze (note spese, rimborsi km) | **Deciso (D5)**: in Common, legata a `Dip_Anagrafica` (`IdDip_Anagrafica`) invece che al rapporto di lavoro, che resta nelle Presenze |
+| Rapporto di lavoro | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | **Deciso (D6)**: in Common vanno **solo le date di assunzione e cessazione**, come campi di `Dip_Anagrafica` (`DataAssunzione`, `DataCessazione`). Il resto del rapporto resta nelle Presenze |
 
 ## 7. Cosa serve per aggiungere un gruppo nuovo
 
@@ -143,6 +143,7 @@ Amministrazione arriva più avanti, solo con la fatturazione (D1, D2).
 | D6 | Quali dati del rapporto di lavoro spostare in Common | **Solo le date di assunzione e cessazione** |
 | D7 | Whistleblowing nel modulo Compliance o venduto a parte | **Nel modulo Compliance**, senza una licenza separata |
 | D8 | Livelli Free/Standard/Pro per i nuovi moduli | **Da definire con i listini**. Se serve si aggiungeranno in seguito; per ora nessun livello specifico |
+| D9 | Sincronizzazione dei calendari: OAuth con Google/Microsoft o feed iCalendar | **Da confermare con l'utente.** Per ora **feed iCalendar (.ics) personale in sola lettura**, sottoscritto via URL da Google Calendar, Outlook e Apple Calendar: OAuth richiede la registrazione di app e credenziali che non abbiamo. La sincronizzazione bidirezionale via OAuth resta un punto futuro (`INF-CAL.4`) |
 
 ---
 
@@ -165,11 +166,11 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 |---|---|---|---|---|---|---|
 | `ANA` | Analisi di dettaglio e decisioni | Infrastructure_Dev (+ rami dei moduli) | `wt_ana` | – | 1 | 🔄 |
 | `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ✅ mergiata l'11/11/2026 |
-| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | 🔄 fatta (ramo `Infrastructure_Dev_inf-com`), merge solo insieme ad `AT-COM` |
+| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ✅ mergiata l'11/11/2026 insieme ad `AT-COM` |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ mergiata l'11/11/2026 (server provato su DB usa e getta, client compilato) |
-| `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
+| `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
-| `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ⏳ |
+| `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
 | `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
 | `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
 | `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ⏳ |
@@ -177,19 +178,19 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
-| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ⏳ |
+| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (canale `doc.fes`) |
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ⏳ |
-| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ⏳ |
+| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | ⏳ |
 | `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ⏳ |
-| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ⏳ |
+| `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_hr-base`, provata su DB usa e getta), da mergiare |
 | `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ⏳ |
 | `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ⏳ |
-| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ⏳ |
+| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
 | `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ⏳ |
 | `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ⏳ |
@@ -207,7 +208,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `ANA.5` Verifica legale del whistleblowing (D.Lgs 24/2023)
 - ⏳ `ANA.6` Analisi della sicurezza dei dati riservati (segnalazioni, dati sanitari delle visite), collegata a `piano-security.md`
 - ⏳ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev)
-- ⏳ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev)
+- ✅ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - ⏳ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev)
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
 
@@ -221,12 +222,12 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-APP.7` CLAUDE.md: nuovi gruppi nell'elenco dei branch e nella catena di AllFunction (Infrastructure, AttendanceTracking, CRM, DocumentManagement, HumanResources, Compliance, Assets)
 
 #### `INF-COM` – Dati in Common, lato Infrastructure (§6)
-- ⏳ `INF-COM.1` Entità Common `Az_Sedi`, `Az_SediReparto` e migration del contesto Common
-- ⏳ `INF-COM.2` Entità Common `Par_Competenza`, `Dip_Competenza`
-- ⏳ `INF-COM.3` Entità Common `Dip_RapportoAutovetture` (D5)
-- ⏳ `INF-COM.4` Date di assunzione e cessazione in Common (campi di `Dip_Anagrafica` o tabella dedicata) (D6)
-- ⏳ `INF-COM.5` Servizi e pagine comuni di sola lettura per i moduli che non sono le Presenze (sedi, reparti, competenze)
-- ⏳ `INF-COM.6` `CommonDataDeleter` aggiornato per le nuove tabelle
+- ✅ `INF-COM.1` Entità Common `Az_Sedi`, `Az_SediReparto` e migration del contesto Common — entità partial in `Entities/Tenant/Common` senza le collection verso le Presenze, configurate in `CommonDbContext`; migration `CommonSediCompetenzeAutovetture` (solo le nuove tabelle e `DataAssunzione`); repository `*CommonRepository`
+- ✅ `INF-COM.2` Entità Common `Par_Competenza`, `Dip_Competenza` — indice univoco (`IdDip_Anagrafica`, `IdPar_Competenza`); la collection `Dip_Anagrafica.Dip_Competenza` è nella classe comune (AT-COM la toglie da `Dip_Anagrafica.Presenze.cs`)
+- ✅ `INF-COM.3` Entità Common `Dip_RapportoAutovetture` (D5) — legata a `Dip_Anagrafica` (FK Cascade) invece che a `Dip_RapportoLavoro`; AT-COM converte i dati
+- ✅ `INF-COM.4` Date di assunzione e cessazione in Common (campi di `Dip_Anagrafica` o tabella dedicata) (D6) — aggiunto `Dip_Anagrafica.DataAssunzione` (`DataCessazione` c'era già)
+- ✅ `INF-COM.5` Servizi e pagine comuni di sola lettura per i moduli che non sono le Presenze (sedi, reparti, competenze) — `CommonOrganizzazioneService`/`CommonOrganizzazioneController` (`SediGetAll` con albero dei reparti, `CompetenzeGetAll`) e servizio client in `ClientServer-Service/Infrastructure/Common`; nessuna pagina
+- ✅ `INF-COM.6` `CommonDataDeleter` aggiornato per le nuove tabelle — tutte in cascata da `Az_Anagrafica` (documentato); prima si scollegano i reparti dal padre (FK Restrict); conteggi invariati
 
 #### `INF-SVC` – Servizi comuni (§5)
 - ✅ `INF-SVC.1` Scadenzario: modello dati (fonte, modulo, riferimento, data, responsabile, stato), da decidere se in `public` o in Common — server fatto e provato su DB usa e getta con 24 controlli API (tabella `Scadenza` in `public`, migration `ServiziComuni`); client: servizi e modelli `ClientServer-Service/Infrastructure/Deadline`
@@ -237,9 +238,10 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
 
 #### `INF-CAL` – Sincronizzazione dei calendari
-- ⏳ `INF-CAL.1` Collegamento OAuth con Google e Microsoft per utente
-- ⏳ `INF-CAL.2` Modello comune degli eventi pubblicati dai moduli
-- ⏳ `INF-CAL.3` Sincronizzazione (invio e aggiornamento) e gestione degli errori
+- ✅ `INF-CAL.1` (ridefinito con D9) Feed iCalendar personale per utente e azienda: tabella `CalendarioFeed` in `public` (token casuale di 32 byte base64url, date di creazione e ultimo accesso), migration `CalendarioFeed`
+- ✅ `INF-CAL.2` Modello comune degli eventi pubblicati dai moduli: `ICalendarEventProvider` + `CalendarEvent` (registrati dallo scanner, più implementazioni); per Infrastructure `DeadlineCalendarEventProvider` (scadenze aperte visibili all'utente, stesse regole dello scadenzario, come eventi tutto il giorno). I moduli (`CRM-CAL`, `AST-PREN.3`, Presenze) aggiungono il proprio provider
+- ✅ `INF-CAL.3` Feed anonimo `GET api/CalendarFeed/{token}.ics` (RFC 5545, eventi da oggi-90 a oggi+365 giorni, 404 per token sconosciuto, calendario vuoto se l'utente non lavora più nell'azienda), gestione del proprio feed (crea, nuovo indirizzo, elimina; indirizzo da `App:ApiPublicUrl` / `App:PublicUrl`), pagina client `/calendarfeed` (menu "Calendario" e bottone nello Scadenzario) — server provato su DB usa e getta con 52 controlli API e parser `icalendar`; client compilato
+- ⏳ `INF-CAL.4` (futuro, D9) Sincronizzazione bidirezionale via OAuth con Google e Microsoft (richiede app registrate e credenziali)
 
 #### `INF-AI` – Riepilogo AI periodico
 - ⏳ `INF-AI.1` Interfaccia con cui ogni modulo fornisce i dati del riepilogo
@@ -247,10 +249,10 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `INF-AI.3` Invio tramite `INF-SVC.4` e consultazione nell'app
 
 #### `AT-COM` – Dati in Common, lato Presenze
-- ⏳ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common
-- ⏳ `AT-COM.2` Migrazione dei dati esistenti dallo schema `tenant_<id>_2` al `tenant_<id>_0`
+- ⏳ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common. Le classi Presenze hanno lo stesso nome di quelle Common: vanno cancellate nello stesso merge in cui arriva `INF-COM` (altrimenti il ramo non compila); va tolta anche la collection `Dip_Competenza` da `Dip_Anagrafica.Presenze.cs` (ora e' nella classe Common). Nel contesto Presenze le tabelle Common si mappano con `ExcludeFromMigrations()` come `Dip_Anagrafica`; le collection verso le tabelle Presenze (Az_SediAttivita, Az_SediRepartoUser, Dip_GG_NotaSpesa...) vanno nei partial Presenze
+- ⏳ `AT-COM.2` Migrazione dei dati esistenti dallo schema `tenant_<id>_2` al `tenant_<id>_0`. Attenzione: all'avvio la migration Common (`CommonSediCompetenzeAutovetture`) crea gia' le tabelle **vuote** in `tenant_<id>_0`, prima delle Presenze, quindi non si puo' usare `ALTER TABLE ... SET SCHEMA`: si copiano le righe mantenendo gli Id (e si riallineano le sequenze identity), si ripuntano le FK delle tabelle Presenze e poi si eliminano le vecchie tabelle. `Dip_RapportoAutovetture`: `IdDip_Anagrafica` preso dal rapporto di lavoro. `Dip_Competenza`: eliminare i doppioni (ora indice univoco dipendente+competenza). Su un database ricreato da zero non serve nulla
 - ⏳ `AT-COM.3` Date di assunzione e cessazione lette da Common, il resto di `Dip_RapportoLavoro` resta nelle Presenze (D6)
-- ⏳ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti ed export paghe (autovetture) ai dati in Common
+- ⏳ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti, note spese e rimborsi km (autovetture) ai dati in Common (l'export paghe legge invece le date del rapporto)
 - ⏳ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati
 
 #### `AT-TURNI` – Turni e pianificazione
@@ -332,9 +334,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende
 
 #### `HR-BASE` – Avvio del modulo Risorse Umane
-- ⏳ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `HR-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli, compresa l'area del dipendente
-- ⏳ `HR-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale — `HumanResourcesDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitHumanResources` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `HR-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli, compresa l'area del dipendente — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/hrsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); area del dipendente prevista nei ruoli, pagine con `HR-CED`; dettagli in `ANALISI_HUMANRESOURCES_APPLICATIVO.md`
+- ✅ `HR-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `HR-CED` – Portale con cedolini e CU
 - ⏳ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda
@@ -387,6 +389,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ 11/11/2026 – Stesura di questo documento e prima catena dei merge (solo locale, nessun push); worktree `wt_infra_moduli` rimosso
 - ✅ 11/11/2026 – Decisioni D1–D8 registrate (`ANA.3`)
 - ✅ 11/11/2026 – Divisione in aree con etichetta e punti numerati per il lavoro su più worktree (`ANA.4`), seconda catena dei merge
+
+- ✅ 11/11/2026 – Fase 1 (`INF-APP`, `INF-SVC`) mergiata; fase 2 (`INF-COM`+`AT-COM`, `INF-CAL`, `DM-FIRMA`, `CMP-BASE`, `HR-BASE`, `AST-BASE`, analisi `ANA.7`–`ANA.9`) mergiata dopo la prova completa della catena (8 rami compilati, AllFunction avviato con tutte le app: 15 controlli)
 
 ### Da fare (per fase, §8)
 - ⏳ **Fase 1**: `ANA.5`–`ANA.10`, `INF-APP`, `INF-COM`, `INF-SVC`; in parallelo, quando si vuole, `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `DM-PEC`, `DM-CONS`, `CRM-PREV`, `CRM-ASS`

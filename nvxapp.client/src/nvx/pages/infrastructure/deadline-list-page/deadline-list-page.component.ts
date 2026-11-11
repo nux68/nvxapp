@@ -45,6 +45,8 @@ export class DeadlineListPageComponent {
 
   public readonly columns: NvxListColumn<DeadlineModel>[];
   public readonly actions: NvxListAction<DeadlineModel>[];
+  /** calendario personale (INF-CAL.3): le scadenze aperte anche in Google / Outlook / Apple */
+  public readonly buttonbar: ButtonItem[];
   public readonly sortByData = (a: DeadlineModel, b: DeadlineModel) => (a.dataScadenza ?? '').localeCompare(b.dataScadenza ?? '');
   public readonly highlight = (item: DeadlineModel) => item.scaduta;
   public readonly isClosed = (item: DeadlineModel) => item.stato === DeadlineState.Chiusa;
@@ -89,6 +91,10 @@ export class DeadlineListPageComponent {
       { button: btnRiapri, visible: d => d.stato === DeadlineState.Chiusa },
       { button: btnModifica, visible: d => d.manuale && this.amministratore },
     ];
+
+    const btnCalendario = userInterfaceService.Btn_Calendario;
+    btnCalendario.event = () => this.navCtrl.navigateForward('/calendarfeed');
+    this.buttonbar = [btnCalendario];
   }
 
   ionViewWillEnter() {
