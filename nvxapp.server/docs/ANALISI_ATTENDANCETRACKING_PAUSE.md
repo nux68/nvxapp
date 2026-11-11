@@ -466,6 +466,12 @@ Verifiche:
 
 - programma di prova usa e getta sulle funzioni pure: 24 controlli superati (casi della tabella §3.3 e §3.4, pausa breve retribuita, pranzo flessibile con intervalli sovrapposti, turno notturno con pausa 02:00-02:30, orario continuato con 30' pagati, validazioni, finestra predefinita 12:45-14:15);
 - build del server (0 errori, nessun nuovo avviso) e del client (`ng build`, 0 errori).
+- prova end-to-end delle API su database usa e getta (`nvxapp_pausetest`, poi eliminato): migrazioni e seed (`DIURNO8H` con pausa rilevata, `CONT8H` automatica, `PNF`), creazione azienda, salvataggio orario in automatica, validazione della finestra incompleta, calcolo di tre giorni:
+  - 09:00, 10:30, 10:45, 13:00, 14:00, 18:00 con pausa da timbrare: versi E U E U E U, 7h45, pausa rilevata 60, ore inferiori (`Err_2`) per i 15' di caffè;
+  - 09:00, 18:00 con pausa automatica: 8h, 60' detratti, nessun errore di timbrature mancanti;
+  - 09:00, 13:00, 13:30, 18:00 con pausa automatica: 8h, 30' rilevati e 30' detratti, avviso `Warning_5` (rientro fuori dal suo intervallo 13:45-14:15).
+
+Osservazione fuori perimetro: inserendo timbrature in rapida sequenza, i ricalcoli in parallelo possono fallire con violazione di `IX_Dip_Periodo_IdDip_RapportoLavoro_Anno_Mese` (cartellino mensile creato due volte); il giorno resta da ricalcolare. Comportamento preesistente.
 
 ---
 
@@ -531,6 +537,6 @@ Verifiche:
 ### Fase 6: verifica
 - [x] Build server e client
 - [x] Scenari della tabella §3.4, U4 (finestra), U7 (notturno), U9/U10 (pause brevi) sulle funzioni pure
-- [ ] Prova end-to-end delle API su database usa e getta (migrazione, seed, salvataggio orario, calcolo giorno)
+- [x] Prova end-to-end delle API su database usa e getta (migrazione, seed, salvataggio orario, calcolo giorno)
 - [ ] Ricalcolo di un mese reale con orari senza pausa: risultati invariati salvo i giorni con uscite intermedie
 - [ ] Catena dei merge (AttendanceTracking_Dev → AttendanceTracking → AllFunction_Dev → AllFunction), previa conferma
