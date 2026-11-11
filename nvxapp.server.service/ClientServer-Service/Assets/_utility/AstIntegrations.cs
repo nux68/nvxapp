@@ -89,6 +89,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             return new List<DeletionCountModel>
             {
                 new() { Label = AssetsMessages.Get("DeletionCountVehicles"), Count = await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+                new() { Label = AssetsMessages.Get("DeletionCountGoods"), Count = await rep.Ast_Bene.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
             };
         }
 
@@ -106,6 +107,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 return;
             // le tabelle figlie seguono in cascata
             await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Ast_Bene.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Ast_Categoria.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Ast_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 

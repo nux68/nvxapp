@@ -8,8 +8,8 @@ Questo manuale è costruito sul **tuo menu**: trovi un capitolo per ogni voce de
 
 ### Chi fa cosa
 - **CompanyPowerAdmin**: configura il modulo e fa tutto quello che fa il CompanyAdmin.
-- **CompanyAdmin** (acquisti, logistica, IT): gestisce veicoli, assegnazioni, scadenze, costi e multe.
-- **Dipendente**: nella pagina **Le mie risorse** vede il veicolo assegnato e le multe che lo riguardano.
+- **CompanyAdmin** (acquisti, logistica, IT): gestisce veicoli, assegnazioni, scadenze, costi e multe, beni con consegne e restituzioni.
+- **Dipendente**: nella pagina **Le mie risorse** vede i beni che ha in consegna (con i verbali da confermare), il veicolo assegnato e le multe che lo riguardano.
 
 @@ /astsettings
 Nella pagina **Impostazioni** il CompanyPowerAdmin imposta i parametri generali del modulo:
@@ -39,4 +39,19 @@ Bollo, assicurazione, revisione, tagliando (anche a chilometri) o altro: ogni sc
 I **costi** (carburante, manutenzione, pedaggi...) mostrano il totale dell'anno; i chilometri indicati aggiornano quelli del veicolo. Nella **multa** il conducente, se non lo indichi, è chi aveva il veicolo il giorno dell'infrazione; con il pulsante **Invia** la multa si notifica al conducente (serve che abbia un utente) e passa a *Notificata*.
 
 @@ /astmine
-La pagina **Le mie risorse** mostra il veicolo che ti è assegnato, con il fringe benefit dell'anno a titolo informativo, e le multe che ti sono state notificate.
+La pagina **Le mie risorse** mostra i beni che hai in consegna (e quelli restituiti nell'ultimo anno) con lo stato dei verbali: quelli da confermare si aprono con **Apri** nella pagina delle prese visione. Sotto trovi il veicolo che ti è assegnato, con il fringe benefit dell'anno a titolo informativo, e le multe che ti sono state notificate.
+
+@@ /astgoods
+La pagina **Beni** ha tre sezioni. Con il **+** in basso aggiungi un bene o una categoria.
+
+### Beni
+L'elenco dei beni (PC, telefoni, badge, attrezzature...) con lo stato e il dipendente che li ha in consegna. Il bene ha un codice di inventario unico, la categoria, descrizione, marca e modello, numero di serie, data di acquisto, valore, sede e fine della garanzia (che va nello **scadenzario**). Lo stato *Consegnato* lo gestiscono consegna e restituzione; con il bene in magazzino puoi sceglierlo *Disponibile*, *In riparazione* o *Dismesso*.
+
+### Consegna e restituzione
+Nella scheda di un bene disponibile il **+** registra la **consegna** a un dipendente, con la data e le condizioni. Il dipendente riceve il **verbale di consegna** da confermare nella pagina delle prese visione; con il Documentale attivo il verbale diventa un PDF da firmare. Dalla riga della consegna aperta registri la **restituzione** (data, condizioni e stato del bene al rientro): il dipendente riceve il verbale di restituzione. Lo storico mostra per ogni consegna lo stato dei verbali. Un dipendente senza utente non riceve verbali: si registra solo la consegna.
+
+### Da restituire
+I beni e i veicoli ancora in mano a dipendenti che hanno una **data di cessazione** (la registrano le Presenze o le Risorse Umane). Ogni notte gli amministratori ricevono una notifica con le nuove cessazioni entro i giorni di preavviso e ogni restituzione va nello **scadenzario** alla data di cessazione; la scadenza si chiude con la restituzione del bene o con la fine dell'assegnazione del veicolo. Il pulsante **Verifica ora** lancia subito il controllo.
+
+### Categorie
+Le categorie dei beni: all'attivazione trovi quelle predefinite. Una categoria usata dai beni non si elimina: la disattivi.

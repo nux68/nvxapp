@@ -5,7 +5,8 @@
       "settings": "Settings",
       "manual": "Company assets manual",
       "vehicles": "Vehicles",
-      "mine": "My resources"
+      "mine": "My resources",
+      "goods": "Items"
     },
     "pages": {
       "settings": {
@@ -69,7 +70,52 @@
         "noVehicles": "No vehicle assigned",
         "fringeNote": "Fringe benefit for the current year, for information only: payroll computes the value on the payslip.",
         "fines": "Fines",
-        "noFines": "No fines"
+        "noFines": "No fines",
+        "goods": "Items held",
+        "noGoods": "No items held",
+        "goodsNote": "Reports to confirm open in the acknowledgements page.",
+        "reportToConfirm": "Report to confirm",
+        "reportConfirmed": "Report confirmed"
+      },
+      "goodsList": {
+        "title": "Company items",
+        "add": "Add",
+        "newGood": "New item",
+        "newCategory": "New category",
+        "section": {
+          "beni": "Items",
+          "restituire": "To return",
+          "categorie": "Categories"
+        },
+        "showDisposed": "Show disposed items",
+        "empty": "No items",
+        "noReturns": "No items or vehicles to return",
+        "returnNote": "Items and vehicles still held by employees with a termination date. Every night the administrators are notified of new terminations within the notice period and the return goes into the deadline schedule; Check now runs it immediately.",
+        "checkNow": "Check now",
+        "checkDone": "Check done: {{n}} new returns notified.",
+        "confirmDelete": "Delete item {{nome}} with its delivery history?",
+        "confirmDeleteCategory": "Delete category {{nome}}?"
+      },
+      "goodEdit": {
+        "title": "Item",
+        "titleNew": "New item",
+        "deliver": "Deliver to an employee",
+        "return": "Return",
+        "deliveries": "Deliveries",
+        "deliveriesNote": "On delivery and return the employee receives the report to confirm (with Document management active, to sign).",
+        "warrantyNote": "The warranty expiry goes into the shared deadline schedule.",
+        "reportNone": "Not requested (employee without a user)",
+        "reportPending": "To be confirmed",
+        "reportConfirmed": "Confirmed on {{data}}",
+        "confirmDeleteAssignment": "Cancel this delivery? Reports not yet confirmed are withdrawn."
+      },
+      "goodItem": {
+        "categoria": "Category",
+        "categoriaNew": "New category",
+        "consegna": "Delivery",
+        "restituzione": "Return",
+        "deliveryNote": "The employee receives the delivery report to confirm in the acknowledgements (with Document management active, to sign). Without a user only the delivery is recorded.",
+        "returnNote": "The employee receives the return report; any deadline for the return on termination is closed."
       }
     },
     "common": {
@@ -118,7 +164,28 @@
       "dataInfrazione": "Offence date and time",
       "numeroVerbale": "Report number",
       "luogo": "Place",
-      "dataPagamento": "Payment date"
+      "dataPagamento": "Payment date",
+      "codiceInventario": "Inventory code",
+      "categoria": "Category",
+      "dataCessazione": "Termination",
+      "oggetto": "Item or vehicle",
+      "dataAvviso": "Notified on",
+      "numeroBeni": "Items",
+      "ordine": "Order",
+      "attivo": "Active",
+      "dataConsegna": "Delivery",
+      "verbaleConsegna": "Delivery report",
+      "dataRestituzione": "Return",
+      "verbaleRestituzione": "Return report",
+      "marcaModello": "Make and model",
+      "numeroSerie": "Serial number",
+      "dataAcquisto": "Purchase date",
+      "valore": "Value",
+      "scadenzaGaranzia": "Warranty expiry",
+      "condizioni": "Condition",
+      "statoRientro": "Item status on return",
+      "bene": "Item",
+      "verbale": "Report"
     },
     "enums": {
       "uso": {
@@ -164,6 +231,16 @@
         "1": "Notified to the driver",
         "2": "Paid",
         "3": "Disputed"
+      },
+      "statoBene": {
+        "0": "Available",
+        "1": "Delivered",
+        "2": "Under repair",
+        "3": "Disposed"
+      },
+      "tipoRestituzione": {
+        "bene": "Item",
+        "veicolo": "Vehicle"
       }
     }
   }

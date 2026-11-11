@@ -5,7 +5,8 @@
       "settings": "Impostazioni",
       "manual": "Manuale Risorse aziendali",
       "vehicles": "Veicoli",
-      "mine": "Le mie risorse"
+      "mine": "Le mie risorse",
+      "goods": "Beni"
     },
     "pages": {
       "settings": {
@@ -69,7 +70,52 @@
         "noVehicles": "Nessun veicolo assegnato",
         "fringeNote": "Fringe benefit dell'anno in corso, a titolo informativo: il valore in busta paga lo calcolano le paghe.",
         "fines": "Multe",
-        "noFines": "Nessuna multa"
+        "noFines": "Nessuna multa",
+        "goods": "Beni in consegna",
+        "noGoods": "Nessun bene in consegna",
+        "goodsNote": "I verbali da confermare si aprono nella pagina delle prese visione.",
+        "reportToConfirm": "Verbale da confermare",
+        "reportConfirmed": "Verbale confermato"
+      },
+      "goodsList": {
+        "title": "Beni aziendali",
+        "add": "Aggiungi",
+        "newGood": "Nuovo bene",
+        "newCategory": "Nuova categoria",
+        "section": {
+          "beni": "Beni",
+          "restituire": "Da restituire",
+          "categorie": "Categorie"
+        },
+        "showDisposed": "Mostra i beni dismessi",
+        "empty": "Nessun bene",
+        "noReturns": "Nessun bene o veicolo da restituire",
+        "returnNote": "Beni e veicoli ancora in mano a dipendenti con una data di cessazione. Ogni notte gli amministratori ricevono l'avviso delle nuove cessazioni entro il preavviso e la restituzione va nello scadenzario; con Verifica ora il controllo parte subito.",
+        "checkNow": "Verifica ora",
+        "checkDone": "Verifica fatta: {{n}} nuove restituzioni avvisate.",
+        "confirmDelete": "Eliminare il bene {{nome}} con lo storico delle consegne?",
+        "confirmDeleteCategory": "Eliminare la categoria {{nome}}?"
+      },
+      "goodEdit": {
+        "title": "Bene",
+        "titleNew": "Nuovo bene",
+        "deliver": "Consegna a un dipendente",
+        "return": "Restituzione",
+        "deliveries": "Consegne",
+        "deliveriesNote": "Alla consegna e alla restituzione il dipendente riceve il verbale da confermare (con il documentale attivo, da firmare).",
+        "warrantyNote": "La fine della garanzia va nello scadenzario comune.",
+        "reportNone": "Non richiesto (dipendente senza utente)",
+        "reportPending": "Da confermare",
+        "reportConfirmed": "Confermato il {{data}}",
+        "confirmDeleteAssignment": "Annullare questa consegna? I verbali non ancora confermati vengono ritirati."
+      },
+      "goodItem": {
+        "categoria": "Categoria",
+        "categoriaNew": "Nuova categoria",
+        "consegna": "Consegna",
+        "restituzione": "Restituzione",
+        "deliveryNote": "Il dipendente riceve il verbale di consegna da confermare nelle prese visione (con il documentale attivo, da firmare). Senza utente si registra solo la consegna.",
+        "returnNote": "Il dipendente riceve il verbale di restituzione; l'eventuale scadenza della restituzione alla cessazione si chiude."
       }
     },
     "common": {
@@ -118,7 +164,28 @@
       "dataInfrazione": "Data e ora dell'infrazione",
       "numeroVerbale": "Numero del verbale",
       "luogo": "Luogo",
-      "dataPagamento": "Data di pagamento"
+      "dataPagamento": "Data di pagamento",
+      "codiceInventario": "Codice inventario",
+      "categoria": "Categoria",
+      "dataCessazione": "Cessazione",
+      "oggetto": "Bene o veicolo",
+      "dataAvviso": "Avvisato il",
+      "numeroBeni": "Beni",
+      "ordine": "Ordine",
+      "attivo": "Attiva",
+      "dataConsegna": "Consegna",
+      "verbaleConsegna": "Verbale di consegna",
+      "dataRestituzione": "Restituzione",
+      "verbaleRestituzione": "Verbale di restituzione",
+      "marcaModello": "Marca e modello",
+      "numeroSerie": "Numero di serie",
+      "dataAcquisto": "Data di acquisto",
+      "valore": "Valore",
+      "scadenzaGaranzia": "Fine garanzia",
+      "condizioni": "Condizioni",
+      "statoRientro": "Stato del bene al rientro",
+      "bene": "Bene",
+      "verbale": "Verbale"
     },
     "enums": {
       "uso": {
@@ -164,6 +231,16 @@
         "1": "Notificata al conducente",
         "2": "Pagata",
         "3": "Contestata"
+      },
+      "statoBene": {
+        "0": "Disponibile",
+        "1": "Consegnato",
+        "2": "In riparazione",
+        "3": "Dismesso"
+      },
+      "tipoRestituzione": {
+        "bene": "Bene",
+        "veicolo": "Veicolo"
       }
     }
   }

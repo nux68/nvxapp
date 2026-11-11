@@ -226,7 +226,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 _utility.RichiediAmministratore(ctx);
                 var v = await VeicoloAsync(ctx, model.Data.Id);
                 var scadenze = await _Ast_VeicoloScadenza.FindAll(x => x.IdAst_Veicolo == v.Id).Select(x => x.Id).ToListAsync();
+                var assegnazioni = await _Ast_VeicoloAssegnazione.FindAll(x => x.IdAst_Veicolo == v.Id).Select(x => x.Id).ToListAsync();
                 await _Ast_Veicolo.FindAll(x => x.Id == v.Id).ExecuteDeleteAsync();
+                foreach (var id in assegnazioni)
+                    await _deadlineRegistry.RemoveAsync(ctx.IdCompany, ApplicationType.Assets, AstRestituzioni.FonteVeicolo, id);
                 foreach (var id in scadenze)
                     await _deadlineRegistry.RemoveAsync(ctx.IdCompany, ApplicationType.Assets, FonteScadenza, id);
                 await _deadlineRegistry.RemoveAsync(ctx.IdCompany, ApplicationType.Assets, FonteContratto, v.Id);
@@ -309,6 +312,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                     a.ChangeUser = ctx.IdUtente;
                     await _Ast_VeicoloAssegnazione.SaveChange();
                 }
+                // assegnazione chiusa: il veicolo e' restituito, si chiude l'eventuale scadenza della restituzione alla cessazione (AST-BENI.3)
+                if (a.DataFine != null)
+                    await _deadlineRegistry.CloseAsync(ctx.IdCompany, ApplicationType.Assets, AstRestituzioni.FonteVeicolo, a.Id);
                 var res = AssegnazioneModel(a, v, new Dictionary<int, string> { { dip.Id, AstUtility.Nominativo(dip.Cognome, dip.Nome) } });
                 res.RimborsoKm = auto.RimborsoKM;
                 return new Ast_AssegnazionePutOutModel { Assegnazione = res };
@@ -324,6 +330,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var a = await _Ast_VeicoloAssegnazione.FindAll(x => x.Id == model.Data.Id && x.Ast_VeicoloNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                         ?? throw new UserMessageException(AssetsMessages.Get("NotFound"));
                 await _Ast_VeicoloAssegnazione.FindAll(x => x.Id == a.Id).ExecuteDeleteAsync();
+                await _deadlineRegistry.RemoveAsync(ctx.IdCompany, ApplicationType.Assets, AstRestituzioni.FonteVeicolo, a.Id);
                 return new Ast_DeleteOutModel { Eliminato = true };
             }, isSubProcess);
         }

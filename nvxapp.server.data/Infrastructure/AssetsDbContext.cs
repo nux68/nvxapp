@@ -34,6 +34,11 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Ast_VeicoloCosto> Ast_VeicoloCosto { get; set; }
         public virtual DbSet<Ast_Multa> Ast_Multa { get; set; }
 
+        // beni assegnati (AST-BENI)
+        public virtual DbSet<Ast_Categoria> Ast_Categoria { get; set; }
+        public virtual DbSet<Ast_Bene> Ast_Bene { get; set; }
+        public virtual DbSet<Ast_BeneAssegnazione> Ast_BeneAssegnazione { get; set; }
+
         // tabelle comuni in sola lettura
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
@@ -48,6 +53,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_References(modelBuilder);
             Gen_Ast(modelBuilder);
             Gen_AstFlotta(modelBuilder);
+            Gen_AstBeni(modelBuilder);
         }
 
         // come nel CRM: si escludono le entita' degli altri applicativi raggiungibili dalle navigazioni delle comuni
@@ -57,6 +63,7 @@ namespace nvxapp.server.data.Infrastructure
             {
                 typeof(Ast_Cfg),
                 typeof(Ast_Veicolo), typeof(Ast_VeicoloAssegnazione), typeof(Ast_VeicoloScadenza), typeof(Ast_VeicoloCosto), typeof(Ast_Multa),
+                typeof(Ast_Categoria), typeof(Ast_Bene), typeof(Ast_BeneAssegnazione),
                 typeof(Az_Anagrafica), typeof(Dip_Anagrafica), typeof(Az_Sedi), typeof(Dip_RapportoAutovetture),
                 typeof(Company), typeof(ApplicationUser),
             };
@@ -162,6 +169,38 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.SetNull);
                 entity.HasIndex(t => new { t.IdAst_Veicolo, t.DataInfrazione });
                 entity.HasIndex(t => t.IdDip_Anagrafica);
+            });
+        }
+
+        /*
+         Beni assegnati (AST-BENI). Cancellazione: tutto in cascata dall'azienda; la categoria usata da un bene non si cancella;
+         il dipendente cancellato da Common porta via le sue assegnazioni.
+        */
+        private static void Gen_AstBeni(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ast_Categoria>(entity =>
+            {
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Descrizione }).IsUnique();
+            });
+
+            modelBuilder.Entity<Ast_Bene>(entity =>
+            {
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Ast_CategoriaNavigation).WithMany().HasForeignKey(t => t.IdAst_Categoria).OnDelete(DeleteBehavior.NoAction);
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.SetNull);
+                // il codice di inventario e' unico tra i beni dell'azienda
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.CodiceInventario }).IsUnique();
+            });
+
+            modelBuilder.Entity<Ast_BeneAssegnazione>(entity =>
+            {
+                entity.HasOne(t => t.Ast_BeneNavigation).WithMany(t => t.Ast_BeneAssegnazione).HasForeignKey(t => t.IdAst_Bene).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdAst_Bene, t.DataConsegna });
+                entity.HasIndex(t => t.IdDip_Anagrafica);
+                // un bene e' in mano a un solo dipendente per volta: una sola assegnazione aperta per bene
+                entity.HasIndex(t => t.IdAst_Bene).IsUnique().HasFilter("\"DataRestituzione\" IS NULL").HasDatabaseName("IX_Ast_BeneAssegnazione_Aperta");
             });
         }
     }

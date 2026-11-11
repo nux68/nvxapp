@@ -8,8 +8,8 @@ This manual follows **your menu**: there is a chapter for each item of the **Com
 
 ### Who does what
 - **CompanyPowerAdmin**: configures the module and does everything the CompanyAdmin does.
-- **CompanyAdmin** (purchasing, logistics, IT): manages vehicles, assignments, deadlines, costs and fines.
-- **Employee**: in the **My resources** page sees the assigned vehicle and the fines concerning them.
+- **CompanyAdmin** (purchasing, logistics, IT): manages vehicles, assignments, deadlines, costs and fines, items with deliveries and returns.
+- **Employee**: in the **My resources** page sees the items they hold (with the reports to confirm), the assigned vehicle and the fines concerning them.
 
 @@ /astsettings
 In the **Settings** page the CompanyPowerAdmin sets the general parameters of the module:
@@ -39,4 +39,19 @@ Road tax, insurance, roadworthiness test, service (also by kilometres) or other:
 **Costs** (fuel, maintenance, tolls...) show the total for the year; the kilometres entered update the vehicle's. In a **fine**, if you do not set the driver, it is whoever had the vehicle on the offence date; the **Send** button notifies the fine to the driver (who needs a user account) and sets it to *Notified*.
 
 @@ /astmine
-The **My resources** page shows the vehicle assigned to you, with the fringe benefit for the year for information, and the fines notified to you.
+The **My resources** page shows the items you hold (and the ones returned in the last year) with the status of the reports: the ones to confirm open with **Open** in the acknowledgements page. Below you find the vehicle assigned to you, with the fringe benefit for the year for information, and the fines notified to you.
+
+@@ /astgoods
+The **Items** page has three sections. Use the **+** at the bottom to add an item or a category.
+
+### Items
+The list of items (PCs, phones, badges, equipment...) with their status and the employee holding them. An item has a unique inventory code, the category, description, make and model, serial number, purchase date, value, site and warranty expiry (which goes into the **deadline schedule**). The *Delivered* status is handled by delivery and return; with the item in stock you can set it *Available*, *Under repair* or *Disposed*.
+
+### Delivery and return
+In the card of an available item the **+** records the **delivery** to an employee, with date and condition. The employee receives the **delivery report** to confirm in the acknowledgements page; with Document management active the report becomes a PDF to sign. From the row of the open delivery you record the **return** (date, condition and item status on return): the employee receives the return report. The history shows the status of the reports for each delivery. An employee without a user receives no reports: only the delivery is recorded.
+
+### To return
+Items and vehicles still held by employees with a **termination date** (recorded by Attendance or Human resources). Every night the administrators receive a notification with the new terminations within the notice days and each return goes into the **deadline schedule** on the termination date; the deadline closes when the item is returned or the vehicle assignment ends. The **Check now** button runs the check immediately.
+
+### Categories
+The item categories: on activation you find the default ones. A category used by items cannot be deleted: deactivate it.

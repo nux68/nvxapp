@@ -23,12 +23,13 @@ export class MainMenuAssetsService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuHeader, zorder: 700000, group: 70, title: 'ast.menu.section', roles: tutti, component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 700100, group: 70, title: 'ast.menu.vehicles', roles: tutti, component: 'AstVehicleListPageComponent', url: '/astvehicles', icon: 'car' },
+      { menuType: MenuType.MenuItem, zorder: 700200, group: 70, title: 'ast.menu.goods', roles: tutti, component: 'AstGoodsListPageComponent', url: '/astgoods', icon: 'cube' },
       { menuType: MenuType.MenuItem, zorder: 700800, group: 70, title: 'ast.menu.mine', roles: tutti, component: 'AstMinePageComponent', url: '/astmine', icon: 'person-circle' },
       { menuType: MenuType.MenuItem, zorder: 700900, group: 70, title: 'ast.menu.settings', roles: ['CompanyPowerAdmin'], component: 'AstSettingsPageComponent', url: '/astsettings', icon: 'construct' },
     ];
   }
 
-  // dipendenti: le proprie risorse (veicolo, multe)
+  // dipendenti: le proprie risorse (beni e verbali, veicolo, multe)
   public get Pages4User(): MainMenuItem[] {
     return [
       { menuType: MenuType.MenuHeader, zorder: 710000, group: 71, title: 'ast.menu.section', roles: ['User'], component: '', url: '', icon: '' },

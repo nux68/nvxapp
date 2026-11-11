@@ -40,6 +40,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         /// <summary>Configurazione predefinita dell'azienda (se manca).</summary>
         Task EnsureDefaultsAsync(int idAz_Anagrafica);
 
+        /// <summary>Categorie predefinite dei beni (se l'azienda non ne ha).</summary>
+        Task EnsureCategorieAsync(int idAz_Anagrafica);
+
         Task<Ast_Cfg> CfgAsync(AstContesto ctx);
 
         /// <summary>UserMessageException se l'utente non e' amministratore dell'azienda.</summary>
@@ -61,6 +64,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
     public class AstUtility : IAstUtility
     {
         private readonly IAst_CfgRepository _Ast_Cfg;
+        private readonly IAst_CategoriaRepository _Ast_Categoria;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -73,9 +77,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         public AstUtility(IAst_CfgRepository ast_CfgRepository, ICommonCompanyUtility commonCompanyUtility,
                           IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager,
                           IAst_Dip_AnagraficaReadRepository dip_AnagraficaRepository, IAst_Az_SediReadRepository az_SediRepository,
-                          INotificationSender notificationSender)
+                          INotificationSender notificationSender, IAst_CategoriaRepository ast_CategoriaRepository)
         {
             _Ast_Cfg = ast_CfgRepository;
+            _Ast_Categoria = ast_CategoriaRepository;
             _commonCompanyUtility = commonCompanyUtility;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -122,6 +127,17 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             if (await _Ast_Cfg.FindAll(_ => true).AnyAsync(x => x.IdAz_Anagrafica == idAz_Anagrafica))
                 return;
             await _Ast_Cfg.CreateAsync(new Ast_Cfg { IdAz_Anagrafica = idAz_Anagrafica, CreationDate = DateTime.Now });
+            await EnsureCategorieAsync(idAz_Anagrafica);
+        }
+
+        // categorie predefinite dei beni (all'attivazione, o alla prima lettura se l'azienda non ne ha)
+        public async Task EnsureCategorieAsync(int idAz_Anagrafica)
+        {
+            if (await _Ast_Categoria.FindAll(x => x.IdAz_Anagrafica == idAz_Anagrafica).AnyAsync())
+                return;
+            int ordine = 0;
+            foreach (var chiave in new[] { "DefaultCategoryPc", "DefaultCategoryPhone", "DefaultCategoryBadge", "DefaultCategoryEquipment", "DefaultCategoryOther" })
+                await _Ast_Categoria.CreateAsync(new Ast_Categoria { IdAz_Anagrafica = idAz_Anagrafica, Descrizione = AssetsMessages.Get(chiave), Ordine = ordine += 10 });
         }
 
         public Task<Ast_Cfg> CfgAsync(AstContesto ctx) => _Ast_Cfg.FindAll(_ => true).FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);

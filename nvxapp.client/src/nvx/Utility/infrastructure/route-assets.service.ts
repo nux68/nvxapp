@@ -21,6 +21,10 @@ export class RouteAssetsService {
       // flotta (AST-FLO)
       { path: 'astvehicles', loadChildren: () => import('../../pages/Assets/ast-vehicle-list-page/ast-vehicle-list-page.module').then(m => m.AstVehicleListPageModule), canActivate: [authenticatedGuard] },
       { path: 'astvehicleedit', loadChildren: () => import('../../pages/Assets/ast-vehicle-edit-page/ast-vehicle-edit-page.module').then(m => m.AstVehicleEditPageModule), canActivate: [authenticatedGuard] },
+      // beni assegnati (AST-BENI)
+      { path: 'astgoods', loadChildren: () => import('../../pages/Assets/ast-goods-list-page/ast-goods-list-page.module').then(m => m.AstGoodsListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astgoodedit', loadChildren: () => import('../../pages/Assets/ast-good-edit-page/ast-good-edit-page.module').then(m => m.AstGoodEditPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astgooditemedit', loadChildren: () => import('../../pages/Assets/ast-good-item-edit-page/ast-good-item-edit-page.module').then(m => m.AstGoodItemEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'astvehicleitemedit', loadChildren: () => import('../../pages/Assets/ast-vehicle-item-edit-page/ast-vehicle-item-edit-page.module').then(m => m.AstVehicleItemEditPageModule), canActivate: [authenticatedGuard] },
     ];
   }

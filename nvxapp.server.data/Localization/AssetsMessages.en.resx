@@ -90,4 +90,88 @@
   <data name="DeletionCountVehicles" xml:space="preserve">
     <value>Vehicles (with assignments, deadlines, costs and fines)</value>
   </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>Enter the description.</value>
+  </data>
+  <data name="CategoryDuplicate" xml:space="preserve">
+    <value>Category {0} already exists.</value>
+  </data>
+  <data name="CategoryInUse" xml:space="preserve">
+    <value>The category is used by some items: deactivate it instead of deleting it.</value>
+  </data>
+  <data name="CategoryRequired" xml:space="preserve">
+    <value>Select the item's category.</value>
+  </data>
+  <data name="InventoryCodeRequired" xml:space="preserve">
+    <value>Enter the inventory code.</value>
+  </data>
+  <data name="InventoryCodeDuplicate" xml:space="preserve">
+    <value>An item with inventory code {0} already exists.</value>
+  </data>
+  <data name="GoodAssignedNoDelete" xml:space="preserve">
+    <value>The item is with an employee: record its return first.</value>
+  </data>
+  <data name="GoodNotAvailable" xml:space="preserve">
+    <value>The item cannot be delivered (it is already delivered, under repair or disposed).</value>
+  </data>
+  <data name="GoodAlreadyReturned" xml:space="preserve">
+    <value>The item has already been returned.</value>
+  </data>
+  <data name="DefaultCategoryPc" xml:space="preserve">
+    <value>PCs and laptops</value>
+  </data>
+  <data name="DefaultCategoryPhone" xml:space="preserve">
+    <value>Phones</value>
+  </data>
+  <data name="DefaultCategoryBadge" xml:space="preserve">
+    <value>Badges</value>
+  </data>
+  <data name="DefaultCategoryEquipment" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="DefaultCategoryOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="DeliveryReportTitle" xml:space="preserve">
+    <value>Goods delivery report - {0} {1}</value>
+  </data>
+  <data name="DeliveryReportText" xml:space="preserve">
+    <value>On {0} the company delivers the item described to the employee, who receives it in good condition and undertakes to look after it and return it on request or when the employment ends.</value>
+  </data>
+  <data name="ReturnReportTitle" xml:space="preserve">
+    <value>Goods return report - {0} {1}</value>
+  </data>
+  <data name="ReturnReportText" xml:space="preserve">
+    <value>On {0} the employee returns the item described to the company.</value>
+  </data>
+  <data name="ReportLineEmployee" xml:space="preserve">
+    <value>Employee: {0}</value>
+  </data>
+  <data name="ReportLineGood" xml:space="preserve">
+    <value>Item: {0} - {1} (category {2})</value>
+  </data>
+  <data name="ReportLineModel" xml:space="preserve">
+    <value>Make and model: {0}</value>
+  </data>
+  <data name="ReportLineSerial" xml:space="preserve">
+    <value>Serial number: {0}</value>
+  </data>
+  <data name="ReportLineConditions" xml:space="preserve">
+    <value>Condition: {0}</value>
+  </data>
+  <data name="WarrantyDeadlineDescription" xml:space="preserve">
+    <value>Warranty expiry - {0} {1}</value>
+  </data>
+  <data name="ReturnDeadlineDescription" xml:space="preserve">
+    <value>Return on termination: {0} - {1}</value>
+  </data>
+  <data name="ReturnNotificationTitle" xml:space="preserve">
+    <value>Items to return on termination: {0}</value>
+  </data>
+  <data name="ReturnNotificationLine" xml:space="preserve">
+    <value>{0} (termination {1}): {2}</value>
+  </data>
+  <data name="DeletionCountGoods" xml:space="preserve">
+    <value>Items (with deliveries and returns)</value>
+  </data>
 </root>
