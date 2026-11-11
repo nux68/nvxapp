@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, Subscription, catchError, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { RegistrationService } from '../../../ClientServer-Service/Infrastructure/Registration/registration.service';
-import { CompanyRegisterInModel, CompanyRegisterUserNamesCheckInModel } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
+import { CompanyRegisterInModel, CompanyRegisterUserNamesCheckInModel, TipoRegistrazione } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
@@ -12,7 +13,10 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { TranslocoService } from '@jsverse/transloco';
 
 /*
- Showcase: registrazione di una nuova azienda (prima del login). Il server salva la richiesta e invia
+ Showcase: registrazione di una nuova azienda o di un nuovo studio (prima del login).
+ Il selettore Azienda / Studio si preimposta dall'indirizzo: /register?tipo=studio (es. dalla pagina dei prezzi
+ con il listino degli studi) o /register?tipo=azienda; senza parametro si parte da Azienda. Lo studio nasce nel
+ centro DEMO con il suo power admin e il suo admin (come dal menu "Studi"). Il server salva la richiesta e invia
  all'email indicata il link di conferma: l'azienda nasce (nel ramo DEMO, con i suoi utenti principali e,
  nei rami applicativi, gli applicativi previsti per le nuove aziende) solo aprendo il link, nella
  pagina /confirm-email (ConfirmEmailPageComponent).
@@ -33,6 +37,7 @@ export class RegisterPageComponent extends BasePageConfirmCancelComponent<Compan
   public readonly ragioneSocialeMaxLength = 40;
   public readonly userNameMinLength = 3;
   public readonly userNameMaxLength = 50;
+  public readonly Tipo = TipoRegistrazione;
   private static readonly userNamePattern = /^[A-Za-z0-9_.-]+$/;
 
   public errori: string[] = [];
@@ -49,6 +54,7 @@ export class RegisterPageComponent extends BasePageConfirmCancelComponent<Compan
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private registrationService: RegistrationService,
+              private route: ActivatedRoute,
               public showcaseService: ShowcaseService,
               private transloco: TranslocoService) {
 
@@ -64,6 +70,7 @@ export class RegisterPageComponent extends BasePageConfirmCancelComponent<Compan
 
   get EditForm(): FormGroup {
     return this.fb.group({
+      tipo: [TipoRegistrazione.Azienda],
       ragioneSociale: ['', [Validators.required, Validators.maxLength(this.ragioneSocialeMaxLength), RegisterPageComponent.lettereOCifre]],
       mail: ['', [Validators.required, Validators.email]],
       pw: ['', [Validators.required, Validators.minLength(this.passwordMinLength)]],
@@ -147,12 +154,34 @@ export class RegisterPageComponent extends BasePageConfirmCancelComponent<Compan
   }
 
   LoadData = (): Observable<CompanyRegisterInModel> => {
-    return of(new CompanyRegisterInModel());
+    const model = new CompanyRegisterInModel();
+    model.tipo = RegisterPageComponent.tipoDaParametro(this.route.snapshot.queryParamMap.get('tipo'));
+    return of(model);
   };
+
+  /** tipo indicato dall'indirizzo (?tipo=studio | azienda, anche 1 | 0); altrimenti Azienda */
+  public static tipoDaParametro(valore: string | null): TipoRegistrazione {
+    const v = (valore ?? '').trim().toLowerCase();
+    return v === 'studio' || v === String(TipoRegistrazione.Studio) ? TipoRegistrazione.Studio : TipoRegistrazione.Azienda;
+  }
+
+  public get studio(): boolean {
+    return this._editForm?.controls['tipo'].value === TipoRegistrazione.Studio;
+  }
+
+  /** titolo e sottotitolo: quelli dei contenuti dello showcase per l'azienda, propri per lo studio */
+  public get titolo(): string {
+    return this.studio ? this.transloco.translate('pages.register.studioTitle') : this.c.titolo;
+  }
+
+  public get sottotitolo(): string {
+    return this.studio ? this.transloco.translate('pages.register.studioSubtitle') : this.c.sottotitolo;
+  }
 
   SaveData = (editModel: CompanyRegisterInModel): Observable<boolean> => {
     this.errori = [];
     const request = new GenericRequest<CompanyRegisterInModel>(CompanyRegisterInModel);
+    request.data.tipo = editModel.tipo === TipoRegistrazione.Studio ? TipoRegistrazione.Studio : TipoRegistrazione.Azienda;
     request.data.ragioneSociale = editModel.ragioneSociale;
     request.data.mail = editModel.mail;
     request.data.pw = editModel.pw;
@@ -187,7 +216,7 @@ export class RegisterPageComponent extends BasePageConfirmCancelComponent<Compan
     return this.showcaseService.Contenuti.register;
   }
 
-  /** nome con cui nasce l'azienda: il server tiene solo lettere e cifre (anche per i nomi degli utenti) */
+  /** nome con cui nasce l'azienda (o lo studio): il server tiene solo lettere e cifre (anche per i nomi degli utenti) */
   public get nomeAzienda(): string {
     return (this._editForm.controls['ragioneSociale'].value ?? '').replace(/[^a-zA-Z0-9]/g, '');
   }
