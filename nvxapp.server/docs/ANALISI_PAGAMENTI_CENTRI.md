@@ -68,8 +68,8 @@ Il calcolo e i cambi di stato stanno in `PaymentSettlementManager` (non dipende 
 | `PaymentSettlementGenerate(anno, mese, idDealer?)` | SuperUser | crea o aggiorna le bozze (un centro o tutti quelli con qualcosa da liquidare) |
 | `PaymentSettlementConfirm` / `Cancel` / `Pay(data, riferimento, note)` | SuperUser | cambi di stato; conferma e liquidazione inviano l'email (se non parte, il cambio di stato resta e l'esito è nello storico) |
 | `PaymentSettlementInvoicePut(numero, data)` | SuperUser, DealerPowerAdmin del centro | fattura del centro sul rendiconto confermato o liquidato |
-| `PaymentSummarySend(idDealer?, anno, mese?)` | SuperUser (qualsiasi centro), centro (il proprio) | email HTML con il PDF del riepilogo, registrata in `Pag_InvioEmail` |
-| `PaymentExport(idDealer?, anno, mese?, formato)` | SuperUser, centro | PDF del riepilogo di un centro; Excel di un centro o (SuperUser) di tutti |
+| `PaymentSummarySend(idDealer?, anno, mese?)` | SuperUser (qualsiasi centro), centro (il proprio) | email HTML con il PDF del riepilogo, registrata in `Pag_InvioEmail`. Con un job in background (`Payments.SummaryEmail`): email non configurata e destinatari mancanti si segnalano subito, l'esito dell'invio nella barra dei job (11/11/2026) |
+| `PaymentExport(idDealer?, anno, mese?, formato)` | SuperUser, centro | PDF del riepilogo di un centro; Excel di un centro o (SuperUser) di tutti. Con un job in background (`JobType` `Payments.Pdf` / `Payments.Excel`): risponde con il `JobId`, il file arriva nella barra dei job con il link di download (11/11/2026) |
 | `PaymentDealerConfigGet/Put` | SuperUser (tutto), DealerPowerAdmin (IBAN, intestatario, email del proprio centro; non la trattenuta); DealerAdmin legge | |
 | `PaymentSettingsGet/Put` | SuperUser | impostazioni `Pagamenti_*` |
 
@@ -99,7 +99,7 @@ Il calcolo e i cambi di stato stanno in `PaymentSettlementManager` (non dipende 
 ## 7. Decisioni (11/11/2026)
 
 1. Il SuperUser incassa dalle aziende e dagli studi e gira la quota ai centri.
-2. Trattenuta della piattaforma: percentuale per centro, con un valore generale per i centri senza una propria. Non per funzione.
+2. Trattenuta della piattaforma: percentuale per centro, con un valore generale per i centri senza una propria. Non per funzione. La trattenuta del centro si imposta dalla scheda del centro (`/dealeredit`) o dai dati di liquidazione (`/paymentdealerconfig`): stesso dato, `Pag_DealerConfig.PercentualePiattaforma`.
 3. I rendiconti si generano in bozza; il SuperUser li conferma prima dell'invio.
 4. Fattura del centro: campi informativi sul rendiconto, nessun blocco.
 5. Pagamenti in debug compresi nel cumulo e nei rendiconti (rivisto l'11/11/2026: in un primo tempo erano esclusi).
@@ -152,6 +152,9 @@ Con i pagamenti reali (Fase 3 delle licenze) la conferma del provider via webhoo
 - [x] Fase 5 – automatismi: `PaymentMaintenanceService`
 - [x] Manuale it/en
 - [x] Pagamenti in debug compresi nel cumulo (11/11/2026)
+- [x] Export PDF ed Excel (pagine `paymentdealer` e `paymentreport`) con job in background e download dalla barra dei job, come gli altri export (11/11/2026)
+- [x] Invio manuale del riepilogo via email con job in background (11/11/2026); conferma e liquidazione dei rendiconti inviano l'email subito, nel cambio di stato
+- [x] Trattenuta del centro modificabile anche dalla scheda del centro (`/dealeredit`, solo SuperUser): vuota = generale, altrimenti comanda quella del centro (11/11/2026)
 - [ ] Schermate del manuale (`nvxapp.server/Tools/ManualScreenshots`)
 - [ ] Impostare la trattenuta generale reale (oggi 0%)
 - [ ] Con i pagamenti reali (Fase 3 delle licenze): valorizzare `DataPagamento` alla conferma del provider (webhook) e decidere se i pagamenti di debug devono restare nel cumulo

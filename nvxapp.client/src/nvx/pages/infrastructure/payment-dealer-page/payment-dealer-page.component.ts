@@ -216,9 +216,10 @@ export class PaymentDealerPageComponent {
     request.data.anno = this.anno;
     request.data.mese = this.mese > 0 ? this.mese : null;
     request.data.formato = formato;
+    // il file si prepara con un job: lo si scarica dalla barra dei job quando e' pronto
     this.paymentService.PaymentExport(request).subscribe(res => {
-      if (res.success && res.data?.file)
-        PaymentService.Download(res.data.fileName, res.data.contentType, res.data.file);
+      if (res.success)
+        this.toast('pages.payment.exportStarted');
     });
   }
 

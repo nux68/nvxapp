@@ -31,6 +31,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
     public interface IPaymentSettlementManager
     {
         Task<decimal> PercentualeAsync(int idDealer);
+        /// <summary>trattenuta propria del centro (null = vale quella generale) e trattenuta generale</summary>
+        Task<(decimal? Propria, decimal Generale)> PercentualiAsync(int idDealer);
+        /// <summary>salva la trattenuta propria del centro (null = torna a quella generale)</summary>
+        Task SalvaPercentualeAsync(int idDealer, decimal? percentuale);
         IQueryable<Lic_Pagamento> PagamentiPeriodo(int anno, int? mese, int? idDealer);
         /// <summary>riepilogo per centro del periodo; idDealer null = tutti i centri (anche senza movimenti) e i clienti senza centro</summary>
         Task<List<PaymentDealerSummaryModel>> RiepilogoAsync(int anno, int? mese, int? idDealer);
@@ -110,6 +114,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
         {
             var propria = await _dealerConfigRepository.FindAll(x => x.IdDealer == idDealer).Select(x => x.PercentualePiattaforma).FirstOrDefaultAsync();
             return propria ?? (await _settingsProvider.GetAsync()).PercentualePiattaforma;
+        }
+
+        public async Task<(decimal? Propria, decimal Generale)> PercentualiAsync(int idDealer)
+        {
+            var propria = await _dealerConfigRepository.FindAll(x => x.IdDealer == idDealer).Select(x => x.PercentualePiattaforma).FirstOrDefaultAsync();
+            return (propria, (await _settingsProvider.GetAsync()).PercentualePiattaforma);
+        }
+
+        public async Task SalvaPercentualeAsync(int idDealer, decimal? percentuale)
+        {
+            if (percentuale is < 0 or > 100)
+                throw new UserMessageException(InfrastructureMessages.Get("PaymentDealerConfigInvalid"));
+            var valore = percentuale == null ? (decimal?)null : Math.Round(percentuale.Value, 2);
+            var config = await _dealerConfigRepository.FindAll(x => x.IdDealer == idDealer).FirstOrDefaultAsync();
+            if (config == null)
+            {
+                if (valore != null)
+                    await _dealerConfigRepository.CreateAsync(new Pag_DealerConfig { IdDealer = idDealer, PercentualePiattaforma = valore });
+            }
+            else if (config.PercentualePiattaforma != valore)
+            {
+                config.PercentualePiattaforma = valore;
+                await _dealerConfigRepository.UpdateAsync(config);
+            }
         }
 
         public IQueryable<Lic_Pagamento> PagamentiPeriodo(int anno, int? mese, int? idDealer)
