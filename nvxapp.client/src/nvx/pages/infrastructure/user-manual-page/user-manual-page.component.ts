@@ -13,7 +13,7 @@ import { SITE_NAME } from '../../../Utility/infrastructure/site-name';
  pronto compare, come per gli altri export, nella barra dei job in alto con il pulsante per scaricarlo.
  Il manuale si compone dal menu che l'utente vede adesso (ruoli, applicativi attivi, voci nascoste dal "Menu utenti"):
  la pagina manda al server le sezioni e le voci del menu che riguardano il manuale (stesse regole del menu laterale).
- Titolo e descrizione: chiavi pages.userManual.manuals.<codice> (ogni ramo aggiunge le sue nelle proprie traduzioni).
+ Titolo, descrizione e nota (facoltativa): chiavi pages.userManual.manuals.<codice> (ogni ramo aggiunge le sue nelle proprie traduzioni).
 */
 @Component({
   selector: 'app-user-manual-page',
@@ -34,6 +34,8 @@ export class UserManualPageComponent {
     attendance: ApplicationType.AttendanceTracking,
     crm: ApplicationType.Crm,
     documents: ApplicationType.DocumentManagement,
+    // comandi vocali: il server li prende dal catalogo dei comandi, il menu serve solo per le voci di Infrastructure
+    voicecommands: null,
   };
 
   constructor(private route: ActivatedRoute,
@@ -44,6 +46,7 @@ export class UserManualPageComponent {
 
   get title(): string { return this.testo('title'); }
   get description(): string { return this.testo('description'); }
+  get note(): string { return this.testo('note'); }
 
   // testo del manuale con ripiego su quello generico
   private testo(campo: string): string {

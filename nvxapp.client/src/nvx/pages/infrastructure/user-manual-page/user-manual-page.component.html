@@ -10,7 +10,7 @@
           <p>{{ description }}</p>
         </ion-label>
       </ion-item>
-      <ion-note class="nvx-nota-disabled">{{ (avviato ? 'pages.userManual.started' : 'pages.userManual.note') | transloco }}</ion-note>
+      <ion-note class="nvx-nota-disabled">{{ avviato ? ('pages.userManual.started' | transloco) : note }}</ion-note>
       <br />
       <ion-button shape="round" [disabled]="inPreparazione" (click)="scarica()">
         <ion-icon slot="start" name="download-outline"></ion-icon>
