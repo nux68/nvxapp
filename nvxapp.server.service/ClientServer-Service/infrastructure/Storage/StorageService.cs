@@ -104,9 +104,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                     .ToListAsync();
                 aziende = aziende.Where(conDocumentale.Contains).ToList();
 
+                // e, con il sistema licenze acceso, solo quelle coperte da una licenza Documentale valida
+                // (propria, dello studio o cumulativa); con il sistema spento nessuna e' "senza licenza"
                 var retVal = new CompanyStorageListOutModel();
                 foreach (var idCompany in aziende)
-                    retVal.CompanyStorage.Add(await ModelAsync(idCompany));
+                {
+                    var riga = await ModelAsync(idCompany);
+                    if (!riga.SenzaLicenza)
+                        retVal.CompanyStorage.Add(riga);
+                }
                 retVal.CompanyStorage = retVal.CompanyStorage.OrderBy(x => x.Studio).ThenBy(x => x.Azienda).ToList();
                 return retVal;
             }, isSubProcess);
