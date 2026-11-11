@@ -189,7 +189,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ⏳ |
 | `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ⏳ |
-| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ⏳ |
+| `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_ast-base`, provata su DB usa e getta), da mergiare |
 | `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ⏳ |
 | `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ⏳ |
@@ -208,7 +208,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `ANA.6` Analisi della sicurezza dei dati riservati (segnalazioni, dati sanitari delle visite), collegata a `piano-security.md`
 - ⏳ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev)
 - ⏳ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev)
-- ⏳ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev)
+- ✅ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
 
 #### `INF-APP` – Registrazione dei nuovi applicativi (§7)
@@ -352,9 +352,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `HR-ONB.3` Creazione e disattivazione dell'account
 
 #### `AST-BASE` – Avvio del modulo Risorse aziendali
-- ⏳ `AST-BASE.1` `AssetsDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `AST-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli
-- ⏳ `AST-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `AST-BASE.1` `AssetsDbContext` registrato in `DataLayerInstaller` e migration iniziale — `AssetsDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitAssets` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `AST-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/astsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); dettagli in `ANALISI_ASSETS_APPLICATIVO.md`
+- ✅ `AST-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `AST-FLO` – Flotta
 - ⏳ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
