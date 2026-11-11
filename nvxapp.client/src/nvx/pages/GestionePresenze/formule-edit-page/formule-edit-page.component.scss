@@ -1,0 +1,69 @@
+.nvx-formule-nota {
+  display: block;
+  margin: 6px 0 10px;
+}
+
+.nvx-formula-editor {
+  width: 100%;
+  min-height: 360px;
+  box-sizing: border-box;
+  padding: 10px;
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.45;
+  tab-size: 4;
+  white-space: pre;
+  overflow: auto;
+  resize: vertical;
+  color: var(--ion-text-color);
+  background: var(--ion-color-light);
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 6px;
+}
+
+.nvx-formula-ai {
+  min-height: 0;
+  max-height: 320px;
+}
+
+.nvx-formula-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.nvx-formula-posizione {
+  color: var(--ion-color-warning-shade);
+  font-size: 12px;
+  margin-right: auto;
+}
+
+.nvx-formula-metodi {
+  padding-left: 8px;
+}
+
+.nvx-formula-metodi-lista {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.nvx-formula-codice {
+  font-family: Consolas, 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.nvx-formula-tabella {
+  margin-top: 8px;
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+.nvx-formula-intestazione {
+  font-weight: bold;
+  border-bottom: 1px solid var(--ion-color-medium);
+}
+
+.nvx-formula-cambiata {
+  background: rgba(var(--ion-color-warning-rgb), 0.18);
+}

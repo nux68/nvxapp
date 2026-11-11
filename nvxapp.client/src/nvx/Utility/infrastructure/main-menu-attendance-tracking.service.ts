@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 import { RichiestaNotifierService } from '../GestionePresenze/richiesta-notifier.service';
+import { LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,9 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 206500, group: 1, title: 'attendance.menu.festivita', roles: ['CompanyPowerAdmin'], component: "FestivitaListPageComponent", url: '/festivitalist', icon: 'flag' },
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'attendance.menu.modelliExport', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
       { menuType: MenuType.MenuItem, zorder: 207500, group: 1, title: 'attendance.menu.tipiSpesa', roles: ['CompanyPowerAdmin'], component: "TipoSpesaListPageComponent", url: '/tipospesalist', icon: 'pricetags' },
+      // formule personalizzate del calcolo giornata: funzione del piano Pro (senza Pro le voci restano nel menu, disattivate)
+      { menuType: MenuType.MenuItem, zorder: 207600, group: 1, title: 'attendance.menu.formule', roles: ['CompanyPowerAdmin'], component: "FormuleListPageComponent", url: '/formulelist', icon: 'code-slash', minLicense: LivelloLicenza.Pro },
+      { menuType: MenuType.MenuItem, zorder: 207700, group: 1, title: 'attendance.menu.profiliFormule', roles: ['CompanyPowerAdmin'], component: "ProfiloFormuleListPageComponent", url: '/profiloformulelist', icon: 'layers', minLicense: LivelloLicenza.Pro },
 
       // Nota spese: subito dopo la sezione Generale (le sezioni seguono lo zorder dell'intestazione)
       { menuType: MenuType.MenuHeader, zorder: 100000, group: 3, title: 'attendance.menu.notaSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },

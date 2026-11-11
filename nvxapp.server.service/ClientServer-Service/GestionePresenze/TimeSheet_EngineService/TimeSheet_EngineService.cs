@@ -14,6 +14,7 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEngine;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
@@ -178,6 +179,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_GiustificativiService _par_GiustificativiService;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
         private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
+        private readonly IFormuleRunner _formuleRunner;
+
+        // "Prova formula": calcolo senza scritture (niente cartellino mensile, niente SaveData)
+        private bool _simulazione;
 
         // causali del giorno calcolate nella fase giornaliera: la fase di periodo aggiunge quelle delle
         // ore in piu' e poi vengono scritte (chiave: rapporto, giorno)
@@ -212,7 +217,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IPar_GiustificativiService par_GiustificativiService,
                                       IDip_GG_RichiestaService dip_GG_RichiestaService,
                                       IPar_FestivitaRepository par_FestivitaRepository,
-                                      IDip_PeriodoRepository dip_PeriodoRepository
+                                      IDip_PeriodoRepository dip_PeriodoRepository,
+                                      IFormuleRunner formuleRunner
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -233,6 +239,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_GiustificativiService = par_GiustificativiService;
             _par_FestivitaRepository = par_FestivitaRepository;
             _dip_PeriodoRepository = dip_PeriodoRepository;
+            _formuleRunner = formuleRunner;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
@@ -896,6 +903,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (NelRapporto(d) && results.Any(r => r.Data.Date == d))
                         giorniDaCalcolare.Add(d);
 
+            // formule personalizzate del rapporto nei giorni da calcolare (solo piano Pro, ANALISI_FORMULE.md)
+            if (giorniDaCalcolare.Count > 0)
+            {
+                int.TryParse(this.CurrentCompany, out var idCompanyFormule);
+                await _formuleRunner.PreparaRapportoAsync(idCompanyFormule, rapporto, giorniDaCalcolare.Min, giorniDaCalcolare.Max, orariSchema.Par_Giustificativi);
+            }
+
             // 2) fase giornaliera
             foreach (var d in giorniDaCalcolare)
                 await CalcolaGiorno(anagrafica, calc, rapporto, d, AllData, conOpzioni: d >= dal && d <= al);
@@ -971,20 +985,34 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 res.Min_NonRiconosciute = g.NonRiconosciute;
                 res.BancaOre = bancaOre && g.Qualificate > 0;
 
-                if (!_causaliGiorno.TryGetValue((rapporto.Id, g.Data), out var causali))
-                    continue;
+                bool haCausali = _causaliGiorno.TryGetValue((rapporto.Id, g.Data), out var causali);
+                causali ??= new Dictionary<int, TimeSpan>();
 
                 var profilo = ProfiloDelGiorno(orariSchema, rapporto.Id, g.Data);
-                if (profilo != null)
+                if (haCausali && profilo != null)
                     AggiungiCausaliEccedenze(causali, profilo, g, bancaOre);
 
                 _importiGiorno.TryGetValue((rapporto.Id, g.Data), out var importi);
-                ScriviCausali(AllData, rapporto.Id, g.Data, causali, importi);
+
+                // formule della fase Finale: lavorano sulle causali gia' qualificate, prima della scrittura
+                var importiFormule = importi ?? new Dictionary<int, decimal>();
+                var statoFormule = _formuleRunner.Esegui(FormulaFase.Finale, DatiFormule(anagrafica, rapporto, g.Data, FormulaFase.Finale, AllData, res, causali, importiFormule));
+                if (statoFormule != 0)
+                {
+                    var stato = res.Stato;
+                    AggiungiStatoFormule(ref stato, statoFormule);
+                    res.Stato = stato;
+                }
+
+                if (!haCausali && causali.Count == 0 && importiFormule.Count == 0)
+                    continue;
+                ScriviCausali(AllData, rapporto.Id, g.Data, causali, importiFormule.Count > 0 ? importiFormule : importi);
             }
 
-            // 5) cartellini mensili
-            foreach (var (anno, mese) in mesi)
-                await AggiornaCartellinoMese(orariSchema, rapporto, anno, mese, results);
+            // 5) cartellini mensili (non in "Prova formula": nessuna scrittura)
+            if (!_simulazione)
+                foreach (var (anno, mese) in mesi)
+                    await AggiornaCartellinoMese(orariSchema, rapporto, anno, mese, results);
         }
 
         private static void AggiungiCausaliEccedenze(Dictionary<int, TimeSpan> causali, Par_ProfiloOrarioModel profilo, GestionePresenzeEccedenze.Giorno g, bool bancaOre)
@@ -1108,6 +1136,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 Calcolo2Result = GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
 
+                // formule della fase Giorno: dopo le causali del giorno, prima della qualifica di periodo
+                if (_causaliGiorno.TryGetValue((rapporto_calc.Id, giorno.Date), out var causaliFormule))
+                {
+                    if (!_importiGiorno.TryGetValue((rapporto_calc.Id, giorno.Date), out var importiFormule))
+                        _importiGiorno[(rapporto_calc.Id, giorno.Date)] = importiFormule = new Dictionary<int, decimal>();
+                    var statoFormule = _formuleRunner.Esegui(FormulaFase.Giorno, DatiFormule(Dip_Anagrafica, rapporto_calc, giorno, FormulaFase.Giorno, AllData, dip_GG_Result, causaliFormule, importiFormule));
+                    AggiungiStatoFormule(ref Calcolo2Result, statoFormule);
+                }
+
                 dip_GG_Result.Stato = Dip_GG_Result_Helper.Combine(Calcolo1Result,
                                                                     Calcolo2Result,
                                                                     VersoTimbratureResult);
@@ -1221,8 +1258,92 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }
             #endregion
 
+            // log delle formule dei giorni ricalcolati
+            await _formuleRunner.SalvaLogAsync();
+
             return;
         }
+
+        #region "Formule personalizzate (ANALISI_FORMULE.md)"
+
+        private static void AggiungiStatoFormule(ref GG_ResultStato stato, GG_ResultStato statoFormule)
+        {
+            if (statoFormule.HasFlag(FormuleRunner.StatoWarningFormula))
+                Dip_GG_Result_Helper.AddDetail(ref stato, FormuleRunner.StatoWarningFormula);
+            if (statoFormule.HasFlag(FormuleRunner.StatoAnomaliaFormula))
+                Dip_GG_Result_Helper.AddDetail(ref stato, FormuleRunner.StatoAnomaliaFormula);
+        }
+
+        // dati del giorno per la facciata "x" delle formule: tutto in memoria, nessuna lettura dal DB
+        private static FormulaDatiGiorno DatiFormule(Dip_AnagraficaModel? anagrafica, Dip_RapportoLavoroModel rapporto, DateTime giorno, FormulaFase fase,
+                                                     Timesheet_AllData_OutModel allData, Dip_GG_ResultModel? result,
+                                                     Dictionary<int, TimeSpan> causali, Dictionary<int, decimal> importi)
+        {
+            var schema = allData.OrariSchema_4User_OutModel;
+            var dati = allData.Dip_GG_AllData_OutModel;
+            var daySlot = schema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto.Id && ds.Data.Date == giorno.Date);
+            var orarioBase = daySlot?.Orari.OrderBy(o => o.ZOrder).FirstOrDefault();
+            var parOrario = orarioBase != null ? schema.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario) : null;
+
+            return new FormulaDatiGiorno
+            {
+                Anagrafica = anagrafica,
+                Rapporto = rapporto,
+                Giorno = giorno.Date,
+                Fase = fase,
+                Result = result,
+                Causali = causali,
+                Importi = importi,
+                Timbrature = dati.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == rapporto.Id && t.GiornoCompetenza.Date == giorno.Date &&
+                                                               (t.RichiestaStato == StatoRichiesta.Diretta || t.RichiestaStato == StatoRichiesta.Approvata) &&
+                                                               !t.ToBeDeleted)
+                                                   .ToList(),
+                Giustificativi = dati.Dip_GG_Giustificativi.Where(gg => gg.IdDip_RapportoLavoro == rapporto.Id && gg.Data.Date == giorno.Date &&
+                                                                        (gg.RichiestaStato == StatoRichiesta.Diretta || gg.RichiestaStato == StatoRichiesta.Approvata) &&
+                                                                        !gg.ToBeDeleted)
+                                                           .ToList(),
+                Orario = parOrario,
+                Fasce = parOrario != null ? schema.Par_OrarioIntervalloHH.Where(hh => hh.IdPar_Orario == parOrario.Id).ToList() : new(),
+                Profilo = daySlot != null ? schema.Par_ProfiloOrario.FirstOrDefault(p => p.Id == daySlot.IdPar_ProfiloOrario) : null,
+                Festivo = daySlot?.Festivo ?? false
+            };
+        }
+
+        /// <summary>
+        /// "Prova formula": calcola un giorno di un rapporto eseguendo solo la formula indicata (testo non salvato),
+        /// senza scrivere nulla. Restituisce le causali prima e dopo la formula e il log (anche di debug).
+        /// </summary>
+        public virtual async Task<FormulaProvaRisultato> SimulaFormula(string idAspNetUsers, int idDip_RapportoLavoro, DateTime giorno, string testo, FormulaFase fase, int idAz_Anagrafica)
+        {
+            _simulazione = true;
+            _formuleRunner.ImpostaProva(testo, fase, giorno.Date, idAz_Anagrafica);
+
+            var calc = new TimeSheet_CalculateModel
+            {
+                Year = giorno.Year,
+                Month = giorno.Month,
+                Dal = giorno.Date,
+                Al = giorno.Date,
+                SelectedUserId = new List<string> { idAspNetUsers }
+            };
+            var caricamento = RangeCaricamento(calc.Dal, calc.Al);
+            var req = new GenericRequest<Timesheet_AllData_InModel>();
+            req.Data.Dal = caricamento.Dal;
+            req.Data.Al = caricamento.Al;
+            req.Data.UsersId = calc.SelectedUserId;
+
+            var allData = await Get_Timesheet_AllData(req, true);
+            if (allData.Success && allData.Data != null)
+            {
+                var anagrafica = allData.Data.OrariSchema_4User_OutModel.Dip_Anagrafica.FirstOrDefault(a => a.IdAspNetUsers == idAspNetUsers);
+                var rapporto = allData.Data.OrariSchema_4User_OutModel.Dip_RapportoLavoro.FirstOrDefault(r => r.Id == idDip_RapportoLavoro);
+                if (anagrafica != null && rapporto != null)
+                    await CalcolaRapporto(anagrafica, calc, rapporto, allData.Data);
+            }
+            return _formuleRunner.Prova ?? new FormulaProvaRisultato();
+        }
+
+        #endregion
         // le autorizzazioni alle ore in piu' non si approvano mai in automatico dal calcolo: le decide l'approvatore
         private static bool IsAutorizzazioneStraordinario(Dip_GG_RichiestaModel richiesta, List<int> idGiustAutorizzazione)
         {
@@ -2378,6 +2499,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess);
         Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess);
         Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess);
+        Task<FormulaProvaRisultato> SimulaFormula(string idAspNetUsers, int idDip_RapportoLavoro, DateTime giorno, string testo, FormulaFase fase, int idAz_Anagrafica);
     }
 
 

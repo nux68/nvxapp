@@ -4,6 +4,7 @@ import { Contatori_Riporto_Model } from "../../Contatori/Models/contatori-model"
 import { Dip_CompetenzaModel } from "../../Dip_Competenza/Models/dip-competenza-model";
 import { Dip_Rapporto_Giustificativi_MaturazioneModel } from "../../Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model";
 import { Dip_ProfiloOrarioModel } from "../../Dip_ProfiloOrario/Models/dip-profilo-orario-model";
+import { Dip_ProfiloFormuleModel } from "../../Par_ProfiloFormule/Models/par-profilo-formule-model";
 import { Dip_RapportoAutovettureModel } from "../../Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model";
 import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 
@@ -60,6 +61,8 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public pw: string;
 
   public dip_ProfiloOrario: Dip_ProfiloOrarioModel[];
+  /** profili formule dei rapporti (storicizzati Dal/Al, piano Pro) */
+  public dip_ProfiloFormule: Dip_ProfiloFormuleModel[] = [];
 
 
   constructor() {
