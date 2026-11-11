@@ -23,7 +23,7 @@ const COLORI = ['--ion-color-primary', '--ion-color-warning', '--ion-color-succe
 const MAX_FETTE = COLORI.length;
 
 /*
- Widget "Spazio per tipo documento" (Documentale, ANALISI_WIDGET_DOCUMENTALE.md): grafico a torta (ciambella SVG)
+ Widget "Spazio per tipo documento" (Documentale, ANALISI_DOCUMENTMANAGEMENT_WIDGET.md): grafico a torta (ciambella SVG)
  dello spazio occupato per tipologia; i tipi oltre il sesto confluiscono in "Altri", il cestino e' una fetta a parte.
  Dati da Doc_Widget/Doc_SpazioPerTipoGet (solo per chi amministra l'archivio).
 */

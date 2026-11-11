@@ -1,7 +1,7 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 
-// dashboard dell'utente corrente nell'azienda corrente (ANALISI_WIDGET.md)
+// dashboard dell'utente corrente nell'azienda corrente (ANALISI_INFRASTRUCTURE_WIDGET.md)
 export class UserDashboardGetInModel {
 }
 

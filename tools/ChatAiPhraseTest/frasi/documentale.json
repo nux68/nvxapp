@@ -1,4 +1,4 @@
-// Frasi di prova dei comandi del Documentale (formato: vedi README.md; analisi: ANALISI_VOCALI_DOCUMENTALE.md)
+// Frasi di prova dei comandi del Documentale (formato: vedi README.md; analisi: ANALISI_DOCUMENTMANAGEMENT_VOCALI.md)
 [
   { "frase": "trova il contratto di Rossi", "intent": "DocSearch", "slots": { "documentType": "contratto", "person": "Rossi" } },
   { "frase": "cedolini del 2025 di Bianchi", "intent": "DocSearch", "slots": { "documentType": "cedolino", "person": "Bianchi", "year": "2025" } },

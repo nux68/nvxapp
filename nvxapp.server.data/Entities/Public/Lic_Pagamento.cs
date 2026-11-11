@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Pagamento di una licenza (ANALISI_LICENZE.md §3.2): uno per sottoscrizione o rinnovo.
+     Pagamento di una licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §3.2): uno per sottoscrizione o rinnovo.
      Resta anche dopo la cancellazione del soggetto o dell'abbonamento (IdAbbonamento diventa null; IdCompany e
      IdFinancialAdvisor senza chiave esterna), come lo storico dello spazio, per i resoconti degli incassi.
      Debug = true: giro completo senza transazione reale (§7.2).
-     Ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): IdDealer e DealerDescrizione sono il centro del cliente
+     Ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): IdDealer e DealerDescrizione sono il centro del cliente
      al momento del pagamento (senza chiave esterna, come IdCompany); IdRendiconto e' il rendiconto che lo liquida al centro,
      IdRendicontoRettifica quello che lo storna se viene rimborsato dopo la liquidazione.
     */

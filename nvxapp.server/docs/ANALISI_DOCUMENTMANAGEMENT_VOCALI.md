@@ -1,10 +1,10 @@
 # Analisi: comandi vocali (chat AI) per il Documentale
 
 > Analisi dell'11/11/2026, branch `DocumentManagement_Dev` (lavoro su `DocumentManagement_Dev_vocali`, worktree
-> `wt_dm_vocali`). Documento gemello: `ANALISI_VOCALI_CRM.md` (branch CRM). Motore e voce: `ANALISI_CHAT_AI.md`.
+> `wt_dm_vocali`). Documento gemello: `ANALISI_VOCALI_CRM.md` (branch CRM). Motore e voce: `ANALISI_INFRASTRUCTURE_CHAT_AI.md`.
 >
 > **Obiettivo**: comandi in linguaggio naturale (chat e voce) per il Documentale, come previsto da
-> `ANALISI_DOCUMENTALE.md` §7.6 e §11 ("trova il contratto di Rossi", "documenti in scadenza",
+> `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §7.6 e §11 ("trova il contratto di Rossi", "documenti in scadenza",
 > "apri l'ultimo cedolino"), nel rispetto della decisione del 04/11/2026: **nessun contenuto dei documenti
 > viene inviato al LLM**.
 

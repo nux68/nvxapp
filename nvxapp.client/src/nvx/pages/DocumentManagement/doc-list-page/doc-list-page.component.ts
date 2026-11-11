@@ -10,7 +10,7 @@ import { DocumentManagementService } from '../../../ClientServer-Service/Documen
 import { DocCartellaModel, DocDipendenteModel, DocDocumentoListInModel, DocDocumentoListModel, DocEmptyInModel, DocIdInModel, DocPermessiModel, DocTipoModel, docSize } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
 
 /*
- Archivio dei documenti dell'azienda (ANALISI_DOCUMENTALE.md §7.1): filtri per cartella, tipologia, dipendente, anno,
+ Archivio dei documenti dell'azienda (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §7.1): filtri per cartella, tipologia, dipendente, anno,
  ricerca nel testo dei file; cestino. Ogni utente vede solo cio' che il server gli consente (documenti del personale
  solo con abilitazione). I documenti oltre la conservazione della tipologia sono segnalati, mai eliminati da soli.
  Colonna Firma: stato della firma se richiesta all'invio (firmato / firmati x su y / da firmare), altrimenti "non attiva".

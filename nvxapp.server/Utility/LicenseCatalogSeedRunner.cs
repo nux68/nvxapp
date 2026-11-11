@@ -3,7 +3,7 @@ using Serilog;
 
 namespace nvxapp.server.Utility
 {
-    // Listini iniziali delle licenze all'avvio, dopo le migration (ANALISI_LICENZE.md §15.5): li dichiarano i rami
+    // Listini iniziali delle licenze all'avvio, dopo le migration (ANALISI_INFRASTRUCTURE_LICENZE.md §15.5): li dichiarano i rami
     // (ILicenseCatalogSeed) e ognuno si crea una sola volta. Un errore non ferma l'avvio: si scrive nel log.
     public static class LicenseCatalogSeedRunner
     {

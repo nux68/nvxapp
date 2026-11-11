@@ -24,7 +24,7 @@ using Serilog;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
 {
     /*
-     Pagamenti delle licenze e loro ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md §4).
+     Pagamenti delle licenze e loro ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §4).
         - SuperUser: tutti i centri; genera, conferma, annulla e liquida i rendiconti; impostazioni e dati di liquidazione di ogni centro
         - DealerPowerAdmin / DealerAdmin: solo il proprio centro (dal token, mai dal client), senza le bozze;
           il DealerPowerAdmin aggiorna i dati di liquidazione (non la trattenuta) e la fattura del centro sui rendiconti

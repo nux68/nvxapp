@@ -2,7 +2,7 @@
 # LAN_IP arriva da DockerLocale.env: l'IP del PC nella rete locale, per aprire l'app da altri PC e dai telefoni.
 # Per un IP privato nessuna autorita' pubblica rilascia certificati: li firma l'autorita' locale di Caddy,
 # creata al primo avvio e salvata nel volume caddy_data. Il suo certificato radice va installato una volta
-# su ogni dispositivo (sezione 10 di nvxapp.server/docs/ANALISI_DOCKER.md), altrimenti il browser avvisa.
+# su ogni dispositivo (sezione 10 di nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md), altrimenti il browser avvisa.
 
 {
 	# certificati dall'autorita' locale di Caddy, mai da Let's Encrypt

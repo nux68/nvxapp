@@ -72,7 +72,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 
         /*
          Utente tolto dall'azienda (o eliminato): il dipendente resta, per la conservazione dei suoi documenti,
-         ma viene scollegato dall'utente e segnato come cessato (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §2.1).
+         ma viene scollegato dall'utente e segnato come cessato (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §2.1).
          Se l'utente viene eliminato, la chiave esterna (SetNull) lo scollega comunque in tutti gli schemi.
         */
         public async Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)

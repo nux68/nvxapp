@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Registro delle email di riepilogo inviate ai centri (ANALISI_PAGAMENTI_CENTRI.md §5).
+     Registro delle email di riepilogo inviate ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §5).
      Serve allo storico e a non inviare due volte lo stesso riepilogo automatico.
      Mese null = riepilogo annuale.
     */

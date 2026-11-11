@@ -11,7 +11,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 {
     /*
-     Spazio a disposizione delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3), uso interno degli applicativi.
+     Spazio a disposizione delle aziende (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3), uso interno degli applicativi.
      Conta solo i file del documentale; spazio solo per azienda; oltre quota si bloccano i caricamenti.
 
      Caricamento di un file:
@@ -20,7 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         2. salvataggio del file e dei metadati
         3. ConfirmAsync  (riuscito) oppure ReleaseAsync (errore)
      Eliminazione definitiva: FreeAsync. Di notte RecalculateAsync riallinea con la somma reale.
-     Quota (ANALISI_LICENZE.md §5.1, §15.7): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync).
+     Quota (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1, §15.7): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync).
         - sistema licenze spento           : spazio illimitato
         - sistema acceso, azienda coperta  : quota della licenza
         - sistema acceso, nessuna copertura: quota zero, caricamenti bloccati (StorageNoLicense). Il Documentale senza

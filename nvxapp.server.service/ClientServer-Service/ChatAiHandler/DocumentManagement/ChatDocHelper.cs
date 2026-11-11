@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManagement
 {
-    // Parti comuni dei comandi del Documentale della chat (ANALISI_VOCALI_DOCUMENTALE.md): ruoli, slot dei filtri,
+    // Parti comuni dei comandi del Documentale della chat (ANALISI_DOCUMENTMANAGEMENT_VOCALI.md): ruoli, slot dei filtri,
     // ricerca dei documenti. La visibilità la applica Doc_DocumentoList; il LLM non riceve mai i documenti.
     public static class ChatDocHelper
     {

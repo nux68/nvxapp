@@ -18,7 +18,7 @@ using System.Security.Claims;
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
 {
     /*
-     Chi sta lavorando nel documentale (azienda e ruoli del token) e cosa puo' fare (ANALISI_DOCUMENTALE.md §4):
+     Chi sta lavorando nel documentale (azienda e ruoli del token) e cosa puo' fare (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §4):
         - CompanyPowerAdmin: configurazione (tipologie, cartelle, impostazioni) e archivio aziendale
         - CompanyAdmin     : archivio aziendale
         - documenti del personale: il CompanyPowerAdmin e' sempre abilitato (vede e carica); il CompanyAdmin solo con

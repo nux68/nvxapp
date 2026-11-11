@@ -23,7 +23,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_ConfigService
 {
     /*
-     Configurazione del documentale dell'azienda (ANALISI_DOCUMENTALE.md §6.1): impostazioni, tipologie, cartelle,
+     Configurazione del documentale dell'azienda (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §6.1): impostazioni, tipologie, cartelle,
      abilitazioni ai documenti del personale. Tipologie, cartelle e impostazioni: CompanyPowerAdmin.
      Abilitazioni dei CompanyAdmin: CompanyPowerAdmin, SuperUser, DealerPowerAdmin del centro (il CompanyPowerAdmin e'
      sempre abilitato e non si modifica).
@@ -300,7 +300,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
 
         /*
          Dipendente (tabella comune Dip_Anagrafica): con il solo documentale i dipendenti si inseriscono qui, anche senza
-         account (ANALISI_DOCUMENTALE.md §2.1). Chi carica i documenti del personale. Codice fiscale e matricola unici
+         account (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §2.1). Chi carica i documenti del personale. Codice fiscale e matricola unici
          nell'azienda. Utente collegato, azienda e dati delle presenze non si toccano da qui.
         */
         public virtual async Task<GenericResult<Doc_DipendentePutOutModel>> Doc_DipendentePut(GenericRequest<Doc_DipendentePutInModel> model, Boolean isSubProcess)
