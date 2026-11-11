@@ -90,7 +90,10 @@
       "1": "Moke",
       "2": "Presenze",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "storageSettings": "Impostazioni spazio",
     "companyStorage": "Spazio documenti",
@@ -777,6 +780,9 @@
       "function2": "Presenze",
       "function3": "CRM",
       "function4": "Documentale",
+      "function5": "Risorse Umane",
+      "function6": "Compliance",
+      "function7": "Risorse aziendali",
       "function100": "Cumulativo (tutte le funzioni)",
       "level1": "Free",
       "level2": "Standard",
@@ -1230,7 +1236,10 @@
       "2": "Presenze",
       "general": "Generale",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "aiPending": "Risposta automatica in corso",
     "notification": {
@@ -1242,7 +1251,10 @@
       "0": "Funzioni base",
       "2": "Presenze",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "dashboard": {
       "customize": "Personalizza",

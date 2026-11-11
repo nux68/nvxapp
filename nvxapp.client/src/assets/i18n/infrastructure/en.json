@@ -90,7 +90,10 @@
       "1": "Moke",
       "2": "Attendance",
       "3": "CRM",
-      "4": "Document management"
+      "4": "Document management",
+      "5": "Human resources",
+      "6": "Compliance",
+      "7": "Company assets"
     },
     "storageSettings": "Storage settings",
     "companyStorage": "Document storage",
@@ -777,6 +780,9 @@
       "function2": "Attendance",
       "function3": "CRM",
       "function4": "Documents",
+      "function5": "Human resources",
+      "function6": "Compliance",
+      "function7": "Company assets",
       "function100": "Bundle (all functions)",
       "level1": "Free",
       "level2": "Standard",
@@ -1230,7 +1236,10 @@
       "2": "Attendance",
       "general": "General",
       "3": "CRM",
-      "4": "Document management"
+      "4": "Document management",
+      "5": "Human resources",
+      "6": "Compliance",
+      "7": "Company assets"
     },
     "aiPending": "Automatic answer in progress",
     "notification": {
@@ -1242,7 +1251,10 @@
       "0": "Core features",
       "2": "Attendance",
       "3": "CRM",
-      "4": "Documents"
+      "4": "Documents",
+      "5": "Human resources",
+      "6": "Compliance",
+      "7": "Company assets"
     },
     "dashboard": {
       "customize": "Customize",

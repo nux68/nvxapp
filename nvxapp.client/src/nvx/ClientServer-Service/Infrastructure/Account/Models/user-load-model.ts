@@ -86,4 +86,8 @@ export enum ApplicationType {
   AttendanceTracking = 2,
   Crm = 3,
   DocumentManagement = 4,
+  HumanResources = 5,
+  Compliance = 6,
+  Assets = 7,
+  // Administration = 8: riservato (Amministrazione, piu' avanti)
 }

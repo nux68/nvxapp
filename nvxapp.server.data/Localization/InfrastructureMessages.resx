@@ -652,6 +652,18 @@
     <value>Documentale</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicenseAmbito_5" xml:space="preserve">
+    <value>Risorse Umane</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_6" xml:space="preserve">
+    <value>Compliance</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_7" xml:space="preserve">
+    <value>Risorse aziendali</value>
+    <comment>licenze</comment>
+  </data>
   <data name="LicenseAmbito_100" xml:space="preserve">
     <value>Cumulativo (tutte le funzioni)</value>
     <comment>licenze</comment>
@@ -714,6 +726,18 @@
   </data>
   <data name="VoiceManualApp_4" xml:space="preserve">
     <value>Documentale</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_5" xml:space="preserve">
+    <value>Risorse Umane</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_6" xml:space="preserve">
+    <value>Compliance</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_7" xml:space="preserve">
+    <value>Risorse aziendali</value>
     <comment>manuale comandi vocali</comment>
   </data>
   <data name="VoiceManualAppIntro" xml:space="preserve">

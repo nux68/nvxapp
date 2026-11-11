@@ -119,7 +119,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
     public class LicenseGuard : ILicenseGuard
     {
-        public static readonly AmbitoLicenza[] Funzioni = { AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement };
+        public static readonly AmbitoLicenza[] Funzioni =
+        {
+            AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+            AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets
+        };
 
         /// <summary>spazio "illimitato": il massimo che le pagine dello spazio sanno mostrare in MB</summary>
         public const long SpazioIllimitatoBytes = (long)int.MaxValue * 1024L * 1024L;
