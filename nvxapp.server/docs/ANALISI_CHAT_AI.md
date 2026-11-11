@@ -257,3 +257,16 @@ Sospese inizialmente il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 tok
 - [ ] Voce in Chrome/Edge: risposte parlate, domande e conferme a voce a chat chiusa, interruzione parlando ed eco, "tieni premuto per parlare", durata dell'avviso (10 s)
 - [x] Log "ChatAI frase non capita" presente nei log con frase, pagina, ruoli e lingua. Da usare periodicamente per arricchire esempi e parole chiave
 - [x] Sessioni lunghe: con 50 turni di cronologia DeepSeek (modalità JSON) rispondeva vuoto in 10 turni su 12 e la chat non capiva più. Ora `AI:MaxHistoryTurns` = 6 (0 risposte vuote su 14) e, se capita, si ripete la chiamata senza cronologia
+
+## 11. Altri applicativi (11/11/2026)
+
+I comandi vocali sono stati estesi al CRM e al Documentale: analisi e comandi in `ANALISI_VOCALI_CRM.md` (branch CRM)
+e `ANALISI_VOCALI_DOCUMENTALE.md` (branch DocumentManagement). Nel motore (Infrastructure):
+
+- [x] I1 Comandi legati a un applicativo: `IntentDefinition.Application` e `IOpenableEntity.Application`
+  (`ApplicationType?`, null = comune). `ChatAIService` legge gli applicativi attivi dell'azienda
+  (`ICompanyApplicationRepository.ActiveApplications`, claim `company`), filtra il catalogo
+  (`IIntentCatalog.Filter4Applications`) e li passa a `IChatUserContext.Applications`; `OpenEntityHandler` cerca solo tra
+  le entità degli applicativi attivi. Senza azienda restano i comandi comuni. I comandi delle presenze sono legati ad
+  `AttendanceTracking` (branch AttendanceTracking)
+- [x] I2 `IRouteProvider.PromptPages`: i moduli aggiungono i nomi delle loro pagine al prompt di `Navigate`
