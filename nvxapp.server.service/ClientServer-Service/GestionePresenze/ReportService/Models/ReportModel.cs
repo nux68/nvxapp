@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaCdgService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportService.Models
@@ -11,7 +12,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
         PianoFerie = 2,              // Piano ferie
         QuadraturaMensile = 3,       // Quadratura mensile, per reparto
         NotaSpesePerTipo = 4,        // Note spese: per tipo di spesa
-        NotaSpesePerDipendente = 5   // Note spese: per dipendente
+        NotaSpesePerDipendente = 5,  // Note spese: per dipendente
+        GiornateDaSistemare = 6,     // Anomalie presenze: giornate da sistemare prima dell'export paghe (AT-AI.2)
+        MarginalitaCommesse = 7      // Marginalita' commesse (AT-CDG.3)
     }
 
     public class ReportModel
@@ -29,6 +32,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
         // note spese: stessi filtri della pagina (tipo di spesa, null/0 = tutti; stati, null/vuoto = tutti)
         public int? IdPar_TipoSpesa { get; set; }
         public List<StatoRichiesta>? Stati { get; set; }
+
+        // marginalita' commesse: periodo, costi orari e ricavi impostati nella pagina (non salvati, AT-CDG.1)
+        public CdgParametri? Cdg { get; set; }
     }
 
     public class Report_InModel

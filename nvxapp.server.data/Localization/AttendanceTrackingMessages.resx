@@ -1493,4 +1493,292 @@
     <value>Pausa "{0}": su un orario a coppia unica bisogna indicare la finestra della pausa.</value>
     <comment>pause</comment>
   </data>
+  <data name="AnomaliaTipo_TimbratureDispari" xml:space="preserve">
+    <value>Timbrature dispari</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornataVuota" xml:space="preserve">
+    <value>Giornata senza timbrature</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_ErroreCalcolo" xml:space="preserve">
+    <value>Errore del calcolo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_NonCalcolata" xml:space="preserve">
+    <value>Giornata non calcolata</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_RichiestaInAttesa" xml:space="preserve">
+    <value>Richiesta in attesa</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_FuoriOrario" xml:space="preserve">
+    <value>Timbratura fuori orario</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornoNonLavorativo" xml:space="preserve">
+    <value>Timbrature in giorno non lavorativo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaMancante" xml:space="preserve">
+    <value>Pausa mancante o insufficiente</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaEccessiva" xml:space="preserve">
+    <value>Pausa eccessiva</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_Ritardo" xml:space="preserve">
+    <value>Ritardo ricorrente</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_TimbratureDispari" xml:space="preserve">
+    <value>Numero dispari di timbrature ({0}): manca un'entrata o un'uscita</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornataVuota" xml:space="preserve">
+    <value>Nessuna timbratura e nessun giustificativo con {0} ore previste</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErroreCalcolo" xml:space="preserve">
+    <value>Errore del calcolo: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_NonCalcolata" xml:space="preserve">
+    <value>Giornata non calcolata: eseguire il ricalcolo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_RichiestaInAttesa" xml:space="preserve">
+    <value>Richieste del giorno ancora da approvare</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_FuoriOrario" xml:space="preserve">
+    <value>Timbrature fuori orario ({0}), orario dalle {1} alle {2}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornoNonLavorativo" xml:space="preserve">
+    <value>Timbrature in un giorno non lavorativo ({0})</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaMancante" xml:space="preserve">
+    <value>Pausa mancante o insufficiente: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaEccessiva" xml:space="preserve">
+    <value>Pausa eccessiva: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_Ritardo" xml:space="preserve">
+    <value>Ritardo di {0} minuti (ritardi ricorrenti)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrTimbratureMancanti" xml:space="preserve">
+    <value>timbrature mancanti</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrOreMancanti" xml:space="preserve">
+    <value>ore mancanti non giustificate</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrFormule" xml:space="preserve">
+    <value>anomalia delle formule</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrSequenza" xml:space="preserve">
+    <value>sequenza di timbrature non interpretabile</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrGenerico" xml:space="preserve">
+    <value>giornata in errore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaDaOrario" xml:space="preserve">
+    <value>secondo la pausa dell'orario</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_LavoroContinuo" xml:space="preserve">
+    <value>lavoro continuo di {0} ore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_StaccoLungo" xml:space="preserve">
+    <value>stacco di {0} ore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Nessuna" xml:space="preserve">
+    <value>Nessuna anomalia dal {0} al {1}.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Riepilogo" xml:space="preserve">
+    <value>Dal {0} al {1}: {2} giornate da sistemare e {3} da verificare, {4} dipendenti coinvolti.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioErrore" xml:space="preserve">
+    <value>{0}: {1} (da sistemare)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioAvviso" xml:space="preserve">
+    <value>{0}: {1} (da verificare)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_RitardiRicorrenti" xml:space="preserve">
+    <value>{0}: {1} ritardi, in media {2} minuti</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_PeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido (al massimo {0} giorni).</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_SoloAmministratori" xml:space="preserve">
+    <value>Funzione riservata agli amministratori dell'azienda.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="ChatDaysToFixDisplayName" xml:space="preserve">
+    <value>Giornate da sistemare</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixDescription" xml:space="preserve">
+    <value>Giornate del mese da sistemare prima dell'export paghe: timbrature dispari, giornate senza timbrature, errori del calcolo, richieste in attesa</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixFuture" xml:space="preserve">
+    <value>Il mese {0} non è ancora iniziato.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixNone" xml:space="preserve">
+    <value>Nessuna giornata da sistemare in {0}. Giornate con avvisi da verificare: {1}.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixTitle" xml:space="preserve">
+    <value>Giornate da sistemare in {0}: {1} ({2} dipendenti coinvolti)</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixWarnings" xml:space="preserve">
+    <value>Ci sono anche {0} giornate con avvisi da verificare nella pagina Anomalie presenze.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="DigestSectionAttendance" xml:space="preserve">
+    <value>Presenze</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToFix" xml:space="preserve">
+    <value>Giornate da sistemare prima dell'export paghe: {0} ({1} dipendenti)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToCheck" xml:space="preserve">
+    <value>Giornate con avvisi da verificare: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestLateness" xml:space="preserve">
+    <value>Dipendenti con ritardi ricorrenti: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestPlannedAbsences" xml:space="preserve">
+    <value>Assenze pianificate dal {1} al {2}: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAbsencePeak" xml:space="preserve">
+    <value>{0}: assenze previste {1} su {2} dipendenti attesi</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="Cdg_PeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido: dal mese al mese, al massimo {0} mesi.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_CostoNonValido" xml:space="preserve">
+    <value>Il costo orario non può essere negativo.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_SoloPowerAdmin" xml:space="preserve">
+    <value>Funzione riservata all'amministratore principale dell'azienda.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Report_GiornateDaSistemare_Titolo" xml:space="preserve">
+    <value>Giornate da sistemare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaSistemare" xml:space="preserve">
+    <value>Da sistemare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaVerificare" xml:space="preserve">
+    <value>Da verificare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateErrori" xml:space="preserve">
+    <value>Da sistemare prima dell'export paghe</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateAvvisi" xml:space="preserve">
+    <value>Da verificare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColTimbrature" xml:space="preserve">
+    <value>Timbrature</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColAnomalie" xml:space="preserve">
+    <value>Anomalie</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_RitardiRicorrenti" xml:space="preserve">
+    <value>Ritardi ricorrenti</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Marginalita_Titolo" xml:space="preserve">
+    <value>Marginalità commesse</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Periodo" xml:space="preserve">
+    <value>Periodo</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoOrarioPredefinito" xml:space="preserve">
+    <value>Costo orario predefinito</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoPersonale" xml:space="preserve">
+    <value>Costo personale</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColNoteSpese" xml:space="preserve">
+    <value>Note spese</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCosto" xml:space="preserve">
+    <value>Costo totale</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColRicavo" xml:space="preserve">
+    <value>Ricavo</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMargine" xml:space="preserve">
+    <value>Margine</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMarginePerc" xml:space="preserve">
+    <value>Margine %</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoOrario" xml:space="preserve">
+    <value>Costo orario</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostiOrari" xml:space="preserve">
+    <value>Costi orari dei dipendenti</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoPredefinitoNota" xml:space="preserve">
+    <value>* costo orario predefinito (non impostato per il dipendente).</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_MarginalitaMetodo" xml:space="preserve">
+    <value>Costo personale = ore del timesheet × costo orario. Note spese approvate ripartite sulle sottocommesse in proporzione alle ore del dipendente nel mese (senza ore: sottocommessa predefinita del rapporto). Costi e ricavi sono quelli impostati nella pagina al momento della stampa.</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_NoteNonAttribuite" xml:space="preserve">
+    <value>Note spese non attribuite a nessuna commessa: {0}</value>
+    <comment>report</comment>
+  </data>
 </root>

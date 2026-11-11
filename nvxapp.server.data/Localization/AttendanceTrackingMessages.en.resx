@@ -1489,4 +1489,292 @@
     <value>Break "{0}": on a single-pair schedule the break window is required.</value>
     <comment>pause</comment>
   </data>
+  <data name="AnomaliaTipo_TimbratureDispari" xml:space="preserve">
+    <value>Odd clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornataVuota" xml:space="preserve">
+    <value>Day without clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_ErroreCalcolo" xml:space="preserve">
+    <value>Calculation error</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_NonCalcolata" xml:space="preserve">
+    <value>Day not calculated</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_RichiestaInAttesa" xml:space="preserve">
+    <value>Pending request</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_FuoriOrario" xml:space="preserve">
+    <value>Clocking outside the schedule</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornoNonLavorativo" xml:space="preserve">
+    <value>Clockings on a non-working day</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaMancante" xml:space="preserve">
+    <value>Missing or short break</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaEccessiva" xml:space="preserve">
+    <value>Break too long</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_Ritardo" xml:space="preserve">
+    <value>Recurring late arrival</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_TimbratureDispari" xml:space="preserve">
+    <value>Odd number of clockings ({0}): an entry or an exit is missing</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornataVuota" xml:space="preserve">
+    <value>No clocking and no justification with {0} hours expected</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErroreCalcolo" xml:space="preserve">
+    <value>Calculation error: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_NonCalcolata" xml:space="preserve">
+    <value>Day not calculated: run the recalculation</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_RichiestaInAttesa" xml:space="preserve">
+    <value>Requests of the day still to be approved</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_FuoriOrario" xml:space="preserve">
+    <value>Clockings outside the schedule ({0}), schedule from {1} to {2}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornoNonLavorativo" xml:space="preserve">
+    <value>Clockings on a non-working day ({0})</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaMancante" xml:space="preserve">
+    <value>Missing or short break: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaEccessiva" xml:space="preserve">
+    <value>Break too long: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_Ritardo" xml:space="preserve">
+    <value>{0} minutes late (recurring late arrivals)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrTimbratureMancanti" xml:space="preserve">
+    <value>missing clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrOreMancanti" xml:space="preserve">
+    <value>missing hours not justified</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrFormule" xml:space="preserve">
+    <value>formula anomaly</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrSequenza" xml:space="preserve">
+    <value>clocking sequence cannot be interpreted</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrGenerico" xml:space="preserve">
+    <value>day in error</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaDaOrario" xml:space="preserve">
+    <value>according to the schedule break</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_LavoroContinuo" xml:space="preserve">
+    <value>{0} hours of continuous work</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_StaccoLungo" xml:space="preserve">
+    <value>{0} hours away</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Nessuna" xml:space="preserve">
+    <value>No anomalies from {0} to {1}.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Riepilogo" xml:space="preserve">
+    <value>From {0} to {1}: {2} days to fix and {3} to check, {4} employees involved.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioErrore" xml:space="preserve">
+    <value>{0}: {1} (to fix)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioAvviso" xml:space="preserve">
+    <value>{0}: {1} (to check)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_RitardiRicorrenti" xml:space="preserve">
+    <value>{0}: {1} late arrivals, {2} minutes on average</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_PeriodoNonValido" xml:space="preserve">
+    <value>Invalid period (at most {0} days).</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_SoloAmministratori" xml:space="preserve">
+    <value>This function is reserved to the company administrators.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="ChatDaysToFixDisplayName" xml:space="preserve">
+    <value>Days to fix</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixDescription" xml:space="preserve">
+    <value>Days of the month to fix before the payroll export: odd clockings, days without clockings, calculation errors, pending requests</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixFuture" xml:space="preserve">
+    <value>Month {0} has not started yet.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixNone" xml:space="preserve">
+    <value>No days to fix in {0}. Days with warnings to check: {1}.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixTitle" xml:space="preserve">
+    <value>Days to fix in {0}: {1} ({2} employees involved)</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixWarnings" xml:space="preserve">
+    <value>There are also {0} days with warnings to check in the Attendance anomalies page.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="DigestSectionAttendance" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToFix" xml:space="preserve">
+    <value>Days to fix before the payroll export: {0} ({1} employees)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToCheck" xml:space="preserve">
+    <value>Days with warnings to check: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestLateness" xml:space="preserve">
+    <value>Employees with recurring late arrivals: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestPlannedAbsences" xml:space="preserve">
+    <value>Planned absences from {1} to {2}: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAbsencePeak" xml:space="preserve">
+    <value>{0}: {1} expected absences out of {2} expected employees</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="Cdg_PeriodoNonValido" xml:space="preserve">
+    <value>Invalid period: from month to month, at most {0} months.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_CostoNonValido" xml:space="preserve">
+    <value>The hourly cost cannot be negative.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_SoloPowerAdmin" xml:space="preserve">
+    <value>This function is reserved to the main company administrator.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Report_GiornateDaSistemare_Titolo" xml:space="preserve">
+    <value>Days to fix</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaSistemare" xml:space="preserve">
+    <value>To fix</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaVerificare" xml:space="preserve">
+    <value>To check</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateErrori" xml:space="preserve">
+    <value>To fix before the payroll export</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateAvvisi" xml:space="preserve">
+    <value>To check</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColTimbrature" xml:space="preserve">
+    <value>Clockings</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColAnomalie" xml:space="preserve">
+    <value>Anomalies</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_RitardiRicorrenti" xml:space="preserve">
+    <value>Recurring late arrivals</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Marginalita_Titolo" xml:space="preserve">
+    <value>Job margins</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Periodo" xml:space="preserve">
+    <value>Period</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoOrarioPredefinito" xml:space="preserve">
+    <value>Default hourly cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoPersonale" xml:space="preserve">
+    <value>Staff cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColNoteSpese" xml:space="preserve">
+    <value>Expenses</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCosto" xml:space="preserve">
+    <value>Total cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColRicavo" xml:space="preserve">
+    <value>Revenue</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMargine" xml:space="preserve">
+    <value>Margin</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMarginePerc" xml:space="preserve">
+    <value>Margin %</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoOrario" xml:space="preserve">
+    <value>Hourly cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostiOrari" xml:space="preserve">
+    <value>Employee hourly costs</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoPredefinitoNota" xml:space="preserve">
+    <value>* default hourly cost (not set for the employee).</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_MarginalitaMetodo" xml:space="preserve">
+    <value>Staff cost = timesheet hours × hourly cost. Approved expenses split among sub-jobs in proportion to the employee's hours in the month (no hours: default sub-job of the employment). Costs and revenues are the ones set in the page when printing.</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_NoteNonAttribuite" xml:space="preserve">
+    <value>Expenses not assigned to any job: {0}</value>
+    <comment>report</comment>
+  </data>
 </root>

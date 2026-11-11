@@ -13,6 +13,10 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivityStatisticsService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivityStatisticsService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaCdgService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaCdgService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnomalieService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnomalieService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_PeriodoService;
@@ -83,6 +87,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                     return retVal;
                 }
 
+                // marginalita' commesse (AT-CDG.3): solo CompanyPowerAdmin, non dipende dai dipendenti selezionati
+                bool cdg = richiesta.Tipo == ReportTipo.MarginalitaCommesse;
+                if (cdg)
+                {
+                    if (!await HaRuolo("CompanyPowerAdmin"))
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_SoloPowerAdmin"));
+                    if (richiesta.Cdg == null)
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_PeriodoNonValido", Az_CommessaCdgService.Az_CommessaCdgService.MaxMesi));
+                }
+
                 // dipendenti richiesti, limitati a quelli che l'utente puo' vedere
                 var usersId = (richiesta.SelectedUserId ?? new List<string>()).Distinct().ToList();
                 if (!await HaRuolo("CompanyPowerAdmin"))
@@ -100,7 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                                      .Select(d => new Dipendente(d.IdAspNetUsers, NomeDipendente(d.Cognome, d.Nome, d.UserName)))
                                      .OrderBy(d => d.Nome, StringComparer.CurrentCultureIgnoreCase)
                                      .ToList();
-                if (dipendenti.Count == 0)
+                if (dipendenti.Count == 0 && !cdg)
                 {
                     retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExportPdfNoEmployees"), MessageType.Warning));
                     return retVal;
@@ -157,6 +171,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                             ReportTipo.QuadraturaMensile => await ReportQuadratura(ctx),
                             ReportTipo.NotaSpesePerTipo => await ReportNotaSpese(ctx, perDipendente: false),
                             ReportTipo.NotaSpesePerDipendente => await ReportNotaSpese(ctx, perDipendente: true),
+                            ReportTipo.GiornateDaSistemare => await ReportGiornateDaSistemare(ctx),
+                            ReportTipo.MarginalitaCommesse => await ReportMarginalita(ctx),
                             _ => throw new UserMessageException(T("Report_TipoNonValido"))
                         };
 
@@ -484,6 +500,127 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
             report.Tabelle.Add(tabella);
             return report;
         }
+
+        // ---------------------------------------------------------------- giornate da sistemare (AT-AI.2)
+
+        private static async Task<ReportPdf> ReportGiornateDaSistemare(Contesto ctx)
+        {
+            int anno = ctx.Richiesta.Year, mese = ctx.Richiesta.Month;
+            var req = new GenericRequest<Dip_Anomalie_GetInModel>();
+            req.Data.Dal = new DateTime(anno, mese, 1);
+            req.Data.Al = new DateTime(anno, mese, DateTime.DaysInMonth(anno, mese));
+            req.Data.UsersId = ctx.UsersId;
+            var r = Dati(await ctx.Get<IDip_AnomalieService>().AnomalieGet(req, true)).Risultato;
+
+            var report = ctx.NuovoReport(T("Report_GiornateDaSistemare_Titolo"), orizzontale: false);
+            report.Intestazione.Add(Voce(T("Report_Dipendenti"), r.DipendentiAnalizzati.ToString(CultureInfo.CurrentCulture)));
+            report.Intestazione.Add(Voce(T("Report_DaSistemare"), r.GiornateDaSistemare.ToString(CultureInfo.CurrentCulture)));
+            report.Intestazione.Add(Voce(T("Report_DaVerificare"), r.GiornateDaVerificare.ToString(CultureInfo.CurrentCulture)));
+
+            foreach (var (titolo, giornate) in new[]
+                     {
+                         (T("Report_GiornateErrori"), r.Giornate.Where(g => g.DaSistemare).ToList()),
+                         (T("Report_GiornateAvvisi"), r.Giornate.Where(g => !g.DaSistemare).ToList())
+                     })
+            {
+                if (giornate.Count == 0)
+                    continue;
+                var tabella = new ReportPdf_Tabella
+                {
+                    Titolo = titolo,
+                    Colonne =
+                    {
+                        new ReportPdf_Colonna(T("Report_ColData"), 2.2),
+                        new ReportPdf_Colonna(T("Report_ColDipendente"), 4.4),
+                        new ReportPdf_Colonna(T("Report_ColTimbrature"), 3.4),
+                        new ReportPdf_Colonna(T("Report_ColAnomalie"), 8.6)
+                    }
+                };
+                foreach (var g in giornate)
+                    tabella.Righe.Add(new ReportPdf_Riga(g.Data.ToString("d", CultureInfo.CurrentCulture),
+                                                         g.NomeDipendente,
+                                                         string.Join(" ", g.Timbrature),
+                                                         string.Join("\n", g.Anomalie.OrderByDescending(a => a.Gravita).Select(a => a.Descrizione))));
+                report.Tabelle.Add(tabella);
+            }
+            if (r.RitardiRicorrenti.Count > 0)
+                report.Note.Add(T("Report_RitardiRicorrenti") + ": " + string.Join("  ·  ",
+                                r.RitardiRicorrenti.Select(x => T("Anomalie_RitardiRicorrenti", x.NomeDipendente, x.Ritardi, x.RitardoMedioMin))));
+            if (r.Giornate.Count == 0)
+                report.Note.Add(T("Anomalie_Nessuna", r.Dal.ToString("d", CultureInfo.CurrentCulture), r.Al.ToString("d", CultureInfo.CurrentCulture)));
+            return report;
+        }
+
+        // ---------------------------------------------------------------- marginalita' commesse (AT-CDG.3)
+
+        private static async Task<ReportPdf> ReportMarginalita(Contesto ctx)
+        {
+            var p = ctx.Richiesta.Cdg!;
+            var r = await ctx.Get<IAz_CommessaCdgService>().Calcola(p);
+
+            var report = ctx.NuovoReport(T("Report_Marginalita_Titolo"), orizzontale: true);
+            // periodo dal mese al mese al posto del mese
+            report.Intestazione.RemoveAt(report.Intestazione.Count - 1);
+            report.Intestazione.Add(Voce(T("Report_Periodo"), $"{r.Dal.ToString("d", CultureInfo.CurrentCulture)} - {r.Al.ToString("d", CultureInfo.CurrentCulture)}"));
+            report.Intestazione.Add(Voce(T("Report_CostoOrarioPredefinito"), Euro(r.CostoOrarioPredefinito)));
+
+            var tabella = new ReportPdf_Tabella
+            {
+                Colonne =
+                {
+                    new ReportPdf_Colonna(T("Report_ColCommessa"), 7.4),
+                    new ReportPdf_Colonna(T("Report_ColOre"), 2.2, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColCostoPersonale"), 3.0, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColNoteSpese"), 2.8, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColCosto"), 3.0, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColRicavo"), 3.0, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColMargine"), 3.0, ReportPdf_Allineamento.Destra),
+                    new ReportPdf_Colonna(T("Report_ColMarginePerc"), 2.2, ReportPdf_Allineamento.Destra)
+                }
+            };
+            ReportPdf_Riga Riga(ReportPdf_TipoRiga tipo, string nome, CdgValori v) => new ReportPdf_Riga(tipo,
+                new ReportPdf_Cella(nome), new ReportPdf_Cella(TimeSheetPdfWriter.HHMM(v.Minuti)), new ReportPdf_Cella(Euro(v.CostoPersonale)),
+                new ReportPdf_Cella(Euro(v.NoteSpese)), new ReportPdf_Cella(Euro(v.Costo)),
+                new ReportPdf_Cella(v.Ricavo.HasValue ? Euro(v.Ricavo.Value) : "-"), new ReportPdf_Cella(v.Margine.HasValue ? Euro(v.Margine.Value) : "-"),
+                new ReportPdf_Cella(v.MarginePerc.HasValue ? v.MarginePerc.Value.ToString("N2", CultureInfo.CurrentCulture) + " %" : "-"));
+
+            foreach (var c in r.Commesse)
+            {
+                tabella.Righe.Add(Riga(ReportPdf_TipoRiga.Gruppo, string.IsNullOrWhiteSpace(c.Cliente) ? c.Descrizione : $"{c.Descrizione}\n{c.Cliente}", c));
+                foreach (var s in c.SubCommesse)
+                    tabella.Righe.Add(Riga(ReportPdf_TipoRiga.Normale, "   " + s.Descrizione, s));
+            }
+            if (r.Commesse.Count > 0)
+                tabella.Righe.Add(Riga(ReportPdf_TipoRiga.Totale, T("Report_TotaleComplessivo"), r.Totale));
+            report.Tabelle.Add(tabella);
+
+            if (r.Dipendenti.Count > 0)
+            {
+                var dip = new ReportPdf_Tabella
+                {
+                    Titolo = T("Report_CostiOrari"),
+                    Colonne =
+                    {
+                        new ReportPdf_Colonna(T("Report_ColDipendente"), 7.4),
+                        new ReportPdf_Colonna(T("Report_ColOre"), 2.2, ReportPdf_Allineamento.Destra),
+                        new ReportPdf_Colonna(T("Report_ColCostoOrario"), 3.0, ReportPdf_Allineamento.Destra),
+                        new ReportPdf_Colonna(T("Report_ColNoteSpese"), 2.8, ReportPdf_Allineamento.Destra)
+                    }
+                };
+                foreach (var d in r.Dipendenti)
+                    dip.Righe.Add(new ReportPdf_Riga(d.NomeDipendente, TimeSheetPdfWriter.HHMM(d.Minuti),
+                                                     Euro(d.CostoOrario) + (d.DaPredefinito ? " *" : ""), Euro(d.NoteSpese)));
+                report.Tabelle.Add(dip);
+                report.Note.Add(T("Report_CostoPredefinitoNota"));
+            }
+            report.Note.Add(T("Report_MarginalitaMetodo"));
+            if (r.GiornateEscluse > 0)
+                report.Note.Add(T("Report_GiornateEscluse", r.GiornateEscluse));
+            if (r.NoteSpeseNonAttribuite > 0)
+                report.Note.Add(T("Report_NoteNonAttribuite", Euro(r.NoteSpeseNonAttribuite)));
+            return report;
+        }
+
 
         private static string DescrizioneSpesa(Dip_GG_NotaSpesaModel s)
         {
