@@ -1,0 +1,14 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      @if (!dipendente) {
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.myPayslips.notEmployee' | transloco }}</ion-note>
+      } @else {
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.myPayslips.note' | transloco }}</ion-note>
+      }
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="document-text-outline" [searchText]="searchText" [highlight]="daConfermare"></nvx-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

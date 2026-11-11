@@ -1,0 +1,42 @@
+<app-page-toolbar [title]="titolo" [showFilter]="false" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  @if (dati) {
+    <ion-card>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>
+            <h2>{{ titolo }} · {{ 'hr.enums.statoCaricamento.' + dati.caricamento.stato | transloco }}</h2>
+            <p>{{ dati.caricamento.nomeFile }} · {{ 'hr.fields.pagine' | transloco }}: {{ dati.caricamento.numeroPagine }} · {{ 'hr.enums.origine.' + dati.caricamento.origine | transloco }}</p>
+            @if (dati.caricamento.messaggio) { <p><ion-note color="danger">{{ dati.caricamento.messaggio }}</ion-note></p> }
+          </ion-label>
+        </ion-item>
+        @if (dati.caricamento.stato === 0) {
+          <ion-note class="nvx-nota-disabled">{{ 'hr.pages.payslipDetail.processing' | transloco }}</ion-note>
+        }
+        @if (dati.conferme.pubblicati > 0) {
+          <ion-item lines="none">
+            <ion-label>{{ 'hr.pages.payslipDetail.report' | transloco }}</ion-label>
+            <ion-chip color="success">{{ 'hr.pages.payslipDetail.confirmedN' | transloco: { n: dati.conferme.confermati } }}</ion-chip>
+            <ion-chip color="warning">{{ 'hr.pages.payslipDetail.waitingN' | transloco: { n: dati.conferme.daConfermare } }}</ion-chip>
+            <ion-chip color="medium">{{ 'hr.pages.payslipDetail.noUserN' | transloco: { n: dati.conferme.senzaUtente } }}</ion-chip>
+          </ion-item>
+        }
+        <ion-segment [(ngModel)]="sezione" [scrollable]="true">
+          <ion-segment-button value="documenti"><ion-label>{{ 'hr.fields.documenti' | transloco }} ({{ dati.documenti.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="scarti"><ion-label>{{ 'hr.pages.payslipDetail.pagesToCheck' | transloco }} ({{ daVerificare }}/{{ dati.scarti.length }})</ion-label></ion-segment-button>
+        </ion-segment>
+        @switch (sezione) {
+          @case ('documenti') {
+            <nvx-list [items]="dati.documenti" [columns]="colDocumenti" [actions]="azDocumenti" icon="document-text-outline"></nvx-list>
+          }
+          @case ('scarti') {
+            <ion-note class="nvx-nota-disabled">{{ 'hr.pages.payslipDetail.scrapNote' | transloco }}</ion-note>
+            <nvx-list [items]="dati.scarti" [columns]="colScarti" [actions]="azScarti" icon="alert-circle-outline" [rowDisabled]="scartoChiuso"></nvx-list>
+          }
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
