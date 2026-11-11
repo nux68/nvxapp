@@ -1,0 +1,166 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="FilterPayments($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+      <div class="nvx-pay-filters">
+        @if (data?.isSuperUser && data!.dealer.length > 0) {
+          <ion-select [(ngModel)]="idDealer" (ionChange)="load()" [label]="'pages.payment.dealer' | transloco" labelPlacement="floating" interface="popover">
+            @for (d of data!.dealer; track d.idDealer) {
+              <ion-select-option [value]="d.idDealer">{{ d.descrizione }}</ion-select-option>
+            }
+          </ion-select>
+        }
+        <ion-select [(ngModel)]="anno" (ionChange)="load()" [label]="'pages.payment.year' | transloco" labelPlacement="floating" interface="popover">
+          @for (a of anni; track a) {
+            <ion-select-option [value]="a">{{ a }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-select [(ngModel)]="mese" (ionChange)="load()" [label]="'pages.payment.month' | transloco" labelPlacement="floating" interface="popover">
+          <ion-select-option [value]="0">{{ 'pages.payment.wholeYear' | transloco }}</ion-select-option>
+          @for (m of monthNavigator.monthNames; track $index) {
+            <ion-select-option [value]="$index + 1">{{ m }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      @if (riepilogo; as r) {
+        <div class="nvx-pay-tiles">
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.payments' | transloco }}</span>
+            <strong>{{ r.numeroPagamenti }}</strong>
+          </div>
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.collected' | transloco }}</span>
+            <strong>{{ r.incassato | number:'1.2-2' }}</strong>
+          </div>
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.fee' | transloco }} {{ r.percentualePiattaforma }}%</span>
+            <strong>{{ r.quotaPiattaforma | number:'1.2-2' }}</strong>
+          </div>
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.dealerShareEstimated' | transloco }}</span>
+            <strong>{{ r.quotaCentro | number:'1.2-2' }}</strong>
+          </div>
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.paid' | transloco }}</span>
+            <strong>{{ r.liquidato | number:'1.2-2' }}</strong>
+          </div>
+          <div class="nvx-pay-tile">
+            <span>{{ 'pages.payment.toPay' | transloco }}</span>
+            <strong>{{ r.daLiquidare | number:'1.2-2' }}</strong>
+          </div>
+        </div>
+        <p class="nvx-nota-disabled">{{ 'pages.payment.estimateNote' | transloco }}</p>
+        @if (r.rimborsato > 0) {
+          <p class="nvx-nota-disabled">{{ 'pages.paymentDealer.refundedNote' | transloco: { importo: (r.rimborsato | number:'1.2-2') } }}</p>
+        }
+        @if (r.numeroDebug > 0) {
+          <ion-note color="warning">{{ 'pages.paymentDealer.debugNote' | transloco: { count: r.numeroDebug, importo: (r.importoDebug | number:'1.2-2') } }}</ion-note>
+        }
+        @if (mese > 0) {
+          <p>
+            @if (r.rendiconto; as s) {
+              {{ 'pages.paymentDealer.monthSettlement' | transloco: { stato: ('pages.payment.settlementState' + s.stato | transloco), quota: (s.quotaCentro | number:'1.2-2') } }}
+            } @else if (meseConcluso) {
+              {{ 'pages.paymentDealer.noSettlement' | transloco }}
+            } @else {
+              {{ 'pages.paymentDealer.monthNotClosed' | transloco }}
+            }
+          </p>
+        }
+      }
+      @if (data && !data.emailConfigurata) {
+        <ion-note color="medium">{{ 'pages.payment.emailNotConfigured' | transloco }}</ion-note>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'pages.paymentDealer.settlements' | transloco: { anno: anno } }}</ion-label>
+      </ion-item>
+      <p class="nvx-nota-disabled">{{ (data?.isSuperUser ? 'pages.paymentDealer.settlementsNoteSuperUser' : 'pages.paymentDealer.settlementsNote') | transloco }}</p>
+      <nvx-list
+        [items]="data?.rendiconto"
+        [columns]="settlementColumns"
+        [actions]="settlementActions"
+        trackKey="id"
+        icon="document-text-outline"
+        [emptyText]="'pages.paymentDealer.noSettlements' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'pages.paymentDealer.payments' | transloco: { periodo: periodo } }}</ion-label>
+      </ion-item>
+      <nvx-list
+        [items]="data?.pagamento"
+        [columns]="paymentColumns"
+        trackKey="id"
+        icon="card-outline"
+        [searchText]="searchPayments"
+        [rowDisabled]="isPaymentDisabled"
+        [disabledToggleLabel]="'pages.paymentDealer.showOtherPayments' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+  @if (data && data.invio.length > 0) {
+    <ion-card>
+      <ion-card-content>
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.paymentDealer.emails' | transloco }}</ion-label>
+        </ion-item>
+        @for (i of data.invio; track $index) {
+          <ion-item lines="none">
+            <ion-icon slot="start" [name]="i.esito ? 'checkmark-circle-outline' : 'alert-circle-outline'" [color]="i.esito ? 'success' : 'danger'"></ion-icon>
+            <ion-label>
+              {{ i.data | date:'dd/MM/yyyy HH:mm' }} – {{ emailLabel(i) }}
+              @if (i.automatico) { ({{ 'pages.paymentDealer.automatic' | transloco }}) }
+              <p>{{ i.destinatari }}</p>
+              @if (i.errore) {
+                <p class="nvx-pay-error">{{ i.errore }}</p>
+              }
+            </ion-label>
+          </ion-item>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+
+</ion-content>
+
+<!-- dialogo di liquidazione (SuperUser) -->
+<ng-template #payDialog>
+  <p>{{ 'pages.paymentDealer.payDialog' | transloco }}</p>
+  <ion-item>
+    <ion-input type="date" [(ngModel)]="payDate" [label]="'pages.paymentDealer.payDate' | transloco" labelPlacement="floating"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-input [(ngModel)]="payReference" maxlength="100" [label]="'pages.paymentDealer.payReference' | transloco" labelPlacement="floating"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-input [(ngModel)]="payNote" maxlength="500" [label]="'pages.paymentDealer.payNote' | transloco" labelPlacement="floating"></ion-input>
+  </ion-item>
+</ng-template>
+
+<!-- dialogo della fattura del centro -->
+<ng-template #invoiceDialog>
+  <p>{{ 'pages.paymentDealer.invoiceDialog' | transloco }}</p>
+  <ion-item>
+    <ion-input [(ngModel)]="invoiceNumber" maxlength="50" [label]="'pages.paymentDealer.invoiceNumber' | transloco" labelPlacement="floating"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-input type="date" [(ngModel)]="invoiceDate" [label]="'pages.paymentDealer.invoiceDate' | transloco" labelPlacement="floating"></ion-input>
+  </ion-item>
+</ng-template>

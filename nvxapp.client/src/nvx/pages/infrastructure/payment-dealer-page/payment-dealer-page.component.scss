@@ -1,0 +1,41 @@
+// filtri del periodo e caselle dei totali (come in payment-report-page)
+.nvx-pay-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  ion-select {
+    min-width: 160px;
+    flex: 0 1 220px;
+  }
+}
+
+.nvx-pay-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 14px 0 6px;
+}
+
+.nvx-pay-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--ion-color-light);
+
+  span {
+    font-size: 0.8em;
+    color: var(--ion-color-medium);
+  }
+
+  strong {
+    font-size: 1.25em;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.nvx-pay-error {
+  color: var(--ion-color-danger);
+}
