@@ -1001,7 +1001,8 @@
       "actions": "Actions"
     },
     "pageToolbar": {
-      "searchPlaceholder": "Search"
+      "searchPlaceholder": "Search",
+      "dashboard": "Go to dashboard"
     },
     "parameterLoader": {
       "title": "Loading...",

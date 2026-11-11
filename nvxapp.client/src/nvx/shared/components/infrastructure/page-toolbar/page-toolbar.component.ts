@@ -4,7 +4,8 @@ import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Platform } from '@ionic/angular';
+import { NavController, Platform } from '@ionic/angular';
+import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -30,12 +31,19 @@ export class PageToolbarComponent {
 
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
+              private authService: AuthService,
+              private navCtrl: NavController,
               private platform: Platform,
               private http: HttpClient)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
   }
 
+
+  // c'e' un login attivo (stesso criterio della guardia della dashboard)
+  public get isLoggedIn(): boolean {
+    return this.authService.Token != null;
+  }
 
   // username dell'utente del login (il primo della cronologia)
   public get loggedUserName(): string | null {
@@ -48,6 +56,10 @@ export class PageToolbarComponent {
     if (!cronologia || cronologia.length < 2)
       return null;
     return cronologia[cronologia.length - 1]?.userData?.userName ?? null;
+  }
+
+  goToDashboard(): void {
+    this.navCtrl.navigateRoot('/dashboard');
   }
 
   public get isMobile(): boolean {
