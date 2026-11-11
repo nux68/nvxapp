@@ -79,9 +79,20 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources._utility
 
         public ApplicationType Application => ApplicationType.HumanResources;
 
-        // per ora solo la configurazione: i conteggi arrivano con le aree del modulo
-        public Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
-            => Task.FromResult(new List<DeletionCountModel>());
+        public async Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            await using var db = await HrSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return new List<DeletionCountModel>();
+            var rep = new HrRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            return new List<DeletionCountModel>
+            {
+                new() { Label = HumanResourcesMessages.Get("DeletionCountDocuments"), Count = await rep.Hr_DocDipendente.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = HumanResourcesMessages.Get("DeletionCountCourses"), Count = await rep.Hr_Corso.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = HumanResourcesMessages.Get("DeletionCountChecklists"), Count = await rep.Hr_Checklist.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+            };
+        }
 
         // multi-tenant: lo schema si elimina con gli altri (DeletionService)
         public async Task DeleteCompanyDataAsync(int idCompany, CancellationToken cancellationToken = default)
@@ -95,11 +106,30 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources._utility
             var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             if (idAz == 0)
                 return;
+            // i file stanno in IFileStorage: li elimina DeletionService con quelli dell'azienda
+            await rep.Hr_DocCaricamento.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Hr_PianoFormazione.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Hr_Corso.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Hr_Checklist.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            await rep.Hr_ChecklistModello.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Hr_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 
-        // nessun dato legato all'utente per ora
-        public Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
-            => Task.CompletedTask;
+        /*
+         Utente tolto dall'azienda: i documenti del dipendente (cedolini, attestati, checklist) restano all'azienda per gli obblighi
+         di conservazione (HR-D4, scelta provvisoria); l'utente perde solo l'accesso. Le voci di cui era responsabile restano
+         senza responsabile (avvisi agli amministratori).
+        */
+        public async Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
+        {
+            await using var db = await HrSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return;
+            var rep = new HrRepositorySet(db, _sp, _http);
+            await rep.Hr_ChecklistModelloVoce.FindAll(x => x.IdAspNetUsersResponsabile == idAspNetUsers)
+                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, (string?)null), cancellationToken);
+            await rep.Hr_ChecklistVoce.FindAll(x => x.IdAspNetUsersResponsabile == idAspNetUsers)
+                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersResponsabile, (string?)null), cancellationToken);
+        }
     }
 }
