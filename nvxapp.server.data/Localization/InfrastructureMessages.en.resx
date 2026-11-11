@@ -1087,4 +1087,20 @@ The statement is attached.</value>
     <value>This request is confirmed by opening the linked document</value>
     <comment>servizi comuni</comment>
   </data>
+  <data name="CalendarFeedNoCompany" xml:space="preserve">
+    <value>The personal calendar is only available when working in a company</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarFeedNotAllowed" xml:space="preserve">
+    <value>You do not work in this company: personal calendar not available</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarFeedName" xml:space="preserve">
+    <value>Deadlines and appointments - {0}</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarDeadlineTitle" xml:space="preserve">
+    <value>Deadline: {0}</value>
+    <comment>calendario</comment>
+  </data>
 </root>
