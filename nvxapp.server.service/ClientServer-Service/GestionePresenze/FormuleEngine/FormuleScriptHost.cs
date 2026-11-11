@@ -88,9 +88,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
 
         /// <summary>
         /// Controllo della formula senza eseguirla: sintassi JavaScript e membri di "x" inesistenti
-        /// (x.Pippo, x.Causale.Pippo). Lista vuota = formula corretta.
+        /// (x.Pippo, x.Causale.Pippo). Con <paramref name="codici"/> controlla anche i codici scritti tra virgolette
+        /// nelle chiamate x.Causale.* e x.Giustificativo.* (es. x.Causale.GetMin("ORDI") con ORDI inesistente).
+        /// Lista vuota = formula corretta.
         /// </summary>
-        public static List<FormulaErrore> CtrlSintassi(string? testo)
+        public static List<FormulaErrore> CtrlSintassi(string? testo, FormulaCodici? codici = null)
         {
             var errori = new List<FormulaErrore>();
             if (string.IsNullOrWhiteSpace(testo))
@@ -132,7 +134,38 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
             }
 
             ControllaMembri(script, errori);
+            if (codici != null)
+                ControllaCodici(script, codici, errori);
             return errori;
+        }
+
+        // x.Causale.Metodo("COD", ...) e x.Giustificativo.Metodo("COD"): i codici scritti come testo devono esistere nell'azienda
+        private static void ControllaCodici(Node nodo, FormulaCodici codici, List<FormulaErrore> errori)
+        {
+            if (nodo is CallExpression call && call.Callee is MemberExpression metodo && !metodo.Computed
+                && metodo.Object is MemberExpression oggetto && !oggetto.Computed
+                && oggetto.Object is Identifier x && x.Name == "x" && oggetto.Property is Identifier nomeOggetto
+                && (nomeOggetto.Name == "Causale" || nomeOggetto.Name == "Giustificativo"))
+            {
+                bool causale = nomeOggetto.Name == "Causale";
+                IEnumerable<string> validi = causale ? codici.Causali.Keys : codici.Giustificativi.Keys;
+                foreach (var arg in call.Arguments)
+                {
+                    if (arg is not Literal lit || lit.Value is not string codice)
+                        continue;
+                    bool esiste = causale ? codici.Causali.ContainsKey(codice.Trim()) : codici.Giustificativi.ContainsKey(codice.Trim());
+                    if (!esiste)
+                        errori.Add(new FormulaErrore
+                        {
+                            Riga = Math.Max(1, arg.Location.Start.Line - RigheScarto),
+                            Colonna = arg.Location.Start.Column + 1,
+                            Messaggio = $"{(causale ? "Causale" : "Giustificativo")} '{codice}' inesistente. {FormulaCodici.Suggerimenti(codice, validi)}"
+                        });
+                }
+            }
+
+            foreach (var figlio in nodo.ChildNodes)
+                ControllaCodici(figlio, codici, errori);
         }
 
         // x.Membro e x.Oggetto.Membro devono esistere nella facciata (membri [FormulaApi])

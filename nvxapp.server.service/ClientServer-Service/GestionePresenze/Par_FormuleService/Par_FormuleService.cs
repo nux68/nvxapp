@@ -32,6 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
         private readonly IFormuleAccesso _formuleAccesso;
         private readonly ITimeSheet_EngineService _timeSheet_EngineService;
         private readonly ILlmClient _llmClient;
+        private readonly IPar_CausaliRepository _par_CausaliRepository;
+        private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
 
         public Par_FormuleService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -47,7 +49,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IFormuleAccesso formuleAccesso,
                                   ITimeSheet_EngineService timeSheet_EngineService,
-                                  ILlmClient llmClient) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  ILlmClient llmClient,
+                                  IPar_CausaliRepository par_CausaliRepository,
+                                  IPar_GiustificativiRepository par_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_FormuleRepository = par_FormuleRepository;
             _par_ProfiloFormuleDettRepository = par_ProfiloFormuleDettRepository;
@@ -57,11 +61,42 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
             _formuleAccesso = formuleAccesso;
             _timeSheet_EngineService = timeSheet_EngineService;
             _llmClient = llmClient;
+            _par_CausaliRepository = par_CausaliRepository;
+            _par_GiustificativiRepository = par_GiustificativiRepository;
         }
 
         private Task<int> Azienda() => _formuleAccesso.VerificaAsync(this.CurrentUserId, this.CurrentCompany);
 
         private static string T(string key, params object?[] args) => AttendanceTrackingMessages.Get(key, args);
+
+        // codici di causali e giustificativi dell'azienda: per il controllo dei codici scritti nella formula
+        private FormulaCodici Codici(int idAzienda)
+        {
+            var codici = new FormulaCodici();
+            foreach (var c in _par_CausaliRepository.FindAll(c => c.IdAz_Anagrafica == idAzienda).ToList())
+                if (!string.IsNullOrWhiteSpace(c.Codice))
+                {
+                    codici.Causali[c.Codice.Trim()] = (c.Id, c.Tipo);
+                    codici.CodiceCausale[c.Id] = c.Codice.Trim();
+                }
+            foreach (var g in _par_GiustificativiRepository.FindAll(g => g.IdAz_Anagrafica == idAzienda).ToList())
+                if (!string.IsNullOrWhiteSpace(g.Codice))
+                    codici.Giustificativi[g.Codice.Trim()] = g.Id;
+            return codici;
+        }
+
+        // elenco di causali e giustificativi dell'azienda per il prompt dell'AI (configurazione, nessun dato dei dipendenti)
+        private string CodiciPerAI(int idAzienda)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append("Causali dell'azienda (codice - descrizione - tipo):\n");
+            foreach (var c in _par_CausaliRepository.FindAll(c => c.IdAz_Anagrafica == idAzienda).OrderBy(c => c.Codice).ToList())
+                sb.Append($"{c.Codice} - {c.Descrizione} - {(c.Tipo == TipoValore.Importo ? "importo" : "ore")}\n");
+            sb.Append("\nGiustificativi dell'azienda (codice - descrizione):\n");
+            foreach (var g in _par_GiustificativiRepository.FindAll(g => g.IdAz_Anagrafica == idAzienda).OrderBy(g => g.Codice).ToList())
+                sb.Append($"{g.Codice} - {g.Descrizione}\n");
+            return sb.ToString();
+        }
 
         private static string Riassunto(List<FormulaErrore> errori)
             => string.Join("; ", errori.Take(3).Select(e => $"riga {e.Riga}: {e.Messaggio}"));
@@ -106,7 +141,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
                     throw new UserMessageException(T("FormulaCodiceDuplicato", m.Codice));
 
                 // una formula con errori non si salva: al calcolo fallirebbe su ogni giorno
-                retVal.Errori = FormuleScriptHost.CtrlSintassi(m.Testo);
+                retVal.Errori = FormuleScriptHost.CtrlSintassi(m.Testo, Codici(idAzienda));
                 if (retVal.Errori.Count > 0)
                 {
                     retVal.Messages.Add(new Message(T("FormulaNonValida", Riassunto(retVal.Errori)), MessageType.Exception));
@@ -183,8 +218,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
         {
             return await ExecuteAction(model, async () =>
             {
-                await Azienda();
-                return new Par_Formule_CtrlSintassiOutModel { Errori = FormuleScriptHost.CtrlSintassi(model.Data.Testo) };
+                var idAzienda = await Azienda();
+                return new Par_Formule_CtrlSintassiOutModel { Errori = FormuleScriptHost.CtrlSintassi(model.Data.Testo, Codici(idAzienda)) };
             }, isSubProcess);
         }
 
@@ -227,7 +262,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
             return await ExecuteAction(model, async () =>
             {
                 var idAzienda = await Azienda();
-                var retVal = new Par_Formule_ProvaOutModel { Errori = FormuleScriptHost.CtrlSintassi(model.Data.Testo) };
+                var retVal = new Par_Formule_ProvaOutModel { Errori = FormuleScriptHost.CtrlSintassi(model.Data.Testo, Codici(idAzienda)) };
                 if (retVal.Errori.Count > 0)
                     return retVal;
 
@@ -298,7 +333,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Formul
         // versione del prompt: cambiarla quando cambiano regole o catalogo
         private const string VersionePromptAI = "formule-v1";
 
-        private static string SystemPromptAI() =>
+        private static string SystemPromptAI(string codiciAzienda) =>
 $@"Sei un assistente che scrive FORMULE per il calcolo delle presenze di un software HR ({VersionePromptAI}).
 Una formula e' uno script JavaScript (ES2020) eseguito sul server per ogni dipendente e giorno.
 Regole:
@@ -307,10 +342,12 @@ Regole:
 - il testo e' il corpo di una funzione: si puo' usare ""return"" per uscire;
 - comincia sempre con il blocco di applicabilita' x.Attiva... e if (!x.Attiva.ApplicaLaFormula()) return;
 - usa solo i membri di x elencati, con le maiuscole esatte; commenta in italiano le righe principali;
+- usa SOLO i codici di causali e giustificativi dell'azienda elencati sotto (ORDI e STR1 dell'esempio sono inventati);
 - niente cicli infiniti: ci sono limiti di tempo e di istruzioni.
 
 Membri di x:
 {FormuleCatalogo.ComeTesto()}
+{codiciAzienda}
 Esempio (le ore ORDI oltre le 8 vanno su STR1, con avviso nel cartellino):
 {FormuleCatalogo.Template.Replace("// x.Causale.TogliEccedenza", "x.Causale.TogliEccedenza")}
 if (x.Causale.GetMin(""STR1"") > 0) x.Stato.Warning(""Straordinario: "" + x.Time.HHMM(x.Causale.GetMin(""STR1"")));
@@ -321,7 +358,9 @@ Rispondi SOLO con un JSON {{ ""codice"": ""<testo della formula>"", ""spiegazion
         {
             return await ExecuteAction(model, async () =>
             {
-                await Azienda();
+                var idAzienda = await Azienda();
+                var codici = Codici(idAzienda);
+                var codiciAI = CodiciPerAI(idAzienda);
                 var richiesta = (model.Data.Richiesta ?? string.Empty).Trim();
                 if (richiesta.Length == 0)
                     throw new UserMessageException(T("FormulaAIRispostaNonValida", "richiesta vuota"));
@@ -336,7 +375,7 @@ Rispondi SOLO con un JSON {{ ""codice"": ""<testo della formula>"", ""spiegazion
                 var retVal = new Par_Formule_GeneraAIOutModel();
                 for (int tentativo = 1; tentativo <= 2; tentativo++)
                 {
-                    var risposta = await _llmClient.CompleteJsonAsync(SystemPromptAI(), messaggio, SchemaAI, "formula",
+                    var risposta = await _llmClient.CompleteJsonAsync(SystemPromptAI(codiciAI), messaggio, SchemaAI, "formula",
                                                                       provider: string.IsNullOrWhiteSpace(provider) ? null : provider, maxTokens: 3000);
                     var (codice, spiegazione) = LeggiRispostaAI(risposta);
                     if (codice == null)
@@ -344,7 +383,7 @@ Rispondi SOLO con un JSON {{ ""codice"": ""<testo della formula>"", ""spiegazion
 
                     retVal.Testo = codice;
                     retVal.Spiegazione = spiegazione ?? string.Empty;
-                    retVal.Errori = FormuleScriptHost.CtrlSintassi(codice);
+                    retVal.Errori = FormuleScriptHost.CtrlSintassi(codice, codici);
                     if (retVal.Errori.Count == 0)
                         break;
 
