@@ -187,9 +187,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | 🔍 bloccata: serve la verifica legale (`ANA.5`) e l'analisi di sicurezza (`ANA.6`) |
 | `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ✅ mergiata l'11/11/2026 |
 | `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_hr-base`, provata su DB usa e getta), da mergiare |
-| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
-| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ✅ mergiata l'11/11/2026 |
+| `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_f3`, worktree `wt_hr-f3`, provata su DB usa e getta: 80 controlli), da mergiare |
+| `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_f3`, worktree `wt_hr-f3`, provata su DB usa e getta: 80 controlli), da mergiare |
+| `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_f3`, worktree `wt_hr-f3`, provata su DB usa e getta: 80 controlli), da mergiare |
 | `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_ast-base`, provata su DB usa e getta), da mergiare |
 | `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
 | `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
@@ -341,19 +341,19 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `HR-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `HR-CED` – Portale con cedolini e CU
-- ⏳ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda
-- ⏳ `HR-CED.2` Divisione per dipendente (codice fiscale o matricola, con l'AI come aiuto) e verifica degli scarti
-- ⏳ `HR-CED.3` Pubblicazione nell'area del dipendente e notifica (`INF-SVC.4`)
-- ⏳ `HR-CED.4` Presa visione (`INF-SVC.6`) e report delle conferme
+- ✅ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda — pagine lato studio (`/hrstudiopayslips`, scelta dell'azienda dello studio) e dell'azienda; origine registrata; divisione in un job
+- ✅ `HR-CED.2` Divisione per dipendente (codice fiscale o matricola, con l'AI come aiuto) e verifica degli scarti — PdfPig/PDFsharp; codice fiscale, poi matricola; scarti con proposta per cognome e nome (niente AI, scelta provvisoria), assegnati o ignorati a mano
+- ✅ `HR-CED.3` Pubblicazione nell'area del dipendente e notifica (`INF-SVC.4`) — pubblicazione in un job, "I miei cedolini", notifica "nuovo documento"
+- ✅ `HR-CED.4` Presa visione (`INF-SVC.6`) e report delle conferme — fonte `hr.cedolino` con il PDF per il canale del documentale; report nel dettaglio del caricamento
 
 #### `HR-FOR` – Formazione e competenze
-- ⏳ `HR-FOR.1` Corsi, attestati e piani di formazione sulle competenze in Common
-- ⏳ `HR-FOR.2` Scadenze dei corsi nello scadenzario (`INF-SVC.2`)
+- ✅ `HR-FOR.1` Corsi, attestati e piani di formazione sulle competenze in Common — corso superato: `Dip_Competenza` in Common; catalogo dei corsi in HR (HR-D5, scelta provvisoria)
+- ✅ `HR-FOR.2` Scadenze dei corsi nello scadenzario (`INF-SVC.2`) — fonte `hr.corso`, chiusura della precedente al rinnovo
 
 #### `HR-ONB` – Onboarding e offboarding
-- ⏳ `HR-ONB.1` Checklist di assunzione e cessazione, basate sulle date in Common (D6)
-- ⏳ `HR-ONB.2` Documenti da consegnare o firmare (`INF-SVC.6`)
-- ⏳ `HR-ONB.3` Creazione e disattivazione dell'account
+- ✅ `HR-ONB.1` Checklist di assunzione e cessazione, basate sulle date in Common (D6) — modelli predefiniti, generazione e spostamento sulle date di `Dip_Anagrafica`, scadenze `hr.checklist`
+- ✅ `HR-ONB.2` Documenti da consegnare o firmare (`INF-SVC.6`) — fonte `hr.checklist.voce` con il file; la conferma completa la voce
+- ✅ `HR-ONB.3` Creazione e disattivazione dell'account — con `IAccountService.UserCompanyGet/UserCompanyPut` (vedi i problemi aperti in `ANALISI_HUMANRESOURCES_APPLICATIVO.md` §7.1)
 
 #### `AST-BASE` – Avvio del modulo Risorse aziendali
 - ✅ `AST-BASE.1` `AssetsDbContext` registrato in `DataLayerInstaller` e migration iniziale — `AssetsDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitAssets` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`

@@ -18,4 +18,211 @@
   <data name="DeletionCountCfg" xml:space="preserve">
     <value>Configurazione di Risorse Umane</value>
   </data>
+  <data name="AccountAlreadyPresent" xml:space="preserve">
+    <value>Il dipendente ha già un account.</value>
+  </data>
+  <data name="AccountDataRequired" xml:space="preserve">
+    <value>Nome utente e password sono obbligatori.</value>
+  </data>
+  <data name="AccountNotCreated" xml:space="preserve">
+    <value>Account non creato: controllare nome utente, email e password.</value>
+  </data>
+  <data name="AccountNotPresent" xml:space="preserve">
+    <value>Il dipendente non ha un account dell'azienda.</value>
+  </data>
+  <data name="AccountSelf" xml:space="preserve">
+    <value>Non è possibile disattivare il proprio account.</value>
+  </data>
+  <data name="AccountUserNameUsed" xml:space="preserve">
+    <value>Il nome utente è già usato.</value>
+  </data>
+  <data name="AcknowledgementNoAccount" xml:space="preserve">
+    <value>Il dipendente non ha un account: la presa visione non si può chiedere.</value>
+  </data>
+  <data name="ChecklistCancelled" xml:space="preserve">
+    <value>La checklist è annullata.</value>
+  </data>
+  <data name="ChecklistDeadline" xml:space="preserve">
+    <value>{0} - {1}</value>
+  </data>
+  <data name="ChecklistItemNotFound" xml:space="preserve">
+    <value>Voce della checklist non trovata.</value>
+  </data>
+  <data name="ChecklistNoEndDate" xml:space="preserve">
+    <value>Il dipendente non ha la data di cessazione.</value>
+  </data>
+  <data name="ChecklistNoHireDate" xml:space="preserve">
+    <value>Il dipendente non ha la data di assunzione.</value>
+  </data>
+  <data name="ChecklistNotFound" xml:space="preserve">
+    <value>Checklist non trovata.</value>
+  </data>
+  <data name="CourseDeadline" xml:space="preserve">
+    <value>Corso {0} - {1}</value>
+  </data>
+  <data name="CourseInUse" xml:space="preserve">
+    <value>Il corso ha edizioni o è in un piano di formazione: non si può cancellare (si può disattivare).</value>
+  </data>
+  <data name="CourseNotFound" xml:space="preserve">
+    <value>Corso non trovato.</value>
+  </data>
+  <data name="CourseTitleRequired" xml:space="preserve">
+    <value>Il titolo del corso è obbligatorio.</value>
+  </data>
+  <data name="DeletionCountChecklists" xml:space="preserve">
+    <value>Checklist di Risorse Umane</value>
+  </data>
+  <data name="DeletionCountCourses" xml:space="preserve">
+    <value>Corsi di Risorse Umane</value>
+  </data>
+  <data name="DeletionCountDocuments" xml:space="preserve">
+    <value>Cedolini e CU dei dipendenti</value>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Documento non trovato.</value>
+  </data>
+  <data name="EditionDatesInvalid" xml:space="preserve">
+    <value>La data di fine è precedente alla data di inizio.</value>
+  </data>
+  <data name="EditionNotFound" xml:space="preserve">
+    <value>Edizione non trovata.</value>
+  </data>
+  <data name="EmployeeDatesInvalid" xml:space="preserve">
+    <value>La data di cessazione è precedente alla data di assunzione.</value>
+  </data>
+  <data name="EmployeeNotFound" xml:space="preserve">
+    <value>Dipendente non trovato.</value>
+  </data>
+  <data name="EmployeeNumberDuplicated" xml:space="preserve">
+    <value>Matricola già usata da un altro dipendente.</value>
+  </data>
+  <data name="EmployeeSurnameRequired" xml:space="preserve">
+    <value>Il cognome è obbligatorio.</value>
+  </data>
+  <data name="EmployeeTaxCodeDuplicated" xml:space="preserve">
+    <value>Codice fiscale già usato da un altro dipendente.</value>
+  </data>
+  <data name="EmployeeTaxCodeInvalid" xml:space="preserve">
+    <value>Codice fiscale non valido.</value>
+  </data>
+  <data name="FileEmpty" xml:space="preserve">
+    <value>Il file è vuoto.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>Il file supera i {0} MB.</value>
+  </data>
+  <data name="JobPublishDone" xml:space="preserve">
+    <value>Pubblicazione completata.</value>
+  </data>
+  <data name="JobPublishFailed" xml:space="preserve">
+    <value>Pubblicazione non riuscita.</value>
+  </data>
+  <data name="JobPublishStarted" xml:space="preserve">
+    <value>Pubblicazione dei documenti in corso...</value>
+  </data>
+  <data name="JobSplitDone" xml:space="preserve">
+    <value>Divisione del PDF completata.</value>
+  </data>
+  <data name="JobSplitFailed" xml:space="preserve">
+    <value>Divisione del PDF non riuscita.</value>
+  </data>
+  <data name="JobSplitStarted" xml:space="preserve">
+    <value>Divisione del PDF per dipendente in corso...</value>
+  </data>
+  <data name="Month13" xml:space="preserve">
+    <value>tredicesima</value>
+  </data>
+  <data name="ParticipantDuplicated" xml:space="preserve">
+    <value>Un dipendente è iscritto più volte all'edizione.</value>
+  </data>
+  <data name="ParticipantNotFound" xml:space="preserve">
+    <value>Partecipante non trovato.</value>
+  </data>
+  <data name="PayslipMonthInvalid" xml:space="preserve">
+    <value>Mese del cedolino non valido.</value>
+  </data>
+  <data name="PayslipNoPages" xml:space="preserve">
+    <value>Il PDF non contiene pagine.</value>
+  </data>
+  <data name="PayslipNotPublishable" xml:space="preserve">
+    <value>Il caricamento non si può pubblicare nello stato attuale.</value>
+  </data>
+  <data name="PayslipNotReadable" xml:space="preserve">
+    <value>Il PDF non si è potuto leggere.</value>
+  </data>
+  <data name="PayslipNotReady" xml:space="preserve">
+    <value>Il caricamento è ancora in elaborazione o in errore.</value>
+  </data>
+  <data name="PayslipNotificationText" xml:space="preserve">
+    <value>{0} è disponibile nella tua area: aprilo e conferma la presa visione.</value>
+  </data>
+  <data name="PayslipNotificationTitle" xml:space="preserve">
+    <value>Nuovo documento: {0}</value>
+  </data>
+  <data name="PayslipPdfRequired" xml:space="preserve">
+    <value>Serve un file PDF.</value>
+  </data>
+  <data name="PayslipTypeInvalid" xml:space="preserve">
+    <value>Tipo di documento non valido.</value>
+  </data>
+  <data name="PayslipUploadNotDeletable" xml:space="preserve">
+    <value>Il caricamento è pubblicato o in elaborazione: non si può cancellare.</value>
+  </data>
+  <data name="PayslipUploadNotFound" xml:space="preserve">
+    <value>Caricamento non trovato.</value>
+  </data>
+  <data name="PayslipYearInvalid" xml:space="preserve">
+    <value>Anno non valido.</value>
+  </data>
+  <data name="PlanDescriptionRequired" xml:space="preserve">
+    <value>La descrizione del piano è obbligatoria.</value>
+  </data>
+  <data name="PlanNotFound" xml:space="preserve">
+    <value>Piano di formazione non trovato.</value>
+  </data>
+  <data name="ScrapAlreadyAssigned" xml:space="preserve">
+    <value>La pagina è già assegnata.</value>
+  </data>
+  <data name="ScrapNotFound" xml:space="preserve">
+    <value>Pagina da verificare non trovata.</value>
+  </data>
+  <data name="ScrapReasonMany" xml:space="preserve">
+    <value>Più dipendenti nella stessa pagina</value>
+  </data>
+  <data name="ScrapReasonNoCode" xml:space="preserve">
+    <value>Nessun codice fiscale o matricola riconosciuti</value>
+  </data>
+  <data name="ScrapReasonNoText" xml:space="preserve">
+    <value>Pagina senza testo (scansione)</value>
+  </data>
+  <data name="SiteNotFound" xml:space="preserve">
+    <value>Sede non trovata.</value>
+  </data>
+  <data name="SkillNotFound" xml:space="preserve">
+    <value>Competenza non trovata.</value>
+  </data>
+  <data name="StudioCompanyNotFound" xml:space="preserve">
+    <value>Azienda non trovata tra quelle dello studio con Risorse Umane attivo.</value>
+  </data>
+  <data name="StudioNotEnabled" xml:space="preserve">
+    <value>Risorse Umane non è abilitato per lo studio.</value>
+  </data>
+  <data name="TemplateDescriptionRequired" xml:space="preserve">
+    <value>La descrizione del modello è obbligatoria.</value>
+  </data>
+  <data name="TemplateItemRequired" xml:space="preserve">
+    <value>Ogni voce deve avere una descrizione.</value>
+  </data>
+  <data name="TemplateNotFound" xml:space="preserve">
+    <value>Modello di checklist non trovato.</value>
+  </data>
+  <data name="TemplateTypeInvalid" xml:space="preserve">
+    <value>Tipo di checklist non valido.</value>
+  </data>
+  <data name="TitleCu" xml:space="preserve">
+    <value>CU {0}</value>
+  </data>
+  <data name="TitlePayslip" xml:space="preserve">
+    <value>Cedolino {0} {1}</value>
+  </data>
 </root>
