@@ -1,0 +1,33 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-input formControlName="titolo" maxlength="200" [label]="'hr.fields.corso' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-input formControlName="ente" maxlength="200" [label]="'hr.fields.ente' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-input type="number" formControlName="durataOre" [label]="'hr.fields.durataOre' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-input type="number" formControlName="validitaMesi" [label]="'hr.fields.validitaMesi' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.courseEdit.validityNote' | transloco }}</ion-note>
+        <ion-item><ion-select formControlName="idPar_Competenza" [label]="'hr.fields.competenza' | transloco" labelPlacement="floating" interface="popover">
+          <ion-select-option [value]="null">{{ 'hr.common.none' | transloco }}</ion-select-option>
+          @for (c of competenze; track c.id) { <ion-select-option [value]="c.id">{{ c.descrizione }}</ion-select-option> }
+        </ion-select></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.courseEdit.skillNote' | transloco }}</ion-note>
+        <ion-item><ion-toggle formControlName="obbligatorio">{{ 'hr.fields.obbligatorio' | transloco }}</ion-toggle></ion-item>
+        <ion-item><ion-toggle formControlName="attivo">{{ 'hr.fields.attivo' | transloco }}</ion-toggle></ion-item>
+        <ion-item><ion-textarea formControlName="note" rows="3" maxlength="2000" [autoGrow]="true" [label]="'hr.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  @if (id) {
+    <ion-card>
+      <ion-card-header><ion-card-title>{{ 'hr.fields.edizioni' | transloco }}</ion-card-title></ion-card-header>
+      <ion-card-content>
+        <nvx-list [items]="edizioni" [columns]="colEdizioni" [actions]="azEdizioni" icon="calendar-outline"></nvx-list>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
