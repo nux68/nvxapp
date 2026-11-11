@@ -15,6 +15,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common
      Le anagrafiche con nome provvisorio (Cognome e Nome vuoti, oppure Cognome = nome utente e Nome vuoto,
      come le creava il documentale) vengono completate con lo stesso criterio.
      I dipendenti senza utente (documentale) non passano di qui.
+
+     Aggancio di un dipendente esistente (INF-SVC.8): creando l'account di un dipendente gia' presente in Dip_Anagrafica
+     (es. Risorse Umane, Account/UserCompanyPut con IdDip_Anagrafica) l'anagrafica si collega al nuovo utente PRIMA
+     degli inizializzatori, che la trovano e non ne creano una nuova. Solo anagrafiche della stessa azienda e senza utente.
     */
     public interface ICommonDipendenteUtility
     {
@@ -26,6 +30,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common
 
         /// <summary>Completa Cognome/Nome provvisori delle anagrafiche esistenti degli utenti indicati.</summary>
         Task CompletaCognomeNomeAsync(int idCompany, IEnumerable<string> idAspNetUsers);
+
+        /// <summary>true se l'anagrafica e' dell'azienda e non e' collegata a nessun utente (si puo' agganciare a un nuovo account).</summary>
+        Task<bool> Dip_AnagraficaAgganciabileAsync(int idCompany, int idDip_Anagrafica);
+
+        /// <summary>
+        /// Collega l'anagrafica (dell'azienda, senza utente) all'utente indicato, che non deve averne gia' una nell'azienda.
+        /// false se non e' piu' agganciabile (es. collegata nel frattempo da un'altra richiesta).
+        /// </summary>
+        Task<bool> AgganciaDip_AnagraficaAsync(int idCompany, int idDip_Anagrafica, string idAspNetUsers);
     }
 
     public class CommonDipendenteUtility : ICommonDipendenteUtility
@@ -95,6 +108,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common
                                                            .OrderBy(x => x.Id)
                                                            .ToListAsync();
             await CompletaAsync(candidate);
+        }
+
+        public async Task<bool> Dip_AnagraficaAgganciabileAsync(int idCompany, int idDip_Anagrafica)
+        {
+            var az_Anagrafica = await _commonCompanyUtility.GetAz_AnagraficaAsync(idCompany, false);
+            return az_Anagrafica != null &&
+                   await _dip_AnagraficaRepository.FindAll(x => x.Id == idDip_Anagrafica && x.IdAz_Anagrafica == az_Anagrafica.Id && x.IdAspNetUsers == null).AnyAsync();
+        }
+
+        public async Task<bool> AgganciaDip_AnagraficaAsync(int idCompany, int idDip_Anagrafica, string idAspNetUsers)
+        {
+            var az_Anagrafica = await _commonCompanyUtility.GetAz_AnagraficaAsync(idCompany, false);
+            if (az_Anagrafica == null || string.IsNullOrEmpty(idAspNetUsers) || await TrovaAsync(az_Anagrafica.Id, idAspNetUsers) != null)
+                return false;
+
+            // aggiornamento condizionato: se un'altra richiesta l'ha collegata nel frattempo non si sovrascrive
+            var ora = DateTime.Now;
+            int n = await _dip_AnagraficaRepository.FindAll(x => x.Id == idDip_Anagrafica && x.IdAz_Anagrafica == az_Anagrafica.Id && x.IdAspNetUsers == null)
+                                                   .ExecuteUpdateAsync(u => u.SetProperty(x => x.IdAspNetUsers, idAspNetUsers)
+                                                                             .SetProperty(x => x.ModifiedDate, ora));
+            return n == 1;
         }
 
         private Task<Dip_Anagrafica?> TrovaAsync(int idAz_Anagrafica, string idAspNetUsers)

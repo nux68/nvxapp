@@ -225,4 +225,8 @@
   <data name="TitlePayslip" xml:space="preserve">
     <value>Cedolino {0} {1}</value>
   </data>
+  <data name="NotificationCategory_Cedolini" xml:space="preserve">
+    <value>Risorse Umane: cedolini e CU</value>
+    <comment>categoria di notifica</comment>
+  </data>
 </root>
