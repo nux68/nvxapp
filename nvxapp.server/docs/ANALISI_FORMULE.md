@@ -1,7 +1,7 @@
 # Analisi – Formule personalizzate nel calcolo giornata
 
 Data: 11/11/2026 — ramo di analisi: `AttendanceTracking_Dev`
-Stato: **solo analisi, nessuna modifica al codice**.
+Stato: **implementata l'11/11/2026** sul ramo di lavoro `AttendanceTracking_Dev_formule`, più la parte generica del menu sul ramo `Infrastructure_Dev_menulicenza` (§10). Commit solo locali, catena dei merge da confermare. Lo stato dei lavori è nella checklist del §12.
 
 Origine: replica di `wfFormule.aspx`, `wfProfiliFormule.aspx` e del collegamento in `wfDipendentiModifica.aspx` (RilevaFull, `C:\REPO\Repo_Presenze`).
 Modulo: Presenze. Visibilità: power admin. Voci nel menu **Parametri**.
@@ -18,7 +18,18 @@ Le formule si raggruppano in **profili**: righe ordinate, ognuna con un periodo 
 
 Nel legacy la formula è **codice C# compilato a runtime** (CodeDom), che gira in-process con piena fiducia e scrive direttamente sul DB. nvxapp invece è **multi-tenant**, quindi va cambiato approccio: un amministratore di un'azienda non deve poter eseguire codice arbitrario sul server condiviso.
 
-### Decisioni proposte (da confermare)
+### Decisioni (aggiornate l'11/11/2026)
+
+- **D1 confermata**: JavaScript con Jint, eseguito sul server (§4.0).
+- **D4**: si assume `CompanyPowerAdmin`.
+- **D9**: textarea con elenco dei metodi e autocomplete su `x.`, **senza CodeMirror**, per non aggiungere dipendenze. Si potrà sostituire in seguito.
+- **D11 (nuova)**: le formule sono una funzione del **piano Pro** della licenza Presenze.
+  - Le voci di menu restano visibili ma **disattivate**, con il badge "PRO", se l'azienda non è Pro.
+  - Route guard per livello di licenza.
+  - Il server ricontrolla con `ILicenseGuard.HasAtLeastAsync(…, Pro)` sia nelle API sia nel calcolo: senza Pro le formule non si eseguono.
+  - Con il sistema licenze spento (`Licenze_Attive`) tutto risponde come Pro.
+
+### Decisioni proposte in origine
 
 | # | Decisione | Proposta |
 |---|-----------|----------|
@@ -235,6 +246,37 @@ Dip_GG_FormuleLog
 ---
 
 ## 4. Motore formule
+
+### 4.0 Come vengono eseguite le formule (lato server)
+
+Le formule girano **solo sul server**, dentro il processo .NET dell'API, durante il calcolo della giornata. Il browser non esegue nulla: serve solo a scrivere e salvare il testo. "JavaScript" è la **sintassi** della formula, non il luogo in cui gira.
+
+**Jint** è un interprete JavaScript scritto in C#, distribuito come pacchetto NuGet (`nvxapp.server.service.csproj`). Non servono Node.js né un browser. Il servizio .NET legge il testo da `Par_Formule.Testo` e lo esegue nello stesso processo di `TimeSheet_EngineService`.
+
+```
+Browser (Angular)                 Server .NET (nvxapp.server)
+─────────────────                 ───────────────────────────────────────────
+scrive il testo   ──Put──►        Par_Formule.Testo  (salvato su DB, e' solo testo)
+
+                                  TimeSheet_EngineService.Calculate (job)
+                                    └ CalcolaRapporto → CalcolaGiorno
+                                        └ GeneraCausali
+                                        └ FormuleRunner.Esegui(Giorno)   ◄── qui
+                                    └ passo 4: qualifica eccedenze
+                                        └ FormuleRunner.Esegui(Finale)   ◄── e qui
+                                        └ ScriviCausali / SaveData (come prima)
+```
+
+Quando la formula esegue `x.Causale.TogliEccedenza("ORDI", 240, "STR1")`, Jint chiama il metodo C# `FormulaCausale.TogliEccedenza`. Quel metodo modifica il dizionario delle causali del giorno in memoria; il salvataggio resta quello del motore.
+
+La formula vede solo l'oggetto `x`. Il CLR non è esposto, quindi niente file, rete, DB, altri dipendenti o altre aziende. Per ogni esecuzione valgono limiti di tempo (500 ms), di istruzioni (50.000), di memoria e di ricorsione. Questo è il motivo della scelta rispetto al C# compilato del legacy, in un server condiviso tra aziende.
+
+**Verificato con un programma di prova sulla facciata reale:**
+- `TogliEccedenza` sposta l'eccedenza da ORDI a STR1;
+- gli overload funzionano e le date diventano `Date` JavaScript;
+- un `while(true){}` viene fermato (limite istruzioni);
+- un errore di runtime riporta la riga corretta;
+- `x.GetType()` non è raggiungibile.
 
 ### 4.1 Perché Jint
 
@@ -462,13 +504,37 @@ Il testo della formula viene avvolto in una funzione (`(function(){ ... })()`), 
 
 ---
 
+### 10.1 Cosa è stato implementato (11/11/2026)
+
+**Infrastructure** (`Infrastructure_Dev_menulicenza`, commit `189acc55`): voci di menu soggette a un livello di licenza.
+- `MainMenuItem.minLicense`.
+- `app.component`: la voce resta nel menu, disattivata, con il badge del piano richiesto ("PRO") e il tooltip `menu.richiedeLicenza`.
+- Guard generica `licenseLevelGuard(application, livello)`.
+
+**Presenze** (`AttendanceTracking_Dev_formule`): commit `210572aa` (server) e `42c1d7a6` (client).
+
+| Area | File principali |
+|---|---|
+| Dati | `Entities/Tenant/GestionePresenze/Par_Formule.cs`, `Par_ProfiloFormule.cs` (con Dett), `Dip_ProfiloFormule.cs`, `Dip_GG_FormuleLog.cs`; repository; `AttendanceTrackingDbContext` (indici unici Codice per azienda); migrazione `20261111104519_AttendanceTracking_Formule` |
+| Motore | `ClientServer-Service/GestionePresenze/FormuleEngine/`: `FormuleScriptHost` (Jint, limiti, cache, CtrlSintassi con controllo dei membri), `FormulaContext` (facciata `x`), `FormuleCatalogo` (lista metodi, template, testo per l'AI), `FormuleRunner` (profilo del giorno, Pro, esecuzione, log, prova), `FormuleAccesso` (CompanyPowerAdmin + Pro) |
+| Calcolo | `TimeSheet_EngineService`: `PreparaRapportoAsync` in `CalcolaRapporto`, fase Giorno dopo `GeneraCausali`, fase Finale prima di `ScriviCausali`, `SalvaLogAsync` in `SaveData`, `SimulaFormula` (prova senza scritture: niente cartellino mensile né SaveData) |
+| Stato del giorno | `Warning_2` = avviso o errore di una formula, `Err_4` = anomalia da formula; label nel cartellino (`time-sheet.service.ts`) |
+| API | `Par_FormuleController` (GetAll, Get, Put, Delete, Duplica, CtrlSintassi, Metodi, RapportiProva, Prova, Log, GeneraAI), `Par_ProfiloFormuleController` (GetAll, Get, Put, Delete, Duplica); `Dip_ProfiloFormule` passa da `Dip_AnagraficaGet/Put` |
+| Client | pagine `formule-list/edit-page`, `profilo-formule-list/edit-page`; dialog `edit-par-profilo-formule-dett-dialog`, `edit-dip-profilo-formule-dialog`; scheda "Profilo formule" nel rapporto (`user-department-edit-page`, solo CompanyPowerAdmin con Pro: `FunzionalitaGestionePresenzeService.formulePersonalizzate`); menu e route; i18n it/en |
+
+**Scostamenti dal piano:**
+- `x.Attiva` usa `Mese(n, true)` al posto di `Gennaio(true)…Dicembre(true)`.
+- Un gruppo di `x.Attiva` senza nessuna scelta (giorni, mesi, festivo) vale "tutti". Nel legacy andava impostato tutto a true.
+- Il salvataggio di una formula con errori viene **rifiutato** (nel legacy veniva salvata).
+- Il pulsante "Ricalcola periodo" sul profilo non è stato fatto: il ricalcolo si lancia come oggi dal calendario HR.
+
 ## 11. Domande aperte
 
-1. Conferma di D1 (JavaScript con Jint) invece del C# legacy.
-2. "Poweradmin" vuol dire `CompanyPowerAdmin`? (D4)
-3. Va bene CodeMirror come dipendenza? (D9)
-4. Il profilo formule è facoltativo per tutti i dipendenti, o serve un **profilo predefinito** da assegnare ai nuovi assunti (nel legacy, regola Unicomm: profilo obbligatorio)?
-5. La fase Ante serve già in v1?
+1. ~~Conferma di D1 (JavaScript con Jint) invece del C# legacy.~~ Confermata l'11/11/2026.
+2. "Poweradmin" vuol dire `CompanyPowerAdmin`? (D4) Si è assunto di sì.
+3. ~~Va bene CodeMirror come dipendenza? (D9)~~ Per ora non si usa (textarea con elenco dei metodi).
+4. Il profilo formule è facoltativo per tutti i dipendenti, o serve un **profilo predefinito** da assegnare ai nuovi assunti (nel legacy, regola Unicomm: profilo obbligatorio)? Per ora è facoltativo.
+5. La fase Ante serve già in v1? Per ora no (fase 2).
 
 ---
 
@@ -480,106 +546,142 @@ Numerazione unica per tutto il documento. `[ ]` da fare, `[x]` fatto (con nota).
 
 | Sezione | Contenuto | Lavori | Fatti | Stato |
 |---|---|---|---|---|
-| 12.0 | Decisioni | 1–5 | 0 | da fare |
-| 12.1 | Modello dati | 6–13 | 0 | da fare |
-| 12.2 | Motore formule (Jint) | 14–21 | 0 | da fare |
-| 12.3 | Integrazione nel calcolo | 22–27 | 0 | da fare |
-| 12.4 | API | 28–33 | 0 | da fare |
-| 12.5 | Front formule | 34–41 | 0 | da fare |
-| 12.6 | Front profili | 42–46 | 0 | da fare |
-| 12.7 | Dipendente | 47–51 | 0 | da fare |
-| 12.8 | Menu, route, i18n, permessi | 52–55 | 0 | da fare |
-| 12.9 | AI formula | 56–59 | 0 | da fare |
-| 12.10 | Verifiche e merge | 60–66 | 0 | da fare |
-| **Totale** | | **66** | **0** | |
+| 12.0 | Decisioni | 1–5 | 5 | fatto (2 e 4 provvisorie) |
+| 12.1 | Modello dati | 6–13 | 8 | fatto |
+| 12.2 | Motore formule (Jint) | 14–21 | 8 | fatto |
+| 12.3 | Integrazione nel calcolo | 22–27 | 6 | fatto |
+| 12.4 | API | 28–33 | 6 | fatto |
+| 12.5 | Front formule | 34–41 | 8 | fatto |
+| 12.6 | Front profili | 42–46 | 4 | quasi (manca Ricalcola periodo) |
+| 12.7 | Dipendente | 47–51 | 5 | fatto |
+| 12.8 | Menu, route, i18n, permessi, piano Pro | 52–55, 67–68 | 6 | fatto |
+| 12.9 | AI formula | 56–59 | 4 | fatto |
+| 12.10 | Verifiche e merge | 60–66 | 5 | in corso (63 e merge) |
+| **Totale** | | **68** | **65** | |
 
 ### 12.0 Decisioni (lavori 1–5) (§0, §11)
-- [ ] 1. Confermare D1: linguaggio JavaScript con Jint
-- [ ] 2. Confermare D4: visibilità CompanyPowerAdmin
-- [ ] 3. Confermare D9: editor CodeMirror 6 oppure textarea con modale
-- [ ] 4. Decidere sul profilo predefinito o obbligatorio per i nuovi assunti
-- [ ] 5. Decidere se la fase Ante entra in v1
+- [x] 1. Confermare D1: linguaggio JavaScript con Jint
+  — Fatto: confermato l'11/11/2026, dopo il chiarimento sull'esecuzione lato server (§4.0).
+- [x] 2. Confermare D4: visibilita' CompanyPowerAdmin
+  — Fatto (provvisorio): si e' assunto CompanyPowerAdmin.
+- [x] 3. Confermare D9: editor CodeMirror 6 oppure textarea con modale
+  — Fatto: textarea con elenco dei metodi e autocomplete su `x.`, senza nuove dipendenze.
+- [x] 4. Decidere sul profilo predefinito o obbligatorio per i nuovi assunti
+  — Fatto (provvisorio): facoltativo.
+- [x] 5. Decidere se la fase Ante entra in v1
+  — Fatto: no, va alla fase 2.
 
 ### 12.1 Modello dati (lavori 6–13) — ramo `AttendanceTracking_Dev` (§3)
-- [ ] 6. Entità `Par_Formule` più DbSet e FK in `AttendanceTrackingDbContext`, indice unico (IdAz, Codice)
-- [ ] 7. Entità `Par_ProfiloFormule` + `Par_ProfiloFormuleDett`, enum `FormulaFase`
-- [ ] 8. Entità `Dip_ProfiloFormule` (figlia di `Dip_RapportoLavoro`)
-- [ ] 9. Entità `Dip_GG_FormuleLog`
-- [ ] 10. Slot `GG_ResultStato` "Errore formula", con la label nel cartellino
-- [ ] 11. Repository (×5)
-- [ ] 12. DTO e mapper AutoMapper
-- [ ] 13. Migrazione EF `AttendanceTracking_Formule`
+- [x] 6. Entita' `Par_Formule` piu' DbSet e FK in `AttendanceTrackingDbContext`, indice unico (IdAz, Codice)
+- [x] 7. Entita' `Par_ProfiloFormule` + `Par_ProfiloFormuleDett`, enum `FormulaFase`
+- [x] 8. Entita' `Dip_ProfiloFormule` (figlia di `Dip_RapportoLavoro`)
+- [x] 9. Entita' `Dip_GG_FormuleLog`
+- [x] 10. Slot `GG_ResultStato` "Errore formula", con la label nel cartellino
+  — Fatto: `Warning_2` = avviso o errore di formula, `Err_4` = anomalia da formula.
+- [x] 11. Repository (×5)
+- [x] 12. DTO e mapper AutoMapper
+  — Fatto: `Formule_Mapper`.
+- [x] 13. Migrazione EF `AttendanceTracking_Formule`
+  — Fatto: `20261111104519`, solo 5 CreateTable e i relativi indici.
 
 ### 12.2 Motore formule (lavori 14–21) (§4.1–4.3)
-- [ ] 14. Pacchetto NuGet Jint in `nvxapp.server.service.csproj`
-- [ ] 15. `FormuleScriptHost`: engine con limiti, wrapper della funzione, cache per (Id, Hash)
-- [ ] 16. `CtrlSintassi`: parser con riga e colonna, più controllo AST dei membri `x.*`
-- [ ] 17. `FormulaContext`: contesto, `Attiva`, `Causale`, `Giustificativo`, `Timbrate`, `Orario`, `Result`, `Stato`, `Log`, `Time`
-- [ ] 18. Attributo `[FormulaApi]` e `FormuleCatalogo` (reflection)
-- [ ] 19. `FormuleRunner`: risoluzione del profilo nel giorno, filtro delle righe, ordinamento, cattura errori, log in memoria
-- [ ] 20. Template della nuova formula e testi di help
-- [ ] 21. Insieme di formule di esempio per i test (TogliEccedenza, Sposta, Warning, errore di runtime, ciclo infinito che deve andare in timeout)
+- [x] 14. Pacchetto NuGet Jint in `nvxapp.server.service.csproj`
+  — Fatto: Jint 4.17.0.
+- [x] 15. `FormuleScriptHost`: engine con limiti, wrapper della funzione, cache per (Id, Hash)
+  — Fatto: cache per impronta del testo.
+- [x] 16. `CtrlSintassi`: parser con riga e colonna, piu' controllo AST dei membri `x.*`
+- [x] 17. `FormulaContext`: contesto, `Attiva`, `Causale`, `Giustificativo`, `Timbrate`, `Orario`, `Result`, `Stato`, `Log`, `Time`
+  — Fatto: aggiunti anche `Rapporto` e `Dipendente`.
+- [x] 18. Attributo `[FormulaApi]` e `FormuleCatalogo` (reflection)
+  — Fatto: 79 voci.
+- [x] 19. `FormuleRunner`: risoluzione del profilo nel giorno, filtro delle righe, ordinamento, cattura errori, log in memoria
+- [x] 20. Template della nuova formula e testi di help
+- [x] 21. Insieme di formule di esempio per i test (TogliEccedenza, Sposta, Warning, errore di runtime, ciclo infinito che deve andare in timeout)
+  — Fatto: programma di prova fuori dal repo (§4.0), tutti i casi come previsto.
 
 ### 12.3 Integrazione nel calcolo (lavori 22–27) (§4.4)
-- [ ] 22. `Get_OrariSchema_4User`: caricamento di profili, righe e formule in `OrariSchema_4User_OutModel`
-- [ ] 23. Aggancio della fase Giorno in `CalcolaGiorno`, dopo `GeneraCausali`
-- [ ] 24. Aggancio della fase Finale in `CalcolaRapporto`, passo 4, prima di `ScriviCausali` (dizionario creato se manca)
-- [ ] 25. `SaveData`: sostituzione di `Dip_GG_FormuleLog` per giorno
-- [ ] 26. Modalità `SoloSimulazione` (senza salvataggio) con risultato prima e dopo
-- [ ] 27. Verifica che un'azienda senza profili non abbia impatto sulle prestazioni
+- [x] 22. Caricamento di profili, righe e formule
+  — Fatto: in `FormuleRunner.PreparaRapportoAsync`, chiamato da `CalcolaRapporto`, invece che in `Get_OrariSchema_4User`. Cosi' il cartellino non paga il costo.
+- [x] 23. Aggancio della fase Giorno in `CalcolaGiorno`, dopo `GeneraCausali`
+- [x] 24. Aggancio della fase Finale in `CalcolaRapporto`, passo 4, prima di `ScriviCausali` (dizionario creato se manca)
+- [x] 25. `SaveData`: sostituzione di `Dip_GG_FormuleLog` per giorno
+- [x] 26. Modalita' `SoloSimulazione` (senza salvataggio) con risultato prima e dopo
+  — Fatto: `SimulaFormula`.
+- [x] 27. Verifica che un'azienda senza profili non abbia impatto sulle prestazioni
+  — Fatto: un controllo di licenza per calcolo e una query per rapporto; senza profili non si esegue nulla.
 
 ### 12.4 API (lavori 28–33) (§5)
-- [ ] 28. `Par_FormuleService` + controller: GetAll, Get, Put, Delete, Duplica
-- [ ] 29. CtrlSintassi, Metodi (con export Excel), Log
-- [ ] 30. Prova (simulazione su rapporto e giorno)
-- [ ] 31. `Par_ProfiloFormuleService` + controller: GetAll, Get, Put (righe), Delete, Duplica
-- [ ] 32. `Dip_ProfiloFormuleService` e integrazione in `Dip_AnagraficaGet/Put`, con controllo di sovrapposizione Dal/Al
-- [ ] 33. Controllo `HaRuolo("CompanyPowerAdmin")` su tutte le azioni, messaggi `.resx` it/en
+- [x] 28. `Par_FormuleService` + controller: GetAll, Get, Put, Delete, Duplica
+- [x] 29. CtrlSintassi, Metodi, Log
+  — Fatto: l'export Excel dei metodi non e' stato fatto, perche' l'elenco e' nella pagina.
+- [x] 30. Prova (simulazione su rapporto e giorno), con `RapportiProva` per la scelta
+- [x] 31. `Par_ProfiloFormuleService` + controller: GetAll, Get, Put (righe), Delete, Duplica
+- [x] 32. `Dip_ProfiloFormuleService` e integrazione in `Dip_AnagraficaGet/Put`, con controllo di sovrapposizione Dal/Al
+- [x] 33. Controllo CompanyPowerAdmin e piano Pro su tutte le azioni, messaggi `.resx` it/en
+  — Fatto: `FormuleAccesso`.
 
 ### 12.5 Front formule (lavori 34–41) (§6.1)
-- [ ] 34. Client service e modelli `Par_Formule`
-- [ ] 35. `formule-list-page` (`nvx-list`, fab nuovo, duplica, elimina)
-- [ ] 36. `formule-edit-page`: segmento Dati
-- [ ] 37. Editor della formula con autocomplete `x.` e indicatore Ln/Col
-- [ ] 38. Controlla sintassi, con evidenza degli errori
-- [ ] 39. Pannello Metodi (ricerca, categorie, in evidenza, inserimento)
-- [ ] 40. Dialog Prova (dipendente, giorno → risultato e log)
-- [ ] 41. Segmento Log
+- [x] 34. Client service e modelli `Par_Formule`
+- [x] 35. `formule-list-page` (`nvx-list`, fab nuovo, elimina)
+- [x] 36. `formule-edit-page`: segmento Dati, con Duplica
+- [x] 37. Editor della formula con autocomplete `x.` e indicatore Ln/Col
+- [x] 38. Controlla sintassi, con evidenza degli errori
+  — Fatto: un clic sull'errore porta alla riga.
+- [x] 39. Pannello Metodi (ricerca, categorie, in evidenza, inserimento)
+- [x] 40. Prova (dipendente, giorno, fase → causali prima e dopo, avvisi, log)
+  — Fatto: segmento della pagina invece di un dialog.
+- [x] 41. Segmento Log
 
 ### 12.6 Front profili (lavori 42–46) (§6.2)
-- [ ] 42. Client service e modelli `Par_ProfiloFormule`
-- [ ] 43. `profilo-formule-list-page`
-- [ ] 44. `profilo-formule-edit-page` (testata e righe ordinate)
-- [ ] 45. Dialog della riga `edit-par-profilo-formule-dett-dialog`
+- [x] 42. Client service e modelli `Par_ProfiloFormule`
+- [x] 43. `profilo-formule-list-page`
+- [x] 44. `profilo-formule-edit-page` (testata e righe ordinate)
+- [x] 45. Dialog della riga `edit-par-profilo-formule-dett-dialog`
 - [ ] 46. Azioni Duplica e Ricalcola periodo
+  — Duplica fatta. Ricalcola periodo non fatta: per ora il ricalcolo si lancia dal calendario HR.
 
 ### 12.7 Dipendente (lavori 47–51) (§6.3)
-- [ ] 47. `Dip_ProfiloFormule` in `Dip_Anagrafica4EditModel` (client e server)
-- [ ] 48. Sotto-segmento PROF_FORM nel rapporto (visibile solo a CompanyPowerAdmin)
-- [ ] 49. Dialog `edit-dip-profilo-formule-dialog` con controllo di sovrapposizione
-- [ ] 50. Voce nel fab e gestione degli id negativi per i rapporti nuovi
-- [ ] 51. `ParTable.Par_ProfiloFormule` nella cache dei parametri
+- [x] 47. `Dip_ProfiloFormule` in `Dip_Anagrafica4EditModel` (client e server)
+- [x] 48. Sotto-segmento "Profilo formule" nel rapporto (solo CompanyPowerAdmin con Pro)
+- [x] 49. Dialog `edit-dip-profilo-formule-dialog` con controllo di sovrapposizione
+- [x] 50. Voce nel fab e gestione degli id negativi per i rapporti nuovi
+- [x] 51. Elenco dei profili formule per la select
+  — Fatto: caricato dalla pagina del dipendente, non dalla cache dei parametri, perche' serve solo a CompanyPowerAdmin con Pro.
 
-### 12.8 Menu, route, i18n, permessi (lavori 52–55) (§6.4)
-- [ ] 52. Voci "Formule" e "Profili formule" nel menu Parametri (zorder 207600 e 207700)
-- [ ] 53. Route con `RoleGuard4CompanyPowerAdmin` e moduli lazy
-- [ ] 54. Chiavi i18n it/en (menu, pagine, dialog, segmento)
-- [ ] 55. Verifica della visibilità: CompanyAdmin e User non vedono voci, route e segmento
+### 12.8 Menu, route, i18n, permessi, piano Pro (lavori 52–55, 67–68) (§6.4, D11)
+- [x] 52. Voci "Formule" e "Profili formule" nel menu Parametri (zorder 207600 e 207700)
+  — Fatto, con `minLicense: Pro`.
+- [x] 53. Route con `RoleGuard4CompanyPowerAdmin` e moduli lazy
+  — Fatto, piu' `licenseLevelGuard(AttendanceTracking, Pro)`.
+- [x] 54. Chiavi i18n it/en (menu, pagine, dialog, segmento, stato del giorno)
+- [x] 55. Verifica della visibilita': CompanyAdmin e User non vedono voci, route e segmento; con azienda non Pro le voci sono disattivate
+  — Fatto lato server (E2E): CompanyAdmin e User ricevono "Funzione riservata"; senza Pro o con Standard le API rispondono "piano Pro" e il calcolo non esegue formule. Menu disattivato e guard verificati con la build, non a video.
+- [x] 67. Infrastructure: `MainMenuItem.minLicense`, voce disattivata con badge del piano, `licenseLevelGuard`
+  — Fatto: ramo `Infrastructure_Dev_menulicenza`, commit `189acc55`.
+- [x] 68. Server: piano Pro controllato nelle API (`FormuleAccesso`) e nel calcolo (`FormuleRunner`)
 
 ### 12.9 AI formula (lavori 56–59) (§7)
-- [ ] 56. System prompt versionato con il catalogo metodi e gli esempi
-- [ ] 57. `GeneraAI` con `CompleteJsonAsync`, validazione e un nuovo tentativo
-- [ ] 58. Configurazione del provider `AI:FormuleLLM` (facoltativa)
-- [ ] 59. Dialog AI nel front (Sostituisci, Accoda, Copia)
+- [x] 56. System prompt versionato con il catalogo metodi e gli esempi
+  — Fatto: `formule-v1`.
+- [x] 57. `GeneraAI` con `CompleteJsonAsync`, validazione e un nuovo tentativo
+- [x] 58. Configurazione del provider `AI:FormuleLLM`
+  — Fatto: chiave facoltativa letta dal servizio; se assente vale `UseLLM`.
+- [x] 59. AI nel front (Sostituisci, Accoda, Copia)
+  — Fatto: pannello nel segmento Formula.
 
 ### 12.10 Verifiche e merge (lavori 60–66) (§10)
-- [ ] 60. Build del server e `ng build` del client
-- [ ] 61. Prova end-to-end: creare una formula, metterla in un profilo, assegnarla a un dipendente, calcolare, controllare le causali
-- [ ] 62. Prova con errore di runtime e con timeout: warning sul giorno e log presenti, calcolo completato
-- [ ] 63. Prova sui giorni bloccati (mese approvato) e sul cambio di profilo a metà mese
-- [ ] 64. Commit locale sul ramo di lavoro
-- [ ] 65. Prova di merge in un worktree temporaneo su AllFunction_Dev (csproj, migrazioni, resx)
-- [ ] 66. Catena di merge AttendanceTracking_Dev → AttendanceTracking → AllFunction_Dev → AllFunction, **previa conferma**
+- [x] 60. Build del server e `ng build` del client
+  — Fatto: 0 errori, sia su Infrastructure sia su Presenze.
+- [x] 61. Prova end-to-end: creare una formula, metterla in un profilo, assegnarla a un dipendente, calcolare, controllare le causali
+  — Fatto su DB usa-e-getta: ORD1 08:00 diventa ORD1 04:00 + ORDI2 04:00; log Info e Warning presenti; bit Warning_2 nello Stato; al ricalcolo i log vengono sostituiti; la Prova non scrive nulla.
+- [x] 62. Prova con errore di runtime e con timeout: warning sul giorno e log presenti, calcolo completato
+  — Fatto: `throw` produce un log Errore con la riga; `while(true)` produce "numero massimo di istruzioni superato".
+- [ ] 63. Prova sui giorni bloccati (mese approvato) e sul cambio di profilo a meta' mese
+- [x] 64. Commit locale sul ramo di lavoro
+  — Fatto: `210572aa`, `42c1d7a6` (Presenze) e `189acc55` (Infrastructure).
+- [x] 65. Prova di merge in un worktree temporaneo su AllFunction_Dev (csproj, migrazioni, resx)
+  — Fatto: nessun conflitto; JSON e resx validi; server e client compilano. Worktree temporaneo rimosso.
+- [ ] 66. Catena di merge, **previa conferma**: Infrastructure_Dev_menulicenza → Infrastructure_Dev → Infrastructure; AttendanceTracking_Dev_formule → AttendanceTracking_Dev → AttendanceTracking; poi AllFunction_Dev → AllFunction
 
 ---
 
@@ -587,4 +689,8 @@ Numerazione unica per tutto il documento. `[ ]` da fare, `[x]` fatto (con nota).
 
 | Data | Sezione | Lavoro | Ramo | Commit | Note |
 |---|---|---|---|---|---|
-| 11/11/2026 | — | Analisi | `AttendanceTracking_Dev_formule` | — | Documento creato |
+| 11/11/2026 | — | Analisi | `AttendanceTracking_Dev_formule` | `6df3c9fb` | Documento creato |
+| 11/11/2026 | 12.8 | Voci di menu per livello di licenza (67) | `Infrastructure_Dev_menulicenza` | `189acc55` | Generico, per tutti i rami |
+| 11/11/2026 | 12.1–12.4, 12.8 | Server: dati, motore Jint, calcolo, API, Pro (6–33, 68) | `AttendanceTracking_Dev_formule` | `210572aa` | Build ok, motore provato con un programma di prova |
+| 11/11/2026 | 12.5–12.9 | Client: pagine, dialog, dipendente, menu, i18n, AI (34–59) | `AttendanceTracking_Dev_formule` | `42c1d7a6` | `ng build` ok |
+| 11/11/2026 | 12.8, 12.10 | Test E2E su DB usa-e-getta (55, 61, 62); correzioni: log tolti quando si toglie il profilo, ora locale nel log, messaggio di parentesi non chiusa | `AttendanceTracking_Dev_formule` | (questo commit) | 6 verifiche su 6 OK, DB eliminato |

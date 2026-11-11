@@ -111,13 +111,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
             }
             catch (ParseErrorException pe)
             {
-                var righeTesto = testo.Split('\n').Length;
-                errori.Add(new FormulaErrore
-                {
-                    Riga = Math.Clamp(pe.LineNumber - RigheScarto, 1, righeTesto),
-                    Colonna = pe.Column + 1,
-                    Messaggio = pe.Description ?? pe.Message
-                });
+                var righeTesto = testo.Split('\n');
+                var riga = pe.LineNumber - RigheScarto;
+                // errore sulla chiusura del wrapper: parentesi, graffa o stringa non chiusa nella formula
+                if (riga > righeTesto.Length)
+                    errori.Add(new FormulaErrore
+                    {
+                        Riga = righeTesto.Length,
+                        Colonna = righeTesto[^1].Length + 1,
+                        Messaggio = "parentesi, graffa o stringa non chiusa (" + (pe.Description ?? pe.Message) + ")"
+                    });
+                else
+                    errori.Add(new FormulaErrore
+                    {
+                        Riga = Math.Max(1, riga),
+                        Colonna = pe.Column + 1,
+                        Messaggio = pe.Description ?? pe.Message
+                    });
                 return errori;
             }
 

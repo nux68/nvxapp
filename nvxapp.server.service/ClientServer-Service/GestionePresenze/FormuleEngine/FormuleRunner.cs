@@ -150,13 +150,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         public GG_ResultStato Esegui(FormulaFase fase, FormulaDatiGiorno dati)
         {
             var stato = (GG_ResultStato)0;
-            if (_pro != true || !_aziendaRapporto.TryGetValue(dati.Rapporto.Id, out var idAzienda))
+            // rapporto non preparato o azienda non Pro: niente formule, e i log del giorno restano com'erano
+            if (_pro != true || !_profiliRapporto.ContainsKey(dati.Rapporto.Id))
                 return stato;
 
+            // giorno ricalcolato in Pro: i suoi log vengono sostituiti (anche se il profilo e' stato tolto)
             var giorno = dati.Giorno.Date;
             var chiave = (dati.Rapporto.Id, giorno);
             if (!_log.ContainsKey(chiave))
                 _log[chiave] = new List<FormulaLogRiga>();
+
+            if (!_aziendaRapporto.TryGetValue(dati.Rapporto.Id, out var idAzienda))
+                return stato;
 
             // formule del giorno: in prova solo quella in prova, altrimenti le righe attive del profilo attivo
             var daEseguire = new List<(int? IdFormula, string Testo)>();
@@ -245,7 +250,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
                 foreach (var vecchio in esistenti.Where(l => giorni.Contains(l.Giorno.Date)))
                     await _dip_GG_FormuleLogRepository.DeleteAsync(vecchio);
 
-                var adesso = DateTime.UtcNow;
+                var adesso = DateTime.Now;   // ora locale, come il resto del modulo Presenze
                 foreach (var giorno in perRapporto)
                     foreach (var riga in giorno.Value)
                         await _dip_GG_FormuleLogRepository.UpsertAsync(new Dip_GG_FormuleLog
