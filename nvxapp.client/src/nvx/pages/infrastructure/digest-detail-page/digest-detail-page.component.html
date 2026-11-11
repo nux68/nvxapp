@@ -1,0 +1,67 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  @if (digest) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>{{ digest.soggetto }} · {{ periodo(digest) }}</ion-card-subtitle>
+        <ion-card-title>{{ digest.titolo }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="nvx-digest-text">{{ digest.testo }}</div>
+        <ion-note class="nvx-digest-source">
+          @if (digest.generatoConAI) {
+            <ion-icon name="sparkles-outline"></ion-icon>
+          }
+          {{ generato(digest) }}
+        </ion-note>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'pages.digestDetail.facts' | transloco }}</ion-card-title>
+        <ion-card-subtitle>{{ 'pages.digestDetail.factsNote' | transloco }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        @for (g of gruppi; track $index) {
+          @if (g.azienda) {
+            <h2 class="nvx-digest-company">{{ g.azienda }}</h2>
+          }
+          @for (s of g.sezioni; track s.codice) {
+            <ion-list lines="none" class="nvx-digest-section">
+              <ion-item>
+                <ion-label>
+                  <h3>{{ s.titolo }}</h3>
+                </ion-label>
+                @if (s.critica) {
+                  <ion-badge slot="end" color="danger">{{ 'pages.digestDetail.critical' | transloco }}</ion-badge>
+                }
+              </ion-item>
+              @for (r of s.righe; track $index) {
+                <ion-item>
+                  <ion-icon slot="start" [name]="r.critico ? 'alert-circle-outline' : 'ellipse-outline'" [color]="r.critico ? 'danger' : 'medium'"></ion-icon>
+                  <ion-label class="ion-text-wrap">
+                    <p class="nvx-digest-fact">{{ r.testo }}</p>
+                    @for (d of r.dettagli; track $index) {
+                      <p>{{ d }}</p>
+                    }
+                  </ion-label>
+                </ion-item>
+              }
+            </ion-list>
+          }
+        } @empty {
+          <ion-note>{{ 'pages.digestDetail.noFacts' | transloco }}</ion-note>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
