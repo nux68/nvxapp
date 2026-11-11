@@ -17,7 +17,7 @@ using System.Text.Json;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicket
 {
     /*
-     Risposta automatica AI ai ticket dalla documentazione del livello (ANALISI_DOCUMENTAZIONE_AI.md [branch DocumentManagement] §7).
+     Risposta automatica AI ai ticket dalla documentazione del livello (ANALISI_DOCUMENTMANAGEMENT_DOCUMENTAZIONE_AI.md [branch DocumentManagement] §7).
      TicketService la chiama in background quando il ticket arriva a un livello che ha l'AI attiva e dei documenti.
        - provider AI:TicketLLM (vuoto = AI:UseLLM), risposta lunga al massimo AI:TicketMaxTokens
        - documenti nell'ordine ricevuto (prima quelli del tipo, poi il nodo, poi i livelli sopra) fino a
