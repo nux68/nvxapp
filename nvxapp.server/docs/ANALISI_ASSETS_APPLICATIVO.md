@@ -101,7 +101,7 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
   - Conflitti: `Ast_PrenotazioneRepository.SalvaSeLiberaAsync` (transazione + `pg_advisory_xact_lock` sulla risorsa): vale anche per richieste concorrenti. Gli utenti vedono le prenotazioni altrui solo come "occupato"; gli amministratori vedono i nomi e annullano (con notifica all'interessato).
   - `AstCalendarEventProvider`: prenotazioni dell'utente nel feed .ics (contesto dalla factory, senza utente collegato).
 - **Client**: pagine `/astvehicles`, `/astvehicleedit`, `/astvehicleitemedit`, `/astgoods` (beni / da restituire / categorie), `/astgoodedit`, `/astgooditemedit`, `/astbookings`, `/astbookingedit`, `/astresources`, `/astresourceedit`, `/astmine` (le mie risorse: beni e verbali, veicolo, multe); impostazioni con i limiti delle prenotazioni; menu (amministratori: Veicoli, Beni, Prenotazioni, Risorse prenotabili, Le mie risorse, Impostazioni; utenti: Prenotazioni, Le mie risorse), i18n it/en, manuale.
-- **Notifiche**: categoria "generale" (le categorie hanno il titolo nei testi di Infrastructure), rispettano `Ast_Cfg.NotificheAttive`.
+- **Notifiche**: categorie proprie (`AST-SEG.1`, `INF-SVC.7`): `ast.flotta` (multe al conducente), `ast.beni` (beni e veicoli da restituire), `ast.prenotazioni` (prenotazione annullata); rispettano `Ast_Cfg.NotificheAttive`.
 - **Prova** su DB usa e getta multi-tenant (60 controlli, tutti ok): azienda, attivazione Assets, CRUD e permessi, autovettura in Common, scadenze nello scadenzario (aperte/chiuse), multa notificata, verbale di consegna creato, restituzioni alla cessazione (scadenze e notifica), conflitti di prenotazione rifiutati anche con 6 richieste concorrenti, prenotazione nel feed .ics dell'utente, conteggi nell'anteprima di cancellazione.
 
 ## 8. Decisioni aperte
@@ -138,6 +138,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
 - ✅ `AST-PREN.2` Calendario delle prenotazioni e conflitti
 - ✅ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa)
+
+#### Seguiti
+- ✅ `AST-SEG.1` Categorie di notifica proprie (`INF-SVC.7`) — fatta, da mergiare: `AstNotificationCategoryProvider` con `ast.flotta` (email predefinita), `ast.beni`, `ast.prenotazioni` al posto di `generale` (`AstUtility.NotificaAsync` riceve la categoria), titoli nei testi del modulo, visibili nelle preferenze solo con Risorse aziendali attivo; le scadenze restano `scadenze`, i verbali `presevisione`. Compilata (server e client); provata sul ramo HR la parte comune
 
 #### Decisioni
 - 🔍 `AST-D1`, `AST-D5`, `AST-D6` (§8)

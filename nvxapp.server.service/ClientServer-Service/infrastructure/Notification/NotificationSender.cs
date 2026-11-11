@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -172,7 +172,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
     // -------------------------------------------------------------------------------------------------
     // Categorie
 
-    /// <summary>Categoria di notifiche: titolo dalla resx (NotificationCategory_&lt;code&gt;) e invio predefinito.</summary>
+    /// <summary>
+    /// Categoria di notifiche: titolo e invio predefinito.
+    /// Titolo: TitoloText se impostato (i moduli lo leggono dai propri Messages, es. () =&gt; HumanResourcesMessages.Get("...")),
+    /// altrimenti dalla resx di Infrastructure (NotificationCategory_&lt;code&gt;). Viene letto a ogni uso: lingua della richiesta.
+    /// </summary>
     public class NotificationCategory
     {
         public string Code { get; init; } = string.Empty;
@@ -184,7 +188,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
         public bool EmailAllowed { get; init; } = true;
         public int Ordine { get; init; }
 
-        public string Titolo => InfrastructureMessages.Get("NotificationCategory_" + Code);
+        /// <summary>testo del titolo fornito dal modulo che dichiara la categoria (null = resx di Infrastructure)</summary>
+        public Func<string>? TitoloText { get; init; }
+
+        public string Titolo => TitoloText != null ? TitoloText() : InfrastructureMessages.Get("NotificationCategory_" + Code);
 
         public static readonly NotificationCategory Generale = new() { Code = "generale", Ordine = 0 };
         public static readonly NotificationCategory Scadenze = new() { Code = "scadenze", DefaultEmail = true, Ordine = 10 };
@@ -193,7 +200,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
         public static readonly NotificationCategory Riepilogo = new() { Code = "riepilogo", DefaultApp = true, DefaultEmail = true, Ordine = 30 };
     }
 
-    /// <summary>Categorie di notifiche di un modulo (ogni ramo ne dichiara una implementazione).</summary>
+    /// <summary>
+    /// Categorie di notifiche di un modulo (ogni ramo ne dichiara una implementazione), con Application = applicativo del modulo
+    /// (la preferenza si vede solo se e' attivo) e TitoloText dai Messages del modulo. Codici con il prefisso del modulo (es. "hr.cedolini").
+    /// </summary>
     public interface INotificationCategoryProvider
     {
         IEnumerable<NotificationCategory> Categories { get; }

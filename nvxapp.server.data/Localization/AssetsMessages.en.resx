@@ -216,4 +216,16 @@
   <data name="DeletionCountBookings" xml:space="preserve">
     <value>Bookings</value>
   </data>
+  <data name="NotificationCategory_Flotta" xml:space="preserve">
+    <value>Company resources: fleet and fines</value>
+    <comment>categoria di notifica</comment>
+  </data>
+  <data name="NotificationCategory_Beni" xml:space="preserve">
+    <value>Company resources: assets and vehicles to return</value>
+    <comment>categoria di notifica</comment>
+  </data>
+  <data name="NotificationCategory_Prenotazioni" xml:space="preserve">
+    <value>Company resources: bookings</value>
+    <comment>categoria di notifica</comment>
+  </data>
 </root>

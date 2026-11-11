@@ -515,7 +515,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                              : await _Dip_Anagrafica.FindAll(x => x.Id == m.IdDip_Anagrafica).Select(x => x.IdAspNetUsers).FirstOrDefaultAsync();
                 if (string.IsNullOrEmpty(utente))
                     throw new UserMessageException(AssetsMessages.Get("FineDriverWithoutUser"));
-                await _utility.NotificaAsync(ctx, new[] { utente },
+                await _utility.NotificaAsync(ctx, AstNotificationCategoryProvider.Flotta, new[] { utente },
                                              AssetsMessages.Get("FineNotificationTitle", v.Targa),
                                              AssetsMessages.Get("FineNotificationText", m.DataInfrazione.ToString("dd/MM/yyyy HH:mm"), v.Targa, m.Importo.ToString("N2"), m.NumeroVerbale ?? "-"),
                                              "/astmine");
