@@ -1,7 +1,7 @@
 # Widget della dashboard — Documentale
 
 Dettaglio del ramo **DocumentManagement**. Il funzionamento generale (catalogo per ramo, configurazione per
-utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_WIDGET.md` (Infrastructure).
+utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_INFRASTRUCTURE_WIDGET.md` (Infrastructure).
 
 ## 1. Widget
 
@@ -10,7 +10,7 @@ utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_WIDGET.md` (Infras
 | `documents.storage` | Spazio documenti | small (1/3) | CompanyPowerAdmin, CompanyAdmin | sì | `Storage/CompanyStorageGet` (Infrastructure) |
 | `documents.typeSpace` | Spazio per tipo documento | medium (1/2) | CompanyPowerAdmin, CompanyAdmin | sì | `Doc_Widget/Doc_SpazioPerTipoGet` (nuovo) |
 
-- Compaiono solo se il **documentale è attivo** per l'azienda (applicativo attivo e licenza: ANALISI_LICENZE.md §15.6).
+- Compaiono solo se il **documentale è attivo** per l'azienda (applicativo attivo e licenza: ANALISI_INFRASTRUCTURE_LICENZE.md §15.6).
 - **Ruoli**: gli stessi delle voci di menu "Archivio" e "Spazio documenti". L'utente semplice (User) non li vede:
   lo spazio dell'azienda non lo riguarda e la ripartizione per tipo rivelerebbe i documenti del personale
   (es. il numero e il peso delle buste paga dei colleghi).

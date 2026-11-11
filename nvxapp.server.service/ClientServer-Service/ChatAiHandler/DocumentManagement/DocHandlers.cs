@@ -11,7 +11,7 @@ using static nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentMa
 
 namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManagement
 {
-    // Comandi del Documentale della chat. ANALISI_VOCALI_DOCUMENTALE.md §2
+    // Comandi del Documentale della chat. ANALISI_DOCUMENTMANAGEMENT_VOCALI.md §2
 
     // R1 — ricerca per tipo, persona, testo, anno o mese
     public class DocSearchHandler : BaseCommandHandler

@@ -2,7 +2,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_WidgetService.Models
 {
-    // spazio occupato per tipo documento (widget "Spazio per tipo documento", ANALISI_WIDGET_DOCUMENTALE.md)
+    // spazio occupato per tipo documento (widget "Spazio per tipo documento", ANALISI_DOCUMENTMANAGEMENT_WIDGET.md)
     public class Doc_SpazioPerTipoGetInModel
     {
     }

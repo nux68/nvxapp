@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
 {
     /*
-     Documentale (ANALISI_DOCUMENTALE.md §6), schema tenant_<IdAzienda>_4 (o public in modalita' singola).
+     Documentale (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §6), schema tenant_<IdAzienda>_4 (o public in modalita' singola).
      Tabelle con prefisso Doc_. Le tabelle comuni (Az_Anagrafica, Az_Cliente, Dip_Anagrafica) stanno nello schema
      Common e sono mappate in sola lettura in DocumentManagementDbContext.
      I file stanno fuori dal database (IFileStorage): qui solo i metadati e la chiave del file.
@@ -101,7 +101,7 @@ namespace nvxapp.server.data.Entities.Tenant.DocumentManagement
         // ai destinatari si chiede la presa visione
         public bool PresaVisioneRichiesta { get; set; }
 
-        // ai destinatari si chiede la firma (FES, ANALISI_FIRMA_DIGITALE.md §4.2): e' solo il valore proposto,
+        // ai destinatari si chiede la firma (FES, ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md §4.2): e' solo il valore proposto,
         // all'invio del singolo documento si puo' togliere o aggiungere (Doc_Documento.FirmaRichiesta)
         public bool FirmaRichiesta { get; set; }
 

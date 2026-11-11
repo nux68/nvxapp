@@ -5,7 +5,7 @@ import { DocumentManagementService } from '../../../ClientServer-Service/Documen
 import { DocAbilitazioneModel, DocAbilitazionePutInModel, DocEmptyInModel } from '../../../ClientServer-Service/DocumentManagement/Models/doc-model';
 
 /*
- Abilitazioni ai documenti del personale (ANALISI_DOCUMENTALE.md §4): per ogni CompanyAdmin "vede" e "carica" (chi
+ Abilitazioni ai documenti del personale (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md §4): per ogni CompanyAdmin "vede" e "carica" (chi
  carica vede anche); senza abilitazione non vede i documenti del personale. Il CompanyPowerAdmin e' sempre abilitato
  (riga fissa). Le gestiscono il CompanyPowerAdmin, il SuperUser e il DealerPowerAdmin del centro.
  Ogni interruttore si salva subito (come la pagina delle impostazioni AI dei tipi di ticket).

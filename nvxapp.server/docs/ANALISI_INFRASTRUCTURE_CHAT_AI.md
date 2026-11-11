@@ -261,7 +261,7 @@ Sospese inizialmente il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 tok
 ## 11. Altri applicativi (11/11/2026)
 
 I comandi vocali sono stati estesi al CRM e al Documentale: analisi e comandi in `ANALISI_VOCALI_CRM.md` (branch CRM)
-e `ANALISI_VOCALI_DOCUMENTALE.md` (branch DocumentManagement). Nel motore (Infrastructure):
+e `ANALISI_DOCUMENTMANAGEMENT_VOCALI.md` (branch DocumentManagement). Nel motore (Infrastructure):
 
 - [x] I1 Comandi legati a un applicativo: `IntentDefinition.Application` e `IOpenableEntity.Application`
   (`ApplicationType?`, null = comune). `ChatAIService` legge gli applicativi attivi dell'azienda
