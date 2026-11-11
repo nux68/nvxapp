@@ -7,7 +7,8 @@ namespace nvxapp.server.data.Infrastructure
 {
     /*
      Applicativo 0 - Common: dati dell'azienda condivisi tra gli applicativi
- (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica).
+ (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica, Az_Sedi, Az_SediReparto, Par_Competenza,
+ Dip_Competenza, Dip_RapportoAutovetture).
      multi-tenant: tenant_<IdAzienda>_0     modalita' singola: public
      Migration in Migrations/Common.
 
@@ -32,11 +33,17 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_Cliente> Az_Cliente { get; set; }
         public virtual DbSet<Az_ClienteContatto> Az_ClienteContatto { get; set; }
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
+        public virtual DbSet<Az_Sedi> Az_Sedi { get; set; }
+        public virtual DbSet<Az_SediReparto> Az_SediReparto { get; set; }
+        public virtual DbSet<Par_Competenza> Par_Competenza { get; set; }
+        public virtual DbSet<Dip_Competenza> Dip_Competenza { get; set; }
+        public virtual DbSet<Dip_RapportoAutovetture> Dip_RapportoAutovetture { get; set; }
 
         // tipi del modello Common (tabelle comuni e tabelle di public referenziate)
         private static readonly HashSet<Type> _commonTypes = new()
         {
             typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica),
+            typeof(Az_Sedi), typeof(Az_SediReparto), typeof(Par_Competenza), typeof(Dip_Competenza), typeof(Dip_RapportoAutovetture),
             typeof(Company), typeof(ApplicationUser),
         };
 
@@ -136,6 +143,73 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasOne(t => t.Az_ClienteNavigation)
                       .WithMany(t => t.Az_ClienteContatto)
                       .HasForeignKey(t => t.IdAz_Cliente)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            /*
+             Sedi, reparti, competenze e autovetture (INF-COM): stessa configurazione che avevano nelle presenze.
+             Le collection verso le tabelle delle presenze non sono nelle entita' comuni (le aggiunge il ramo
+             Presenze in un partial): qui .WithMany() senza navigazione dove serve.
+             Percorso di cancellazione: tutte in cascata da Az_Anagrafica (direttamente o tramite Dip_Anagrafica/Az_Sedi).
+            */
+
+            /* Az_Sedi */
+            modelBuilder.Entity<Az_Sedi>(entity =>
+            {
+                entity.ToTable("Az_Sedi");
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            /* Az_SediReparto: reparti della sede, ad albero (il padre non si cancella se ha figli) */
+            modelBuilder.Entity<Az_SediReparto>(entity =>
+            {
+                entity.ToTable("Az_SediReparto");
+                entity.HasOne(t => t.Az_SediNavigation)
+                      .WithMany(t => t.Az_Reparto)
+                      .HasForeignKey(t => t.IdAz_Sedi)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Az_SediRepartoNavigation)
+                      .WithMany(t => t.Az_SediReparto_Sub)
+                      .HasForeignKey(t => t.IdAz_SediReparto)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            /* Par_Competenza */
+            modelBuilder.Entity<Par_Competenza>(entity =>
+            {
+                entity.ToTable("Par_Competenza");
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            /* Dip_Competenza: una riga per dipendente e competenza */
+            modelBuilder.Entity<Dip_Competenza>(entity =>
+            {
+                entity.ToTable("Dip_Competenza");
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany(t => t.Dip_Competenza)
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Par_CompetenzaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdPar_Competenza)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => new { t.IdDip_Anagrafica, t.IdPar_Competenza }).IsUnique();
+            });
+
+            /* Dip_RapportoAutovetture: legata al dipendente (nelle presenze era legata al rapporto di lavoro) */
+            modelBuilder.Entity<Dip_RapportoAutovetture>(entity =>
+            {
+                entity.ToTable("Dip_RapportoAutovetture");
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }
