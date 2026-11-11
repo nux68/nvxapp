@@ -23,7 +23,7 @@ import { CrmContactDialogComponent } from '../../../shared/components/Crm/crm-co
 })
 /*
  Scheda del cliente nel CRM: anagrafica comune + dati del CRM (salvati con il pulsante Conferma) e, per un cliente gia'
- salvato, contatti, opportunita', attivita', offerte, note e allegati (ognuno si salva da se').
+ salvato, contatti, opportunita', attivita', offerte (preventivi), richieste di assistenza, note e allegati (ognuno si salva da se').
 */
 export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent<M.CrmClienteModel> {
 
@@ -46,6 +46,9 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
   public readonly azAttivita: NvxListAction<M.CrmAttivitaListModel>[];
   public readonly colOfferte: NvxListColumn<M.CrmOffertaListModel>[];
   public readonly azOfferte: NvxListAction<M.CrmOffertaListModel>[];
+  public readonly colRichieste: NvxListColumn<M.CrmRichiestaListModel>[];
+  public readonly azRichieste: NvxListAction<M.CrmRichiestaListModel>[];
+  public readonly richiestaAperta = (x: M.CrmRichiestaListModel) => x.stato <= 2;
   public readonly principale = (x: M.CrmContattoModel) => x.principale;
 
   constructor(protected override navCtrl: NavController,
@@ -96,6 +99,17 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
     ];
     const b5 = userInterfaceService.Btn_Apri; b5.event = (x: M.CrmOffertaListModel) => this.navCtrl.navigateForward('/crmofferedit', { state: { id: x.id } });
     this.azOfferte = [{ button: b5 }];
+    this.colRichieste = [
+      { key: 'numeroCompleto', title: t('crm.fields.numero'), mobile: 'note' },
+      { key: 'dataApertura', title: t('crm.fields.apertura'), value: x => crmDataOra(x.dataApertura), sortValue: x => x.dataApertura },
+      { key: 'oggetto', title: t('crm.fields.oggetto'), mobile: 'title' },
+      { key: 'priorita', title: t('crm.fields.priorita'), value: x => t('crm.enums.prioritaRichiesta.' + x.priorita), sortValue: x => x.priorita },
+      { key: 'stato', title: t('crm.fields.stato'), mobile: 'subtitle', value: x => t('crm.enums.statoRichiesta.' + x.stato) },
+      { key: 'assegnatario', title: t('crm.fields.assegnatario'), mobile: 'hidden', value: x => x.assegnatario ?? '' },
+      { key: 'oreRisoluzione', title: t('crm.fields.oreRisoluzione'), align: 'end', mobile: 'hidden', value: x => x.oreRisoluzione != null ? String(x.oreRisoluzione) : '', sortValue: x => x.oreRisoluzione ?? -1 },
+    ];
+    const b6 = userInterfaceService.Btn_Apri; b6.event = (x: M.CrmRichiestaListModel) => this.navCtrl.navigateForward('/crmrequestedit', { state: { id: x.id } });
+    this.azRichieste = [{ button: b6 }];
   }
 
   get Title(): string { return this.transloco.translate('crm.pages.customerEdit.title'); }
@@ -166,6 +180,7 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
         { text: t('crm.pages.customerEdit.addOpportunita'), icon: 'git-network-outline', handler: () => { this.nuova('/crmopportunityedit'); } },
         { text: t('crm.pages.customerEdit.addAttivita'), icon: 'calendar-outline', handler: () => { this.nuova('/crmactivityedit'); } },
         { text: t('crm.pages.customerEdit.addOfferta'), icon: 'document-text-outline', handler: () => { this.nuova('/crmofferedit'); } },
+        { text: t('crm.pages.customerEdit.addRichiesta'), icon: 'help-buoy-outline', handler: () => { this.nuova('/crmrequestedit'); } },
         { text: t('common.buttons.cancel'), role: 'cancel' }
       ]
     });

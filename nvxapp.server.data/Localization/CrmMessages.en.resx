@@ -611,4 +611,132 @@ Best regards
     <value>Lead: {0}</value>
     <comment>calendario (CRM-CAL.1)</comment>
   </data>
+  <data name="OfferStateInvalid" xml:space="preserve">
+    <value>Invalid offer state.</value>
+    <comment>CRM-PREV</comment>
+  </data>
+  <data name="OfferPdfJobStarted" xml:space="preserve">
+    <value>Preparing the PDF of offer {0}...</value>
+    <comment>CRM-PREV.2</comment>
+  </data>
+  <data name="OfferPdfJobReady" xml:space="preserve">
+    <value>PDF of offer {0} ready.</value>
+    <comment>CRM-PREV.2</comment>
+  </data>
+  <data name="OfferPdfJobFailed" xml:space="preserve">
+    <value>PDF of offer {0} failed.</value>
+    <comment>CRM-PREV.2</comment>
+  </data>
+  <data name="OfferEmailFailed" xml:space="preserve">
+    <value>Email to {0} not sent: check the address or try again later. The offer has not been marked as sent.</value>
+    <comment>CRM-PREV.2</comment>
+  </data>
+  <data name="OfferSentActivitySubject" xml:space="preserve">
+    <value>Offer {0} sent</value>
+    <comment>CRM-PREV.2: attivita' registrata con l'invio</comment>
+  </data>
+  <data name="OfferSentActivityOutcome" xml:space="preserve">
+    <value>Sent by email to {0}</value>
+    <comment>CRM-PREV.2</comment>
+  </data>
+  <data name="OfferDeadlineDescription" xml:space="preserve">
+    <value>Offer {0} - {1}</value>
+    <comment>CRM-PREV.1: scadenzario</comment>
+  </data>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Support request not found or not visible.</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestSubjectRequired" xml:space="preserve">
+    <value>The request subject is required.</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestDataInvalid" xml:space="preserve">
+    <value>Invalid request data (state, priority or channel).</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestNotAllowed" xml:space="preserve">
+    <value>Operation not allowed on this request: it is assigned to another user.</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestAssignNotAllowed" xml:space="preserve">
+    <value>Only administrators can assign a request to other users.</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestMessageRequired" xml:space="preserve">
+    <value>Write the note text.</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestEventOpened" xml:space="preserve">
+    <value>Request opened</value>
+    <comment>CRM-ASS: storico</comment>
+  </data>
+  <data name="RequestEventState" xml:space="preserve">
+    <value>State: {0} → {1}</value>
+    <comment>CRM-ASS: storico</comment>
+  </data>
+  <data name="RequestEventAssigned" xml:space="preserve">
+    <value>Assigned to {0}</value>
+    <comment>CRM-ASS: storico</comment>
+  </data>
+  <data name="RequestEventUnassigned" xml:space="preserve">
+    <value>Assignment removed</value>
+    <comment>CRM-ASS: storico</comment>
+  </data>
+  <data name="RequestAssignedTitle" xml:space="preserve">
+    <value>Support request {0} assigned to you</value>
+    <comment>CRM-ASS: notifica</comment>
+  </data>
+  <data name="RequestAssignedText" xml:space="preserve">
+    <value>Customer {0}: {1} ({2} priority)</value>
+    <comment>CRM-ASS: notifica</comment>
+  </data>
+  <data name="RequestState_0" xml:space="preserve">
+    <value>New</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestState_1" xml:space="preserve">
+    <value>In progress</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestState_2" xml:space="preserve">
+    <value>Waiting for customer</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestState_3" xml:space="preserve">
+    <value>Resolved</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestState_4" xml:space="preserve">
+    <value>Closed</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestState_5" xml:space="preserve">
+    <value>Cancelled</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestPriority_0" xml:space="preserve">
+    <value>low</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestPriority_1" xml:space="preserve">
+    <value>normal</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestPriority_2" xml:space="preserve">
+    <value>high</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="RequestPriority_3" xml:space="preserve">
+    <value>urgent</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="DeletionCountRequests" xml:space="preserve">
+    <value>CRM support requests</value>
+    <comment>CRM-ASS</comment>
+  </data>
+  <data name="CustomerUsedByRequests" xml:space="preserve">
+    <value>CRM support requests: {0}</value>
+    <comment>CRM-ASS</comment>
+  </data>
 </root>

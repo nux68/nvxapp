@@ -12,7 +12,8 @@
       "tables": "Tabelle",
       "settings": "Impostazioni",
       "reassign": "Riassegnazione",
-      "manual": "Manuale CRM"
+      "manual": "Manuale CRM",
+      "requests": "Richieste clienti"
     },
     "common": {
       "add": "Aggiungi",
@@ -28,7 +29,9 @@
       "offerte": "Offerte",
       "note": "Note",
       "allegati": "Allegati",
-      "storico": "Storico"
+      "storico": "Storico",
+      "assistenza": "Assistenza",
+      "messaggi": "Messaggi"
     },
     "fields": {
       "assegnatario": "Assegnata a",
@@ -88,11 +91,21 @@
       "validaFinoAl": "Valida fino al",
       "valore": "Valore",
       "valoreAperto": "Valore aperto",
-      "ivaTotale": "IVA"
+      "ivaTotale": "IVA",
+      "apertura": "Apertura",
+      "priorita": "Priorità",
+      "canale": "Canale",
+      "soluzione": "Soluzione",
+      "presaInCarico": "Presa in carico",
+      "risoluzione": "Risoluzione",
+      "orePresaInCarico": "Ore presa in carico",
+      "oreRisoluzione": "Ore risoluzione",
+      "tipoProdotto": "Tipo"
     },
     "validation": {
       "checkFields": "Controlla i campi evidenziati.",
-      "customerName": "La ragione sociale è obbligatoria (max 100 caratteri)."
+      "customerName": "La ragione sociale è obbligatoria (max 100 caratteri).",
+      "requestSubject": "L'oggetto è obbligatorio (max 200 caratteri)."
     },
     "contact": {
       "title": "Persona di riferimento",
@@ -153,7 +166,8 @@
         "addContatto": "Contatto",
         "addOpportunita": "Opportunità",
         "addAttivita": "Attività",
-        "addOfferta": "Offerta"
+        "addOfferta": "Offerta",
+        "addRichiesta": "Richiesta di assistenza"
       },
       "leadList": {
         "title": "Lead",
@@ -206,7 +220,11 @@
         "addLine": "Aggiungi riga",
         "delete": "Cancella l'offerta",
         "confirmDelete": "Confermi la cancellazione dell'offerta in bozza?",
-        "sentOn": "Inviata il {{data}}"
+        "sentOn": "Inviata il {{data}}",
+        "pdfStarted": "PDF in preparazione: lo trovi nella barra dei job quando è pronto.",
+        "outcomeOn": "· {{stato}} il {{data}}",
+        "order": "· Ordine n. {{id}}",
+        "lifecycleNote": "Inviata (anche con il pulsante Invia) l'offerta entra nello scadenzario fino alla validità; passata la validità senza esito diventa Scaduta. Accettata: l'opportunità collegata, se aperta, passa alla fase vinta con il valore dell'offerta."
       },
       "parList": {
         "title": "Tabelle del CRM",
@@ -258,6 +276,25 @@
         "activitiesByUser": "Attività fatte per utente",
         "weighted": "pesato",
         "empty": "Nessun dato."
+      },
+      "requestList": {
+        "title": "Richieste di assistenza",
+        "new": "Nuova richiesta",
+        "open": "Aperte",
+        "mine": "Assegnate a me",
+        "empty": "Nessuna richiesta.",
+        "note": "Richieste dei clienti dell'azienda (non sono i ticket verso l'assistenza della piattaforma). In evidenza le aperte con priorità alta o urgente."
+      },
+      "requestEdit": {
+        "title": "Richiesta di assistenza",
+        "delete": "Cancella la richiesta",
+        "confirmDelete": "Confermi la cancellazione della richiesta e dei suoi messaggi?",
+        "times": "Tempi",
+        "hours": "{{ore}} ore",
+        "notePlaceholder": "Nota interna",
+        "noMessages": "Nessun messaggio.",
+        "newNote": "Dopo il primo salvataggio si possono aggiungere le note interne; l'assegnatario riceve una notifica.",
+        "readOnly": "La richiesta è assegnata a un altro utente: puoi leggerla e aggiungere note, non modificarla."
       }
     },
     "enums": {
@@ -283,7 +320,8 @@
         "0": "Bozza",
         "1": "Inviata",
         "2": "Accettata",
-        "3": "Rifiutata"
+        "3": "Rifiutata",
+        "4": "Scaduta"
       },
       "faseTipo": {
         "0": "Aperta",
@@ -301,6 +339,31 @@
         "3": "Fonti",
         "4": "Prodotti",
         "5": "Etichette"
+      },
+      "tipoProdotto": {
+        "0": "Articolo",
+        "1": "Servizio"
+      },
+      "statoRichiesta": {
+        "0": "Nuova",
+        "1": "In carico",
+        "2": "In attesa del cliente",
+        "3": "Risolta",
+        "4": "Chiusa",
+        "5": "Annullata"
+      },
+      "prioritaRichiesta": {
+        "0": "Bassa",
+        "1": "Normale",
+        "2": "Alta",
+        "3": "Urgente"
+      },
+      "canaleRichiesta": {
+        "0": "Telefono",
+        "1": "Email",
+        "2": "Di persona",
+        "3": "Sito",
+        "4": "Altro"
       }
     },
     "showcase": {

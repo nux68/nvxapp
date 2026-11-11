@@ -23,6 +23,9 @@
           </ion-select></ion-item>
         }
         @if (tabella === 4) {
+          <ion-item><ion-select formControlName="tipoProdotto" [label]="'crm.fields.tipoProdotto' | transloco" labelPlacement="floating" interface="popover">
+            @for (t of tipiProdotto; track t) { <ion-select-option [value]="t">{{ 'crm.enums.tipoProdotto.' + t | transloco }}</ion-select-option> }
+          </ion-select></ion-item>
           <ion-item><ion-input formControlName="codice" maxlength="30" [label]="'crm.fields.codice' | transloco" labelPlacement="floating"></ion-input></ion-item>
           <ion-item><ion-input type="number" formControlName="prezzo" [label]="'crm.fields.prezzo' | transloco" labelPlacement="floating"></ion-input></ion-item>
           <ion-item><ion-input formControlName="um" maxlength="10" [label]="'crm.fields.um' | transloco" labelPlacement="floating"></ion-input></ion-item>

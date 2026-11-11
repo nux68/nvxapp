@@ -284,6 +284,8 @@ Implementata il 04/11/2026 (commit 846a9400 e seguenti su CRM_Dev; in Infrastruc
 - [x] opportunità, pipeline kanban (trascinamento HTML5, scelta della fase su mobile, motivo per le perse), storico delle fasi e del valore
 - [x] attività, agenda (oggi / scadute / prossime / fatte), promemoria SignalR (`CrmReminderService` + `IUserNotifier` di Infrastructure)
 - [x] offerte con righe, totali calcolati dal server, numerazione per anno, PDF (MigraDoc) e invio email con il PDF allegato
+- [x] preventivi completi (11/11/2026, `CRM-PREV`): stato scaduta, scadenzario, PDF con job, invio registrato come attività, accettata → opportunità vinta, listino articoli/servizi – vedi `ANALISI_CRM_PREVENTIVI.md`
+- [x] assistenza ai clienti dell'azienda (11/11/2026, `CRM-ASS`): richieste con stati, priorità, assegnazione con notifica, tempi, note interne, sezione nella scheda cliente – vedi `ANALISI_CRM_ASSISTENZA.md`
 - [x] note (fissate, autore) e allegati (`Crm_Allegato`, max 20 MB, su disco; non contano nello spazio del documentale)
 - [x] report (pipeline per fase/responsabile con valore pesato, vinte/perse nel periodo, conversione dei lead, attività per utente)
 - [ ] import clienti/contatti da Excel/CSV con controllo duplicati

@@ -151,7 +151,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 {
                     case Crm_Par_Fase f: f.Probabilita = Math.Clamp(d.Probabilita, 0, 100); f.Tipo = d.Tipo; break;
                     case Crm_Par_TipoAttivita t: t.Icona = d.Icona; t.Colore = d.Colore; t.DurataMinuti = Math.Clamp(d.DurataMinuti, 0, 24 * 60); break;
-                    case Crm_Par_Prodotto p: p.Codice = string.IsNullOrWhiteSpace(d.Codice) ? null : d.Codice.Trim(); p.Prezzo = d.Prezzo; p.Um = d.Um; p.AliquotaIva = Math.Clamp(d.AliquotaIva, 0, 100); break;
+                    case Crm_Par_Prodotto p: p.Codice = string.IsNullOrWhiteSpace(d.Codice) ? null : d.Codice.Trim(); p.Prezzo = d.Prezzo; p.Um = d.Um; p.AliquotaIva = Math.Clamp(d.AliquotaIva, 0, 100); p.TipoProdotto = Enum.IsDefined(d.TipoProdotto) ? d.TipoProdotto : Crm_TipoProdotto.Articolo; break;
                     case Crm_Par_Tag g: g.Colore = d.Colore; break;
                 }
                 await _Crm_Attivita.SaveChange();
@@ -275,7 +275,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 case Crm_Par_TipoAttivita t: m.Tabella = Crm_ParTabella.TipoAttivita; m.Icona = t.Icona; m.Colore = t.Colore; m.DurataMinuti = t.DurataMinuti; break;
                 case Crm_Par_MotivoPerdita: m.Tabella = Crm_ParTabella.MotivoPerdita; break;
                 case Crm_Par_Fonte: m.Tabella = Crm_ParTabella.Fonte; break;
-                case Crm_Par_Prodotto p: m.Tabella = Crm_ParTabella.Prodotto; m.Codice = p.Codice; m.Prezzo = p.Prezzo; m.Um = p.Um; m.AliquotaIva = p.AliquotaIva; break;
+                case Crm_Par_Prodotto p: m.Tabella = Crm_ParTabella.Prodotto; m.Codice = p.Codice; m.Prezzo = p.Prezzo; m.Um = p.Um; m.AliquotaIva = p.AliquotaIva; m.TipoProdotto = p.TipoProdotto; break;
                 case Crm_Par_Tag g: m.Tabella = Crm_ParTabella.Tag; m.Colore = g.Colore; break;
             }
             return m;

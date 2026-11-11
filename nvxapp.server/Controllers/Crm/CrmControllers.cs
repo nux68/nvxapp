@@ -138,19 +138,29 @@ namespace nvxapp.server.Controllers.Crm
         [Authorize, HttpPost, Route("Crm_OffertaInvia")]
         public async Task<GenericResult<Crm_OffertaPutOutModel>> Crm_OffertaInvia(GenericRequest<Crm_OffertaInviaInModel> inModel) => await _service.Crm_OffertaInvia(inModel, false);
 
-        [Authorize, HttpGet, Route("Crm_OffertaPdf")]
-        public async Task<IActionResult> Crm_OffertaPdf([FromQuery] int id)
-        {
-            try
-            {
-                var file = await _service.Crm_OffertaPdf(id);
-                return File(file.Content, file.ContentType, file.NomeFile);
-            }
-            catch (UserMessageException ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
+        // PDF tramite job: il file arriva nella barra dei job (Account/Download)
+        [Authorize, HttpPost, Route("Crm_OffertaPdfJob")]
+        public async Task<GenericResult<Crm_OffertaPdfJobOutModel>> Crm_OffertaPdfJob(GenericRequest<Crm_IdInModel> inModel) => await _service.Crm_OffertaPdfJob(inModel, false);
+    }
+
+    // assistenza ai clienti dell'azienda (CRM-ASS)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class Crm_RichiestaController : NvxControllerBase
+    {
+        private readonly ICrm_RichiestaService _service;
+        public Crm_RichiestaController(IHttpContextAccessor httpContextAccessor, ICrm_RichiestaService service) : base(httpContextAccessor) { _service = service; }
+
+        [Authorize, HttpPost, Route("Crm_RichiestaList")]
+        public async Task<GenericResult<Crm_RichiestaListOutModel>> Crm_RichiestaList(GenericRequest<Crm_RichiestaListInModel> inModel) => await _service.Crm_RichiestaList(inModel, false);
+        [Authorize, HttpPost, Route("Crm_RichiestaGet")]
+        public async Task<GenericResult<Crm_RichiestaGetOutModel>> Crm_RichiestaGet(GenericRequest<Crm_IdInModel> inModel) => await _service.Crm_RichiestaGet(inModel, false);
+        [Authorize, HttpPost, Route("Crm_RichiestaPut")]
+        public async Task<GenericResult<Crm_RichiestaPutOutModel>> Crm_RichiestaPut(GenericRequest<Crm_RichiestaPutInModel> inModel) => await _service.Crm_RichiestaPut(inModel, false);
+        [Authorize, HttpPost, Route("Crm_RichiestaMessaggioPut")]
+        public async Task<GenericResult<Crm_RichiestaMessaggioPutOutModel>> Crm_RichiestaMessaggioPut(GenericRequest<Crm_RichiestaMessaggioPutInModel> inModel) => await _service.Crm_RichiestaMessaggioPut(inModel, false);
+        [Authorize, HttpPost, Route("Crm_RichiestaDelete")]
+        public async Task<GenericResult<Crm_IdOutModel>> Crm_RichiestaDelete(GenericRequest<Crm_IdInModel> inModel) => await _service.Crm_RichiestaDelete(inModel, false);
     }
 
     [ApiController]

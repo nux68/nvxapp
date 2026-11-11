@@ -1,0 +1,16 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <ion-segment [(ngModel)]="sezione" (ionChange)="load()" [scrollable]="true">
+        <ion-segment-button value="aperte"><ion-label>{{ 'crm.pages.requestList.open' | transloco }}</ion-label></ion-segment-button>
+        <ion-segment-button value="mie"><ion-label>{{ 'crm.pages.requestList.mine' | transloco }}</ion-label></ion-segment-button>
+        <ion-segment-button value="tutte"><ion-label>{{ 'crm.common.all' | transloco }}</ion-label></ion-segment-button>
+      </ion-segment>
+      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="help-buoy-outline" [searchText]="searchText" [highlight]="evidenza"
+        [emptyText]="'crm.pages.requestList.empty' | transloco"></nvx-list>
+      <ion-note class="nvx-nota-disabled">{{ 'crm.pages.requestList.note' | transloco }}</ion-note>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
