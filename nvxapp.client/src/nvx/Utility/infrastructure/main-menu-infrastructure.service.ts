@@ -37,7 +37,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
       { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storagePlans', component: "StoragePlanListPageComponent", url: '/storageplanlist', icon: 'server' },
+      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storageSettings', component: "StorageSettingsPageComponent", url: '/storagesettings', icon: 'server' },
       { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.companyStorage', component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' }
     ];
   }

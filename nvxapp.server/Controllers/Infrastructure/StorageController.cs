@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.Infrastructure
 {
-    // Spazio a disposizione delle aziende: pacchetti e valori predefiniti (SuperUser), spazio delle aziende
+    // Spazio a disposizione delle aziende: valori predefiniti (SuperUser), spazio delle aziende
     // (SuperUser, centro, studio in lettura, azienda in lettura). I ruoli li controlla il servizio.
     [ApiController]
     [Route("api/[controller]")]
@@ -26,14 +26,6 @@ namespace nvxapp.server.Controllers.Infrastructure
         [Authorize, HttpPost, Route("StorageSettingsPut")]
         public async Task<GenericResult<StorageSettingsPutOutModel>> StorageSettingsPut(GenericRequest<StorageSettingsPutInModel> inModel)
             => await _service.StorageSettingsPut(inModel, false);
-
-        [Authorize, HttpPost, Route("StoragePlanPut")]
-        public async Task<GenericResult<StoragePlanPutOutModel>> StoragePlanPut(GenericRequest<StoragePlanPutInModel> inModel)
-            => await _service.StoragePlanPut(inModel, false);
-
-        [Authorize, HttpPost, Route("StoragePlanDelete")]
-        public async Task<GenericResult<StoragePlanDeleteOutModel>> StoragePlanDelete(GenericRequest<StoragePlanDeleteInModel> inModel)
-            => await _service.StoragePlanDelete(inModel, false);
 
         [Authorize, HttpPost, Route("CompanyStorageList")]
         public async Task<GenericResult<CompanyStorageListOutModel>> CompanyStorageList(GenericRequest<CompanyStorageListInModel> inModel)
