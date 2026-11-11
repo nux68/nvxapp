@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Tenant;
+using System.Diagnostics;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
@@ -44,8 +45,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         public Dictionary<string, (int Id, TipoValore Tipo)> Causali { get; } = new(StringComparer.OrdinalIgnoreCase);
         public Dictionary<int, string> CodiceCausale { get; } = new();
         public Dictionary<string, int> Giustificativi { get; } = new(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>Testo con i codici esistenti, prima quelli simili a quello sbagliato (per il messaggio d'errore).</summary>
+        public static string Suggerimenti(string? sbagliato, IEnumerable<string> codici)
+        {
+            var tutti = codici.OrderBy(c => c, StringComparer.OrdinalIgnoreCase).ToList();
+            if (tutti.Count == 0) return "Nessun codice definito.";
+            var s = (sbagliato ?? string.Empty).Trim();
+            var pref = s.Length >= 2 ? s[..2] : s;
+            var simili = tutti.Where(c => s.Length > 0 && (c.Contains(s, StringComparison.OrdinalIgnoreCase) ||
+                                                          s.Contains(c, StringComparison.OrdinalIgnoreCase) ||
+                                                          c.StartsWith(pref, StringComparison.OrdinalIgnoreCase)))
+                              .ToList();
+            static string Elenco(List<string> l) => string.Join(", ", l.Take(12)) + (l.Count > 12 ? ", ..." : "");
+            var altri = tutti.Except(simili).ToList();
+            if (simili.Count == 0) return "Codici disponibili: " + Elenco(tutti) + ".";
+            return "Forse: " + Elenco(simili) + "." + (altri.Count > 0 ? " Altri codici: " + Elenco(altri) + "." : "");
+        }
     }
 
+    [DebuggerNonUserCode]
     public class FormulaContext
     {
         private readonly FormulaDatiGiorno _d;
@@ -109,6 +128,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     // ── x.Attiva ─────────────────────────────────────────────────────────────────────
     // Come il legacy: Sempre(true) applica sempre; altrimenti devono valere giorno della settimana, mese e festivo.
     // Un gruppo senza nessuna scelta vale "tutti" (nel legacy andavano impostati tutti a true).
+    [DebuggerNonUserCode]
     public class FormulaAttiva
     {
         private readonly FormulaDatiGiorno _d;
@@ -146,6 +166,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Causale ────────────────────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaCausale
     {
         private readonly FormulaDatiGiorno _d;
@@ -156,7 +177,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         private (int Id, TipoValore Tipo) Trova(string? codice)
         {
             if (string.IsNullOrWhiteSpace(codice) || !_c.Causali.TryGetValue(codice.Trim(), out var c))
-                throw new FormulaException($"Causale '{codice}' inesistente");
+                throw new FormulaException($"Causale '{codice}' inesistente. {FormulaCodici.Suggerimenti(codice, _c.Causali.Keys)}");
             return c;
         }
 
@@ -247,6 +268,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Giustificativo ─────────────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaGiustificativo
     {
         private readonly FormulaDatiGiorno _d;
@@ -257,7 +279,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         private IEnumerable<Dip_GG_GiustificativiModel> DelCodice(string? codice)
         {
             if (string.IsNullOrWhiteSpace(codice) || !_c.Giustificativi.TryGetValue(codice.Trim(), out var id))
-                throw new FormulaException($"Giustificativo '{codice}' inesistente");
+                throw new FormulaException($"Giustificativo '{codice}' inesistente. {FormulaCodici.Suggerimenti(codice, _c.Giustificativi.Keys)}");
             return _d.Giustificativi.Where(g => g.IdPar_Giustificativi == id);
         }
 
@@ -288,6 +310,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         public string Verso { get; init; } = string.Empty;
     }
 
+    [DebuggerNonUserCode]
     public class FormulaTimbrate
     {
         private readonly List<FormulaTimbratura> _t;
@@ -345,6 +368,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         [FormulaApi("Fine fascia in minuti da mezzanotte")] public int Alle { get; init; }
     }
 
+    [DebuggerNonUserCode]
     public class FormulaOrario
     {
         private readonly FormulaDatiGiorno _d;
@@ -369,6 +393,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Result ─────────────────────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaResult
     {
         private readonly FormulaDatiGiorno _d;
@@ -395,6 +420,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Stato ──────────────────────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaStato
     {
         private readonly Action<FormulaLogTipo, string> _log;
@@ -419,6 +445,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Time ───────────────────────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaTime
     {
         [FormulaApi("Minuti da ore e minuti (es. Min(4, 30) = 270)", InEvidenza = true, Firma = "Min(ore, minuti)")]
@@ -447,6 +474,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
     }
 
     // ── x.Rapporto / x.Dipendente ────────────────────────────────────────────────────
+    [DebuggerNonUserCode]
     public class FormulaRapporto
     {
         private readonly FormulaDatiGiorno _d;
@@ -457,6 +485,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         [FormulaApi("CCNL del rapporto")] public string Ccnl => _d.Rapporto.Ccnl ?? string.Empty;
     }
 
+    [DebuggerNonUserCode]
     public class FormulaDipendente
     {
         private readonly FormulaDatiGiorno _d;
