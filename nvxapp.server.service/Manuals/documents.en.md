@@ -86,9 +86,9 @@ The access log keeps track of everything that happens to the documents: who uplo
 It is the tool to verify the confidentiality of personnel documents and to reconstruct the history of a document when in doubt.
 
 @@ /docstorage
-This page shows the space used and the company package, the number of files, the maximum size allowed for a single file and the warning threshold.
+This page shows the space used and the Document management licence the company's space comes from (unlimited without a licence), the number of files and the warning threshold.
 
-When usage passes the threshold the administrators receive a warning; above 100% no new documents can be uploaded. For a larger storage package contact the dealer that follows your company.
+When usage passes the threshold the administrators receive a warning; above 100% no new documents can be uploaded. For more space move to a higher plan of the Document management licence from the Licence management page.
 
 @@ /docmine
 Here you find the documents concerning you as an employee: payslips, contracts, notices and the other documents the company archives in your name.
@@ -107,7 +107,7 @@ Some types (for example payslips, contracts, notices) require you to confirm you
 If it is still in the trash, yes: open the archive, switch to the **Trash** view and use **Restore**. Once the trash is emptied, or the set days have passed, the deletion is permanent.
 
 ### Why can't I upload a new document? {CompanyPowerAdmin, CompanyAdmin}
-Most likely the company storage has passed 100%: check the storage page. Above the limit uploads are blocked until you free space or move to a larger package.
+Most likely the company storage has passed 100%: check the storage page. Above the limit uploads are blocked until you free space or move to a licence plan with more space.
 
 ### An employee cannot see their documents, why? {CompanyPowerAdmin, CompanyAdmin}
 Check that the employee has an account (key icon) and that the documents are in **Published** status: in Draft status they are not visible. Registry-only employees cannot view documents in the app until they get access.
