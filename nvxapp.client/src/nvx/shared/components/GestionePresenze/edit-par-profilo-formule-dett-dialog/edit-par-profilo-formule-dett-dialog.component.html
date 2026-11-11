@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ Title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form [formGroup]="_editForm">
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-select formControlName="idPar_Formule" interface="modal"
+            [label]="'attendance.components.editParProfiloFormuleDettDialog.formula' | transloco" labelPlacement="stacked">
+            @for (f of formule; track f.id) {
+              <ion-select-option [value]="f.id">{{ f.codice }} - {{ f.titolo }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-item>
+          <ion-input type="number" min="1" formControlName="ordine"
+            [label]="'attendance.components.editParProfiloFormuleDettDialog.ordine' | transloco" labelPlacement="stacked"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-select formControlName="fase" interface="popover"
+            [label]="'attendance.components.editParProfiloFormuleDettDialog.fase' | transloco" labelPlacement="stacked">
+            @for (f of fasi; track f) {
+              <ion-select-option [value]="f">{{ faseTesto[f] | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-note class="ion-padding-start">{{ 'attendance.components.editParProfiloFormuleDettDialog.faseNota' | transloco }}</ion-note>
+        <ion-item>
+          <ion-input type="date" formControlName="dal"
+            [label]="'attendance.components.editParProfiloFormuleDettDialog.dal' | transloco" labelPlacement="stacked"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-input type="date" formControlName="al"
+            [label]="'attendance.components.editParProfiloFormuleDettDialog.al' | transloco" labelPlacement="stacked"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="sospesa">{{ 'attendance.components.editParProfiloFormuleDettDialog.sospesa' | transloco }}</ion-toggle>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

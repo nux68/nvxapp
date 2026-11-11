@@ -1389,4 +1389,56 @@
     <value>Dato riservato agli amministratori dell'azienda.</value>
     <comment>widget della dashboard</comment>
   </data>
+  <data name="FormulaSoloPowerAdmin" xml:space="preserve">
+    <value>Funzione riservata all'amministratore dell'azienda.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaPianoPro" xml:space="preserve">
+    <value>Le formule personalizzate sono disponibili con il piano Pro.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaCodiceObbligatorio" xml:space="preserve">
+    <value>Codice e titolo sono obbligatori.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaCodiceDuplicato" xml:space="preserve">
+    <value>Esiste gia' una formula con codice {0}.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaInUso" xml:space="preserve">
+    <value>La formula e' usata in {0} righe di profili formule: non si puo' cancellare.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaNonValida" xml:space="preserve">
+    <value>La formula contiene errori: {0}</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaProvaRapporto" xml:space="preserve">
+    <value>Dipendente o rapporto di lavoro non trovato.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="FormulaAIRispostaNonValida" xml:space="preserve">
+    <value>L'AI non ha prodotto una formula valida: {0}</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleCodiceObbligatorio" xml:space="preserve">
+    <value>Codice e descrizione sono obbligatori.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleCodiceDuplicato" xml:space="preserve">
+    <value>Esiste gia' un profilo formule con codice {0}.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleInUso" xml:space="preserve">
+    <value>Il profilo formule e' assegnato a {0} periodi di rapporti di lavoro: non si puo' cancellare.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleRigaNonValida" xml:space="preserve">
+    <value>Riga del profilo non valida: servono una formula, un ordine maggiore di zero e il periodo Dal-Al.</value>
+    <comment>formule personalizzate</comment>
+  </data>
+  <data name="ProfiloFormuleSovrapposti" xml:space="preserve">
+    <value>I periodi del profilo formule si sovrappongono ({0} e {1}).</value>
+    <comment>formule personalizzate</comment>
+  </data>
 </root>

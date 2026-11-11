@@ -19,6 +19,9 @@ import { Dip_Anagrafica4EditModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Pu
 import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { EditDipProfiloOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
+import { EditDipProfiloFormuleDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-profilo-formule-dialog/edit-dip-profilo-formule-dialog.component';
+import { ParProfiloFormuleService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloFormule/par-profilo-formule.service';
+import { Dip_ProfiloFormuleModel, Par_ProfiloFormuleInModel, Par_ProfiloFormuleModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloFormule/Models/par-profilo-formule-model';
 import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -56,6 +59,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public readonly tipoContrattoEnum = TipoContratto;
   public readonly destinazioneEccedenzeEnum = DestinazioneEccedenze;
   public readonly SEGMENT_DIPRAPP_PROF_HH   = 'DIPRAPP_DETT_PROF_HH';
+  public readonly SEGMENT_DIPRAPP_PROF_FORM = 'DIPRAPP_DETT_PROF_FORM';
+  // profili formule dell'azienda (scheda "Profilo formule", solo CompanyPowerAdmin con il piano Pro)
+  public par_ProfiloFormule: Par_ProfiloFormuleModel[] = [];
   public readonly SEGMENT_DIPRAPP_VARIE     = 'DIPRAPP_DETT_VARIE';
   public readonly SEGMENT_DIPRAPP_CONTATORI = 'DIPRAPP_DETT_CONTATORI';
   public readonly SEGMENT_DIPRAPP_SPESA     = 'DIPRAPP_DETT_SPESA';
@@ -115,7 +121,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
     private languageService: LanguageService,
-    public funzionalitaGestionePresenzeService: FunzionalitaGestionePresenzeService) {
+    public funzionalitaGestionePresenzeService: FunzionalitaGestionePresenzeService,
+    private parProfiloFormuleService: ParProfiloFormuleService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -156,6 +163,10 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   override ionViewWillEnter() {
     super.ionViewWillEnter();
+    if (this.funzionalitaGestionePresenzeService.formulePersonalizzate) {
+      const reqPF = new GenericRequest<Par_ProfiloFormuleInModel>(Par_ProfiloFormuleInModel);
+      this.parProfiloFormuleService.GetAll(reqPF).subscribe(res => this.par_ProfiloFormule = res.data?.par_ProfiloFormule ?? []);
+    }
     this.setfabMenuService();
   }
 
@@ -194,6 +205,14 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         this.fabMenuService.fabMenuItem = [
           new FabMenuItem('xxx', 'add-circle-outline', () => {
             this.EditDipRapportoAutovettureDialog_Open(0);
+          }),
+        ];
+
+      } else if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_FORM)) {
+
+        this.fabMenuService.fabMenuItem = [
+          new FabMenuItem('xxx', 'add-circle-outline', () => {
+            this.EditDipProfiloFormuleDialog_Open(0);
           }),
         ];
 
@@ -364,6 +383,54 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
 
+
+  // ── Profilo formule (formule personalizzate del calcolo, piano Pro) ─────────
+  getAll_Dip_ProfiloFormule(): Dip_ProfiloFormuleModel[] {
+    if (!this._editModel) return [];
+    const curr_RappLav = this.getCurr_RappLav_Id();
+    return (this._editModel.dip_ProfiloFormule ?? []).filter(x => x.idDip_RapportoLavoro == curr_RappLav)
+                                                     .sort((a, b) => (a.dal ?? '').localeCompare(b.dal ?? ''));
+  }
+
+  nomeProfiloFormule(id: number): string {
+    const p = this.par_ProfiloFormule.find(x => x.id === id);
+    return p ? `${p.codice} - ${p.descrizione}` : String(id);
+  }
+
+  async EditDipProfiloFormuleDialog_Open(id: number) {
+    if (!this._editModel) return;
+    this._editModel.dip_ProfiloFormule ??= [];
+    const curr_RappLav = this.getCurr_RappLav_Id();
+    let periodo: Dip_ProfiloFormuleModel;
+    if (id === 0) {
+      periodo = new Dip_ProfiloFormuleModel();
+      periodo.id = this.dbUtilService.GenerateCounterKey();
+      periodo.idDip_RapportoLavoro = curr_RappLav;
+      periodo.idPar_ProfiloFormule = this.par_ProfiloFormule.length > 0 ? this.par_ProfiloFormule[0].id : 0;
+      periodo.dal = new Date().toISOString().substring(0, 10);
+      periodo.al = '2100-12-31';
+    } else {
+      periodo = { ...this._editModel.dip_ProfiloFormule.find(p => p.id === id)! };
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipProfiloFormuleDialogComponent,
+      componentProps: { dip_ProfiloFormule: periodo, profili: this.par_ProfiloFormule, altriPeriodi: this.getAll_Dip_ProfiloFormule() },
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<Dip_ProfiloFormuleModel | null>();
+    if (role === 'confirm' && data) {
+      const index = this._editModel.dip_ProfiloFormule.findIndex(p => p.id === data.id);
+      if (index > -1) this._editModel.dip_ProfiloFormule[index] = data;
+      else this._editModel.dip_ProfiloFormule.push(data);
+    }
+  }
+
+  async Dip_ProfiloFormule_Delete(item: Dip_ProfiloFormuleModel) {
+    const ok = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.userDepartmentEdit.confirmDeleteFormulaProfile'));
+    if (ok && this._editModel)
+      this._editModel.dip_ProfiloFormule = this._editModel.dip_ProfiloFormule.filter(p => p.id !== item.id);
+  }
 
   getAll_Dip_ProfiloOrario() {
 
