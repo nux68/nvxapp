@@ -64,6 +64,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         private readonly IAspNetUsersRepository _aspNetUsersRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
 
         public LicenseSubscriptionManager(ILic_AbbonamentoRepository abbonamentoRepository,
                                           ILic_PagamentoRepository pagamentoRepository,
@@ -76,7 +78,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                                           IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
                                           IAspNetUsersRepository aspNetUsersRepository,
                                           IAspNetRolesRepository aspNetRolesRepository,
-                                          IAspNetUserRolesRepository aspNetUserRolesRepository)
+                                          IAspNetUserRolesRepository aspNetUserRolesRepository,
+                                          ICompanyRepository companyRepository,
+                                          IFinancialAdvisorRepository financialAdvisorRepository)
         {
             _abbonamentoRepository = abbonamentoRepository;
             _pagamentoRepository = pagamentoRepository;
@@ -90,6 +94,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             _aspNetUsersRepository = aspNetUsersRepository;
             _aspNetRolesRepository = aspNetRolesRepository;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
+            _companyRepository = companyRepository;
+            _financialAdvisorRepository = financialAdvisorRepository;
         }
 
         public DateTime FinePeriodo(DateTime inizio, PeriodicitaLicenza periodicita)
@@ -357,6 +363,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         private async Task<(Lic_Pagamento Pagamento, PaymentResult Result)> PagaAsync(IPaymentGateway gateway, Lic_Abbonamento abbonamento, string soggetto,
                                                                                      decimal importo, DateTime inizio, DateTime fine, MetodoPagamento metodo, string? returnUrl)
         {
+            var centro = await CentroDelSoggettoAsync(abbonamento);
             var pagamento = await _pagamentoRepository.CreateAsync(new Lic_Pagamento
             {
                 IdAbbonamento = abbonamento.Id,
@@ -373,7 +380,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 Metodo = metodo,
                 Stato = StatoPagamento.Creato,
                 Debug = gateway.Debug,
-                IdDealerListino = abbonamento.IdDealerListino
+                IdDealerListino = abbonamento.IdDealerListino,
+                IdDealer = centro?.IdDealer,
+                DealerDescrizione = centro?.Descrizione
             });
 
             PaymentResult result;
@@ -399,8 +408,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             pagamento.RiferimentoGateway = result.RiferimentoGateway;
             pagamento.Debug = result.Debug;
             pagamento.Note = result.Errore is { Length: > 500 } e ? e[..500] : result.Errore;
+            if (result.Stato is StatoPagamento.Completato or StatoPagamento.Debug)
+                pagamento.DataPagamento = DateTime.Now;
             pagamento = await _pagamentoRepository.UpdateAsync(pagamento);
             return (pagamento, result);
+        }
+
+        /*
+         Centro del cliente che paga (ANALISI_PAGAMENTI_CENTRI.md §2): azienda -> studio -> centro, oppure studio -> centro.
+         Si fotografa sul pagamento perche' la quota va al centro a cui il cliente apparteneva quando ha pagato.
+         Non e' IdDealerListino: quello e' il proprietario del listino (null = listino globale), non il centro del cliente.
+        */
+        private async Task<(int IdDealer, string? Descrizione)?> CentroDelSoggettoAsync(Lic_Abbonamento abbonamento)
+        {
+            int? idFinancialAdvisor = abbonamento.IdFinancialAdvisor;
+            if (idFinancialAdvisor == null && abbonamento.IdCompany != null)
+                idFinancialAdvisor = await _companyRepository.FindAll(c => c.Id == abbonamento.IdCompany)
+                                                             .Select(c => (int?)c.IdFinancialAdvisor)
+                                                             .FirstOrDefaultAsync();
+            if (idFinancialAdvisor == null)
+                return null;
+
+            var centro = await _financialAdvisorRepository.FindAll(f => f.Id == idFinancialAdvisor)
+                                                          .Select(f => new { f.IdDealer, f.DealerNavigation!.Descrizione })
+                                                          .FirstOrDefaultAsync();
+            return centro == null ? null : (centro.IdDealer, centro.Descrizione);
         }
 
         private async Task<List<string>> EmailPowerAdmin(Lic_Abbonamento abbonamento)
