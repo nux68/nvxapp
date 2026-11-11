@@ -9,6 +9,10 @@
         <ion-note class="nvx-nota-disabled">{{ 'ast.pages.settings.noticeDaysNote' | transloco }}</ion-note>
         <ion-item><ion-toggle formControlName="notificheAttive">{{ 'ast.pages.settings.notifications' | transloco }}</ion-toggle></ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'ast.pages.settings.notificationsNote' | transloco }}</ion-note>
+        <ion-item class="nvx-item-4-title"><ion-label>{{ 'ast.pages.settings.bookings' | transloco }}</ion-label></ion-item>
+        <ion-item><ion-input type="number" formControlName="prenotazioneDurataMaxOre" [label]="'ast.pages.settings.maxHours' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-input type="number" formControlName="prenotazioneAnticipoMaxGiorni" [label]="'ast.pages.settings.maxDaysAhead' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'ast.pages.settings.bookingsNote' | transloco }}</ion-note>
         <ion-item><ion-textarea formControlName="note" rows="4" maxlength="2000" [autoGrow]="true" [label]="'ast.pages.settings.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
       </form>
     </ion-card-content>

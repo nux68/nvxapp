@@ -17,6 +17,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
     {
         public int GiorniPreavviso { get; set; }
         public bool NotificheAttive { get; set; }
+        public int PrenotazioneDurataMaxOre { get; set; }
+        public int PrenotazioneAnticipoMaxGiorni { get; set; }
         public string? Note { get; set; }
     }
 

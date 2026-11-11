@@ -3,7 +3,12 @@
     "menu": {
       "section": "Company assets",
       "settings": "Settings",
-      "manual": "Company assets manual"
+      "manual": "Company assets manual",
+      "vehicles": "Vehicles",
+      "mine": "My resources",
+      "goods": "Items",
+      "bookings": "Bookings",
+      "resources": "Bookable resources"
     },
     "pages": {
       "settings": {
@@ -13,7 +18,278 @@
         "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
         "notifications": "Notifications on",
         "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
-        "note": "Notes"
+        "note": "Notes",
+        "bookings": "Bookings",
+        "maxHours": "Maximum length of a booking (hours)",
+        "maxDaysAhead": "Maximum advance (days)",
+        "bookingsNote": "Bookings need no approval; 0 = no limit."
+      },
+      "vehicleList": {
+        "title": "Company vehicles",
+        "new": "New vehicle",
+        "confirmDelete": "Delete vehicle {{targa}} with its assignments, deadlines, costs and fines?",
+        "showDisposed": "Show disposed vehicles",
+        "empty": "No vehicles"
+      },
+      "vehicleEdit": {
+        "title": "Vehicle",
+        "titleNew": "New vehicle",
+        "noFringe": "Business use only",
+        "add": "Add",
+        "addAssegnazione": "Assignment to an employee",
+        "addScadenza": "Deadline",
+        "addCosto": "Cost",
+        "addMulta": "Fine",
+        "confirmDelete": "Delete the selected item?",
+        "confirmNotify": "Notify the fine to {{nome}}?",
+        "contract": "Contract",
+        "contractNote": "The expiry of the rental or leasing contract goes into the shared deadline schedule.",
+        "fringe": "Fringe benefit",
+        "fringeNote": "The fringe benefit is 15,000 conventional km times the ACI cost per km, with the assignment's percentage (from emissions: up to 60 g/km 25%, up to 160 30%, up to 190 50%, above 60%). The payroll export stays in Attendance.",
+        "section": {
+          "assegnazione": "Assignments",
+          "scadenza": "Deadlines",
+          "costo": "Costs",
+          "multa": "Fines"
+        },
+        "assignmentNote": "Each assignment creates or updates the employee's car used by Attendance expense reports for mileage reimbursements.",
+        "totalYear": "Total costs this year: {{importo}}"
+      },
+      "vehicleItem": {
+        "assegnazione": "Assignment",
+        "assegnazioneNew": "New assignment",
+        "scadenza": "Deadline",
+        "scadenzaNew": "New deadline",
+        "costo": "Cost",
+        "costoNew": "New cost",
+        "multa": "Fine",
+        "multaNew": "New fine",
+        "fringeNote": "Leave 0 to use the percentage from the vehicle's emissions ({{co2}} g/km).",
+        "carNote": "The employee's car with this reimbursement is used by Attendance expense reports.",
+        "deadlineNote": "The deadline goes into the shared deadline schedule; entering the date it was done closes it.",
+        "driverAuto": "From the assignment on the offence date",
+        "fineNote": "Without a driver, whoever had the vehicle on the offence date is proposed. The notice to the driver is sent from the list of fines."
+      },
+      "mine": {
+        "title": "My resources",
+        "vehicles": "Assigned vehicle",
+        "noVehicles": "No vehicle assigned",
+        "fringeNote": "Fringe benefit for the current year, for information only: payroll computes the value on the payslip.",
+        "fines": "Fines",
+        "noFines": "No fines",
+        "goods": "Items held",
+        "noGoods": "No items held",
+        "goodsNote": "Reports to confirm open in the acknowledgements page.",
+        "reportToConfirm": "Report to confirm",
+        "reportConfirmed": "Report confirmed"
+      },
+      "goodsList": {
+        "title": "Company items",
+        "add": "Add",
+        "newGood": "New item",
+        "newCategory": "New category",
+        "section": {
+          "beni": "Items",
+          "restituire": "To return",
+          "categorie": "Categories"
+        },
+        "showDisposed": "Show disposed items",
+        "empty": "No items",
+        "noReturns": "No items or vehicles to return",
+        "returnNote": "Items and vehicles still held by employees with a termination date. Every night the administrators are notified of new terminations within the notice period and the return goes into the deadline schedule; Check now runs it immediately.",
+        "checkNow": "Check now",
+        "checkDone": "Check done: {{n}} new returns notified.",
+        "confirmDelete": "Delete item {{nome}} with its delivery history?",
+        "confirmDeleteCategory": "Delete category {{nome}}?"
+      },
+      "goodEdit": {
+        "title": "Item",
+        "titleNew": "New item",
+        "deliver": "Deliver to an employee",
+        "return": "Return",
+        "deliveries": "Deliveries",
+        "deliveriesNote": "On delivery and return the employee receives the report to confirm (with Document management active, to sign).",
+        "warrantyNote": "The warranty expiry goes into the shared deadline schedule.",
+        "reportNone": "Not requested (employee without a user)",
+        "reportPending": "To be confirmed",
+        "reportConfirmed": "Confirmed on {{data}}",
+        "confirmDeleteAssignment": "Cancel this delivery? Reports not yet confirmed are withdrawn."
+      },
+      "goodItem": {
+        "categoria": "Category",
+        "categoriaNew": "New category",
+        "consegna": "Delivery",
+        "restituzione": "Return",
+        "deliveryNote": "The employee receives the delivery report to confirm in the acknowledgements (with Document management active, to sign). Without a user only the delivery is recorded.",
+        "returnNote": "The employee receives the return report; any deadline for the return on termination is closed."
+      },
+      "resourceList": {
+        "title": "Bookable resources",
+        "new": "New resource",
+        "empty": "No bookable resources",
+        "showInactive": "Show deactivated resources",
+        "seats": "{{n}} seats",
+        "confirmDelete": "Delete resource {{nome}} with its booking history?"
+      },
+      "resourceEdit": {
+        "title": "Bookable resource",
+        "titleNew": "New bookable resource",
+        "poolNote": "You can choose the fleet vehicles with \"pool\" use."
+      },
+      "booking": {
+        "title": "Bookings",
+        "new": "New booking",
+        "thisWeek": "This week",
+        "allResources": "All",
+        "onlyMine": "Only mine",
+        "busy": "Busy",
+        "empty": "No bookings this week",
+        "confirmCancel": "Cancel the booking of {{nome}}?",
+        "note": "Your bookings also appear in your personal calendar (Calendar button)."
+      },
+      "bookingEdit": {
+        "title": "Booking",
+        "titleNew": "New booking",
+        "limits": "Maximum length {{ore}} hours, at most {{giorni}} days in advance. A resource already booked at that time cannot be booked."
+      }
+    },
+    "common": {
+      "none": "None",
+      "empty": "No items"
+    },
+    "fields": {
+      "targa": "Licence plate",
+      "veicolo": "Vehicle",
+      "uso": "Use",
+      "assegnatario": "Assigned to",
+      "sede": "Site",
+      "prossimaScadenza": "Next deadline",
+      "dipendente": "Employee",
+      "dal": "From",
+      "al": "To",
+      "fringeAnnuo": "Annual fringe benefit",
+      "fringeAnno": "Fringe benefit this year",
+      "data": "Date",
+      "tipo": "Type",
+      "km": "Km",
+      "eseguita": "Done on",
+      "descrizione": "Description",
+      "importo": "Amount",
+      "conducente": "Driver",
+      "stato": "Status",
+      "marca": "Make",
+      "modello": "Model",
+      "alimentazione": "Fuel",
+      "dataImmatricolazione": "Registration date",
+      "kmAttuali": "Current km",
+      "possesso": "Ownership",
+      "fornitore": "Supplier",
+      "numeroContratto": "Contract number",
+      "scadenzaContratto": "Contract expiry",
+      "kmInclusi": "Included km",
+      "canoneMensile": "Monthly fee",
+      "costoKmAci": "ACI cost per km (€/km)",
+      "emissioniCO2": "CO2 emissions (g/km)",
+      "note": "Notes",
+      "usoPromiscuo": "Mixed use (business and private)",
+      "percentualeFringe": "Fringe benefit percentage (%)",
+      "rimborsoKm": "Reimbursement per km (expense reports)",
+      "dataScadenza": "Due date",
+      "documento": "Document",
+      "dataInfrazione": "Offence date and time",
+      "numeroVerbale": "Report number",
+      "luogo": "Place",
+      "dataPagamento": "Payment date",
+      "codiceInventario": "Inventory code",
+      "categoria": "Category",
+      "dataCessazione": "Termination",
+      "oggetto": "Item or vehicle",
+      "dataAvviso": "Notified on",
+      "numeroBeni": "Items",
+      "ordine": "Order",
+      "attivo": "Active",
+      "dataConsegna": "Delivery",
+      "verbaleConsegna": "Delivery report",
+      "dataRestituzione": "Return",
+      "verbaleRestituzione": "Return report",
+      "marcaModello": "Make and model",
+      "numeroSerie": "Serial number",
+      "dataAcquisto": "Purchase date",
+      "valore": "Value",
+      "scadenzaGaranzia": "Warranty expiry",
+      "condizioni": "Condition",
+      "statoRientro": "Item status on return",
+      "bene": "Item",
+      "verbale": "Report",
+      "dettaglio": "Detail",
+      "capienza": "Seats",
+      "attiva": "Active",
+      "quando": "When",
+      "risorsa": "Resource",
+      "prenotatoDa": "Booked by",
+      "titolo": "Title",
+      "inizio": "Start",
+      "fine": "End"
+    },
+    "enums": {
+      "uso": {
+        "0": "Assigned",
+        "1": "Pool (bookable)"
+      },
+      "statoVeicolo": {
+        "0": "Active",
+        "1": "Disposed"
+      },
+      "alimentazione": {
+        "0": "Petrol",
+        "1": "Diesel",
+        "2": "LPG",
+        "3": "Natural gas",
+        "4": "Hybrid",
+        "5": "Electric",
+        "6": "Other"
+      },
+      "possesso": {
+        "0": "Owned",
+        "1": "Rental",
+        "2": "Leasing"
+      },
+      "tipoScadenza": {
+        "0": "Road tax",
+        "1": "Insurance",
+        "2": "Roadworthiness test",
+        "3": "Service",
+        "4": "Other deadline"
+      },
+      "tipoCosto": {
+        "0": "Fuel",
+        "1": "Maintenance",
+        "2": "Tolls",
+        "3": "Parking",
+        "4": "Insurance",
+        "5": "Road tax",
+        "6": "Other"
+      },
+      "statoMulta": {
+        "0": "To be notified",
+        "1": "Notified to the driver",
+        "2": "Paid",
+        "3": "Disputed"
+      },
+      "statoBene": {
+        "0": "Available",
+        "1": "Delivered",
+        "2": "Under repair",
+        "3": "Disposed"
+      },
+      "tipoRestituzione": {
+        "bene": "Item",
+        "veicolo": "Vehicle"
+      },
+      "tipoRisorsa": {
+        "0": "Desk",
+        "1": "Room",
+        "2": "Pool car"
       }
     }
   }

@@ -14,6 +14,9 @@ namespace nvxapp.server.Utility
             // contesto dell'applicativo: tenant_<IdAzienda>_7 in multi-tenant, public in modalita' singola
             builder.Services.AddApplicationDbContext<AssetsDbContext>(ApplicationType.Assets);
 
+            // beni e veicoli da restituire alla cessazione dei dipendenti (AST-BENI.3), una volta al giorno
+            builder.Services.AddHostedService<AstRestituzioniMaintenanceService>();
+
             return builder.Services;
         }
     }
