@@ -53,6 +53,9 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<Lic_Piano> Lic_Piano { get; set; }
         public DbSet<Lic_Abbonamento> Lic_Abbonamento { get; set; }
         public DbSet<Lic_Pagamento> Lic_Pagamento { get; set; }
+        public DbSet<Pag_Rendiconto> Pag_Rendiconto { get; set; }
+        public DbSet<Pag_DealerConfig> Pag_DealerConfig { get; set; }
+        public DbSet<Pag_InvioEmail> Pag_InvioEmail { get; set; }
 
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
@@ -72,6 +75,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_Document(modelBuilder);
             Gen_DeletionLog(modelBuilder);
             Gen_License(modelBuilder);
+            Gen_Payments(modelBuilder);
         }
 
         /*
@@ -173,6 +177,18 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany()
                       .HasForeignKey(e => e.IdAbbonamento)
                       .OnDelete(DeleteBehavior.SetNull);
+                // ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md)
+                entity.HasIndex(e => new { e.IdDealer, e.DataPagamento });
+                entity.HasIndex(e => e.IdRendiconto);
+                entity.HasIndex(e => e.IdRendicontoRettifica);
+                entity.HasOne(e => e.RendicontoNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdRendiconto)
+                      .OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.RendicontoRettificaNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdRendicontoRettifica)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<AppSetting>().HasData(
@@ -188,6 +204,66 @@ namespace nvxapp.server.data.Infrastructure
                 new AppSetting { Key = Key_LicenzeMaxSpazioMBPro, Value = "20480" },
                 new AppSetting { Key = Key_LicenzeGraceGiorni, Value = "7" },
                 new AppSetting { Key = Key_LicenzeAvvisoGiorni, Value = "10" });
+        }
+
+        /*
+         Ripartizione degli incassi delle licenze ai centri (ANALISI_PAGAMENTI_CENTRI.md).
+         Impostazioni (AppSetting):
+            - Pagamenti_PercentualePiattaforma : trattenuta della piattaforma (0-100) per i centri senza una propria
+            - Pagamenti_RiepilogoAutomatico    : "true" = la manutenzione genera i rendiconti e invia i riepiloghi
+            - Pagamenti_GiornoInvioMensile     : giorno del mese in cui si genera il rendiconto del mese precedente
+            - Pagamenti_MeseInvioAnnuale       : mese in cui si invia il riepilogo dell'anno precedente
+        */
+        public const string Key_PagamentiPercentualePiattaforma = "Pagamenti_PercentualePiattaforma";
+        public const string Key_PagamentiRiepilogoAutomatico = "Pagamenti_RiepilogoAutomatico";
+        public const string Key_PagamentiGiornoInvioMensile = "Pagamenti_GiornoInvioMensile";
+        public const string Key_PagamentiMeseInvioAnnuale = "Pagamenti_MeseInvioAnnuale";
+
+        private void Gen_Payments(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Pag_Rendiconto>(entity =>
+            {
+                entity.ToTable("Pag_Rendiconto", Schema, t =>
+                {
+                    t.HasCheckConstraint("CK_Pag_Rendiconto_Mese", "\"Mese\" BETWEEN 1 AND 12");
+                    t.HasCheckConstraint("CK_Pag_Rendiconto_Percentuale", "\"PercentualePiattaforma\" BETWEEN 0 AND 100");
+                });
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.TotaleIncassato).HasPrecision(12, 2);
+                entity.Property(e => e.TotaleRettifiche).HasPrecision(12, 2);
+                entity.Property(e => e.QuotaPiattaforma).HasPrecision(12, 2);
+                entity.Property(e => e.QuotaCentro).HasPrecision(12, 2);
+                entity.Property(e => e.PercentualePiattaforma).HasPrecision(5, 2);
+                // un solo rendiconto valido per centro e mese
+                entity.HasIndex(e => new { e.IdDealer, e.Anno, e.Mese }).IsUnique().HasFilter("\"Stato\" <> 3");
+                entity.HasIndex(e => new { e.Anno, e.Mese });
+            });
+
+            modelBuilder.Entity<Pag_DealerConfig>(entity =>
+            {
+                entity.ToTable("Pag_DealerConfig", Schema, t =>
+                    t.HasCheckConstraint("CK_Pag_DealerConfig_Percentuale", "\"PercentualePiattaforma\" IS NULL OR \"PercentualePiattaforma\" BETWEEN 0 AND 100"));
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.PercentualePiattaforma).HasPrecision(5, 2);
+                entity.HasIndex(e => e.IdDealer).IsUnique();
+                entity.HasOne(e => e.DealerNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdDealer)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Pag_InvioEmail>(entity =>
+            {
+                entity.ToTable("Pag_InvioEmail", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdDealer, e.Anno, e.Mese, e.Tipo });
+            });
+
+            modelBuilder.Entity<AppSetting>().HasData(
+                new AppSetting { Key = Key_PagamentiPercentualePiattaforma, Value = "0" },
+                new AppSetting { Key = Key_PagamentiRiepilogoAutomatico, Value = "false" },
+                new AppSetting { Key = Key_PagamentiGiornoInvioMensile, Value = "5" },
+                new AppSetting { Key = Key_PagamentiMeseInvioAnnuale, Value = "1" });
         }
 
         private void Gen_DeletionLog(ModelBuilder modelBuilder)
