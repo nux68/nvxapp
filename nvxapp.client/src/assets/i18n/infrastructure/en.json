@@ -29,7 +29,13 @@
       "detail": "Details",
       "export": "Export",
       "pdf": "PDF",
-      "excel": "Excel"
+      "excel": "Excel",
+      "complete": "Complete",
+      "markAllRead": "Mark all as read",
+      "deleteRead": "Delete read",
+      "preferences": "Preferences",
+      "loadMore": "Load more",
+      "confirmRead": "I confirm I have read it"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",
@@ -106,7 +112,10 @@
     "licenseCatalogs": "Licence price lists",
     "preferences": "Preferences",
     "payments": "Centre payments",
-    "dealerPayments": "Centre payments"
+    "dealerPayments": "Centre payments",
+    "notifications": "Notifications",
+    "deadlines": "Deadlines",
+    "acknowledgements": "Acknowledgements"
   },
   "showcase": {
     "menu": {
@@ -1062,6 +1071,83 @@
       "monthlyDay": "Statement generation day",
       "annualMonth": "Annual summary month",
       "invalid": "Check the fields: fee between 0 and 100."
+    },
+    "deadlineList": {
+      "title": "Deadlines",
+      "filter": {
+        "open": "Open",
+        "closed": "Closed",
+        "all": "All"
+      },
+      "withinDays": "Due",
+      "anyDate": "Any date",
+      "days": "Within {{days}} days",
+      "onlyMine": "Only mine",
+      "columnDate": "Due date",
+      "columnDescription": "Description",
+      "columnResponsible": "Responsible",
+      "columnState": "Status",
+      "columnSource": "Source",
+      "manual": "Manual",
+      "stateOpen": "Open",
+      "stateExpiring": "Due soon",
+      "stateExpired": "Overdue",
+      "stateClosed": "Closed",
+      "newDeadline": "New deadline",
+      "empty": "No deadlines."
+    },
+    "deadlineEdit": {
+      "title": "Deadline",
+      "info": "Deadline details",
+      "description": "Description",
+      "date": "Due date",
+      "dateRequired": "The due date is required.",
+      "noticeDays": "Days of notice",
+      "noticeDaysNote": "The reminder starts this many days before the due date (0 = on the day only).",
+      "noticeDaysInvalid": "Enter a number of days from 0 to 365.",
+      "responsible": "Responsible",
+      "noResponsible": "No responsible person",
+      "note": "Notes",
+      "confirmDelete": "Delete the deadline?"
+    },
+    "notificationList": {
+      "title": "Notifications",
+      "filter": {
+        "all": "All",
+        "unread": "Unread"
+      },
+      "columnTitle": "Notification",
+      "columnMessage": "Message",
+      "columnDate": "Date",
+      "empty": "No notifications.",
+      "confirmDeleteRead": "Delete all notifications already read?"
+    },
+    "notificationPreference": {
+      "title": "Notification preferences",
+      "note": "Choose for each type of notification whether to receive it in the app and by email.",
+      "emailNotConfigured": "Email sending is not configured: for now notifications are only shown in the app.",
+      "category": "Notification type",
+      "app": "App",
+      "email": "Email",
+      "emailNotAllowed": "Not available by email",
+      "empty": "No notification types available."
+    },
+    "acknowledgementList": {
+      "title": "Acknowledgements",
+      "filter": {
+        "pending": "To confirm",
+        "all": "All"
+      },
+      "note": "Confirm that you have read the documents and communications you received. Those requiring another confirmation (e.g. a signature) are completed by opening the item.",
+      "columnTitle": "Subject",
+      "columnText": "Text",
+      "columnCompany": "Company",
+      "columnRequested": "Requested on",
+      "columnState": "Status",
+      "pending": "To confirm",
+      "pendingOther": "To confirm by opening the item",
+      "confirmedOn": "Confirmed on {{date}}",
+      "empty": "No acknowledgements."
     }
   },
   "components": {
@@ -1277,6 +1363,15 @@
     "askAssistant": {
       "title": "Ask the assistant",
       "description": "Field to ask the AI assistant a question."
+    },
+    "deadlines": {
+      "title": "Due soon",
+      "description": "Overdue deadlines and those due in the next 30 days, with the first five.",
+      "expired": "Overdue",
+      "expiring": "Due soon (30 days)",
+      "none": "No deadlines in the next 30 days.",
+      "noData": "Deadlines not available.",
+      "openAll": "Open the deadlines"
     }
   }
 }

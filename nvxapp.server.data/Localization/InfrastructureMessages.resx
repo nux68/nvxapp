@@ -1086,4 +1086,80 @@ In allegato il rendiconto.</value>
     <value>Riepilogo dei pagamenti inviato a {0}.</value>
     <comment>pagamenti</comment>
   </data>
+  <data name="NotificationCategory_generale" xml:space="preserve">
+    <value>Avvisi generali</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationCategory_scadenze" xml:space="preserve">
+    <value>Scadenze</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationCategory_presevisione" xml:space="preserve">
+    <value>Prese visione</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationEmailOpen" xml:space="preserve">
+    <value>Apri {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineReminderTitle" xml:space="preserve">
+    <value>In scadenza: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineReminderText" xml:space="preserve">
+    <value>{0} scade il {1}.</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineExpiredTitle" xml:space="preserve">
+    <value>Scaduta: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineExpiredText" xml:space="preserve">
+    <value>{0} e' scaduta il {1}.</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNoCompany" xml:space="preserve">
+    <value>Lo scadenzario e' disponibile solo lavorando in un'azienda</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNotAllowed" xml:space="preserve">
+    <value>Operazione riservata agli amministratori dell'azienda</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNotFound" xml:space="preserve">
+    <value>Scadenza non trovata</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineManualOnly" xml:space="preserve">
+    <value>Questa scadenza la gestisce il modulo che l'ha creata: si puo' solo chiudere o riaprire</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineDescriptionRequired" xml:space="preserve">
+    <value>La descrizione e' obbligatoria</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineDateRequired" xml:space="preserve">
+    <value>La data di scadenza e' obbligatoria</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineUserInvalid" xml:space="preserve">
+    <value>Il responsabile deve essere un utente attivo dell'azienda</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementRequestTitle" xml:space="preserve">
+    <value>Presa visione richiesta: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementRequestText" xml:space="preserve">
+    <value>Ti e' stato chiesto di confermare di aver letto: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementNotFound" xml:space="preserve">
+    <value>Richiesta di presa visione non trovata</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementOtherChannel" xml:space="preserve">
+    <value>Questa richiesta si conferma aprendo il documento collegato</value>
+    <comment>servizi comuni</comment>
+  </data>
 </root>
