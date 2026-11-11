@@ -189,6 +189,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
         public static readonly NotificationCategory Generale = new() { Code = "generale", Ordine = 0 };
         public static readonly NotificationCategory Scadenze = new() { Code = "scadenze", DefaultEmail = true, Ordine = 10 };
         public static readonly NotificationCategory PreseVisione = new() { Code = "presevisione", DefaultEmail = true, Ordine = 20 };
+        // riepilogo AI periodico (INF-AI): l'utente lo puo' disattivare dalle preferenze
+        public static readonly NotificationCategory Riepilogo = new() { Code = "riepilogo", DefaultApp = true, DefaultEmail = true, Ordine = 30 };
     }
 
     /// <summary>Categorie di notifiche di un modulo (ogni ramo ne dichiara una implementazione).</summary>
@@ -202,7 +204,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
     {
         public IEnumerable<NotificationCategory> Categories => new[]
         {
-            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione
+            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione, NotificationCategory.Riepilogo
         };
     }
 

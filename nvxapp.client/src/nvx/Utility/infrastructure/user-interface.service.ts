@@ -481,6 +481,17 @@ export class UserInterfaceService {
     return button;
   }
 
+  // riepilogo AI periodico (INF-AI.3): genera subito i riepiloghi dell'azienda o dello studio
+  get Btn_GeneraOra(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.generateNow'),
+      'sparkles-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_GeneraOra cliccato'); }
+    );
+  }
+
   //trash-outline
 
 }

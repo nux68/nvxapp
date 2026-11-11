@@ -1103,4 +1103,92 @@ The statement is attached.</value>
     <value>Deadline: {0}</value>
     <comment>calendario</comment>
   </data>
+  <data name="NotificationCategory_riepilogo" xml:space="preserve">
+    <value>Weekly summary</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionDeadlines" xml:space="preserve">
+    <value>Deadlines</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesExpired" xml:space="preserve">
+    <value>Overdue deadlines still open: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesExpiring" xml:space="preserve">
+    <value>Deadlines in the next {1} days: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesClosed" xml:space="preserve">
+    <value>Deadlines closed in the period: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionAcknowledgements" xml:space="preserve">
+    <value>Acknowledgements</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsPending" xml:space="preserve">
+    <value>Acknowledgements awaiting confirmation: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsOld" xml:space="preserve">
+    <value>Waiting for more than {1} days: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsMine" xml:space="preserve">
+    <value>Acknowledgements you still have to confirm: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementItem" xml:space="preserve">
+    <value>{0} ({1} pending)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionNotifications" xml:space="preserve">
+    <value>Notifications</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotificationsUnread" xml:space="preserve">
+    <value>Unread notifications: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotificationsCategory" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestStudioCompanies" xml:space="preserve">
+    <value>Companies with critical issues: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestCriticalSection" xml:space="preserve">
+    <value>{0} (needs attention)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestTitleCompany" xml:space="preserve">
+    <value>Weekly summary {0} ({1} - {2})</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestTitleStudio" xml:space="preserve">
+    <value>Weekly summary of the firm {0} ({1} - {2})</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotFound" xml:space="preserve">
+    <value>Summary not found</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestGenerateNotAllowed" xml:space="preserve">
+    <value>Only the main administrator of the company or of the firm can generate the summaries</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNothingCompany" xml:space="preserve">
+    <value>No summary generated: there is nothing to report to the company administrators</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNothingStudio" xml:space="preserve">
+    <value>No summary generated: no company of the firm has critical issues</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestGenerated" xml:space="preserve">
+    <value>Summaries generated: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
 </root>

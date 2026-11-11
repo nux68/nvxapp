@@ -1178,4 +1178,92 @@ In allegato il rendiconto.</value>
     <value>Scadenza: {0}</value>
     <comment>calendario</comment>
   </data>
+  <data name="NotificationCategory_riepilogo" xml:space="preserve">
+    <value>Riepilogo settimanale</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionDeadlines" xml:space="preserve">
+    <value>Scadenzario</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesExpired" xml:space="preserve">
+    <value>Scadenze superate e ancora aperte: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesExpiring" xml:space="preserve">
+    <value>Scadenze nei prossimi {1} giorni: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDeadlinesClosed" xml:space="preserve">
+    <value>Scadenze chiuse nel periodo: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionAcknowledgements" xml:space="preserve">
+    <value>Prese visione</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsPending" xml:space="preserve">
+    <value>Prese visione in attesa di conferma: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsOld" xml:space="preserve">
+    <value>In attesa da più di {1} giorni: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementsMine" xml:space="preserve">
+    <value>Prese visione che devi ancora confermare: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAcknowledgementItem" xml:space="preserve">
+    <value>{0} ({1} in attesa)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestSectionNotifications" xml:space="preserve">
+    <value>Notifiche</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotificationsUnread" xml:space="preserve">
+    <value>Notifiche non lette: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotificationsCategory" xml:space="preserve">
+    <value>{0}: {1}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestStudioCompanies" xml:space="preserve">
+    <value>Aziende con criticità: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestCriticalSection" xml:space="preserve">
+    <value>{0} (da gestire subito)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestTitleCompany" xml:space="preserve">
+    <value>Riepilogo settimanale {0} ({1} - {2})</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestTitleStudio" xml:space="preserve">
+    <value>Riepilogo settimanale dello studio {0} ({1} - {2})</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNotFound" xml:space="preserve">
+    <value>Riepilogo non trovato</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestGenerateNotAllowed" xml:space="preserve">
+    <value>Solo l'amministratore principale dell'azienda o dello studio può generare i riepiloghi</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNothingCompany" xml:space="preserve">
+    <value>Nessun riepilogo generato: non ci sono fatti da riepilogare per gli amministratori dell'azienda</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestNothingStudio" xml:space="preserve">
+    <value>Nessun riepilogo generato: nessuna azienda dello studio ha criticità</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestGenerated" xml:space="preserve">
+    <value>Riepiloghi generati: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
 </root>
