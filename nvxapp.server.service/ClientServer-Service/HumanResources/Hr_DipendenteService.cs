@@ -136,7 +136,7 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
             {
                 var ctx = await _utility.AmministratoreAsync();
                 var d = model.Data;
-                var dip = await _Dip_AnagraficaCommon.FindAll(x => x.Id == d.IdDip_Anagrafica && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).AsTracking().FirstOrDefaultAsync()
+                var dip = await _Dip_AnagraficaCommon.FindAll(x => x.Id == d.IdDip_Anagrafica && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).FirstOrDefaultAsync()
                           ?? throw new UserMessageException(HumanResourcesMessages.Get("EmployeeNotFound"));
                 if (!string.IsNullOrEmpty(dip.IdAspNetUsers))
                     throw new UserMessageException(HumanResourcesMessages.Get("AccountAlreadyPresent"));
@@ -146,7 +146,9 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
                 if (await _userManager.FindByNameAsync(userName) != null)
                     throw new UserMessageException(HumanResourcesMessages.Get("AccountUserNameUsed"));
 
-                // servizio esistente degli utenti dell'azienda: ruolo User, limite utenti della licenza, inizializzatori
+                // servizio esistente degli utenti dell'azienda: ruolo User, limite utenti della licenza, inizializzatori;
+                // IdDip_Anagrafica (INF-SVC.8): l'utente si collega al dipendente esistente prima degli inizializzatori,
+                // che quindi non creano un'altra anagrafica (HR-ONB.4)
                 var put = await _accountService.UserCompanyPut(new GenericRequest<UserCompanyPutInModel>
                 {
                     Data = new UserCompanyPutInModel
@@ -154,7 +156,8 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
                         UserCompanyEdit = new UserCompanyEditModel
                         {
                             IdUserCompany = 0, Descrizione = userName, Mail = string.IsNullOrWhiteSpace(d.Mail) ? dip.Email : d.Mail.Trim(), Pw = d.Password,
-                            Roles = new List<string> { nameof(RoleCode.User) }
+                            Roles = new List<string> { nameof(RoleCode.User) },
+                            IdDip_Anagrafica = dip.Id
                         }
                     }
                 }, true);
@@ -162,30 +165,9 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
                 if (!put.Success || string.IsNullOrEmpty(idUtente))
                     throw new UserMessageException(put.Messages?.FirstOrDefault()?.Text ?? HumanResourcesMessages.Get("AccountNotCreated"));
 
-                // l'inizializzatore comune ha creato un'anagrafica per il nuovo utente: l'utente va invece sul dipendente esistente
-                var doppia = await _Dip_AnagraficaCommon.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers == idUtente && x.Id != dip.Id)
-                                                        .AsTracking().FirstOrDefaultAsync();
-                if (doppia != null)
-                {
-                    doppia.IdAspNetUsers = null;
-                    doppia.Attivo = false;
-                    await _Dip_AnagraficaCommon.SaveChange();
-                }
-                dip.IdAspNetUsers = idUtente;
-                dip.ModifiedDate = DateTime.Now;
-                await _Dip_AnagraficaCommon.SaveChange();
-                if (doppia != null)
-                {
-                    try
-                    {
-                        await _Dip_AnagraficaCommon.DeleteAsync(doppia);
-                    }
-                    catch (Exception ex)
-                    {
-                        // gia' usata da un altro applicativo (es. dati iniziali delle presenze): resta disattivata e senza utente
-                        Log.Warning(ex, "[HR] Anagrafica {Id} creata per l'utente {User} non eliminata", doppia.Id, idUtente);
-                    }
-                }
+                // collegato nel frattempo a un altro utente da un'altra richiesta (caso limite): lo si segnala nel log
+                if (!await _Dip_AnagraficaCommon.FindAll(x => x.Id == dip.Id && x.IdAspNetUsers == idUtente).AnyAsync())
+                    Log.Warning("[HR] Account {User} creato ma non collegato al dipendente {Id}", idUtente, dip.Id);
 
                 if (d.IdHr_ChecklistVoce is int idVoce)
                     await _onboarding.CompletaVoceAsync(ctx, idVoce);
