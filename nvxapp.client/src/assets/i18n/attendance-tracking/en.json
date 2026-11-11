@@ -9,6 +9,79 @@
       "importoObbligatorio": "Enter an amount greater than zero."
     },
     "pages": {
+      "turni": {
+        "wd0": "Mon",
+        "wd1": "Tue",
+        "wd2": "Wed",
+        "wd3": "Thu",
+        "wd4": "Fri",
+        "wd5": "Sat",
+        "wd6": "Sun"
+      },
+      "turnoList": {
+        "title": "Shifts",
+        "columnCode": "Code",
+        "columnDescription": "Description",
+        "columnHours": "Hours",
+        "rest": "Rest",
+        "fabAdd": "Add",
+        "fabNew": "New shift",
+        "fabCoverage": "Department shifts and coverage",
+        "deleteConfirm": "Delete the shift?"
+      },
+      "turnoEdit": {
+        "title": "Shift",
+        "section": "Shift model",
+        "code": "Code",
+        "codeRequired": "The code is required (max 10 characters).",
+        "description": "Description",
+        "descriptionRequired": "The description is required (max 50 characters).",
+        "schedule": "Shift schedule",
+        "rest": "No schedule (rest)",
+        "color": "Colour in the planning",
+        "note": "On days with this shift the calculation uses the shift schedule instead of the working-time profile. Rest counts as a non-working day."
+      },
+      "turnoCoperture": {
+        "title": "Department shifts and coverage",
+        "department": "Department",
+        "departmentPlaceholder": "Choose the department",
+        "note": "Select the shifts used in the department and the minimum number of people per shift; coverage applies on the ticked days (0 people = no check).",
+        "noShifts": "No shifts defined: create the shifts first.",
+        "minPeople": "Minimum people"
+      },
+      "pianificazioneTurni": {
+        "title": "Shift planning",
+        "department": "Department",
+        "week": "Week",
+        "month": "Month",
+        "employee": "Employee",
+        "coverage": "coverage",
+        "coverageKo": "Insufficient coverage: {{ n }}",
+        "noEmployees": "No employees in the department.",
+        "noShift": "No shift",
+        "conflicts": "Conflicts with absences",
+        "legend": "Click a cell to choose the shift. Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
+      },
+      "mieiTurni": {
+        "title": "My shifts",
+        "toAnswer": "Swap proposals to review",
+        "accept": "Accept",
+        "refuse": "Refuse",
+        "myShifts": "Shifts of the next 4 weeks",
+        "noShifts": "No planned shifts.",
+        "propose": "Swap",
+        "proposeHeader": "Swap shift {{ shift }} of {{ date }} with",
+        "giveTo": "Give to {{ name }}",
+        "swaps": "Swaps",
+        "withdraw": "Withdraw",
+        "withdrawConfirm": "Withdraw the swap proposal?",
+        "state0": "Waiting for the colleague",
+        "state1": "Refused by the colleague",
+        "state2": "Awaiting approval",
+        "state3": "Approved",
+        "state4": "Refused",
+        "state5": "Cancelled"
+      },
       "presentStaff": {
         "title": "Staff present"
       },
@@ -1300,11 +1373,13 @@
         "contatoreConBlocco": "Counter with block"
       },
       "tipoRichiestaToLongText": {
+        "scambioTurno": "Shift swap",
         "timbratura": "Clocking",
         "giustificativo": "Absence justification",
         "notaSpesa": "Expense report"
       },
       "tipoRichiestaToShortText": {
+        "scambioTurno": "Shift",
         "timbratura": "Clock.",
         "giustificativo": "Just.",
         "notaSpesa": "Expense"
@@ -1323,6 +1398,9 @@
       }
     },
     "menu": {
+      "pianificazioneTurni": "Shift planning",
+      "turni": "Shifts",
+      "mieiTurni": "My shifts",
       "richieste": "Requests",
       "calendarioHR": "HR calendar",
       "quadraturaMensile": "Monthly reconciliation",

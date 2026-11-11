@@ -1553,6 +1553,48 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Dip_Rapporto_Giustificativi_Maturazione");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SediRepartoTurno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("GiorniSettimana")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<int>("IdAz_SediReparto")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Turno")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinPersone")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdPar_Turno");
+
+                    b.HasIndex("IdAz_SediReparto", "IdPar_Turno")
+                        .IsUnique();
+
+                    b.ToTable("Az_SediRepartoTurno");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
                 {
                     b.Property<int>("Id")
@@ -1620,6 +1662,110 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsUnique();
 
                     b.ToTable("Az_SubCommessaUser");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("IdAz_SediReparto")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Turno")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdPar_Turno");
+
+                    b.HasIndex("IdAz_SediReparto", "Data");
+
+                    b.HasIndex("IdDip_RapportoLavoro", "Data")
+                        .IsUnique();
+
+                    b.ToTable("Dip_Turno");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_TurnoScambio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataRisposta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("IdDip_GG_Richiesta")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_RapportoLavoro_Collega")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_Turno")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_Turno_Collega")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_GG_Richiesta");
+
+                    b.HasIndex("IdDip_RapportoLavoro");
+
+                    b.HasIndex("IdDip_RapportoLavoro_Collega");
+
+                    b.HasIndex("IdDip_Turno");
+
+                    b.HasIndex("IdDip_Turno_Collega");
+
+                    b.ToTable("Dip_TurnoScambio");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Arrotondamenti", b =>
@@ -2230,6 +2376,53 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasIndex("IdPar_ProfiloOrario");
 
                     b.ToTable("Par_ProfiloOrarioGG");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Turno", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Codice")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<string>("Colore")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdPar_Orario")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.HasIndex("IdPar_Orario");
+
+                    b.ToTable("Par_Turno");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.My_Template1", b =>
@@ -3169,6 +3362,25 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_GiustificativiNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SediRepartoTurno", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_SediReparto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Turno", "Par_TurnoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Turno")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediRepartoNavigation");
+
+                    b.Navigation("Par_TurnoNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
@@ -3205,6 +3417,73 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("AspNetUsersNavigation");
 
                     b.Navigation("Az_SubCommessaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_SediReparto")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Turno", "Par_TurnoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Turno")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediRepartoNavigation");
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
+
+                    b.Navigation("Par_TurnoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_TurnoScambio", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_GG_Richiesta", "Dip_GG_RichiestaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_GG_Richiesta")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoro_CollegaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro_Collega")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", "Dip_TurnoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Turno")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", "Dip_Turno_CollegaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Turno_Collega")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Dip_GG_RichiestaNavigation");
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
+
+                    b.Navigation("Dip_RapportoLavoro_CollegaNavigation");
+
+                    b.Navigation("Dip_TurnoNavigation");
+
+                    b.Navigation("Dip_Turno_CollegaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Arrotondamenti", b =>
@@ -3433,6 +3712,24 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_OrarioNavigation");
 
                     b.Navigation("Par_ProfiloOrarioNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Turno", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", "Par_OrarioNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Orario")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Par_OrarioNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Attivita", b =>

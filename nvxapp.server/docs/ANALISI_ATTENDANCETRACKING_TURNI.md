@@ -87,8 +87,8 @@ Client:
 Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 
 - ✅ `AT-TURNI.0` Analisi (questo documento)
-- ⏳ `AT-TURNI.1` Modello dei turni: `Par_Turno`, `Az_SediRepartoTurno`, `Dip_Turno`, `Dip_TurnoScambio`, migration `AttendanceTracking_Turni`, repository, servizi e API dei parametri (turni, coperture del reparto); client `/turnolist`, `/turnoedit`, `/turnocoperture`
-- ⏳ `AT-TURNI.2` Pianificazione: API `Dip_Turno/Pianificazione` e `Dip_Turno/Put` (coperture, assenze approvate, conflitti, consuntivo, ricalcolo); client `/pianificazioneturni` (settimana/mese)
-- ⏳ `AT-TURNI.3` Scambio turni: proposta, risposta del collega, richiesta `ScambioTurno` con gli approvatori esistenti, applicazione all'approvazione e annullamento alla revoca; client `/mieiturni` e testi delle richieste
-- ⏳ `AT-TURNI.4` Turno pianificato nel calcolo della giornata (`Get_OrariSchema_4User`, `GestionePresenzeOreTeoriche`), senza cambiare i calcoli senza turni
-- ⏳ `AT-TURNI.5` Prova su DB usa e getta (copertura insufficiente, scambio approvato, calcolo con turno, calcolo senza turni invariato)
+- ✅ `AT-TURNI.1` Modello dei turni: `Par_Turno`, `Az_SediRepartoTurno`, `Dip_Turno`, `Dip_TurnoScambio`, migration `AttendanceTracking_Turni`, repository, servizi e API dei parametri (turni, coperture del reparto); client `/turnolist`, `/turnoedit`, `/turnocoperture`
+- ✅ `AT-TURNI.2` Pianificazione: API `Dip_Turno/Pianificazione` e `Dip_Turno/Put` (coperture, assenze approvate, conflitti, consuntivo, ricalcolo); client `/pianificazioneturni` (settimana/mese)
+- ✅ `AT-TURNI.3` Scambio turni: proposta, risposta del collega, richiesta `ScambioTurno` con gli approvatori esistenti, applicazione all'approvazione e annullamento alla revoca; client `/mieiturni` e testi delle richieste
+- ✅ `AT-TURNI.4` Turno pianificato nel calcolo della giornata (`Get_OrariSchema_4User`, `GestionePresenzeOreTeoriche`), senza cambiare i calcoli senza turni
+- ✅ `AT-TURNI.5` Prova su DB usa e getta (copertura insufficiente, scambio approvato, calcolo con turno, calcolo senza turni invariato) — 49 controlli API: modelli e coperture, griglia con coperture insufficienti e ferie approvata (conflitto), scambio fra giorni diversi approvato e poi revocato (turni ripristinati), scambio rifiutato dal collega, scambio nello stesso giorno, calcolo: riposo pianificato = 0 ore, sabato con turno = 8 ore teoriche e lavorate (ORD1), dipendente senza turni con il profilo invariato

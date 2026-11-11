@@ -9,6 +9,79 @@
       "importoObbligatorio": "Indicare un importo maggiore di zero."
     },
     "pages": {
+      "turni": {
+        "wd0": "Lun",
+        "wd1": "Mar",
+        "wd2": "Mer",
+        "wd3": "Gio",
+        "wd4": "Ven",
+        "wd5": "Sab",
+        "wd6": "Dom"
+      },
+      "turnoList": {
+        "title": "Turni",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione",
+        "columnHours": "Orario",
+        "rest": "Riposo",
+        "fabAdd": "Aggiungi",
+        "fabNew": "Nuovo turno",
+        "fabCoverage": "Turni e coperture di un reparto",
+        "deleteConfirm": "Eliminare il turno?"
+      },
+      "turnoEdit": {
+        "title": "Turno",
+        "section": "Modello di turno",
+        "code": "Codice",
+        "codeRequired": "Il codice è obbligatorio (massimo 10 caratteri).",
+        "description": "Descrizione",
+        "descriptionRequired": "La descrizione è obbligatoria (massimo 50 caratteri).",
+        "schedule": "Orario del turno",
+        "rest": "Nessun orario (riposo)",
+        "color": "Colore nella pianificazione",
+        "note": "Nei giorni con questo turno il calcolo usa l'orario del turno al posto di quello del profilo orario. Il riposo vale come giorno non lavorativo."
+      },
+      "turnoCoperture": {
+        "title": "Turni e coperture del reparto",
+        "department": "Reparto",
+        "departmentPlaceholder": "Scegli il reparto",
+        "note": "Seleziona i turni usati nel reparto e il numero minimo di persone per turno; la copertura vale nei giorni spuntati (0 persone = nessun controllo).",
+        "noShifts": "Nessun turno definito: crea prima i turni.",
+        "minPeople": "Persone minime"
+      },
+      "pianificazioneTurni": {
+        "title": "Pianificazione turni",
+        "department": "Reparto",
+        "week": "Settimana",
+        "month": "Mese",
+        "employee": "Dipendente",
+        "coverage": "copertura",
+        "coverageKo": "Coperture insufficienti: {{ n }}",
+        "noEmployees": "Nessun dipendente nel reparto.",
+        "noShift": "Nessun turno",
+        "conflicts": "Conflitti con le assenze",
+        "legend": "Clic su una cella per scegliere il turno. Sotto il turno: assenze (tratteggiate se in attesa di approvazione) e ore lavorate/previste dei giorni calcolati. Bordo rosso = turno in un giorno di assenza approvata."
+      },
+      "mieiTurni": {
+        "title": "I miei turni",
+        "toAnswer": "Proposte di scambio da valutare",
+        "accept": "Accetta",
+        "refuse": "Rifiuta",
+        "myShifts": "Turni delle prossime 4 settimane",
+        "noShifts": "Nessun turno pianificato.",
+        "propose": "Scambia",
+        "proposeHeader": "Scambia il turno {{ shift }} del {{ date }} con",
+        "giveTo": "Cedi a {{ name }}",
+        "swaps": "Scambi",
+        "withdraw": "Ritira",
+        "withdrawConfirm": "Ritirare la proposta di scambio?",
+        "state0": "In attesa del collega",
+        "state1": "Rifiutato dal collega",
+        "state2": "In approvazione",
+        "state3": "Approvato",
+        "state4": "Rifiutato",
+        "state5": "Annullato"
+      },
       "presentStaff": {
         "title": "Personale presente"
       },
@@ -1300,11 +1373,13 @@
         "contatoreConBlocco": "Contatore con blocco"
       },
       "tipoRichiestaToLongText": {
+        "scambioTurno": "Scambio turno",
         "timbratura": "Timbratura",
         "giustificativo": "Giustificativo",
         "notaSpesa": "Nota spese"
       },
       "tipoRichiestaToShortText": {
+        "scambioTurno": "Turno",
         "timbratura": "Timbr.",
         "giustificativo": "Giust.",
         "notaSpesa": "Spesa"
@@ -1323,6 +1398,9 @@
       }
     },
     "menu": {
+      "pianificazioneTurni": "Pianificazione turni",
+      "turni": "Turni",
+      "mieiTurni": "I miei turni",
       "richieste": "Richieste",
       "calendarioHR": "Calendario HR",
       "quadraturaMensile": "Quadratura mensile",

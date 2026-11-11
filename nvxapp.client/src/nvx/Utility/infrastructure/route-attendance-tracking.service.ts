@@ -34,12 +34,18 @@ export class RouteAttendanceTrackingService {
       { path: 'requestjustificationuser', loadChildren: () => import('../../pages/GestionePresenze/request-justification-user-page/request-justification-user-page.module').then(m => m.RequestJustificationUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestclockinguser', loadChildren: () => import('../../pages/GestionePresenze/request-clocking-user-page/request-clocking-user-page.module').then(m => m.RequestClockingUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestlistuser', loadChildren: () => import('../../pages/GestionePresenze/request-list-user-page/request-list-user-page.module').then(m => m.RequestListUserPageModule), canActivate: [RoleGuard4User] },
+      { path: 'mieiturni', loadChildren: () => import('../../pages/GestionePresenze/miei-turni-page/miei-turni-page.module').then(m => m.MieiTurniPageModule), canActivate: [RoleGuard4User] },
 
       //power admin
       { path: 'exportcausali', loadChildren: () => import('../../pages/GestionePresenze/export-causali-page/export-causali-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'activitystatistics', loadChildren: () => import('../../pages/GestionePresenze/activity-statistics-page/activity-statistics-page.module').then(m => m.ActivityStatisticsPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'presentstaff', loadChildren: () => import('../../pages/GestionePresenze/present-staff-page/present-staff-page.module').then(m => m.PresentStaffPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'vacationplan', loadChildren: () => import('../../pages/GestionePresenze/vacation-plan-page/vacation-plan-page.module').then(m => m.VacationPlanPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      // turni e pianificazione (AT-TURNI)
+      { path: 'pianificazioneturni', loadChildren: () => import('../../pages/GestionePresenze/pianificazione-turni-page/pianificazione-turni-page.module').then(m => m.PianificazioneTurniPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'turnolist', loadChildren: () => import('../../pages/GestionePresenze/turno-list-page/turno-list-page.module').then(m => m.TurnoListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'turnoedit', loadChildren: () => import('../../pages/GestionePresenze/turno-edit-page/turno-edit-page.module').then(m => m.TurnoEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'turnocoperture', loadChildren: () => import('../../pages/GestionePresenze/turno-coperture-page/turno-coperture-page.module').then(m => m.TurnoCoperturePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       { path: 'quadraturamensile', loadChildren: () => import('../../pages/GestionePresenze/quadratura-mensile-page/quadratura-mensile-page.module').then(m => m.QuadraturaMensilePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'festivitalist', loadChildren: () => import('../../pages/GestionePresenze/festivita-list-page/festivita-list-page.module').then(m => m.FestivitaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },

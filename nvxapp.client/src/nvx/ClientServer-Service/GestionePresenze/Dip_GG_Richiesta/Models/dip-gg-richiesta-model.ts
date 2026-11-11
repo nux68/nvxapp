@@ -84,7 +84,8 @@ export enum TipoRichiesta {
   Timbratura,
   Giustificativo,
   NotaSpesa,
-  ApprovazioneStraordinario
+  ApprovazioneStraordinario,
+  ScambioTurno      // scambio di turni tra colleghi (AT-TURNI.3): dati = { idDip_TurnoScambio, testo }
 }
 export enum StatoRichiesta {
   Diretta,

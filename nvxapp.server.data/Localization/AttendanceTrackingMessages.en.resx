@@ -1489,4 +1489,85 @@
     <value>Break "{0}": on a single-pair schedule the break window is required.</value>
     <comment>pause</comment>
   </data>
+  <data name="TurnoNonAutorizzato" xml:space="preserve">
+    <value>Shift operation not allowed for your role.</value>
+  </data>
+  <data name="TurnoCodiceDescrizione" xml:space="preserve">
+    <value>The shift code and description are required.</value>
+  </data>
+  <data name="TurnoCodiceDuplicato" xml:space="preserve">
+    <value>A shift with code {0} already exists.</value>
+  </data>
+  <data name="TurnoOrarioNonValido" xml:space="preserve">
+    <value>The shift schedule does not exist.</value>
+  </data>
+  <data name="TurnoUsato" xml:space="preserve">
+    <value>Shift {0} is used in the planning: it cannot be deleted.</value>
+  </data>
+  <data name="TurnoRepartoNonValido" xml:space="preserve">
+    <value>Department not found.</value>
+  </data>
+  <data name="TurnoPeriodoNonValido" xml:space="preserve">
+    <value>Invalid period (maximum {0} days).</value>
+  </data>
+  <data name="TurnoConflittoAssenza" xml:space="preserve">
+    <value>shift {0} on a day of approved absence ({1})</value>
+  </data>
+  <data name="TurnoConflittoAssenzaInAttesa" xml:space="preserve">
+    <value>shift {0} on a day of absence awaiting approval ({1})</value>
+  </data>
+  <data name="TurnoDipendenteNonValido" xml:space="preserve">
+    <value>Employee not found in the company.</value>
+  </data>
+  <data name="TurnoNonValido" xml:space="preserve">
+    <value>Shift not found.</value>
+  </data>
+  <data name="ScambioTurnoNonTuo" xml:space="preserve">
+    <value>You can only propose a swap of your own shifts.</value>
+  </data>
+  <data name="ScambioTurnoPassato" xml:space="preserve">
+    <value>Shifts of past days cannot be swapped.</value>
+  </data>
+  <data name="ScambioTurnoCollegaNonValido" xml:space="preserve">
+    <value>Invalid colleague or colleague shift.</value>
+  </data>
+  <data name="ScambioTurnoAltroReparto" xml:space="preserve">
+    <value>Swaps are only possible with a colleague of your department.</value>
+  </data>
+  <data name="ScambioTurnoGiaProposto" xml:space="preserve">
+    <value>There is already a swap proposal in progress for this shift.</value>
+  </data>
+  <data name="ScambioTurnoNotificaProposta" xml:space="preserve">
+    <value>Shift swap proposal</value>
+  </data>
+  <data name="ScambioTurnoNonTrovato" xml:space="preserve">
+    <value>Swap proposal not found.</value>
+  </data>
+  <data name="ScambioTurnoGiaRisposto" xml:space="preserve">
+    <value>The swap proposal is no longer awaiting an answer.</value>
+  </data>
+  <data name="ScambioTurnoNotificaRifiutata" xml:space="preserve">
+    <value>Shift swap refused by the colleague</value>
+  </data>
+  <data name="ScambioTurnoNotificaAccettata" xml:space="preserve">
+    <value>Shift swap accepted: awaiting approval</value>
+  </data>
+  <data name="ScambioTurnoTesto" xml:space="preserve">
+    <value>Shift swap: {0} ({1}) with {2} ({3})</value>
+  </data>
+  <data name="ScambioTurnoTestoCessione" xml:space="preserve">
+    <value>Shift handover: {0} ({1}) to {2}</value>
+  </data>
+  <data name="ScambioTurnoTurniCambiati" xml:space="preserve">
+    <value>The shifts of the swap have been changed in the meantime.</value>
+  </data>
+  <data name="ScambioTurnoGiornoOccupato" xml:space="preserve">
+    <value>The swap is not possible: on {0:dd/MM/yyyy} the receiver already has a shift.</value>
+  </data>
+  <data name="ScambioTurnoNonApplicato" xml:space="preserve">
+    <value>Shift swap not applied: {0}</value>
+  </data>
+  <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
+    <value>Swap shifts not restored: {0}</value>
+  </data>
 </root>

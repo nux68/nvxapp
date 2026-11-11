@@ -1493,4 +1493,85 @@
     <value>Pausa "{0}": su un orario a coppia unica bisogna indicare la finestra della pausa.</value>
     <comment>pause</comment>
   </data>
+  <data name="TurnoNonAutorizzato" xml:space="preserve">
+    <value>Operazione sui turni non consentita al tuo ruolo.</value>
+  </data>
+  <data name="TurnoCodiceDescrizione" xml:space="preserve">
+    <value>Il codice e la descrizione del turno sono obbligatori.</value>
+  </data>
+  <data name="TurnoCodiceDuplicato" xml:space="preserve">
+    <value>Esiste già un turno con codice {0}.</value>
+  </data>
+  <data name="TurnoOrarioNonValido" xml:space="preserve">
+    <value>L'orario del turno non esiste.</value>
+  </data>
+  <data name="TurnoUsato" xml:space="preserve">
+    <value>Il turno {0} è usato nella pianificazione: non si può eliminare.</value>
+  </data>
+  <data name="TurnoRepartoNonValido" xml:space="preserve">
+    <value>Reparto non trovato.</value>
+  </data>
+  <data name="TurnoPeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido (massimo {0} giorni).</value>
+  </data>
+  <data name="TurnoConflittoAssenza" xml:space="preserve">
+    <value>turno {0} in un giorno di assenza approvata ({1})</value>
+  </data>
+  <data name="TurnoConflittoAssenzaInAttesa" xml:space="preserve">
+    <value>turno {0} in un giorno di assenza in attesa di approvazione ({1})</value>
+  </data>
+  <data name="TurnoDipendenteNonValido" xml:space="preserve">
+    <value>Dipendente non trovato nell'azienda.</value>
+  </data>
+  <data name="TurnoNonValido" xml:space="preserve">
+    <value>Turno non trovato.</value>
+  </data>
+  <data name="ScambioTurnoNonTuo" xml:space="preserve">
+    <value>Puoi proporre lo scambio solo dei tuoi turni.</value>
+  </data>
+  <data name="ScambioTurnoPassato" xml:space="preserve">
+    <value>Non si possono scambiare turni di giorni passati.</value>
+  </data>
+  <data name="ScambioTurnoCollegaNonValido" xml:space="preserve">
+    <value>Collega o turno del collega non valido.</value>
+  </data>
+  <data name="ScambioTurnoAltroReparto" xml:space="preserve">
+    <value>Lo scambio è possibile solo con un collega del tuo reparto.</value>
+  </data>
+  <data name="ScambioTurnoGiaProposto" xml:space="preserve">
+    <value>Per questo turno c'è già una proposta di scambio in corso.</value>
+  </data>
+  <data name="ScambioTurnoNotificaProposta" xml:space="preserve">
+    <value>Proposta di scambio turno</value>
+  </data>
+  <data name="ScambioTurnoNonTrovato" xml:space="preserve">
+    <value>Proposta di scambio non trovata.</value>
+  </data>
+  <data name="ScambioTurnoGiaRisposto" xml:space="preserve">
+    <value>La proposta di scambio non è più in attesa di risposta.</value>
+  </data>
+  <data name="ScambioTurnoNotificaRifiutata" xml:space="preserve">
+    <value>Scambio turno rifiutato dal collega</value>
+  </data>
+  <data name="ScambioTurnoNotificaAccettata" xml:space="preserve">
+    <value>Scambio turno accettato: in approvazione</value>
+  </data>
+  <data name="ScambioTurnoTesto" xml:space="preserve">
+    <value>Scambio turno: {0} ({1}) con {2} ({3})</value>
+  </data>
+  <data name="ScambioTurnoTestoCessione" xml:space="preserve">
+    <value>Cessione turno: {0} ({1}) a {2}</value>
+  </data>
+  <data name="ScambioTurnoTurniCambiati" xml:space="preserve">
+    <value>I turni dello scambio sono stati cambiati nel frattempo.</value>
+  </data>
+  <data name="ScambioTurnoGiornoOccupato" xml:space="preserve">
+    <value>Lo scambio non è possibile: il {0:dd/MM/yyyy} chi riceve il turno ne ha già uno.</value>
+  </data>
+  <data name="ScambioTurnoNonApplicato" xml:space="preserve">
+    <value>Scambio turno non applicato: {0}</value>
+  </data>
+  <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
+    <value>Turni dello scambio non ripristinati: {0}</value>
+  </data>
 </root>
