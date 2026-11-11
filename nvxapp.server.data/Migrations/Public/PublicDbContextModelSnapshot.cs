@@ -506,6 +506,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int?>("IdCompany")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Mail")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -523,6 +526,9 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()

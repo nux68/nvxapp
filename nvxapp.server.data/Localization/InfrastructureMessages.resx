@@ -112,6 +112,22 @@
     <value>L'azienda {0} e' attiva. Questi sono gli utenti creati:</value>
     <comment>email; {0} = ragione sociale</comment>
   </data>
+  <data name="RegistrationStudioAlreadyExists" xml:space="preserve">
+    <value>Esiste gia' uno studio registrato come '{0}'.</value>
+    <comment>{0} = nome dello studio</comment>
+  </data>
+  <data name="RegistrationConfirmEmailIntroStudio" xml:space="preserve">
+    <value>Hai chiesto di registrare lo studio {0}.</value>
+    <comment>email; {0} = nome dello studio</comment>
+  </data>
+  <data name="RegistrationSummaryEmailSubjectStudio" xml:space="preserve">
+    <value>{0}: lo studio {1} e' attivo</value>
+    <comment>email; {0} = sito, {1} = nome dello studio</comment>
+  </data>
+  <data name="RegistrationSummaryEmailIntroStudio" xml:space="preserve">
+    <value>Lo studio {0} e' attivo. Questi sono gli utenti creati:</value>
+    <comment>email; {0} = nome dello studio</comment>
+  </data>
   <data name="RegistrationSummaryEmailPassword" xml:space="preserve">
     <value>Per tutti vale la password che hai scelto alla registrazione.</value>
     <comment>email</comment>
