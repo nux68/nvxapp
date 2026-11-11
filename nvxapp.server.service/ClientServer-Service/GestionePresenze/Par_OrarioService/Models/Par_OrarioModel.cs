@@ -24,6 +24,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         //public int? IdAz_SubCommessaAttivita_MonteOre { get; set; }
     }
 
+    public class Par_OrarioPausaModel
+    {
+        public int Id { get; set; }
+        public int IdPar_Orario { get; set; }
+        public int NumPausa { get; set; } = 1;
+        public PausaTipo Tipo { get; set; } = PausaTipo.Pranzo;
+        public string? Descrizione { get; set; }
+        public PausaModalita Modalita { get; set; } = PausaModalita.Rilevata;
+        public int DurataMin { get; set; }
+        public int? DurataMaxMin { get; set; }
+        public int SogliaMin { get; set; } = 360;
+        public TimeOnly? FinestraDalle { get; set; }
+        public TimeOnly? FinestraAlle { get; set; }
+        public int RetribuitaMin { get; set; }
+        public int? IdCausale_Pausa { get; set; }
+    }
+
     public class Par_Orario_GetAllInModel { }
     public class Par_Orario_GetAllOutModel : ModelResult
     {
@@ -42,6 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public Par_OrarioModel? Par_Orario { get; set; }
 
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        public List<Par_OrarioPausaModel> Par_OrarioPausa { get; set; } = new List<Par_OrarioPausaModel>();
 
     }
 
@@ -49,11 +67,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
     {
         public Par_OrarioModel Par_Orario { get; set; } = new Par_OrarioModel();
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        public List<Par_OrarioPausaModel> Par_OrarioPausa { get; set; } = new List<Par_OrarioPausaModel>();
     }
     public class Par_Orario_PutOutModel : ModelResult
     {
         public Par_OrarioModel? Par_Orario { get; set; }
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        public List<Par_OrarioPausaModel> Par_OrarioPausa { get; set; } = new List<Par_OrarioPausaModel>();
     }
 
     public class Par_Orario_DeleteInModel

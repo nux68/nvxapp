@@ -1437,4 +1437,56 @@
     <value>The formula profile periods overlap ({0} and {1}).</value>
     <comment>formule personalizzate</comment>
   </data>
+  <data name="OrarioIntervalloNonValido" xml:space="preserve">
+    <value>Pair {0}: the recognition interval of time {1} is not valid (it must contain the time and be shorter than 12 hours).</value>
+    <comment>pause</comment>
+  </data>
+  <data name="OrarioIntervalliFuoriOrdine" xml:space="preserve">
+    <value>Pair {0}: the recognition intervals must follow the previous pair in time order.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="OrarioIntervalliSovrapposti" xml:space="preserve">
+    <value>Pair {0}: the entry and exit intervals overlap; narrow the intervals or lengthen the pair.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaSoloIntervalloOrario" xml:space="preserve">
+    <value>Breaks can only be set on schedules with time pairs.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaPranzoUnica" xml:space="preserve">
+    <value>A schedule can have only one lunch break.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaBreveUnica" xml:space="preserve">
+    <value>A schedule can have only one short-breaks row.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaDurataNonValida" xml:space="preserve">
+    <value>Break "{0}": the minimum duration must be greater than zero.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaValoriNegativi" xml:space="preserve">
+    <value>Break "{0}": duration, threshold and paid minutes cannot be negative.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaRetribuitaNonValida" xml:space="preserve">
+    <value>Break "{0}": the paid minutes cannot exceed the minimum duration.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaDurataMaxNonValida" xml:space="preserve">
+    <value>Break "{0}": the maximum duration cannot be lower than the minimum duration.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaAutomaticaSoloPranzo" xml:space="preserve">
+    <value>Break "{0}": automatic deduction applies only to the lunch break.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaFinestraIncompleta" xml:space="preserve">
+    <value>Break "{0}": set both the start and the end of the window, or leave both empty.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaFinestraObbligatoria" xml:space="preserve">
+    <value>Break "{0}": on a single-pair schedule the break window is required.</value>
+    <comment>pause</comment>
+  </data>
 </root>

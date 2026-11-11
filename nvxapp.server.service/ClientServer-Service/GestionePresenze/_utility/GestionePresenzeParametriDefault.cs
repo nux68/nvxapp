@@ -6,7 +6,8 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
     // Parametri presenze di partenza per una nuova azienda (ricavati dalla configurazione di tenant_1_2):
-    // causali, giustificativi, orari DIURNO8H (09-13 / 14-18) e RIPOSO, profilo settimanale DAY7H8
+    // causali, giustificativi, orari DIURNO8H (09-13 / 14-18, pausa pranzo rilevata), CONTINUATO8H (08:30-17:30,
+    // pausa pranzo automatica) e RIPOSO, profilo settimanale DAY7H8
     // (lun-ven DIURNO8H, sab-dom RIPOSO, festivi RIPOSO, straordinario/supplementare giornaliero),
     // calendario delle festivita' nazionali, export.
     // Gli Id NON sono fissi: le chiavi esterne vengono collegate ai record appena creati,
@@ -21,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
+        private readonly IPar_OrarioPausaRepository _par_OrarioPausaRepository;
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_ExportCauRepository _par_ExportCauRepository;
@@ -37,7 +39,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                 IPar_ExportCauRepository par_ExportCauRepository,
                                                 IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository,
                                                 IPar_FestivitaRepository par_FestivitaRepository,
-                                                IPar_TipoSpesaRepository par_TipoSpesaRepository)
+                                                IPar_TipoSpesaRepository par_TipoSpesaRepository,
+                                                IPar_OrarioPausaRepository par_OrarioPausaRepository)
         {
             _par_CausaliRepository = par_CausaliRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
@@ -49,6 +52,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
             _par_FestivitaRepository = par_FestivitaRepository;
             _par_TipoSpesaRepository = par_TipoSpesaRepository;
+            _par_OrarioPausaRepository = par_OrarioPausaRepository;
         }
 
         public async Task InitParametri(int IdAz_Anagrafica)
@@ -98,6 +102,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 new { Codice = "BO",    Descrizione = "Recupero banca ore", Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = "BO", Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco, PianoFerie = true },
                 // autorizzazione alle ore in piu' (profili con "solo se autorizzate"): nessuna causale, non cambia il dovuto
                 new { Codice = "AUTS",  Descrizione = "Autorizzazione straordinario", Bg = (string?)"#ffc409", Tx = (string?)"#000000", Causale = (string)null!, Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = false },
+                // pausa non fruita: nel giorno non si detrae la pausa pranzo automatica (nessuna causale, non cambia il dovuto)
+                new { Codice = "PNF",   Descrizione = "Pausa non fruita", Bg = (string?)"#6c757d", Tx = (string?)"#ffffff", Causale = (string)null!, Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = false },
             })
             {
                 giustificativi[g.Codice] = await _par_GiustificativiRepository.UpsertAsync(new Par_Giustificativi
@@ -113,7 +119,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     VisualizzaInPianoFerie = g.PianoFerie,
                     TipoContatore = g.Contatore,
                     BancaOre = g.Codice == "BO",
-                    AutorizzaStraordinario = g.Codice == "AUTS"
+                    AutorizzaStraordinario = g.Codice == "AUTS",
+                    AnnullaPausa = g.Codice == "PNF"
                 });
             }
 
@@ -150,6 +157,61 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     IdCausale_HH_Lav = causali["ORD1"].Id
                 });
             }
+
+            // DIURNO8H: pausa pranzo da timbrare (60', dovuta oltre 6h): solo controllo e avviso; finestra dagli
+            // intervalli di riconoscimento delle coppie (12:45-14:15)
+            await _par_OrarioPausaRepository.UpsertAsync(new Par_OrarioPausa
+            {
+                IdPar_Orario = orario.Id,
+                NumPausa = 1,
+                Tipo = PausaTipo.Pranzo,
+                Descrizione = "Pausa pranzo",
+                Modalita = PausaModalita.Rilevata,
+                DurataMin = 60,
+                SogliaMin = 360
+            });
+
+            // Orario CONTINUATO8H: coppia unica 08:30-17:30 con pausa pranzo automatica di 60' tra 12:30 e 14:30
+            // (chi non timbra la pausa la vede detratta; teorico 8h)
+            var orarioContinuato = await _par_OrarioRepository.UpsertAsync(new Par_Orario
+            {
+                IdAz_Anagrafica = IdAz_Anagrafica,
+                Codice = "CONT8H",
+                Descrizione = "Continuato 8H con pausa",
+                NumeroCoppie = 1,
+                TimbratureTipo = OrarioTimbratureTipo.IntervalloOrario,
+                Hh_Teo_MonteOre = new TimeOnly(0, 0)
+            });
+            await _par_OrarioIntervalloHHRepository.UpsertAsync(new Par_OrarioIntervalloHH
+            {
+                IdPar_Orario = orarioContinuato.Id,
+                NumCoppia = 1,
+                Dalle = new TimeOnly(8, 30),
+                Dalle_Limite_SX = new TimeOnly(8, 15),
+                Dalle_Limite_DX = new TimeOnly(8, 45),
+                Dalle_Arrotondamento = TimeRoundInterval.Min15,
+                Dalle_Arrotondamento_Verso = RoundDirection.Up,
+                Dalle_Use_4_Match = true,
+                Alle = new TimeOnly(17, 30),
+                Alle_Limite_SX = new TimeOnly(17, 15),
+                Alle_Limite_DX = new TimeOnly(17, 45),
+                Alle_Arrotondamento = TimeRoundInterval.Min15,
+                Alle_Arrotondamento_Verso = RoundDirection.Up,
+                Alle_Use_4_Match = true,
+                IdCausale_HH_Lav = causali["ORD1"].Id
+            });
+            await _par_OrarioPausaRepository.UpsertAsync(new Par_OrarioPausa
+            {
+                IdPar_Orario = orarioContinuato.Id,
+                NumPausa = 1,
+                Tipo = PausaTipo.Pranzo,
+                Descrizione = "Pausa pranzo",
+                Modalita = PausaModalita.Automatica,
+                DurataMin = 60,
+                SogliaMin = 360,
+                FinestraDalle = new TimeOnly(12, 30),
+                FinestraAlle = new TimeOnly(14, 30)
+            });
 
             // Orario RIPOSO: nessuna coppia, 0 ore teoriche (giorno non lavorativo)
             var orarioRiposo = await _par_OrarioRepository.UpsertAsync(new Par_Orario

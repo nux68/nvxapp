@@ -24,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         private readonly IPar_CausaliRepository _par_CausaliRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
+        private readonly IPar_OrarioPausaRepository _par_OrarioPausaRepository;
 
 
 
@@ -36,13 +37,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
                                   IPar_OrarioRepository par_OrarioRepository,
-                                  IPar_CausaliRepository par_CausaliRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_CausaliRepository par_CausaliRepository,
+                                  IPar_OrarioPausaRepository par_OrarioPausaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_OrarioRepository = par_OrarioRepository;
             _par_CausaliRepository = par_CausaliRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_OrarioIntervalloHHService = par_OrarioIntervalloHHService;
+            _par_OrarioPausaRepository = par_OrarioPausaRepository;
         }
+
+        private List<Par_OrarioPausaModel> PauseOrario(int idPar_Orario) =>
+            _mapper.Map<List<Par_OrarioPausaModel>>(_par_OrarioPausaRepository.FindAll(x => x.IdPar_Orario == idPar_Orario)
+                                                                              .OrderBy(x => x.NumPausa)
+                                                                              .ToList());
 
         public virtual async Task<GenericResult<Par_Orario_GetAllOutModel>> GetAll(GenericRequest<Par_Orario_GetAllInModel> model, bool isSubProcess)
         {
@@ -88,6 +96,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                         retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
                     }
 
+                    retVal.Par_OrarioPausa = PauseOrario(model.Data.Id);
                 }
 
                 return retVal;
@@ -101,6 +110,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 var retVal = new Par_Orario_PutOutModel();
                 // la causale del monte ore riceve ore: niente causali a importo
                 GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository, model.Data.Par_Orario.IdCausale_HH_Lav_MonteOre);
+
+                // intervalli di riconoscimento coerenti e pause valide (ANALISI_ATTENDANCETRACKING_PAUSE.md)
+                if (model.Data.Par_Orario.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)
+                    GestionePresenzeOrarioValidazione.ControllaIntervalli(model.Data.Par_OrarioIntervalloHH);
+                GestionePresenzeOrarioValidazione.ControllaPause(model.Data.Par_Orario.TimbratureTipo, model.Data.Par_OrarioIntervalloHH, model.Data.Par_OrarioPausa);
+                // i minuti detratti vanno su una causale a ore
+                GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository, model.Data.Par_OrarioPausa.Select(p => p.IdCausale_Pausa).ToArray());
+
                 var entity = _mapper.Map<Par_Orario>(model.Data.Par_Orario);
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
@@ -124,6 +141,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 {
                     retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
                 }
+
+                // pause: cancellate quelle tolte dal client, salvate le altre
+                var idOrario = retVal.Par_Orario.Id;
+                var inviate = model.Data.Par_OrarioPausa;
+                inviate.Where(x => x.Id < 0).ToList().ForEach(x => x.Id = 0);
+                foreach (var esistente in _par_OrarioPausaRepository.FindAll(x => x.IdPar_Orario == idOrario).ToList())
+                    if (!inviate.Any(x => x.Id == esistente.Id))
+                        await _par_OrarioPausaRepository.DeleteAsync(esistente);
+                foreach (var item in inviate)
+                {
+                    var pausa = _mapper.Map<Par_OrarioPausa>(item);
+                    pausa.IdPar_Orario = idOrario;
+                    if (pausa.IdCausale_Pausa is <= 0)
+                        pausa.IdCausale_Pausa = null;
+                    await _par_OrarioPausaRepository.UpsertAsync(pausa);
+                }
+                retVal.Par_OrarioPausa = PauseOrario(idOrario);
 
                 return retVal;
             }, isSubProcess);

@@ -27,6 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public TipoContatore TipoContatore { get; set; }
         public bool BancaOre { get; set; }
         public bool AutorizzaStraordinario { get; set; }
+        public bool AnnullaPausa { get; set; }
     }
 
 

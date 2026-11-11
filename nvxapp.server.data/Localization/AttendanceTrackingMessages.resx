@@ -1441,4 +1441,56 @@
     <value>I periodi del profilo formule si sovrappongono ({0} e {1}).</value>
     <comment>formule personalizzate</comment>
   </data>
+  <data name="OrarioIntervalloNonValido" xml:space="preserve">
+    <value>Coppia {0}: l'intervallo di riconoscimento dell'ora {1} non è valido (deve contenere l'ora ed essere inferiore a 12 ore).</value>
+    <comment>pause</comment>
+  </data>
+  <data name="OrarioIntervalliFuoriOrdine" xml:space="preserve">
+    <value>Coppia {0}: gli intervalli di riconoscimento devono essere in ordine di orario rispetto alla coppia precedente.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="OrarioIntervalliSovrapposti" xml:space="preserve">
+    <value>Coppia {0}: l'intervallo di entrata e quello di uscita si sovrappongono; restringere gli intervalli o allungare la coppia.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaSoloIntervalloOrario" xml:space="preserve">
+    <value>Le pause si possono configurare solo sugli orari a coppie.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaPranzoUnica" xml:space="preserve">
+    <value>Un orario può avere una sola pausa pranzo.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaBreveUnica" xml:space="preserve">
+    <value>Un orario può avere una sola riga di pause brevi.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaDurataNonValida" xml:space="preserve">
+    <value>Pausa "{0}": la durata minima deve essere maggiore di zero.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaValoriNegativi" xml:space="preserve">
+    <value>Pausa "{0}": durata, soglia e minuti retribuiti non possono essere negativi.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaRetribuitaNonValida" xml:space="preserve">
+    <value>Pausa "{0}": i minuti retribuiti non possono superare la durata minima.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaDurataMaxNonValida" xml:space="preserve">
+    <value>Pausa "{0}": la durata massima non può essere inferiore alla durata minima.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaAutomaticaSoloPranzo" xml:space="preserve">
+    <value>Pausa "{0}": la detrazione automatica vale solo per la pausa pranzo.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaFinestraIncompleta" xml:space="preserve">
+    <value>Pausa "{0}": indicare sia l'inizio sia la fine della finestra, oppure lasciarle vuote entrambe.</value>
+    <comment>pause</comment>
+  </data>
+  <data name="PausaFinestraObbligatoria" xml:space="preserve">
+    <value>Pausa "{0}": su un orario a coppia unica bisogna indicare la finestra della pausa.</value>
+    <comment>pause</comment>
+  </data>
 </root>

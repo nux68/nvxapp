@@ -132,6 +132,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                         GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository,
                             model.Data.Par_OrarioIntervalloHH.Select(x => (int?)x.IdCausale_HH_Lav).ToArray());
 
+                        // intervalli di riconoscimento coerenti (ANALISI_ATTENDANCETRACKING_PAUSE.md 3.3)
+                        if (par_Orario.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)
+                            GestionePresenzeOrarioValidazione.ControllaIntervalli(model.Data.Par_OrarioIntervalloHH);
+
                         //elimino gli id <0
                         model.Data.Par_OrarioIntervalloHH.Where(x => x.Id < 0).ToList().ForEach(x => x.Id = 0);
 
