@@ -1,0 +1,34 @@
+.nvx-calendar-note {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.nvx-calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+// date di creazione e ultimo accesso (vanno a capo su schermi stretti)
+.nvx-calendar-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  margin-bottom: 12px;
+  font-size: 0.85em;
+  color: var(--ion-color-medium);
+}
+
+.nvx-calendar-howto {
+  margin: 0 0 12px;
+
+  dt {
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  dd {
+    margin-left: 0;
+  }
+}
