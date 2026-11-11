@@ -1006,7 +1006,7 @@ export class TimeSheetService {
       [GG_ResultStato.Err_TimbratureMancanti]: this.t('giornata.err.timbratureMancanti'),
       [GG_ResultStato.Err_2]:  this.t('giornata.err.oreInferiori'),
       [GG_ResultStato.Err_3]:  this.t('giornata.oreSuperiori'),
-      [GG_ResultStato.Err_4]:  this.t('giornata.erroreN', { n: 4 }),
+      [GG_ResultStato.Err_4]:  this.t('giornata.formulaAnomalia'),
       [GG_ResultStato.Err_5]:  this.t('giornata.erroreN', { n: 5 }),
       [GG_ResultStato.Err_6]:  this.t('giornata.erroreN', { n: 6 }),
       [GG_ResultStato.Err_7]:  this.t('giornata.erroreN', { n: 7 }),
@@ -1028,7 +1028,7 @@ export class TimeSheetService {
     // --- Dettagli warning ---
     const warnLabels: Partial<Record<GG_ResultStato, string>> = {
       [GG_ResultStato.Warning_1]:  this.t('giornata.oreSuperiori'),
-      [GG_ResultStato.Warning_2]:  this.t('giornata.avvertimentoN', { n: 2 }),
+      [GG_ResultStato.Warning_2]:  this.t('giornata.formulaAvviso'),
       [GG_ResultStato.Warning_3]:  this.t('giornata.avvertimentoN', { n: 3 }),
       [GG_ResultStato.Warning_4]:  this.t('giornata.avvertimentoN', { n: 4 }),
       [GG_ResultStato.Warning_5]:  this.t('giornata.avvertimentoN', { n: 5 }),
