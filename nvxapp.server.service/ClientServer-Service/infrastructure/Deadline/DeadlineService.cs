@@ -218,22 +218,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deadline
                 throw new UserMessageException(InfrastructureMessages.Get("DeadlineNoCompany"));
             var user = await _userManager.FindByIdAsync(this.CurrentUserId)
                        ?? throw new UserMessageException(InfrastructureMessages.Get("DeadlineNotAllowed"));
-            var ruoli = await _userManager.GetRolesAsync(user);
-            return (idCompany, ruoli.Any(r => r == nameof(RoleCode.CompanyPowerAdmin) || r == nameof(RoleCode.CompanyAdmin)));
+            return (idCompany, await AmministratoreAsync(_userManager, user));
         }
 
-        // scadenze dell'azienda degli applicativi attivi (e delle funzioni base); solo le proprie se richiesto
-        private async Task<IQueryable<Scadenza>> Visibili(int idCompany, bool admin, bool soloMie)
+        private Task<IQueryable<Scadenza>> Visibili(int idCompany, bool admin, bool soloMie)
+            => VisibiliPerUtente(_scadenzaRepository, _companyApplicationRepository, idCompany, this.CurrentUserId, admin, soloMie);
+
+        // Regole di visibilita', usate anche dal feed del calendario (DeadlineCalendarEventProvider, INF-CAL.2)
+        // dove l'utente non e' quello collegato.
+
+        /// <summary>l'utente vede e gestisce tutte le scadenze dell'azienda (CompanyPowerAdmin, CompanyAdmin)</summary>
+        public static async Task<bool> AmministratoreAsync(UserManager<ApplicationUser> userManager, ApplicationUser user)
         {
-            var attivi = (await _companyApplicationRepository.FindAll(x => x.IdCompany == idCompany && x.Active)
-                                                             .Select(x => x.ApplicationType).ToListAsync())
+            var ruoli = await userManager.GetRolesAsync(user);
+            return ruoli.Any(r => r == nameof(RoleCode.CompanyPowerAdmin) || r == nameof(RoleCode.CompanyAdmin));
+        }
+
+        /// <summary>scadenze dell'azienda degli applicativi attivi (e delle funzioni base); solo quelle dell'utente se non e' amministratore o se richiesto</summary>
+        public static async Task<IQueryable<Scadenza>> VisibiliPerUtente(IScadenzaRepository scadenzaRepository,
+                                                                         ICompanyApplicationRepository companyApplicationRepository,
+                                                                         int idCompany, string idAspNetUsers, bool admin, bool soloMie)
+        {
+            var attivi = (await companyApplicationRepository.FindAll(x => x.IdCompany == idCompany && x.Active)
+                                                            .Select(x => x.ApplicationType).ToListAsync())
                          .Select(x => (int)x).Append((int)ApplicationType.Common).ToList();
-            var query = _scadenzaRepository.FindAll(x => x.IdCompany == idCompany && attivi.Contains(x.Application));
+            var query = scadenzaRepository.FindAll(x => x.IdCompany == idCompany && attivi.Contains(x.Application));
             if (soloMie || !admin)
-            {
-                var io = this.CurrentUserId;
-                query = query.Where(x => x.IdAspNetUsersResponsabile == io);
-            }
+                query = query.Where(x => x.IdAspNetUsersResponsabile == idAspNetUsers);
             return query;
         }
 
