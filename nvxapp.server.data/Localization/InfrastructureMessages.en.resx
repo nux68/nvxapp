@@ -593,6 +593,14 @@
     <value>Unlimited storage</value>
     <comment>spazio a disposizione</comment>
   </data>
+  <data name="StorageNoLicensePlan" xml:space="preserve">
+    <value>No Document management licence</value>
+    <comment>spazio a disposizione</comment>
+  </data>
+  <data name="StorageNoLicense" xml:space="preserve">
+    <value>The company has no valid Document management licence: documents cannot be uploaded. Subscribe to or renew the licence from Licence management.</value>
+    <comment>spazio a disposizione</comment>
+  </data>
   <data name="DashboardNotConfigurable" xml:space="preserve">
     <value>The dashboard can only be configured while working in a company with the User, CompanyAdmin or CompanyPowerAdmin role.</value>
     <comment>dashboard</comment>
