@@ -11,7 +11,8 @@ import { CompanyStorageModel, CompanyStoragePutInModel, bytesToMB } from '../../
 
 /*
  Spazio di un'azienda (SuperUser, DealerPowerAdmin del centro): soglia di avviso propria dell'azienda, facoltativa
- (vuota = predefinita). La quota non si cambia qui: e' quella della licenza Documentale (senza licenza illimitata).
+ (vuota = predefinita). La quota non si cambia qui: e' quella della licenza Documentale (illimitata con le licenze spente,
+ zero e caricamenti bloccati senza licenza).
 */
 @Component({
   selector: 'app-company-storage-edit-page',
@@ -36,6 +37,8 @@ export class CompanyStorageEditPageComponent extends BasePageConfirmCancelCompon
     const c = this._editModel;
     if (!c)
       return '';
+    if (c.senzaLicenza)
+      return this.transloco.translate('pages.companyStorageEdit.usedNoLicense', { used: bytesToMB(c.usedBytes), files: c.fileCount });
     return c.illimitato
       ? this.transloco.translate('pages.companyStorageEdit.usedUnlimited', { used: bytesToMB(c.usedBytes), files: c.fileCount })
       : this.transloco.translate('pages.companyStorageEdit.used', { used: bytesToMB(c.usedBytes), quota: c.quotaMB.toLocaleString(), percent: c.usedPercent, files: c.fileCount });
