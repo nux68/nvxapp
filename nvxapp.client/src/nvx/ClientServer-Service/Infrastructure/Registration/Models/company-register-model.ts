@@ -1,9 +1,14 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 
-// registrazione di una nuova azienda dallo showcase (prima del login): il server salva la richiesta
-// e invia all'email indicata il link di conferma; l'azienda nasce (nel ramo DEMO) solo alla conferma
+// cosa si registra (stessi valori di TipoRegistrazione del server): l'azienda nasce nello studio DEMO,
+// lo studio nel centro DEMO
+export enum TipoRegistrazione { Azienda = 0, Studio = 1 }
+
+// registrazione di una nuova azienda o di un nuovo studio dallo showcase (prima del login): il server salva
+// la richiesta e invia all'email indicata il link di conferma; l'azienda o lo studio nasce (nel ramo DEMO) solo alla conferma
 export class CompanyRegisterInModel {
+  public tipo: TipoRegistrazione = TipoRegistrazione.Azienda;
   public ragioneSociale: string | null = null;
   public mail: string | null = null;
   public pw: string | null = null;
@@ -46,7 +51,10 @@ export class CompanyRegisterUserModel {
 }
 
 export class CompanyRegisterConfirmOutModel extends ModelResult {
+  // cosa e' stato creato: l'azienda (idCompany) o lo studio (idFinancialAdvisor)
+  public tipo: TipoRegistrazione;
   public idCompany: number;
+  public idFinancialAdvisor: number;
   public descrizione: string;
   public users: CompanyRegisterUserModel[] = [];
 }

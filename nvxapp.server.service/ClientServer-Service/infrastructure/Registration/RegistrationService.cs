@@ -25,7 +25,8 @@ using nvxapp.server.data.Localization;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 {
     /*
-     Registrazione di una nuova azienda dallo showcase, senza login, in due tempi:
+     Registrazione di una nuova azienda o di un nuovo studio dallo showcase, senza login, in due tempi
+     (Tipo della richiesta: TipoRegistrazione.Azienda o TipoRegistrazione.Studio, scelto nella pagina):
       1. CompanyRegister: controlla i dati, salva la richiesta (CompanyRegistrationRequest) e invia
          all'email indicata il link di conferma, valido ScadenzaOre ore. Non crea ancora niente.
       2. CompanyRegisterConfirm: dal link, crea l'azienda nel ramo DEMO (studio DEMO del centro DEMO,
@@ -33,6 +34,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
          stessi utenti principali (gli amministratori con i nomi scelti nella pagina) e, nei rami applicativi, gli stessi applicativi attivati e
          inizializzati sulle nuove aziende. Gli utenti ricevono la password scelta alla registrazione;
          all'email arriva il riepilogo degli utenti creati con il link di accesso (senza password).
+         Per lo studio: si crea nel centro DEMO con la stessa creazione del menu "Studi"
+         (AccountService.FinancialAdvisorPut), con il power admin e l'admin dello studio; applicativi
+         dello studio non attivati (li attiva il centro).
      Non si usa EmailConfirmed di Identity: gli utenti nascono anche dai menu, senza registrazione.
      Gli errori di compilazione dei dati tornano come messaggi (MessageType.Error), mostrati dalla pagina.
      Indirizzo del link: App:PublicUrl di appsettings (es. https://miosito.it), altrimenti l'origine
@@ -66,6 +70,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         private readonly IEmailService _emailService;
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
+        private readonly IUserFinancialAdvisorRepository _userFinancialAdvisorRepository;
         private readonly IDealerRepository _dealerRepository;
         private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
         private readonly ICompanyRegistrationRequestRepository _companyRegistrationRequestRepository;
@@ -81,6 +86,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                                    IEmailService emailService,
                                    ICompanyRepository companyRepository,
                                    IUserCompanyRepository userCompanyRepository,
+                                   IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
                                    IDealerRepository dealerRepository,
                                    IFinancialAdvisorRepository financialAdvisorRepository,
                                    ICompanyRegistrationRequestRepository companyRegistrationRequestRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -89,6 +95,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
             _emailService = emailService;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
+            _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _dealerRepository = dealerRepository;
             _financialAdvisorRepository = financialAdvisorRepository;
             _companyRegistrationRequestRepository = companyRegistrationRequestRepository;
@@ -104,6 +111,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 string descrizione = StringHelper.RemoveSpecialCharacters(data.RagioneSociale?.Trim()) ?? string.Empty;
                 string mail = data.Mail?.Trim() ?? string.Empty;
                 string pw = data.Pw ?? string.Empty;
+                TipoRegistrazione tipo = Enum.IsDefined(data.Tipo) ? data.Tipo : TipoRegistrazione.Azienda;
 
                 // dati della richiesta
                 if (descrizione.Length < RagioneSocialeMinLength || descrizione.Length > RagioneSocialeMaxLength)
@@ -117,7 +125,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 if (retVal.Messages.Any())
                     return retVal;
 
-                if (!_emailService.Configured || StudioDemo() == 0)
+                if (!_emailService.Configured || (tipo == TipoRegistrazione.Studio ? CentroDemo() : StudioDemo()) == 0)
                 {
                     Log.Warning("Registrazione non disponibile: invio email non configurato o ramo DEMO mancante.");
                     retVal.AddMessage(InfrastructureMessages.Get("RegistrationUnavailable"), MessageType.Error);
@@ -126,8 +134,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
                 await EliminaRichiesteScadute();
 
-                // nome gia' usato da un'azienda, dagli utenti che si creerebbero o da un'altra richiesta in attesa
-                string? nomeOccupato = await NomeNonDisponibile(descrizione);
+                // nome gia' usato da un'azienda (o da uno studio), dagli utenti che si creerebbero o da un'altra richiesta in attesa
+                string? nomeOccupato = await NomeNonDisponibile(descrizione, tipo);
                 if (nomeOccupato != null)
                 {
                     retVal.AddMessage(nomeOccupato, MessageType.Error);
@@ -153,7 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     return retVal;
                 }
 
-                // stesso nome e stessa email: la nuova richiesta sostituisce la precedente (nuovo link)
+                // stesso nome e stessa email: la nuova richiesta sostituisce la precedente (nuovo link, anche se cambia il tipo)
                 foreach (var vecchia in stessoNome)
                     await _companyRegistrationRequestRepository.DeleteAsync(vecchia);
 
@@ -165,13 +173,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     PasswordHash = _userManager.PasswordHasher.HashPassword(new ApplicationUser(), pw),
                     PowerAdminUserName = powerAdminUserName,
                     AdminUserName = adminUserName,
+                    Tipo = tipo,
                     TokenHash = HashToken(token),
                     ExpiresAt = DateTime.Now.AddHours(ScadenzaOre)
                 });
 
                 try
                 {
-                    await InviaEmailConferma(mail, descrizione, LinkConferma(token));
+                    await InviaEmailConferma(mail, descrizione, tipo, LinkConferma(token));
                 }
                 catch (Exception e)
                 {
@@ -209,6 +218,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     await RiempiAzienda(retVal, richiesta.IdCompany.Value);
                     return retVal;
                 }
+                if (richiesta.ConfirmedAt != null && richiesta.IdFinancialAdvisor != null)
+                {
+                    await RiempiStudio(retVal, richiesta.IdFinancialAdvisor.Value);
+                    return retVal;
+                }
 
                 if (richiesta.ExpiresAt < DateTime.Now)
                 {
@@ -217,11 +231,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     return retVal;
                 }
 
-                // il nome dell'azienda o quelli degli amministratori possono essere stati presi nel frattempo
-                // (es. azienda o utente creati dal menu)
-                string? nomeOccupato = await NomeNonDisponibile(richiesta.Descrizione);
-                int idFinancialAdvisor = StudioDemo();
-                if (nomeOccupato != null || idFinancialAdvisor == 0)
+                // il nome dell'azienda (o dello studio) o quelli degli amministratori possono essere stati presi nel frattempo
+                // (es. azienda, studio o utente creati dal menu)
+                bool studio = richiesta.Tipo == TipoRegistrazione.Studio;
+                string? nomeOccupato = await NomeNonDisponibile(richiesta.Descrizione, richiesta.Tipo);
+                int idPadre = studio ? CentroDemo() : StudioDemo();
+                if (nomeOccupato != null || idPadre == 0)
                 {
                     retVal.AddMessage(nomeOccupato ?? InfrastructureMessages.Get("RegistrationUnavailable"), MessageType.Error);
                     return retVal;
@@ -236,38 +251,36 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     return retVal;
                 }
 
-                // creazione come dal menu "Aziende" di uno studio: lo studio corrente e' quello DEMO.
+                // creazione come dal menu "Aziende" dello studio DEMO o dal menu "Studi" del centro DEMO.
                 // Gli utenti nascono con una password provvisoria, sostituita subito da quella scelta.
-                var reqPut = new GenericRequest<CompanyPutInModel>();
-                reqPut.Data = new CompanyPutInModel();
-                reqPut.Data.CompanyEdit = new CompanyEditModel()
+                List<string> idUtenti;
+                if (studio)
                 {
-                    IdCompany = 0,
-                    Descrizione = richiesta.Descrizione,
-                    Mail = richiesta.Mail,
-                    Pw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
-                    PowerAdminUserName = powerAdminUserName,
-                    AdminUserName = adminUserName
-                };
-
-                ((_accountService as ServiceBase)!).tokenProperty = new TokenProperty()
-                {
-                    FinancialAdvisor = idFinancialAdvisor.ToString(),
-                    Dealer = (_financialAdvisorRepository.FindById(idFinancialAdvisor)?.IdDealer ?? 0).ToString()
-                };
-                var resPut = await _accountService.CompanyPut(reqPut, true);
-
-                if (!resPut.Success || resPut.Data == null || resPut.Data.CompanyEdit.IdCompany == 0)
-                {
-                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationFailed"), MessageType.Error);
-                    return retVal;
+                    int idStudio = await CreaStudio(richiesta, idPadre, powerAdminUserName, adminUserName);
+                    if (idStudio == 0)
+                    {
+                        retVal.AddMessage(InfrastructureMessages.Get("RegistrationFailed"), MessageType.Error);
+                        return retVal;
+                    }
+                    richiesta.IdFinancialAdvisor = idStudio;
+                    idUtenti = _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == idStudio).Select(x => x.IdAspNetUsers).ToList();
                 }
-                int idCompany = resPut.Data.CompanyEdit.IdCompany;
-
-                // password scelta alla registrazione per tutti gli utenti dell'azienda
-                foreach (var userCompany in _userCompanyRepository.FindAll(x => x.IdCompany == idCompany).ToList())
+                else
                 {
-                    var user = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    int idAzienda = await CreaAzienda(richiesta, idPadre, powerAdminUserName, adminUserName);
+                    if (idAzienda == 0)
+                    {
+                        retVal.AddMessage(InfrastructureMessages.Get("RegistrationFailed"), MessageType.Error);
+                        return retVal;
+                    }
+                    richiesta.IdCompany = idAzienda;
+                    idUtenti = _userCompanyRepository.FindAll(x => x.IdCompany == idAzienda).Select(x => x.IdAspNetUsers).ToList();
+                }
+
+                // password scelta alla registrazione per tutti gli utenti creati
+                foreach (var idAspNetUsers in idUtenti)
+                {
+                    var user = await _userManager.FindByIdAsync(idAspNetUsers);
                     if (user == null)
                         continue;
                     user.PasswordHash = richiesta.PasswordHash;
@@ -276,17 +289,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
                 // richiesta confermata: la password cifrata non serve piu'
                 richiesta.ConfirmedAt = DateTime.Now;
-                richiesta.IdCompany = idCompany;
                 richiesta.PasswordHash = string.Empty;
                 await _companyRegistrationRequestRepository.UpdateAsync(richiesta);
 
-                await RiempiAzienda(retVal, idCompany);
+                if (studio)
+                    await RiempiStudio(retVal, richiesta.IdFinancialAdvisor!.Value);
+                else
+                    await RiempiAzienda(retVal, richiesta.IdCompany!.Value);
 
                 // riepilogo delle utenze per email (solo alla prima conferma): se non parte,
-                // l'azienda resta creata e gli utenti si vedono comunque nella pagina
+                // l'azienda o lo studio resta creato e gli utenti si vedono comunque nella pagina
                 try
                 {
-                    await InviaEmailRiepilogo(richiesta.Mail, retVal.Descrizione, retVal.Users);
+                    await InviaEmailRiepilogo(richiesta.Mail, retVal.Descrizione, richiesta.Tipo, retVal.Users);
                 }
                 catch (Exception e)
                 {
@@ -296,6 +311,62 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
             }, isSubProcess);
+        }
+
+        // azienda nello studio DEMO, come dal menu "Aziende" (0 = non creata)
+        private async Task<int> CreaAzienda(CompanyRegistrationRequest richiesta, int idFinancialAdvisor, string powerAdminUserName, string adminUserName)
+        {
+            var reqPut = new GenericRequest<CompanyPutInModel>();
+            reqPut.Data = new CompanyPutInModel();
+            reqPut.Data.CompanyEdit = new CompanyEditModel()
+            {
+                IdCompany = 0,
+                Descrizione = richiesta.Descrizione,
+                Mail = richiesta.Mail,
+                Pw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
+                PowerAdminUserName = powerAdminUserName,
+                AdminUserName = adminUserName
+            };
+
+            ((_accountService as ServiceBase)!).tokenProperty = new TokenProperty()
+            {
+                FinancialAdvisor = idFinancialAdvisor.ToString(),
+                Dealer = (_financialAdvisorRepository.FindById(idFinancialAdvisor)?.IdDealer ?? 0).ToString()
+            };
+            var resPut = await _accountService.CompanyPut(reqPut, true);
+
+            if (!resPut.Success || resPut.Data == null)
+                return 0;
+            return resPut.Data.CompanyEdit.IdCompany;
+        }
+
+        // studio nel centro DEMO, come dal menu "Studi" (0 = non creato)
+        private async Task<int> CreaStudio(CompanyRegistrationRequest richiesta, int idDealer, string powerAdminUserName, string adminUserName)
+        {
+            var reqPut = new GenericRequest<FinancialAdvisorPutInModel>();
+            reqPut.Data = new FinancialAdvisorPutInModel();
+            reqPut.Data.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
+            {
+                IdFinancialAdvisor = 0,
+                Descrizione = richiesta.Descrizione,
+                Mail = richiesta.Mail,
+                Pw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
+                PowerAdminUserName = powerAdminUserName,
+                AdminUserName = adminUserName,
+                Applications = null
+            };
+
+            ((_accountService as ServiceBase)!).tokenProperty = new TokenProperty()
+            {
+                Dealer = idDealer.ToString()
+            };
+            var resPut = await _accountService.FinancialAdvisorPut(reqPut, true);
+
+            if (!resPut.Success || resPut.Data == null)
+                return 0;
+            int idStudio = resPut.Data.FinancialAdvisorEdit.IdFinancialAdvisor;
+            // lo studio nasce anche se gli utenti non si creano: senza utenti la registrazione non e' riuscita
+            return idStudio != 0 && _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == idStudio).Any() ? idStudio : 0;
         }
 
         // verifica dei nomi degli amministratori mentre si compila la pagina (vuoti = quelli predefiniti)
@@ -320,15 +391,32 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
             }, isSubProcess);
         }
 
+        // studio creato e suoi utenti, prima il PowerAdmin che gestisce lo studio
+        private async Task RiempiStudio(CompanyRegisterConfirmOutModel retVal, int idFinancialAdvisor)
+        {
+            retVal.Tipo = TipoRegistrazione.Studio;
+            retVal.IdFinancialAdvisor = idFinancialAdvisor;
+            retVal.Descrizione = _financialAdvisorRepository.FindById(idFinancialAdvisor)?.Descrizione ?? string.Empty;
+            await RiempiUtenti(retVal, _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == idFinancialAdvisor).Select(x => x.IdAspNetUsers).ToList(),
+                               new[] { "FinancialAdvisorPowerAdmin", "FinancialAdvisorAdmin" });
+        }
+
         // azienda creata e suoi utenti, prima il PowerAdmin che gestisce l'azienda
         private async Task RiempiAzienda(CompanyRegisterConfirmOutModel retVal, int idCompany)
         {
+            retVal.Tipo = TipoRegistrazione.Azienda;
             retVal.IdCompany = idCompany;
             retVal.Descrizione = _companyRepository.FindById(idCompany)?.Descrizione ?? string.Empty;
+            await RiempiUtenti(retVal, _userCompanyRepository.FindAll(x => x.IdCompany == idCompany).Select(x => x.IdAspNetUsers).ToList(),
+                               new[] { "CompanyPowerAdmin", "CompanyAdmin", "User" });
+        }
 
-            foreach (var userCompany in _userCompanyRepository.FindAll(x => x.IdCompany == idCompany).ToList())
+        // utenti creati con i ruoli, nell'ordine dei ruoli indicati
+        private async Task RiempiUtenti(CompanyRegisterConfirmOutModel retVal, List<string> idUtenti, string[] ordineRuoli)
+        {
+            foreach (var idAspNetUsers in idUtenti)
             {
-                var user = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                var user = await _userManager.FindByIdAsync(idAspNetUsers);
                 if (user?.UserName == null)
                     continue;
                 retVal.Users.Add(new CompanyRegisterUserModel()
@@ -337,14 +425,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     Roles = new List<string>(await _userManager.GetRolesAsync(user))
                 });
             }
-            string[] ordineRuoli = { "CompanyPowerAdmin", "CompanyAdmin", "User" };
             retVal.Users = retVal.Users.OrderBy(u => u.Roles.Select(r => Array.IndexOf(ordineRuoli, r)).Where(i => i >= 0).DefaultIfEmpty(ordineRuoli.Length).Min()).ToList();
         }
 
-        // messaggio se il nome e' gia' di un'azienda o degli utenti che si creerebbero, altrimenti null
-        private async Task<string?> NomeNonDisponibile(string descrizione)
+        // messaggio se il nome e' gia' di un'azienda (o di uno studio, se si registra uno studio)
+        // o degli utenti che si creerebbero, altrimenti null
+        private async Task<string?> NomeNonDisponibile(string descrizione, TipoRegistrazione tipo)
         {
             string descrizioneNorm = descrizione.ToUpper();
+            if (tipo == TipoRegistrazione.Studio)
+                return _financialAdvisorRepository.FindAll(x => x.Descrizione != null && x.Descrizione.ToUpper() == descrizioneNorm).Any()
+                    ? InfrastructureMessages.Get("RegistrationStudioAlreadyExists", descrizione)
+                    : null;
+
             if (_companyRepository.FindAll(x => x.Descrizione != null && x.Descrizione.ToUpper() == descrizioneNorm).Any())
                 return InfrastructureMessages.Get("RegistrationCompanyAlreadyExists", descrizione);
 
@@ -407,29 +500,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 await _companyRegistrationRequestRepository.DeleteAsync(scaduta);
         }
 
-        private async Task InviaEmailConferma(string mail, string descrizione, string link)
+        private async Task InviaEmailConferma(string mail, string descrizione, TipoRegistrazione tipo, string link)
         {
+            string intro = tipo == TipoRegistrazione.Studio ? "RegistrationConfirmEmailIntroStudio" : "RegistrationConfirmEmailIntro";
             string sito = SiteName.Value;
             string linkHtml = WebUtility.HtmlEncode(link);
             string subject = InfrastructureMessages.Get("RegistrationConfirmEmailSubject", sito, descrizione);
             string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
   <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
-  <p>{Html("RegistrationConfirmEmailIntro", $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
+  <p>{Html(intro, $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
   <p>{Html("RegistrationConfirmEmailOpenLink", ScadenzaOre)}</p>
   <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">{Html("RegistrationConfirmEmailButton")}</a></p>
   <p style=""color:#666;font-size:13px"">{Html("EmailButtonFallback")}<br>{linkHtml}</p>
   <p style=""color:#666;font-size:13px"">{Html("RegistrationConfirmEmailIgnore")}</p>
 </div>";
-            string text = $"{sito}\n\n{InfrastructureMessages.Get("RegistrationConfirmEmailIntro", descrizione)}\n" +
+            string text = $"{sito}\n\n{InfrastructureMessages.Get(intro, descrizione)}\n" +
                           $"{InfrastructureMessages.Get("RegistrationConfirmEmailOpenLink", ScadenzaOre)}\n{link}\n\n" +
                           InfrastructureMessages.Get("RegistrationConfirmEmailIgnore");
             await _emailService.SendAsync(mail, subject, html, text);
         }
 
-        // azienda attivata: utenti creati con i ruoli e link di accesso (la password e' quella
+        // azienda o studio attivato: utenti creati con i ruoli e link di accesso (la password e' quella
         // scelta alla registrazione e non si invia)
-        private async Task InviaEmailRiepilogo(string mail, string descrizione, List<CompanyRegisterUserModel> users)
+        private async Task InviaEmailRiepilogo(string mail, string descrizione, TipoRegistrazione tipo, List<CompanyRegisterUserModel> users)
         {
+            string suffisso = tipo == TipoRegistrazione.Studio ? "Studio" : string.Empty;
             string sito = SiteName.Value;
             string linkLogin = BaseUrl() + PaginaLogin;
             string linkHtml = WebUtility.HtmlEncode(linkLogin);
@@ -438,16 +533,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 $@"<td style=""padding:8px 12px;border-bottom:1px solid #eee;color:#666"">{WebUtility.HtmlEncode(string.Join(", ", u.Roles))}</td></tr>"));
             string righeTesto = string.Join("\n", users.Select(u => $"  - {u.UserName} ({string.Join(", ", u.Roles)})"));
 
-            string subject = InfrastructureMessages.Get("RegistrationSummaryEmailSubject", sito, descrizione);
+            string subject = InfrastructureMessages.Get("RegistrationSummaryEmailSubject" + suffisso, sito, descrizione);
             string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
   <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
-  <p>{Html("RegistrationSummaryEmailIntro", $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
+  <p>{Html("RegistrationSummaryEmailIntro" + suffisso, $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
   <table style=""border-collapse:collapse;margin:16px 0"">{righeHtml}</table>
   <p>{Html("RegistrationSummaryEmailPassword")}</p>
   <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">{Html("RegistrationSummaryEmailButton")}</a></p>
   <p style=""color:#666;font-size:13px"">{Html("RegistrationSummaryEmailKeep")}</p>
 </div>";
-            string text = $"{sito}\n\n{InfrastructureMessages.Get("RegistrationSummaryEmailIntro", descrizione)}\n{righeTesto}\n\n" +
+            string text = $"{sito}\n\n{InfrastructureMessages.Get("RegistrationSummaryEmailIntro" + suffisso, descrizione)}\n{righeTesto}\n\n" +
                           $"{InfrastructureMessages.Get("RegistrationSummaryEmailPassword")}\n{InfrastructureMessages.Get("RegistrationSummaryEmailLoginFrom", linkLogin)}";
             await _emailService.SendAsync(mail, subject, html, text);
         }
@@ -470,13 +565,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         private static string HashToken(string token)
             => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
-        // studio DEMO del centro DEMO (0 se manca)
+        // centro DEMO (0 se manca): ci nascono gli studi registrati
+        private int CentroDemo()
+            => _dealerRepository.FindAll(x => x.Descrizione == RamoDemo).FirstOrDefault()?.Id ?? 0;
+
+        // studio DEMO del centro DEMO (0 se manca): ci nascono le aziende registrate
         private int StudioDemo()
         {
-            var dealer = _dealerRepository.FindAll(x => x.Descrizione == RamoDemo).FirstOrDefault();
-            if (dealer == null)
+            int idDealer = CentroDemo();
+            if (idDealer == 0)
                 return 0;
-            return _financialAdvisorRepository.FindAll(x => x.IdDealer == dealer.Id && x.Descrizione == RamoDemo).FirstOrDefault()?.Id ?? 0;
+            return _financialAdvisorRepository.FindAll(x => x.IdDealer == idDealer && x.Descrizione == RamoDemo).FirstOrDefault()?.Id ?? 0;
         }
 
         private static bool MailValida(string mail)

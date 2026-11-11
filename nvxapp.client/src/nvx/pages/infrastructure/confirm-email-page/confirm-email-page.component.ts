@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { RegistrationService } from '../../../ClientServer-Service/Infrastructure/Registration/registration.service';
-import { CompanyRegisterConfirmInModel, CompanyRegisterUserModel } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
+import { CompanyRegisterConfirmInModel, CompanyRegisterUserModel, TipoRegistrazione } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
@@ -11,7 +11,7 @@ import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Showcase: conferma della registrazione dal link ricevuto per email (/confirm-email?token=...).
- Il server crea l'azienda con i suoi utenti; si mostrano gli utenti creati e si va al login con il
+ Il server crea l'azienda (o lo studio) con i suoi utenti; si mostrano gli utenti creati e si va al login con il
  primo gia' compilato. Aprire di nuovo il link mostra la stessa azienda (non ne crea un'altra).
 */
 @Component({
@@ -27,6 +27,8 @@ export class ConfirmEmailPageComponent {
   public inCorso = false;
   public errori: string[] = [];
   public descrizione = '';
+  // creato uno studio (nel centro DEMO) invece di un'azienda
+  public studio = false;
   public utentiCreati: CompanyRegisterUserModel[] | null = null;
 
   public buttonbar: ButtonItem[] = [];
@@ -80,6 +82,7 @@ export class ConfirmEmailPageComponent {
           return;
         }
         this.descrizione = res.data.descrizione;
+        this.studio = res.data.tipo === TipoRegistrazione.Studio;
         this.utentiCreati = res.data.users;
         this.buttonbar = [this.btnAccedi];
       },
