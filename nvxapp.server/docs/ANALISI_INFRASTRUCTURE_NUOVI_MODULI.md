@@ -207,9 +207,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `ANA.4` Divisione in aree con etichetta e punti numerati per il lavoro su più worktree (§8, §10)
 - ⏳ `ANA.5` Verifica legale del whistleblowing (D.Lgs 24/2023)
 - ⏳ `ANA.6` Analisi della sicurezza dei dati riservati (segnalazioni, dati sanitari delle visite), collegata a `piano-security.md`
-- ⏳ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev)
+- ✅ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - ✅ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
-- ⏳ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev)
+- ✅ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
 
 #### `INF-APP` – Registrazione dei nuovi applicativi (§7)
@@ -251,39 +251,39 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-AI.3` Invio tramite `INF-SVC.4` e consultazione nell'app — tabella `public.Riepilogo` (tipo azienda/studio, IdCompany, IdFinancialAdvisor, IdAspNetUsers, periodo, testo, fatti JSON, AI sì/no, manuale; migration `Riepilogo`), notifica `riepilogo` con link a `/digestdetail`; `DigestService`/`DigestController` (`DigestList`, `DigestGet`, `DigestGenerate`); client: pagine `/digests` (elenco, "Genera ora" per CompanyPowerAdmin nell'azienda e FinancialAdvisorPowerAdmin nello studio) e `/digestdetail` (testo e fatti), voce di menu "Riepiloghi" per amministratori dell'azienda e utenti dello studio, testi it/en
 
 #### `AT-COM` – Dati in Common, lato Presenze
-- ⏳ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common. Le classi Presenze hanno lo stesso nome di quelle Common: vanno cancellate nello stesso merge in cui arriva `INF-COM` (altrimenti il ramo non compila); va tolta anche la collection `Dip_Competenza` da `Dip_Anagrafica.Presenze.cs` (ora e' nella classe Common). Nel contesto Presenze le tabelle Common si mappano con `ExcludeFromMigrations()` come `Dip_Anagrafica`; le collection verso le tabelle Presenze (Az_SediAttivita, Az_SediRepartoUser, Dip_GG_NotaSpesa...) vanno nei partial Presenze
-- ⏳ `AT-COM.2` Migrazione dei dati esistenti dallo schema `tenant_<id>_2` al `tenant_<id>_0`. Attenzione: all'avvio la migration Common (`CommonSediCompetenzeAutovetture`) crea gia' le tabelle **vuote** in `tenant_<id>_0`, prima delle Presenze, quindi non si puo' usare `ALTER TABLE ... SET SCHEMA`: si copiano le righe mantenendo gli Id (e si riallineano le sequenze identity), si ripuntano le FK delle tabelle Presenze e poi si eliminano le vecchie tabelle. `Dip_RapportoAutovetture`: `IdDip_Anagrafica` preso dal rapporto di lavoro. `Dip_Competenza`: eliminare i doppioni (ora indice univoco dipendente+competenza). Su un database ricreato da zero non serve nulla
-- ⏳ `AT-COM.3` Date di assunzione e cessazione lette da Common, il resto di `Dip_RapportoLavoro` resta nelle Presenze (D6)
-- ⏳ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti, note spese e rimborsi km (autovetture) ai dati in Common (l'export paghe legge invece le date del rapporto)
-- ⏳ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati
+- ✅ `AT-COM.1` Rimozione di `Az_Sedi`, `Az_SediReparto`, `Par_Competenza`, `Dip_Competenza`, `Dip_RapportoAutovetture` dal contesto delle Presenze; collegamenti verso Common. Le classi Presenze hanno lo stesso nome di quelle Common: vanno cancellate nello stesso merge in cui arriva `INF-COM` (altrimenti il ramo non compila); va tolta anche la collection `Dip_Competenza` da `Dip_Anagrafica.Presenze.cs` (ora e' nella classe Common). Nel contesto Presenze le tabelle Common si mappano con `ExcludeFromMigrations()` come `Dip_Anagrafica`; le collection verso le tabelle Presenze (Az_SediAttivita, Az_SediRepartoUser, Dip_GG_NotaSpesa...) vanno nei partial Presenze — fatto: cancellate le 5 entità e i repository Presenze omonimi; partial `Az_Sedi.Presenze.cs`, `Az_SediReparto.Presenze.cs`, `Dip_RapportoAutovetture.Presenze.cs`; tabelle mappate in `AttendanceTrackingDbContext.Gen_PublicReferences_GestionePresenze` con `ExcludeFromMigrations()` e la stessa configurazione di `CommonDbContext`. Repository: i servizi Presenze (`Az_SediService`, `Az_SediRepartoService`, `Par_CompetenzaService`, `Dip_CompetenzaService`, `Dip_RapportoAutovettureService`, utility, report, note spese) leggono e scrivono con i `*CommonRepository`: nessuna query unisce queste tabelle a quelle Presenze (gli Id si materializzano prima), quindi non servono repository `*ReadRepository`; le `Include` dalle tabelle Presenze (es. `Az_SediRepartoUser` → reparto) funzionano con la mappatura esclusa
+- ✅ `AT-COM.2` Migrazione dei dati esistenti dallo schema `tenant_<id>_2` al `tenant_<id>_0`. Attenzione: all'avvio la migration Common (`CommonSediCompetenzeAutovetture`) crea gia' le tabelle **vuote** in `tenant_<id>_0`, prima delle Presenze, quindi non si puo' usare `ALTER TABLE ... SET SCHEMA`: si copiano le righe mantenendo gli Id (e si riallineano le sequenze identity), si ripuntano le FK delle tabelle Presenze e poi si eliminano le vecchie tabelle. `Dip_RapportoAutovetture`: `IdDip_Anagrafica` preso dal rapporto di lavoro. `Dip_Competenza`: eliminare i doppioni (ora indice univoco dipendente+competenza). Su un database ricreato da zero non serve nulla — fatto: `AttendanceTracking_Init` non crea più le 5 tabelle (le FK Presenze, senza schema, si risolvono col search_path sulle tabelle comuni: serve anche alla modalità single-tenant, dove la migration Common le crea già in `public`); migration `AttendanceTracking_CommonTables` con un blocco `DO` condizionale (esce se lo schema è `public` o le vecchie tabelle non ci sono; si ferma con errore se le tabelle comuni hanno già righe con gli stessi Id) che copia con `OVERRIDING SYSTEM VALUE`, deduplica `Dip_Competenza` (tiene l'Id minore), converte le autovetture, riallinea le sequenze, ricrea le FK (stesso nome e ON DELETE) sulle tabelle comuni e toglie le vecchie. Provato: DB nuovo multi-tenant e single-tenant, DB multi-tenant creato con il codice originale e poi migrato (dati, doppioni, FK, sequenze, CRUD e note spese dopo la migrazione). **Limite**: database single-tenant **già esistenti** (tabelle Presenze già in `public`) non sono gestiti: la migration Common `CommonSediCompetenzeAutovetture` (ramo Infrastructure) fallisce su `CREATE TABLE "Az_Sedi"` perché la tabella esiste. Procedura manuale prima dell'avvio con il nuovo codice: in `public` aggiungere a `Dip_RapportoAutovetture` la colonna `IdDip_Anagrafica` (valorizzata dal rapporto di lavoro) e togliere `IdDip_RapportoLavoro`, eliminare i doppioni di `Dip_Competenza` e creare l'indice univoco, aggiungere `Dip_Anagrafica.DataAssunzione`, poi inserire in `__EFMigrationsHistory_Common` la riga di `CommonSediCompetenzeAutovetture`; in alternativa rendere tollerante quella migration su Infrastructure (da decidere)
+- ✅ `AT-COM.3` Date di assunzione e cessazione lette da Common, il resto di `Dip_RapportoLavoro` resta nelle Presenze (D6) — `GestionePresenzeUserUtility.AllineaDateDipendente`: `DataAssunzione` = `DataAss` minima, `DataCessazione` = `DataLic` del rapporto più recente (null se un rapporto è aperto); chiamata da `Dip_RapportoLavoroPut` (salvataggio e cancellazione dei rapporti, anche dall'import dei dipendenti, che passa da `Dip_AnagraficaPut`) e alla creazione del rapporto iniziale; la migration allinea i dati esistenti con lo stesso calcolo. Prima `DataCessazione` la impostava solo `CommonDataDeleter` (resta); `Dip_AnagraficaPut` conserva le due date salvate
+- ✅ `AT-COM.4` Adeguamento di servizi, pagine, import dei dipendenti, note spese e rimborsi km (autovetture) ai dati in Common (l'export paghe legge invece le date del rapporto) — autovetture del dipendente: `Dip_RapportoAutovettureModel.IdDip_Anagrafica`, Get/Put per dipendente (una volta, fuori dal ciclo dei rapporti), `GetAll4User` e rimborsi km dal dipendente del rapporto; client: modello, anagrafica dipendente (la sezione Spesa di ogni rapporto mostra le autovetture del dipendente), testo "nessuna autovettura"; export paghe invariato (date del rapporto)
+- ✅ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati — `dotnet build` e `ng build` ok; prova API su DB usa e getta: creazione azienda, CRUD sedi/reparti (anche figlio)/competenze, anagrafica con competenze e autovetture, nota spese con rimborso km (100 km × 0,40 = 40,00), autovettura usata non cancellabile, `TimeSheet_Engine/Calculate`, cancellazioni a cascata; dati verificati con psql in `tenant_<id>_0`. Export paghe non provato (job; il codice non legge le tabelle spostate)
 
 #### `AT-TURNI` – Turni e pianificazione
-- ⏳ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime)
-- ⏳ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie
-- ⏳ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione
-- ⏳ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata
+- ✅ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime) — mergiata: `Par_Turno` (orario o riposo), `Az_SediRepartoTurno` (turni del reparto comune con copertura minima e giorni), `Dip_Turno` (uno per dipendente e giorno); pagine `/turnolist`, `/turnoedit`, `/turnocoperture`
+- ✅ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie — mergiata: `/pianificazioneturni` (reparto, settimana/mese), coperture insufficienti, assenze approvate/in attesa e conflitti, consuntivo dei giorni calcolati
+- ✅ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione — mergiata: `Dip_TurnoScambio`, accettazione del collega e richiesta `TipoRichiesta.ScambioTurno` con gli approvatori esistenti, revoca che ripristina i turni; `/mieiturni`
+- ✅ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata — mergiata: il turno pianificato sostituisce l'orario del profilo nel `DaySlot` del motore e in `GestionePresenzeOreTeoriche`; senza turni nulla cambia (prova: 49 controlli + regressione)
 
 #### `AT-TIMB` – Timbratura evoluta
-- ⏳ `AT-TIMB.1` Timbratura con QR o NFC per sede
-- ⏳ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede
-- ⏳ `AT-TIMB.3` Postazione condivisa in modalità kiosk
-- ⏳ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo
+- ✅ `AT-TIMB.1` Timbratura con QR o NFC per sede — mergiata: QR firmato HMAC rotante per sede (immagine con QRCoder), anti-replay per dipendente, `/timbraturapostazione` e `/timbraturaqr`; NFC documentato come estensione
+- ✅ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede — mergiata: `Az_SediTimbratura` (Presenze, collegata alla sede comune), regola segnala/blocca, esito in `Dip_GG_TimbraturaInfo`
+- ✅ `AT-TIMB.3` Postazione condivisa in modalità kiosk — mergiata: dispositivo registrato per sede con un amministratore collegato, PIN (HMAC) o badge assegnati dall'HR, limite dei tentativi; `/timbraturakiosk`, `/timbraturapin`
+- ✅ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo — mergiata: coda nel `localStorage` e invio alla riconnessione; il server accetta le differite entro `DifferitaMaxOre` della sede e le marca (prova TIMB: 41 controlli). Il caricamento offline dell'app richiede un service worker: estensione
 
 #### `AT-SW` – Smart working
-- ⏳ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile)
-- ⏳ `AT-SW.2` Calendario del lavoro agile e limite di giorni
-- ⏳ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata
+- ✅ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile) — mergiata: `Dip_AccordoSW`, presa visione `at.accordo-sw` (verbale di accordo con il Documentale), `/accordiswlist`, `/accordoswedit`
+- ✅ `AT-SW.2` Calendario del lavoro agile e limite di giorni — mergiata: `/lavoroagile`, richiesta del giorno con la richiesta di giustificativo; controllo di accordo firmato, giorni consentiti e limite settimanale in `Send`
+- ✅ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata — mergiata: flag `Par_Giustificativi.LavoroAgile`, giustificativo e causale `SW` (neutro) nei parametri di default e al primo uso; geofence escluso nei giorni agili (prova SW: 32 controlli)
 
 #### `AT-AI` – Analisi AI delle timbrature
-- ⏳ `AT-AI.1` Segnalazione delle timbrature anomale
-- ⏳ `AT-AI.2` Giornate da sistemare prima dell'export paghe
-- ⏳ `AT-AI.3` Previsione delle assenze
-- ⏳ `AT-AI.4` Widget e comandi vocali
+- ✅ `AT-AI.1` Segnalazione delle timbrature anomale — mergiata: regole deterministiche (`GestionePresenzeAnomalie`: dispari, giornata vuota, errori del calcolo, non calcolata, richieste in attesa, fuori orario, giorno non lavorativo, pause, ritardi ricorrenti), spiegazione con l'AI solo dai fatti (`AI:AnomalieLLM`) e ripiego senza AI (`ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md`)
+- ✅ `AT-AI.2` Giornate da sistemare prima dell'export paghe — mergiata: pagina `/attendanceanomalies` e report PDF tramite job
+- ✅ `AT-AI.3` Previsione delle assenze — mergiata: tassi per giorno della settimana x fattore del mese sullo storico, massimo con il piano ferie
+- ✅ `AT-AI.4` Widget e comandi vocali — mergiata: widget `attendance.daysToFix`, `attendance.absenceForecast`, comando `DaysToFix`, `AttendanceTrackingDigestProvider` per il riepilogo AI (INF-AI)
 
 #### `AT-CDG` – Controllo di gestione sulle commesse (D2)
-- ⏳ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro
-- ⏳ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese
-- ⏳ `AT-CDG.3` Report di marginalità e widget
+- ✅ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro — mergiata con scelta provvisoria: `Dip_RapportoLavoro` non ha un campo di costo e la migration non era possibile, quindi costo predefinito e per dipendente impostati nella pagina (non salvati, ricordati dal browser); campo persistente da aggiungere con una migration (`ANALISI_ATTENDANCETRACKING_CONTROLLO_GESTIONE.md`)
+- ✅ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese — mergiata: note spese ripartite in proporzione alle ore del mese (senza ore: sottocommessa predefinita del rapporto)
+- ✅ `AT-CDG.3` Report di marginalità e widget — mergiata: pagina `/jobmargins` (ricavi per sottocommessa impostati nella pagina), PDF tramite job, widget `attendance.jobHours`
 
 #### `DM-PEC` – Acquisizione delle PEC
 - ⏳ `DM-PEC.1` Configurazione della casella PEC per azienda (credenziali protette)
@@ -296,33 +296,33 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `DM-CONS.3` Regole per tipologia di documento
 
 #### `DM-FIRMA` – Presa visione e verbali per gli altri moduli
-- ⏳ `DM-FIRMA.1` Implementazione di `IAcknowledgementService` (`INF-SVC.6`) con la FES già realizzata
-- ⏳ `DM-FIRMA.2` Modelli di verbale (consegna di beni, consegna di DPI, accordi)
-- ⏳ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove
+- ✅ `DM-FIRMA.1` Implementazione di `IAcknowledgementService` (`INF-SVC.6`) con la FES già realizzata — canale `doc.fes` (`DocumentManagementAcknowledgementChannel`, priorità 10): disponibile con documentale attivo e inizializzato e tipologia `PRESAVIS` "Verbali e prese visione" non disattivata (disattivarla = tornare al canale base; nelle aziende già inizializzate la crea il canale alla prima richiesta, nelle nuove è tra le predefinite); crea un documento del personale pubblicato (file del modulo se c'è, altrimenti verbale PDF) con il destinatario (e il suo dipendente, se collegato), presa visione richiesta e firma FES proposta dalla tipologia (accesa di default); riferimento nel canale `"<IdCompany>:<Doc_Destinatario.Id>"` (gli id del documentale sono per schema), url della richiesta `/docmine` ("I miei documenti"); la firma — o la presa visione se la firma non è richiesta — chiama `ConfirmFromChannelAsync` con data, IP e browser (`IAcknowledgementService` risolto in modo lazy in `Doc_DocumentoService`); se il documento non si può creare (es. senza licenza/spazio) la richiesta passa al canale base. Provato su DB usa e getta: creazione, firma prima del download rifiutata, conferma con IP e browser, presa visione senza firma, tipologia disattivata/eliminata, documentale disattivato, senza licenza
+- ✅ `DM-FIRMA.2` Modelli di verbale (consegna di beni, consegna di DPI, accordi) — basta un testo predefinito: `DocumentManagementVerbale` genera il PDF (azienda, titolo, destinatario, data, testo del modulo riga per riga, dichiarazione e modalità di conferma); la dichiarazione dipende dal modello scelto dalla fonte della richiesta (`dpi` → consegna DPI con richiamo al D.Lgs. 81/2008 artt. 20 e 78, `beni`/`consegna`/`asset` → consegna di beni, `accordo`/`agreement` → accordo, altrimenti presa visione generica; testi in `DocumentManagementMessages`, italiano e inglese). L'elenco dei beni o il testo dell'accordo li scrive il modulo nel testo; un modulo che vuole un modello proprio passa il file (`Contenuto`/`NomeFile`)
+- ✅ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove — verificato: il documento resta nel documentale (tipologia `PRESAVIS`, categoria Personale, conservazione 10 anni, versioni non potate perché con presa visione/firma); le prove sono su `Doc_Destinatario` (`DataFirma`, `FirmaVersione`, `FirmaHash` SHA-256 della versione, `FirmaIp`, `FirmaUserAgent`, `IdAspNetUsersFirma`, `DataPresaVisione`) e nel registro `Doc_Log` (caricamento con la fonte della richiesta, download, presa visione, `Firma` con `FES sha256:<hash>`); in `public.PresaVisione` restano data di conferma, IP e browser. Nessun attestato PDF separato (resta nel piano della firma, `ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md` §13 F1)
 
 #### `CRM-PREV` – Preventivi e offerte
-- ⏳ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati)
-- ⏳ `CRM-PREV.2` PDF e invio al cliente
-- ⏳ `CRM-PREV.3` Collegamento con le opportunità della pipeline
+- ✅ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati) — mergiata: sulle offerte esistenti stato `Scaduta` (automatico), `DataEsito`, `IdOrdineAmministrazione` (predisposizione dell'ordine), listino con tipo articolo/servizio; scadenza `crm.preventivo` nello scadenzario (inviata → aperta, esito → chiusa, bozza → tolta); migration `Crm_PreventiviAssistenza`
+- ✅ `CRM-PREV.2` PDF e invio al cliente — mergiata: PDF solo con job (`Crm_OffertaPdfJob`), invio al contatto con il PDF allegato, errore SMTP gestito, invio registrato come attività
+- ✅ `CRM-PREV.3` Collegamento con le opportunità della pipeline — mergiata: accettata → opportunità aperta nella prima fase vinta con il valore dell'offerta e lo storico
 
 #### `CRM-ASS` – Assistenza ai clienti dell'azienda
-- ⏳ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi)
-- ⏳ `CRM-ASS.2` Storico nella scheda del cliente
+- ✅ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi) — mergiata: `Crm_Richiesta` + `Crm_RichiestaMessaggio` (note interne ed eventi), priorità, canale, tempi di presa in carico e risoluzione, notifica all'assegnatario (`INotificationSender`, categoria `generale` in attesa di `INF-SVC.7`), permessi per ruolo; pagine `/crmrequestlist`, `/crmrequestedit`
+- ✅ `CRM-ASS.2` Storico nella scheda del cliente — mergiata: sezione Assistenza (e Offerte) nella scheda cliente del CRM, "+" con la nuova richiesta
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
-- ⏳ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`)
+- ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
 
 #### `CMP-BASE` – Avvio del modulo Compliance
-- ⏳ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `CMP-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli
-- ⏳ `CMP-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale — `ComplianceDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitCompliance` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `CMP-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/cmpsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); dettagli in `ANALISI_COMPLIANCE_APPLICATIVO.md`
+- ✅ `CMP-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `CMP-81` – Sicurezza sul lavoro (D.Lgs 81/08)
-- ⏳ `CMP-81.1` Corsi obbligatori per mansione e scadenze
-- ⏳ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`)
-- ⏳ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`)
-- ⏳ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR
-- ⏳ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`)
+- ✅ `CMP-81.1` Corsi obbligatori per mansione e scadenze — mansioni, corsi per mansione, assegnazioni, corsi svolti con rinnovo e situazione della formazione
+- ✅ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`) — esito e scadenza agli amministratori, dati sanitari cifrati solo agli abilitati (scelta provvisoria in attesa di `ANA.6`)
+- ✅ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`) — presa visione `cmp.dpi` (con il documentale: verbale DPI)
+- ✅ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR — presa visione del nominato; allegati solo come riferimento
+- ✅ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`) — `cmp.formazione`, `cmp.visita`, `cmp.nomina`, `cmp.documento` a ogni salvataggio/cancellazione
 
 #### `CMP-WB` – Whistleblowing (D7: nel modulo, senza una licenza separata)
 - ⏳ `CMP-WB.1` Canale di segnalazione con anonimato e codice per seguire la segnalazione
@@ -330,10 +330,10 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CMP-WB.3` Scadenze di legge (7 giorni, 3 mesi) e registro
 
 #### `CMP-GDPR` – Registro GDPR
-- ⏳ `CMP-GDPR.1` Registro dei trattamenti
-- ⏳ `CMP-GDPR.2` Nomine e responsabili esterni
-- ⏳ `CMP-GDPR.3` Registro delle violazioni
-- ⏳ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende
+- ✅ `CMP-GDPR.1` Registro dei trattamenti — con export Excel tramite job
+- ✅ `CMP-GDPR.2` Nomine e responsabili esterni — scadenza del contratto `cmp.responsabile`
+- ✅ `CMP-GDPR.3` Registro delle violazioni — 72 ore nello scadenzario (`cmp.violazione`), notifica agli amministratori
+- ✅ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende — pagina `/cmpstudio` (registro GDPR e scadenze del modulo)
 
 #### `HR-BASE` – Avvio del modulo Risorse Umane
 - ✅ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale — `HumanResourcesDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitHumanResources` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
@@ -356,24 +356,24 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `HR-ONB.3` Creazione e disattivazione dell'account — con `IAccountService.UserCompanyGet/UserCompanyPut` (vedi i problemi aperti in `ANALISI_HUMANRESOURCES_APPLICATIVO.md` §7.1)
 
 #### `AST-BASE` – Avvio del modulo Risorse aziendali
-- ⏳ `AST-BASE.1` `AssetsDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `AST-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli
-- ⏳ `AST-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `AST-BASE.1` `AssetsDbContext` registrato in `DataLayerInstaller` e migration iniziale — `AssetsDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitAssets` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `AST-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/astsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); dettagli in `ANALISI_ASSETS_APPLICATIVO.md`
+- ✅ `AST-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `AST-FLO` – Flotta
-- ⏳ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
-- ⏳ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario
-- ⏳ `AST-FLO.3` Multe e costi
+- ✅ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5) — l'assegnazione crea/aggiorna l'autovettura del dipendente in Common (tabella ponte `Ast_VeicoloAssegnazione`, scelta provvisoria `AST-D3`); fringe benefit informativo in Assets, export nelle Presenze (scelta provvisoria `AST-D2`)
+- ✅ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario — fonti `ast.veicolo.scadenza` e `ast.veicolo.contratto` (noleggio/leasing)
+- ✅ `AST-FLO.3` Multe e costi — conducente dal periodo di assegnazione, notifica della multa al conducente
 
 #### `AST-BENI` – Beni assegnati
-- ⏳ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature)
-- ⏳ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`)
-- ⏳ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common)
+- ✅ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature) — categorie predefinite, garanzia nello scadenzario
+- ✅ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`) — prese visione `ast.beni.consegna` / `ast.beni.restituzione` (con il documentale: verbale di consegna beni da firmare)
+- ✅ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common) — beni e veicoli; verifica giornaliera con scadenzario e notifica agli amministratori
 
 #### `AST-PREN` – Prenotazioni
-- ⏳ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
-- ⏳ `AST-PREN.2` Calendario delle prenotazioni e conflitti
-- ⏳ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa)
+- ✅ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
+- ✅ `AST-PREN.2` Calendario delle prenotazioni e conflitti — controllo atomico nel repository (transazione + lock sulla risorsa), senza approvazione (scelta provvisoria `AST-D4`)
+- ✅ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa) — `AstCalendarEventProvider` nel feed .ics
 
 #### `ADM` – Amministrazione (più avanti, D1, D2)
 - 🔍 `ADM.1` Scelta dell'intermediario SdI
