@@ -180,6 +180,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
         private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
         private readonly IFormuleRunner _formuleRunner;
+        // turni pianificati (AT-TURNI.4): il turno del giorno prevale sull'orario del profilo
+        private readonly IDip_TurnoRepository _dip_TurnoRepository;
+        private readonly IPar_TurnoRepository _par_TurnoRepository;
 
         // "Prova formula": calcolo senza scritture (niente cartellino mensile, niente SaveData)
         private bool _simulazione;
@@ -218,7 +221,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_RichiestaService dip_GG_RichiestaService,
                                       IPar_FestivitaRepository par_FestivitaRepository,
                                       IDip_PeriodoRepository dip_PeriodoRepository,
-                                      IFormuleRunner formuleRunner
+                                      IFormuleRunner formuleRunner,
+                                      IDip_TurnoRepository dip_TurnoRepository,
+                                      IPar_TurnoRepository par_TurnoRepository
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -240,6 +245,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_FestivitaRepository = par_FestivitaRepository;
             _dip_PeriodoRepository = dip_PeriodoRepository;
             _formuleRunner = formuleRunner;
+            _dip_TurnoRepository = dip_TurnoRepository;
+            _par_TurnoRepository = par_TurnoRepository;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
@@ -552,6 +559,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     // per ogni dipendente × ogni giorno del periodo richiesto, risolve
                     // quale profilo è attivo e tutte le sue righe orario ordinate per ZOrder
 
+                    // turni pianificati nel periodo (AT-TURNI.4, ANALISI_ATTENDANCETRACKING_TURNI.md §6)
+                    var turniPianificati = _dip_TurnoRepository.FindAll(t => rapportoIds.Contains(t.IdDip_RapportoLavoro) && t.Data >= Dal.Date && t.Data <= Al)
+                                                               .ToList();
+                    var idParTurni = turniPianificati.Select(t => t.IdPar_Turno).Distinct().ToList();
+                    var parTurni = idParTurni.Count > 0
+                                   ? _par_TurnoRepository.FindAll(p => idParTurni.Contains(p.Id)).ToList()
+                                   : new List<Par_Turno>();
+
                     foreach (var rapporto in rapporti)
                     {
                         var anagrafica = retVal.Dip_Anagrafica.First(a => a.Id == rapporto.IdDip_Anagrafica);
@@ -613,8 +628,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 };
                             }
 
+                            // turno pianificato: per quel giorno vale SOLO l'orario del turno (riposo = orario festivo
+                            // del profilo, 0 ore), anche nei festivi; tutti i passi del calcolo leggono l'orario dal DaySlot
+                            var turnoDelGiorno = turniPianificati.FirstOrDefault(t => t.IdDip_RapportoLavoro == rapporto.Id && t.Data.Date == giorno.Date);
+                            if (turnoDelGiorno != null)
+                            {
+                                var parTurno = parTurni.FirstOrDefault(p => p.Id == turnoDelGiorno.IdPar_Turno);
+                                int? idOrarioTurno = parTurno?.IdPar_Orario ?? (parProfilo.idPar_Orario_Festivo > 0 ? parProfilo.idPar_Orario_Festivo : null);
+                                if (idOrarioTurno != null)
+                                    orariDelGiorno = new List<Dip_ProfiloOrario_DaySlot_GG>
+                                    {
+                                        new Dip_ProfiloOrario_DaySlot_GG { ZOrder = 1, IdPar_Orario = idOrarioTurno.Value }
+                                    };
+                            }
+
                             retVal.DaySlots.Add(new Dip_ProfiloOrario_DaySlot
                             {
+                                IdDip_Turno = turnoDelGiorno?.Id,
+                                IdPar_Turno = turnoDelGiorno?.IdPar_Turno,
                                 Festivo = festivo,
                                 IdAspNetUsers = anagrafica.IdAspNetUsers,
                                 IdDip_RapportoLavoro = rapporto.Id,

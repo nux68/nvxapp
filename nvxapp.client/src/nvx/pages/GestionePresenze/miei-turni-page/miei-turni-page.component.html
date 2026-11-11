@@ -1,0 +1,68 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  @if (dati) {
+    @if (daRispondere.length > 0) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'attendance.pages.mieiTurni.toAnswer' | transloco }}</ion-label>
+          </ion-item>
+          @for (s of daRispondere; track s.id) {
+            <ion-item>
+              <ion-icon slot="start" name="swap-horizontal-outline" color="warning"></ion-icon>
+              <ion-label class="ion-text-wrap">{{ s.testo }}@if (s.note) {<p>{{ s.note }}</p>}</ion-label>
+              <ion-button slot="end" color="success" (click)="rispondi(s, true)">{{ 'attendance.pages.mieiTurni.accept' | transloco }}</ion-button>
+              <ion-button slot="end" color="danger" fill="outline" (click)="rispondi(s, false)">{{ 'attendance.pages.mieiTurni.refuse' | transloco }}</ion-button>
+            </ion-item>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <ion-card>
+      <ion-card-content>
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'attendance.pages.mieiTurni.myShifts' | transloco }}</ion-label>
+        </ion-item>
+        @if (dati.mieiTurni.length === 0) {
+          <ion-note class="nvx-nota">{{ 'attendance.pages.mieiTurni.noShifts' | transloco }}</ion-note>
+        }
+        @for (t of dati.mieiTurni; track t.id) {
+          <ion-item>
+            <span slot="start" class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span>
+            <ion-label>
+              <h3>{{ t.data | date: 'EEEE dd/MM' }}</h3>
+              <p>{{ t.descrizione }} {{ t.orarioTesto }} {{ t.reparto }}</p>
+            </ion-label>
+            <ion-button slot="end" fill="outline" (click)="proponi(t)">
+              <ion-icon slot="start" name="swap-horizontal-outline"></ion-icon>
+              {{ 'attendance.pages.mieiTurni.propose' | transloco }}
+            </ion-button>
+          </ion-item>
+        }
+      </ion-card-content>
+    </ion-card>
+
+    @if (altriScambi.length > 0) {
+      <ion-card>
+        <ion-card-content>
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'attendance.pages.mieiTurni.swaps' | transloco }}</ion-label>
+          </ion-item>
+          @for (s of altriScambi; track s.id) {
+            <ion-item>
+              <ion-label class="ion-text-wrap">
+                <h3>{{ s.testo }}</h3>
+                <p>{{ statoTesto(s) }}</p>
+              </ion-label>
+              @if (s.annullabile) {
+                <ion-button slot="end" fill="clear" color="danger" (click)="ritira(s)">{{ 'attendance.pages.mieiTurni.withdraw' | transloco }}</ion-button>
+              }
+            </ion-item>
+          }
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+</ion-content>

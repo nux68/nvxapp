@@ -1,0 +1,69 @@
+<app-page-toolbar [title]="Title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-item class="nvx-item-4-title">
+        <ion-label>{{ 'attendance.pages.accordoSwEdit.section' | transloco }}</ion-label>
+      </ion-item>
+      @if (_editModel?.id) {
+        <ion-note class="nvx-nota">
+          {{ (_editModel?.firmato ? 'attendance.pages.accordoSwEdit.signed' : 'attendance.pages.accordoSwEdit.waiting') | transloco: { date: (_editModel?.dataFirma | date: 'dd/MM/yyyy') } }}
+        </ion-note>
+      }
+
+      @if (_editForm) {
+        <form [formGroup]="_editForm">
+          <ion-item>
+            <ion-label position="stacked">{{ 'attendance.pages.accordoSwEdit.employee' | transloco }}</ion-label>
+            <ion-select formControlName="idAspNetUsers" interface="popover" [disabled]="!!_editModel?.id">
+              @for (d of dipendenti; track d.idAspNetUsers) {
+                <ion-select-option [value]="d.idAspNetUsers">{{ d.nominativo }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">{{ 'attendance.pages.accordoSwEdit.from' | transloco }}</ion-label>
+            <ion-datetime-button datetime="sw-dal"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="sw-dal" formControlName="dal" presentation="date" [firstDayOfWeek]="1" [showDefaultButtons]="true" doneText="OK" [cancelText]="'common.buttons.cancel' | transloco"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'attendance.pages.accordoSwEdit.to' | transloco }}</ion-label>
+            <ion-datetime-button datetime="sw-al"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="sw-al" formControlName="al" presentation="date" [firstDayOfWeek]="1" [showDefaultButtons]="true" doneText="OK" [cancelText]="'common.buttons.cancel' | transloco"></ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <ion-item>
+            <ion-input type="number" min="1" max="7" formControlName="maxGiorniSettimana" [label]="'attendance.pages.accordoSwEdit.maxDays' | transloco" labelPlacement="stacked"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">{{ 'attendance.pages.accordoSwEdit.allowedDays' | transloco }}</ion-label>
+            <div class="nvx-giorni">
+              @for (i of giorniSettimana; track i) {
+                <ion-checkbox [(ngModel)]="giorni[i]" [ngModelOptions]="{ standalone: true }" labelPlacement="stacked">{{ nomeGiorno(i) }}</ion-checkbox>
+              }
+            </div>
+          </ion-item>
+
+          <ion-item>
+            <ion-textarea formControlName="note" [autoGrow]="true" [label]="'attendance.pages.accordoSwEdit.note' | transloco" labelPlacement="stacked"></ion-textarea>
+          </ion-item>
+
+          <ion-note class="nvx-nota">{{ 'attendance.pages.accordoSwEdit.info' | transloco }}</ion-note>
+        </form>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

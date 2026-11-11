@@ -1,0 +1,40 @@
+.nvx-nota {
+  display: block;
+  padding: 8px 16px;
+}
+
+.nvx-riga {
+  border-bottom: 1px solid var(--ion-color-light-shade, #ddd);
+  padding: 8px 4px;
+}
+
+.nvx-spento {
+  opacity: 0.6;
+}
+
+.nvx-chip {
+  display: inline-block;
+  min-width: 36px;
+  padding: 2px 6px;
+  margin-right: 6px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.nvx-dettaglio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 4px 0 0 32px;
+}
+
+.nvx-min {
+  max-width: 140px;
+}
+
+.nvx-giorni {
+  display: flex;
+  gap: 10px;
+}

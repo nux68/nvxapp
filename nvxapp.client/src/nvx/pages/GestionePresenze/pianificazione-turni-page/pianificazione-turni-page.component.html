@@ -1,0 +1,104 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <div class="nvx-comandi">
+        <ion-select class="nvx-reparto" interface="popover" [(ngModel)]="idAz_SediReparto" (ionChange)="carica()"
+          [label]="'attendance.pages.pianificazioneTurni.department' | transloco" labelPlacement="stacked">
+          @for (r of reparti; track r.id) {
+            <ion-select-option [value]="r.id">{{ r.descrizione }}</ion-select-option>
+          }
+        </ion-select>
+
+        <ion-segment [value]="vista" (ionChange)="cambiaVista($event.detail.value)">
+          <ion-segment-button value="settimana"><ion-label>{{ 'attendance.pages.pianificazioneTurni.week' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="mese"><ion-label>{{ 'attendance.pages.pianificazioneTurni.month' | transloco }}</ion-label></ion-segment-button>
+        </ion-segment>
+
+        <div class="nvx-periodo">
+          <ion-button fill="clear" (click)="sposta(-1)"><ion-icon slot="icon-only" name="chevron-back"></ion-icon></ion-button>
+          <ion-button fill="clear" (click)="oggi()">{{ periodoTesto }}</ion-button>
+          <ion-button fill="clear" (click)="sposta(1)"><ion-icon slot="icon-only" name="chevron-forward"></ion-icon></ion-button>
+        </div>
+      </div>
+
+      @if (dati) {
+        @if (dati.copertureInsufficienti > 0) {
+          <ion-note color="danger" class="nvx-avviso">{{ 'attendance.pages.pianificazioneTurni.coverageKo' | transloco: { n: dati.copertureInsufficienti } }}</ion-note>
+        }
+        @if (dati.dipendenti.length === 0) {
+          <ion-note class="nvx-avviso">{{ 'attendance.pages.pianificazioneTurni.noEmployees' | transloco }}</ion-note>
+        }
+
+        <div class="nvx-griglia-wrap">
+          <table class="nvx-griglia">
+            <thead>
+              <tr>
+                <th class="nvx-nome">{{ 'attendance.pages.pianificazioneTurni.employee' | transloco }}</th>
+                @for (d of giorni; track d.getTime()) {
+                  <th [class.nvx-weekend]="festivo(d)">{{ intestazioneGiorno(d) }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (dip of dati.dipendenti; track dip.idDip_RapportoLavoro) {
+                <tr>
+                  <td class="nvx-nome">{{ dip.nominativo }}</td>
+                  @for (d of giorni; track d.getTime()) {
+                    <td class="nvx-cella" [class.nvx-weekend]="festivo(d)" [class.nvx-conflitto]="conflittoGrave(dip, d)"
+                      [title]="conflitto(dip, d) ?? ''" (click)="scegliTurno(dip, d)">
+                      @if (turno(dip, d); as t) {
+                        <span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span>
+                      }
+                      @for (a of assenze(dip, d); track $index) {
+                        <span class="nvx-assenza" [class.nvx-attesa]="!a.approvata"
+                          [style.background]="a.backgroundColor || '#eeeeee'" [style.color]="a.textColor || '#000'">{{ a.codice }}</span>
+                      }
+                      @if (consuntivo(dip, d); as c) {
+                        <small class="nvx-consuntivo" [class.nvx-ko]="c.anomalia">{{ ore(c.min_Lav) }}/{{ ore(c.min_Teo) }}</small>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+            @if (turniCopertura.length > 0) {
+              <tfoot>
+                @for (t of turniCopertura; track t.id) {
+                  <tr>
+                    <td class="nvx-nome">
+                      <span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span>
+                      {{ 'attendance.pages.pianificazioneTurni.coverage' | transloco }}
+                    </td>
+                    @for (d of giorni; track d.getTime()) {
+                      <td class="nvx-copertura">
+                        @if (copertura(t, d); as c) {
+                          <span [class.nvx-ko]="c.insufficiente">{{ c.assegnati }}/{{ c.minPersone }}</span>
+                        }
+                      </td>
+                    }
+                  </tr>
+                }
+              </tfoot>
+            }
+          </table>
+        </div>
+
+        <ion-note class="nvx-avviso">{{ 'attendance.pages.pianificazioneTurni.legend' | transloco }}</ion-note>
+
+        @if (dati.conflitti.length > 0) {
+          <ion-list>
+            <ion-list-header>{{ 'attendance.pages.pianificazioneTurni.conflicts' | transloco }}</ion-list-header>
+            @for (c of dati.conflitti; track $index) {
+              <ion-item>
+                <ion-icon slot="start" [name]="c.grave ? 'alert-circle' : 'information-circle'" [color]="c.grave ? 'danger' : 'warning'"></ion-icon>
+                <ion-label>{{ nome(c.idDip_RapportoLavoro) }} {{ c.data | date: 'dd/MM' }} - {{ c.messaggio }}</ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        }
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>

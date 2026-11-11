@@ -80,6 +80,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 ("ORDI3", "Ordinarie 3° fascia"),
                 ("ROL",   "ROL"),
                 ("MAL",   "Malattia"),
+                ("SW",    "Lavoro agile"),
             })
             {
                 causali[codice] = await _par_CausaliRepository.UpsertAsync(new Par_Causali
@@ -104,6 +105,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 new { Codice = "AUTS",  Descrizione = "Autorizzazione straordinario", Bg = (string?)"#ffc409", Tx = (string?)"#000000", Causale = (string)null!, Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = false },
                 // pausa non fruita: nel giorno non si detrae la pausa pranzo automatica (nessuna causale, non cambia il dovuto)
                 new { Codice = "PNF",   Descrizione = "Pausa non fruita", Bg = (string?)"#6c757d", Tx = (string?)"#ffffff", Causale = (string)null!, Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = false },
+                // lavoro agile (AT-SW): segno neutro, le ore del giorno vanno sulla causale SW (marcatore per l'export paghe)
+                new { Codice = "SW",    Descrizione = "Lavoro agile",    Bg = (string?)"#3dc2ff", Tx = (string?)"#000000", Causale = "SW", Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = true },
             })
             {
                 giustificativi[g.Codice] = await _par_GiustificativiRepository.UpsertAsync(new Par_Giustificativi
@@ -120,7 +123,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     TipoContatore = g.Contatore,
                     BancaOre = g.Codice == "BO",
                     AutorizzaStraordinario = g.Codice == "AUTS",
-                    AnnullaPausa = g.Codice == "PNF"
+                    AnnullaPausa = g.Codice == "PNF",
+                    LavoroAgile = g.Codice == "SW"
                 });
             }
 
