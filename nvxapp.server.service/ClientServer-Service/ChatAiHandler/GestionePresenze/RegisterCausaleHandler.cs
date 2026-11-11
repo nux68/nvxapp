@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
@@ -38,6 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "RegisterCausale",
+                Application = ApplicationType.AttendanceTracking,
                 Category    = AttendanceTrackingMessages.Get("ChatCategoryJustifications"),
                 CategoryOrder = 200,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterCausaleDisplayName"),

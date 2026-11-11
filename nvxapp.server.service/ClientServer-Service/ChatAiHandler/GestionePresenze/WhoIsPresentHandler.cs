@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
@@ -37,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "WhoIsPresent",
+                Application = ApplicationType.AttendanceTracking,
                 Category = AttendanceTrackingMessages.Get("ChatCategoryAttendance"),
                 CategoryOrder = 500,
                 DisplayName = AttendanceTrackingMessages.Get("ChatWhoIsPresentDisplayName"),
