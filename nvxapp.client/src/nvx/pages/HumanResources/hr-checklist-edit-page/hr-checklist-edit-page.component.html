@@ -1,0 +1,81 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  @if (dati) {
+    <ion-card>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-label>
+            <h2>{{ dati.checklist.dipendente }} · {{ 'hr.enums.tipoChecklist.' + dati.checklist.tipo | transloco }} {{ data(dati.checklist.dataRiferimento) }}</h2>
+            <p>{{ dati.checklist.descrizione }} · {{ 'hr.enums.statoChecklist.' + dati.checklist.stato | transloco }} · {{ dati.checklist.numeroCompletate }}/{{ dati.checklist.numeroVoci }}</p>
+            <p>{{ 'hr.fields.account' | transloco }}:
+              @if (dati.account.presente) { {{ dati.account.userName }} @if (dati.account.disabilitato) { ({{ 'hr.pages.employeeEdit.accountDisabled' | transloco }}) } }
+              @else { {{ 'hr.pages.employeeEdit.noAccount' | transloco }} }
+            </p>
+          </ion-label>
+        </ion-item>
+        <form [formGroup]="_editForm">
+          <ion-item><ion-textarea formControlName="note" rows="2" maxlength="2000" [autoGrow]="true" [label]="'hr.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+          <ion-item><ion-toggle formControlName="annullata">{{ 'hr.pages.checklistEdit.cancelled' | transloco }}</ion-toggle></ion-item>
+        </form>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header><ion-card-title>{{ 'hr.fields.voci' | transloco }}</ion-card-title></ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          @for (v of dati.voci; track v.id) {
+            <ion-item>
+              <ion-checkbox slot="start" [checked]="v.completata" [disabled]="annullata" (ionChange)="salvaVoce(v, { completata: $event.detail.checked })"></ion-checkbox>
+              <ion-grid class="ion-no-padding">
+                <ion-row class="ion-align-items-center">
+                  <ion-col size="12" size-md="5">
+                    <ion-label>
+                      <h3>{{ v.descrizione }}</h3>
+                      <p>{{ 'hr.fields.dataPrevista' | transloco }}: {{ data(v.dataPrevista) }}
+                        @if (v.completata && v.dataCompletamento) { · {{ 'hr.pages.checklistEdit.completedOn' | transloco }} {{ data(v.dataCompletamento) }} }</p>
+                      @if (v.documento) {
+                        <p>{{ v.documentoNomeFile || ('hr.pages.checklistEdit.noDocument' | transloco) }}
+                          @if (v.dataConferma) { · {{ 'hr.pages.payslipDetail.confirmed' | transloco }} {{ data(v.dataConferma) }} }
+                          @else if (v.dataRichiestaPresaVisione) { · {{ 'hr.pages.payslipDetail.waiting' | transloco }} }</p>
+                      }
+                    </ion-label>
+                  </ion-col>
+                  <ion-col size="12" size-md="3">
+                    <ion-select [value]="v.idAspNetUsersResponsabile" [disabled]="annullata" (ionChange)="salvaVoce(v, { idAspNetUsersResponsabile: $event.detail.value })"
+                      [label]="'hr.fields.responsabile' | transloco" labelPlacement="floating" interface="popover">
+                      <ion-select-option [value]="null">{{ 'hr.pages.templateEdit.admins' | transloco }}</ion-select-option>
+                      @for (u of dati.utenti; track u.id) { <ion-select-option [value]="u.id">{{ u.nome }}</ion-select-option> }
+                    </ion-select>
+                  </ion-col>
+                  <ion-col size="12" size-md="4" class="ion-text-end">
+                    @if (!annullata) {
+                      @if (v.documento) {
+                        @if (v.documentoNomeFile) {
+                          <ion-button fill="clear" size="small" (click)="scaricaDocumento(v)"><ion-icon slot="icon-only" name="download-outline"></ion-icon></ion-button>
+                        }
+                        <ion-button fill="clear" size="small" (click)="caricaDocumento(v)"><ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon></ion-button>
+                        @if (dati.account.presente && !v.dataConferma) {
+                          <ion-button fill="outline" size="small" (click)="presaVisione(v)">{{ 'hr.pages.checklistEdit.requestAck' | transloco }}</ion-button>
+                        }
+                      }
+                      @if (v.azione === 1 && !dati.account.presente && !v.completata) {
+                        <ion-button fill="outline" size="small" (click)="creaAccount(v)">{{ 'hr.account.create' | transloco }}</ion-button>
+                      }
+                      @if (v.azione === 2 && dati.account.presente && !dati.account.disabilitato && !v.completata) {
+                        <ion-button fill="outline" size="small" color="danger" (click)="disattivaAccount(v)">{{ 'hr.account.disable' | transloco }}</ion-button>
+                      }
+                    }
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+          }
+        </ion-list>
+        <ion-note class="nvx-nota-disabled">{{ 'hr.pages.checklistEdit.note' | transloco }}</ion-note>
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
