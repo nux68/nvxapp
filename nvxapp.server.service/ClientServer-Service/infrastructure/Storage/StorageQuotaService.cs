@@ -11,7 +11,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 {
     /*
-     Spazio a disposizione delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3), uso interno degli applicativi.
+     Spazio a disposizione delle aziende (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3), uso interno degli applicativi.
      Conta solo i file del documentale; spazio solo per azienda; oltre quota si bloccano i caricamenti.
 
      Caricamento di un file:

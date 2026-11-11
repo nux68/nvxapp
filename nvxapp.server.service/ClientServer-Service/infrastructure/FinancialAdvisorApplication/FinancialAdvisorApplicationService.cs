@@ -17,7 +17,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.FinancialAdvisorApplication
 {
     /*
-     Abilitazione degli applicativi per studio (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §4.1): abilita le funzioni lato studio.
+     Abilitazione degli applicativi per studio (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §4.1): abilita le funzioni lato studio.
      Non crea schemi e non limita le aziende dello studio. Cambiano lo stato solo il SuperUser e il
      DealerPowerAdmin del centro dello studio. Si elencano gli applicativi attivabili presenti nel ramo.
     */
