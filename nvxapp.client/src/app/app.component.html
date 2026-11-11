@@ -81,10 +81,13 @@
                     @if (p.menuType === 0) {
                       @if (sezione.mostra(p.component)) {
                         <ion-menu-toggle auto-hide="false">
-                          <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                          <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected"
+                                    [disabled]="voceDisattivata(p)" [title]="voceDisattivata(p) ? ('menu.richiedeLicenza' | transloco: { livello: licenzaRichiesta(p) }) : ''">
                             <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                             <ion-label>{{ p.title | transloco }}</ion-label>
-                            @if (menuBadge(p) > 0) {
+                            @if (voceDisattivata(p)) {
+                              <ion-badge slot="end" color="medium">{{ licenzaRichiesta(p) }}</ion-badge>
+                            } @else if (menuBadge(p) > 0) {
                               <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
                             }
                           </ion-item>

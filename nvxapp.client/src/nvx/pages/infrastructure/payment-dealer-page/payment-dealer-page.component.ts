@@ -47,7 +47,8 @@ export class PaymentDealerPageComponent {
   public readonly settlementColumns: NvxListColumn<PaymentSettlementModel>[];
   public readonly settlementActions: NvxListAction<PaymentSettlementModel>[];
   public readonly paymentColumns: NvxListColumn<PaymentRowModel>[];
-  public readonly isPaymentDisabled = (p: PaymentRowModel) => p.debug || p.stato !== 2;
+  // incassati: Completato (2) e Debug (5), entrambi nel cumulo; nascosti finche' non si chiede i rimborsati
+  public readonly isPaymentDisabled = (p: PaymentRowModel) => p.stato !== 2 && p.stato !== 5;
 
   // campi dei dialoghi di liquidazione e fattura
   public payDate = '';
