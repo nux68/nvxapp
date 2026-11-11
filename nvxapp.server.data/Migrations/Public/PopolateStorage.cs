@@ -5,6 +5,8 @@ namespace nvxapp.server.data.Migrations.Public
     /*
      Pacchetti di spazio iniziali (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): 1, 5 e 20 GB, predefinito 1 GB.
      Inseriti senza Id: li assegna la sequenza identity.
+     Storico: la tabella StoragePlan e' eliminata dalla migration RemoveStoragePlan (la quota e' quella della licenza Documentale);
+     questo metodo resta solo perche' lo richiama InitPublic.
     */
     public static class PopolateStorage
     {

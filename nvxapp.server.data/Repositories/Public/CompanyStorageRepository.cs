@@ -9,32 +9,22 @@ namespace nvxapp.server.data.Repositories.Public
     /*
      Spazio dei file di ogni azienda. Le variazioni dello spazio sono istruzioni SQL atomiche (UPDATE condizionali):
      due caricamenti contemporanei non superano mai la quota e i contatori non si perdono aggiornamenti.
+     La quota la passa il chiamante (licenza Documentale, StorageQuotaService).
     */
     public class CompanyStorageRepository : Repository<PublicDbContext, CompanyStorage>, ICompanyStorageRepository
     {
-        private const long MB = 1024L * 1024L;
-
         public CompanyStorageRepository(PublicDbContext dbContext, IServiceProvider provider, IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)
         {
         }
 
-        public Task<int> InsertIfMissingAsync(int idCompany, int idStoragePlan, CancellationToken cancellationToken = default)
+        public Task<int> InsertIfMissingAsync(int idCompany, CancellationToken cancellationToken = default)
             => DbContext.Database.ExecuteSqlInterpolatedAsync($@"
-                INSERT INTO public.""CompanyStorage"" (""IdCompany"", ""IdStoragePlan"", ""UsedBytes"", ""ReservedBytes"", ""FileCount"", ""LastWarningPercent"", ""CreationDate"", ""ModifiedDate"")
-                VALUES ({idCompany}, {idStoragePlan}, 0, 0, 0, 0, now(), now())
+                INSERT INTO public.""CompanyStorage"" (""IdCompany"", ""UsedBytes"", ""ReservedBytes"", ""FileCount"", ""LastWarningPercent"", ""CreationDate"", ""ModifiedDate"")
+                VALUES ({idCompany}, 0, 0, 0, 0, now(), now())
                 ON CONFLICT (""IdCompany"") DO NOTHING", cancellationToken);
 
-        public async Task<bool> ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
-            => await DbContext.Database.ExecuteSqlInterpolatedAsync($@"
-                UPDATE public.""CompanyStorage"" cs
-                   SET ""ReservedBytes"" = cs.""ReservedBytes"" + {bytes}
-                  FROM public.""StoragePlan"" p
-                 WHERE p.""Id"" = cs.""IdStoragePlan""
-                   AND cs.""IdCompany"" = {idCompany}
-                   AND cs.""UsedBytes"" + cs.""ReservedBytes"" + {bytes} <= p.""QuotaMB""::bigint * {MB}", cancellationToken) > 0;
-
-        // stessa prenotazione atomica, con la quota data dalla licenza del documentale invece che dal pacchetto (ANALISI_LICENZE.md §5.1)
+        // prenotazione atomica con la quota indicata (ANALISI_LICENZE.md §5.1)
         public async Task<bool> ReserveAsync(int idCompany, long bytes, long quotaBytes, CancellationToken cancellationToken = default)
             => await DbContext.Database.ExecuteSqlInterpolatedAsync($@"
                 UPDATE public.""CompanyStorage"" cs
@@ -74,13 +64,10 @@ namespace nvxapp.server.data.Repositories.Public
 
     public interface ICompanyStorageRepository : IRepository<CompanyStorage>
     {
-        /// <summary>Riga dello spazio dell'azienda con il pacchetto indicato, se manca (idempotente).</summary>
-        Task<int> InsertIfMissingAsync(int idCompany, int idStoragePlan, CancellationToken cancellationToken = default);
+        /// <summary>Riga dello spazio dell'azienda, se manca (idempotente).</summary>
+        Task<int> InsertIfMissingAsync(int idCompany, CancellationToken cancellationToken = default);
 
-        /// <summary>Prenota lo spazio solo se c'e' (atomico); false = quota superata.</summary>
-        Task<bool> ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default);
-
-        /// <summary>Prenota lo spazio con una quota esplicita (licenza del documentale); false se non basta.</summary>
+        /// <summary>Prenota lo spazio solo se c'e' entro la quota indicata (atomico); false = quota superata.</summary>
         Task<bool> ReserveAsync(int idCompany, long bytes, long quotaBytes, CancellationToken cancellationToken = default);
 
         /// <summary>Spazio prenotato che diventa occupato (+1 file).</summary>

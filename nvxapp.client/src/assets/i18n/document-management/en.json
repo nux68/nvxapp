@@ -198,10 +198,11 @@
       "storage": {
         "title": "Document storage",
         "used": "{{used}} MB used of {{quota}} MB ({{percent}}%)",
-        "files": "{{files}} files · maximum file size {{maxFile}} MB · warning at {{warning}}%",
+        "usedUnlimited": "{{used}} MB used, unlimited space",
+        "files": "{{files}} files · warning at {{warning}}%",
         "over": "Out of space",
         "warning": "Almost full",
-        "note": "Beyond 100% no documents can be uploaded. Ask the centre for a larger plan."
+        "note": "The space is the one of the company's Document management licence. Beyond 100% no documents can be uploaded: for more space move to a higher plan from Licence management."
       }
     },
     "showcase": {
@@ -300,7 +301,7 @@
           },
           "spazio": {
             "title": "Storage",
-            "text": "Storage packages and a warning before it runs out."
+            "text": "Space based on the licence and a warning before it runs out."
           }
         }
       },

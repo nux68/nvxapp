@@ -70,11 +70,11 @@ Tutti gli utenti dell'applicazione, con i collegamenti a centri, studi e aziende
 @@ /companymove
 Sposta un'azienda da uno studio a un altro, con i suoi utenti e i suoi dati.
 
-@@ /storageplanlist
-I pacchetti di spazio per il documentale (per esempio 1, 5 e 20 GB), con il pacchetto predefinito assegnato alle aziende nuove.
+@@ /storagesettings
+Le impostazioni dello spazio del documentale: la soglia di avviso predefinita e lo spazio usato da tutte le aziende. Lo spazio di ogni azienda è quello della sua licenza Documentale.
 
 @@ /companystoragelist
-Lo spazio del documentale usato da ogni azienda: pacchetto, spazio occupato e avvisi. Da qui assegni un pacchetto diverso a un'azienda.
+Lo spazio del documentale usato da ogni azienda: licenza, spazio occupato e avvisi. Da qui cambi la soglia di avviso di un'azienda; lo spazio si cambia con la licenza.
 
 @@ /poweradmin
 La pagina del PowerAdmin dell'installazione.

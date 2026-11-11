@@ -83,14 +83,18 @@ namespace nvxapp.server.Utility
             var oggi = DateTime.Today;
             var gia = await historyRepository.FindAll(x => x.Anno == oggi.Year && x.Mese == oggi.Month).Select(x => x.IdCompany).ToListAsync(cancellationToken);
             var daFotografare = await companyStorageRepository.FindAll(x => !gia.Contains(x.IdCompany))
-                                        .Select(x => new { x.IdCompany, x.UsedBytes, x.FileCount, Pacchetto = x.StoragePlanNavigation!.Descrizione, x.StoragePlanNavigation.QuotaMB })
+                                        .Select(x => x.IdCompany)
                                         .ToListAsync(cancellationToken);
-            foreach (var r in daFotografare)
+            foreach (var idCompany in daFotografare)
+            {
+                // quota e descrizione come le vede l'azienda: licenza Documentale, altrimenti illimitato
+                var status = await quota.StatusAsync(idCompany, cancellationToken);
                 await historyRepository.CreateAsync(new CompanyStorageHistory
                 {
-                    IdCompany = r.IdCompany, Anno = oggi.Year, Mese = oggi.Month, Pacchetto = r.Pacchetto, QuotaMB = r.QuotaMB,
-                    UsedBytes = r.UsedBytes, FileCount = r.FileCount
+                    IdCompany = idCompany, Anno = oggi.Year, Mese = oggi.Month, Pacchetto = status.Pacchetto, QuotaMB = status.QuotaMB,
+                    UsedBytes = status.UsedBytes, FileCount = status.FileCount
                 }, SaveChanges: false);
+            }
             if (daFotografare.Count > 0)
                 await historyRepository.SaveChange();
 

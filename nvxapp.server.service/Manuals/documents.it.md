@@ -86,9 +86,9 @@ Il registro accessi tiene traccia di tutto ciò che succede ai documenti: chi ha
 È lo strumento per verificare la riservatezza dei documenti del personale e per ricostruire la storia di un documento in caso di dubbi.
 
 @@ /docstorage
-Questa pagina mostra lo spazio usato e il pacchetto dell'azienda, il numero di file, la dimensione massima consentita per un singolo file e la soglia di avviso.
+Questa pagina mostra lo spazio usato e la licenza Documentale da cui viene lo spazio dell'azienda (senza licenza è illimitato), il numero di file e la soglia di avviso.
 
-Quando l'occupazione supera la soglia gli amministratori ricevono un avviso; oltre il 100% non si possono caricare nuovi documenti. Per un pacchetto di spazio più grande rivolgiti al centro che segue la tua azienda.
+Quando l'occupazione supera la soglia gli amministratori ricevono un avviso; oltre il 100% non si possono caricare nuovi documenti. Per avere più spazio passa a un piano superiore della licenza Documentale dalla pagina Gestione licenze.
 
 @@ /docmine
 Qui trovi i documenti che ti riguardano come dipendente: cedolini, contratti, comunicazioni e gli altri documenti che l'azienda archivia a tuo nome.
@@ -107,7 +107,7 @@ Alcune tipologie (per esempio cedolini, contratti, comunicazioni) richiedono di 
 Se è ancora nel cestino sì: apri l'archivio, passa alla vista **Cestino** e usa **Ripristina**. Una volta svuotato il cestino, o passati i giorni impostati, l'eliminazione è definitiva.
 
 ### Perché non riesco a caricare un nuovo documento? {CompanyPowerAdmin, CompanyAdmin}
-Probabilmente lo spazio dell'azienda ha superato il 100%: controlla la pagina dello spazio di archiviazione. Oltre il limite i caricamenti sono bloccati finché non liberi spazio o non passi a un pacchetto più grande.
+Probabilmente lo spazio dell'azienda ha superato il 100%: controlla la pagina dello spazio di archiviazione. Oltre il limite i caricamenti sono bloccati finché non liberi spazio o non passi a un piano della licenza con più spazio.
 
 ### Un dipendente non vede i suoi documenti, perché? {CompanyPowerAdmin, CompanyAdmin}
 Controlla che il dipendente abbia un account (icona della chiave) e che i documenti siano in stato **Pubblicato**: in stato Bozza non sono visibili. I dipendenti solo in anagrafica non possono consultare i documenti in app finché non ricevono un accesso.

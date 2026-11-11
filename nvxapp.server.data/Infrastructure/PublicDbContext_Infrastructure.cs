@@ -17,7 +17,6 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<FinancialAdvisorApplication> FinancialAdvisorApplication { get; set; }
 
         // spazio dei file delle aziende (documentale)
-        public DbSet<StoragePlan> StoragePlan { get; set; }
         public DbSet<CompanyStorage> CompanyStorage { get; set; }
         public DbSet<CompanyStorageHistory> CompanyStorageHistory { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
@@ -224,25 +223,13 @@ namespace nvxapp.server.data.Infrastructure
         }
         /*
          Spazio dei file delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3).
-         Dati iniziali: pacchetti 1, 5 e 20 GB (predefinito 1 GB) e i valori predefiniti dell'installazione
-         (dimensione massima del file 50 MB, avviso all'80%).
+         La quota e' quella della licenza Documentale (ANALISI_LICENZE.md §5.1): i pacchetti di spazio e la dimensione
+         massima del file sono stati eliminati. Dato iniziale: soglia di avviso all'80%.
         */
-        public const string Key_StorageMaxFileMB = "Storage_MaxFileMB";
         public const string Key_StorageWarningPercent = "Storage_WarningPercent";
 
         private void Gen_Storage(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<StoragePlan>(entity =>
-            {
-                entity.ToTable("StoragePlan", Schema);
-                entity.HasKey(e => e.Id);
-                entity.HasIndex(e => e.Descrizione).IsUnique();
-                // al piu' un pacchetto predefinito
-                entity.HasIndex(e => e.Predefinito).IsUnique().HasFilter("\"Predefinito\"");
-                // i pacchetti iniziali si inseriscono nella migration (Migrations/Public/PopolateStorage.cs): HasData con Id
-                // espliciti non fa avanzare la sequenza identity di PostgreSQL
-            });
-
             modelBuilder.Entity<CompanyStorage>(entity =>
             {
                 entity.ToTable("CompanyStorage", Schema);
@@ -252,11 +239,6 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany()
                       .HasForeignKey(e => e.IdCompany)
                       .OnDelete(DeleteBehavior.Cascade);
-                // un pacchetto usato non si elimina (si disattiva)
-                entity.HasOne(e => e.StoragePlanNavigation)
-                      .WithMany()
-                      .HasForeignKey(e => e.IdStoragePlan)
-                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // storico mensile: nessuna chiave esterna, resta anche dopo la cancellazione dell'azienda (fatturazione)
@@ -268,7 +250,6 @@ namespace nvxapp.server.data.Infrastructure
             });
 
             modelBuilder.Entity<AppSetting>().HasData(
-                new AppSetting { Key = Key_StorageMaxFileMB, Value = "50" },
                 new AppSetting { Key = Key_StorageWarningPercent, Value = "80" });
         }
 
