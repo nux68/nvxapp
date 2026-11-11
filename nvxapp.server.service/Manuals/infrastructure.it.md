@@ -74,7 +74,7 @@ Sposta un'azienda da uno studio a un altro, con i suoi utenti e i suoi dati.
 Le impostazioni dello spazio del documentale: la soglia di avviso predefinita e lo spazio usato da tutte le aziende. Lo spazio di ogni azienda è quello della sua licenza Documentale.
 
 @@ /companystoragelist
-Lo spazio del documentale usato da ogni azienda: licenza, spazio occupato e avvisi. Da qui cambi la soglia di avviso di un'azienda; lo spazio si cambia con la licenza.
+Lo spazio del documentale usato da ogni azienda con licenza Documentale attiva: licenza, spazio occupato e avvisi. Da qui cambi la soglia di avviso di un'azienda; lo spazio si cambia con la licenza.
 
 @@ /poweradmin
 La pagina del PowerAdmin dell'installazione.
