@@ -52,6 +52,7 @@
     }
   },
   "menu": {
+    "richiedeLicenza": "Available with the {{livello}} plan",
     "superUser": "SuperUser",
     "superUserPage": "SuperUser Page",
     "dealers": "Dealers",
