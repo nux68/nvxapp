@@ -62,6 +62,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       bancaOre: [false],
       autorizzaStraordinario: [false],
       annullaPausa: [false],
+      lavoroAgile: [false],
 
 
       //roleId: [null, [Validators.required]],
@@ -89,6 +90,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
         bancaOre: false,
         autorizzaStraordinario: false,
         annullaPausa: false,
+        lavoroAgile: false,
         visualizzaInPianoFerie: false
       });
     }

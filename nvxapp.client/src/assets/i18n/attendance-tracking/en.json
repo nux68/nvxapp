@@ -9,6 +9,39 @@
       "importoObbligatorio": "Enter an amount greater than zero."
     },
     "pages": {
+      "accordiSw": {
+        "title": "Smart working agreements",
+        "employee": "Employee",
+        "period": "Period",
+        "maxDays": "Days/week",
+        "signature": "Signature",
+        "signed": "Signed on {{ date }}",
+        "waiting": "Awaiting signature",
+        "add": "New agreement",
+        "deleteConfirm": "Delete the agreement? The unconfirmed signature request is withdrawn."
+      },
+      "accordoSwEdit": {
+        "title": "Smart working agreement",
+        "section": "Individual agreement",
+        "employee": "Employee",
+        "from": "From",
+        "to": "To",
+        "maxDays": "Maximum days per week",
+        "allowedDays": "Allowed weekdays",
+        "note": "Notes (included in the agreement text)",
+        "signed": "Agreement signed on {{ date }}.",
+        "waiting": "Awaiting the employee's signature or acknowledgement.",
+        "info": "On save the employee receives the acknowledgement request (with Document management active, the agreement record to sign). If period or days change the request is repeated. Days can be requested only with a signed agreement."
+      },
+      "lavoroAgile": {
+        "title": "Smart working",
+        "noAgreement": "No smart working agreement this month.",
+        "agreement": "Agreement from {{ from }} to {{ to }}: at most {{ max }} days per week.",
+        "notSigned": "To be signed: confirm it in the Acknowledgements page.",
+        "week": "Week",
+        "confirm": "Request smart working on {{ date }}?",
+        "legend": "Click a highlighted day to request it. Solid blue = approved, dashed = awaiting approval. The last column shows the days used and the weekly limit."
+      },
       "timbraturaSede": {
         "title": "Site clock-in",
         "site": "Site",
@@ -869,6 +902,8 @@
         "confirmExport": "Confirm the reason code export? "
       },
       "justificationEdit": {
+        "lavoroAgile": "Smart working",
+        "lavoroAgileNote": "Days with this justification are requested under the smart working agreement: allowed weekdays and the weekly limit are checked. With a neutral sign the hours go on the cause (payroll marker) and the employee clocks in remotely; on approved days geofencing does not apply.",
         "tipoImportoNota": "Amount justification: a single amount in euro is entered. It does not affect hours, counters, hour bank or holiday plan; the pay cause must be amount-based.",
         "title": "Absence justifications",
         "info": "Info",
@@ -1467,6 +1502,8 @@
       }
     },
     "menu": {
+      "accordiSw": "Smart working agreements",
+      "lavoroAgile": "Smart working",
       "postazioneQr": "QR station",
       "kiosk": "Clock-in kiosk",
       "timbraturaSedi": "Site clock-in settings",

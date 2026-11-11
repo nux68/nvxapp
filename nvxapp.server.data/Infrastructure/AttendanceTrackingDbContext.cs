@@ -95,6 +95,9 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_SediTimbratura> Az_SediTimbratura { get; set; }
         public virtual DbSet<Dip_GG_TimbraturaInfo> Dip_GG_TimbraturaInfo { get; set; }
         public virtual DbSet<Dip_TimbraturaPin> Dip_TimbraturaPin { get; set; }
+
+        // smart working (AT-SW)
+        public virtual DbSet<Dip_AccordoSW> Dip_AccordoSW { get; set; }
         
         
 
@@ -104,6 +107,13 @@ namespace nvxapp.server.data.Infrastructure
             Gen_Init_GestionePresenze(modelBuilder);
             Gen_Turni(modelBuilder);
             Gen_TimbraturaEvoluta(modelBuilder);
+
+            /* Smart working (AT-SW, ANALISI_ATTENDANCETRACKING_SMARTWORKING.md) */
+            modelBuilder.Entity<Dip_AccordoSW>(entity =>
+            {
+                entity.HasOne(t => t.Dip_RapportoLavoroNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdDip_RapportoLavoro, t.Dal });
+            });
         }
 
         /* Timbratura evoluta (AT-TIMB, ANALISI_ATTENDANCETRACKING_TIMBRATURA.md) */

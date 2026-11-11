@@ -55,6 +55,7 @@ POWERADMIN
 
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorkingService;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService
 {
@@ -85,6 +86,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IGestionePresenzeOreTeoriche _gestionePresenzeOreTeoriche;
         private readonly IRichiestaNotifier _richiestaNotifier;
         private readonly IDip_TurnoScambioHandler _turnoScambioHandler;
+        private readonly ILavoroAgileUtility _lavoroAgileUtility;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -112,7 +114,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IContatoriService contatoriService,
                                   IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche,
                                   IRichiestaNotifier richiestaNotifier,
-                                  IDip_TurnoScambioHandler turnoScambioHandler) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_TurnoScambioHandler turnoScambioHandler,
+                                  ILavoroAgileUtility lavoroAgileUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _az_CfgService = az_CfgService;
@@ -134,6 +137,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _gestionePresenzeOreTeoriche = gestionePresenzeOreTeoriche;
             _richiestaNotifier = richiestaNotifier;
             _turnoScambioHandler = turnoScambioHandler;
+            _lavoroAgileUtility = lavoroAgileUtility;
 
         }
 
@@ -480,6 +484,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 {
                                     retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("RequestedPeriodNoWorkingDays"), MessageType.Exception));
                                     return retVal;
+                                }
+
+                                // lavoro agile (AT-SW.2): accordo valido e firmato, giorni consentiti e limite settimanale
+                                var bodyGiust = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(dip_GG_Richiesta.Dati);
+                                if (bodyGiust != null && _lavoroAgileUtility.IsGiustificativoLavoroAgile(bodyGiust.IdPar_Giustificativi))
+                                {
+                                    int.TryParse(this.CurrentCompany, out int idCompanySW);
+                                    var erroreSW = await _lavoroAgileUtility.ValidaRichiestaAsync(idCompanySW, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, orePerGiorno.Keys);
+                                    if (erroreSW != null)
+                                    {
+                                        retVal.Messages.Add(new Message(erroreSW, MessageType.Exception));
+                                        return retVal;
+                                    }
                                 }
 
                                 var validazione = await ValidaContatoriAsync(

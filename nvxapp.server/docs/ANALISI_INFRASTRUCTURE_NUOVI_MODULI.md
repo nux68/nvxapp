@@ -171,9 +171,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
-| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
-| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
-| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ⏳ |
+| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-f4` | – | 1 | ✅ fatta, da mergiare (`ANALISI_ATTENDANCETRACKING_TURNI.md`, migration `AttendanceTracking_Turni`) |
+| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-f4` | – | 1 | ✅ fatta, da mergiare (`ANALISI_ATTENDANCETRACKING_TIMBRATURA.md`, migration `AttendanceTracking_Timbratura`) |
+| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-f4` | – | 1 | ✅ fatta, da mergiare (`ANALISI_ATTENDANCETRACKING_SMARTWORKING.md`, migration `AttendanceTracking_SmartWorking`) |
 | `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ⏳ |
 | `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
@@ -258,21 +258,21 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati — `dotnet build` e `ng build` ok; prova API su DB usa e getta: creazione azienda, CRUD sedi/reparti (anche figlio)/competenze, anagrafica con competenze e autovetture, nota spese con rimborso km (100 km × 0,40 = 40,00), autovettura usata non cancellabile, `TimeSheet_Engine/Calculate`, cancellazioni a cascata; dati verificati con psql in `tenant_<id>_0`. Export paghe non provato (job; il codice non legge le tabelle spostate)
 
 #### `AT-TURNI` – Turni e pianificazione
-- ⏳ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime)
-- ⏳ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie
-- ⏳ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione
-- ⏳ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata
+- ✅ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime) — fatta, da mergiare: `Par_Turno` (orario o riposo), `Az_SediRepartoTurno` (turni del reparto comune con copertura minima e giorni), `Dip_Turno` (uno per dipendente e giorno); pagine `/turnolist`, `/turnoedit`, `/turnocoperture`
+- ✅ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie — fatta, da mergiare: `/pianificazioneturni` (reparto, settimana/mese), coperture insufficienti, assenze approvate/in attesa e conflitti, consuntivo dei giorni calcolati
+- ✅ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione — fatta, da mergiare: `Dip_TurnoScambio`, accettazione del collega e richiesta `TipoRichiesta.ScambioTurno` con gli approvatori esistenti, revoca che ripristina i turni; `/mieiturni`
+- ✅ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata — fatta, da mergiare: il turno pianificato sostituisce l'orario del profilo nel `DaySlot` del motore e in `GestionePresenzeOreTeoriche`; senza turni nulla cambia (prova: 49 controlli + regressione)
 
 #### `AT-TIMB` – Timbratura evoluta
-- ⏳ `AT-TIMB.1` Timbratura con QR o NFC per sede
-- ⏳ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede
-- ⏳ `AT-TIMB.3` Postazione condivisa in modalità kiosk
-- ⏳ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo
+- ✅ `AT-TIMB.1` Timbratura con QR o NFC per sede — fatta, da mergiare: QR firmato HMAC rotante per sede (immagine con QRCoder), anti-replay per dipendente, `/timbraturapostazione` e `/timbraturaqr`; NFC documentato come estensione
+- ✅ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede — fatta, da mergiare: `Az_SediTimbratura` (Presenze, collegata alla sede comune), regola segnala/blocca, esito in `Dip_GG_TimbraturaInfo`
+- ✅ `AT-TIMB.3` Postazione condivisa in modalità kiosk — fatta, da mergiare: dispositivo registrato per sede con un amministratore collegato, PIN (HMAC) o badge assegnati dall'HR, limite dei tentativi; `/timbraturakiosk`, `/timbraturapin`
+- ✅ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo — fatta, da mergiare: coda nel `localStorage` e invio alla riconnessione; il server accetta le differite entro `DifferitaMaxOre` della sede e le marca (prova TIMB: 41 controlli). Il caricamento offline dell'app richiede un service worker: estensione
 
 #### `AT-SW` – Smart working
-- ⏳ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile)
-- ⏳ `AT-SW.2` Calendario del lavoro agile e limite di giorni
-- ⏳ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata
+- ✅ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile) — fatta, da mergiare: `Dip_AccordoSW`, presa visione `at.accordo-sw` (verbale di accordo con il Documentale), `/accordiswlist`, `/accordoswedit`
+- ✅ `AT-SW.2` Calendario del lavoro agile e limite di giorni — fatta, da mergiare: `/lavoroagile`, richiesta del giorno con la richiesta di giustificativo; controllo di accordo firmato, giorni consentiti e limite settimanale in `Send`
+- ✅ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata — fatta, da mergiare: flag `Par_Giustificativi.LavoroAgile`, giustificativo e causale `SW` (neutro) nei parametri di default e al primo uso; geofence escluso nei giorni agili (prova SW: 32 controlli)
 
 #### `AT-AI` – Analisi AI delle timbrature
 - ⏳ `AT-AI.1` Segnalazione delle timbrature anomale

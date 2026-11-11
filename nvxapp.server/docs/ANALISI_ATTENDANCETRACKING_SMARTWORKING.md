@@ -44,13 +44,14 @@ Client: `/accordiswlist`, `/accordoswedit` (CompanyAdmin/CompanyPowerAdmin), `/l
 | S3 | Accordo non ancora firmato | **Scelta provvisoria**: i giorni agili non si possono richiedere finché la presa visione non è confermata |
 | S4 | Settimana del limite | Lunedì-domenica; contano i giorni in attesa e approvati |
 | S5 | Accordi sovrapposti | Non ammessi per lo stesso rapporto |
+| S6 | Più giustificativi con `LavoroAgile` | **Scelta provvisoria**: si usa il primo (Id più basso) per il calendario; il controllo vale per tutti |
 
 ## 7. Checklist
 
 Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 
 - ✅ `AT-SW.0` Analisi (questo documento)
-- ⏳ `AT-SW.1` Accordi individuali: `Dip_AccordoSW`, API, presa visione `at.accordo-sw` (verbale di accordo con il Documentale), pagine `/accordiswlist` e `/accordoswedit`
-- ⏳ `AT-SW.2` Calendario del lavoro agile: API `Calendario`, controllo di accordo, giorni consentiti e limite settimanale nella richiesta; pagina `/lavoroagile`
-- ⏳ `AT-SW.3` Giustificativo `SW` (flag `LavoroAgile`, causale `SW`) nei parametri di default e al primo uso; geofence escluso nei giorni agili; flag nella pagina del giustificativo
-- ⏳ `AT-SW.4` Prova su DB usa e getta (accordo con presa visione, giorno oltre il limite rifiutato, giorno non consentito rifiutato, calcolo con causale `SW`)
+- ✅ `AT-SW.1` Accordi individuali: `Dip_AccordoSW`, API, presa visione `at.accordo-sw` (verbale di accordo con il Documentale), pagine `/accordiswlist` e `/accordoswedit`
+- ✅ `AT-SW.2` Calendario del lavoro agile: API `Calendario`, controllo di accordo, giorni consentiti e limite settimanale nella richiesta; pagina `/lavoroagile`
+- ✅ `AT-SW.3` Giustificativo `SW` (flag `LavoroAgile`, causale `SW`) nei parametri di default e al primo uso; geofence escluso nei giorni agili; flag nella pagina del giustificativo
+- ✅ `AT-SW.4` Prova su DB usa e getta (accordo con presa visione, giorno oltre il limite rifiutato, giorno non consentito rifiutato, calcolo con causale `SW`) — 32 controlli API: permessi, presa visione `at.accordo-sw` creata (canale base, il Documentale non è nel ramo), accordo sovrapposto e giorni massimi non validi rifiutati, giustificativo SW creato al primo uso, richiesta con accordo non firmato rifiutata, conferma della presa visione e data di firma, giorno consentito accettato, giorno non consentito / oltre il limite / doppio / senza accordo rifiutati, altri giustificativi invariati, approvazione e calendario (stati e conteggio settimanale), calcolo: causale SW 8 ore con dovuto invariato, geofence non applicato nel giorno agile approvato, nuova presa visione dopo la modifica delle condizioni. Regressione su un'azienda nuova (13 controlli): giustificativo SW nei parametri di default, calcolo senza turni con gli stessi risultati di prima (8 ore, ORD1)

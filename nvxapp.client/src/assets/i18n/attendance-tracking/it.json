@@ -9,6 +9,39 @@
       "importoObbligatorio": "Indicare un importo maggiore di zero."
     },
     "pages": {
+      "accordiSw": {
+        "title": "Accordi di lavoro agile",
+        "employee": "Dipendente",
+        "period": "Periodo",
+        "maxDays": "Giorni/settimana",
+        "signature": "Firma",
+        "signed": "Firmato il {{ date }}",
+        "waiting": "In attesa di firma",
+        "add": "Nuovo accordo",
+        "deleteConfirm": "Eliminare l'accordo? La richiesta di firma non confermata viene ritirata."
+      },
+      "accordoSwEdit": {
+        "title": "Accordo di lavoro agile",
+        "section": "Accordo individuale",
+        "employee": "Dipendente",
+        "from": "Dal",
+        "to": "Al",
+        "maxDays": "Giorni massimi a settimana",
+        "allowedDays": "Giorni consentiti",
+        "note": "Note (riportate nel testo dell'accordo)",
+        "signed": "Accordo firmato il {{ date }}.",
+        "waiting": "In attesa della firma o presa visione del dipendente.",
+        "info": "Al salvataggio il dipendente riceve la richiesta di presa visione (con il Documentale attivo, il verbale di accordo da firmare). Se cambiano periodo o giorni la richiesta si ripete. I giorni si possono richiedere solo con l'accordo firmato."
+      },
+      "lavoroAgile": {
+        "title": "Lavoro agile",
+        "noAgreement": "Nessun accordo di lavoro agile nel mese.",
+        "agreement": "Accordo dal {{ from }} al {{ to }}: al massimo {{ max }} giorni a settimana.",
+        "notSigned": "Da firmare: conferma la presa visione nella pagina Prese visione.",
+        "week": "Sett.",
+        "confirm": "Richiedere il lavoro agile il {{ date }}?",
+        "legend": "Clic su un giorno evidenziato per richiederlo. Azzurro pieno = approvato, tratteggiato = in approvazione. L'ultima colonna mostra i giorni usati e il limite della settimana."
+      },
       "timbraturaSede": {
         "title": "Timbratura della sede",
         "site": "Sede",
@@ -869,6 +902,8 @@
         "confirmExport": "Confermi l'export delle causali? "
       },
       "justificationEdit": {
+        "lavoroAgile": "Lavoro agile (smart working)",
+        "lavoroAgileNote": "I giorni con questo giustificativo si richiedono con l'accordo di lavoro agile: si controllano i giorni consentiti e il limite settimanale. Con il segno neutro le ore vanno sulla causale (marcatore per le paghe) e il dipendente timbra da remoto; nei giorni approvati il geofence non si applica.",
         "tipoImportoNota": "Giustificativo a importo: si inserisce un solo importo in euro. Non incide su ore, contatori, banca ore e piano ferie; la causale deve essere a importo.",
         "title": "Giustificativi",
         "info": "Info",
@@ -1467,6 +1502,8 @@
       }
     },
     "menu": {
+      "accordiSw": "Accordi lavoro agile",
+      "lavoroAgile": "Lavoro agile",
       "postazioneQr": "Postazione QR",
       "kiosk": "Kiosk timbrature",
       "timbraturaSedi": "Timbratura delle sedi",

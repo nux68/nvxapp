@@ -1,0 +1,55 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <div class="nvx-mese">
+        <ion-button fill="clear" (click)="sposta(-1)"><ion-icon slot="icon-only" name="chevron-back"></ion-icon></ion-button>
+        <strong>{{ meseTesto }}</strong>
+        <ion-button fill="clear" (click)="sposta(1)"><ion-icon slot="icon-only" name="chevron-forward"></ion-icon></ion-button>
+      </div>
+
+      @if (dati) {
+        @if (dati.accordi.length === 0) {
+          <ion-note class="nvx-nota">{{ 'attendance.pages.lavoroAgile.noAgreement' | transloco }}</ion-note>
+        }
+        @for (a of dati.accordi; track a.id) {
+          <ion-note class="nvx-nota">
+            {{ 'attendance.pages.lavoroAgile.agreement' | transloco: { from: (a.dal | date: 'dd/MM/yyyy'), to: (a.al | date: 'dd/MM/yyyy'), max: a.maxGiorniSettimana } }}
+            @if (!a.firmato) { <strong>{{ 'attendance.pages.lavoroAgile.notSigned' | transloco }}</strong> }
+          </ion-note>
+        }
+
+        <table class="nvx-calendario">
+          <thead>
+            <tr>
+              @for (i of intestazione; track i) { <th>{{ nomeGiorno(i) }}</th> }
+              <th>{{ 'attendance.pages.lavoroAgile.week' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of settimane; track s.lunedi.getTime()) {
+              <tr>
+                @for (g of s.giorni; track $index) {
+                  <td [class.nvx-consentito]="g?.consentito && g?.lavorativo && g?.stato === null"
+                      [class.nvx-approvato]="g && approvato(g)"
+                      [class.nvx-attesa]="g && g.stato !== null && !approvato(g)"
+                      (click)="richiedi(g)">
+                    @if (g) {
+                      <span class="nvx-num">{{ giornoNumero(g) }}</span>
+                      @if (g.stato !== null) { <small>SW</small> }
+                    }
+                  </td>
+                }
+                <td class="nvx-conteggio" [class.nvx-pieno]="s.conteggio && s.conteggio.max > 0 && s.conteggio.usati >= s.conteggio.max">
+                  @if (s.conteggio && s.conteggio.max > 0) { {{ s.conteggio.usati }}/{{ s.conteggio.max }} }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <ion-note class="nvx-nota">{{ 'attendance.pages.lavoroAgile.legend' | transloco }}</ion-note>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>

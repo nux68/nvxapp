@@ -1,0 +1,53 @@
+.nvx-mese {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: capitalize;
+}
+
+.nvx-nota {
+  display: block;
+  padding: 6px 4px;
+}
+
+.nvx-calendario {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th, td {
+    border: 1px solid var(--ion-color-light-shade, #ddd);
+    text-align: center;
+    padding: 6px 2px;
+    height: 52px;
+  }
+
+  small {
+    display: block;
+    font-weight: 700;
+  }
+}
+
+.nvx-consentito {
+  cursor: pointer;
+  background: rgba(61, 194, 255, 0.12);
+}
+
+.nvx-approvato {
+  background: #3dc2ff;
+  color: #000;
+}
+
+.nvx-attesa {
+  background: rgba(61, 194, 255, 0.35);
+  border-style: dashed !important;
+}
+
+.nvx-conteggio {
+  font-weight: 600;
+}
+
+.nvx-pieno {
+  color: var(--ion-color-danger, #eb445a);
+}

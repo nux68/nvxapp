@@ -1646,4 +1646,64 @@
   <data name="TimbBadgeGiaUsato" xml:space="preserve">
     <value>Badge già assegnato a un altro dipendente.</value>
   </data>
+  <data name="SwNonAutorizzato" xml:space="preserve">
+    <value>Operazione sul lavoro agile non consentita al tuo ruolo.</value>
+  </data>
+  <data name="SwDipendenteNonValido" xml:space="preserve">
+    <value>Dipendente non trovato nell'azienda.</value>
+  </data>
+  <data name="SwPeriodoNonValido" xml:space="preserve">
+    <value>Periodo dell'accordo non valido.</value>
+  </data>
+  <data name="SwMaxGiorniNonValido" xml:space="preserve">
+    <value>I giorni massimi a settimana vanno da 1 a 7.</value>
+  </data>
+  <data name="SwGiorniNonValidi" xml:space="preserve">
+    <value>Indicare almeno un giorno della settimana consentito.</value>
+  </data>
+  <data name="SwAccordoSovrapposto" xml:space="preserve">
+    <value>Il dipendente ha già un accordo di lavoro agile nel periodo.</value>
+  </data>
+  <data name="SwGiorno0" xml:space="preserve">
+    <value>lunedì</value>
+  </data>
+  <data name="SwGiorno1" xml:space="preserve">
+    <value>martedì</value>
+  </data>
+  <data name="SwGiorno2" xml:space="preserve">
+    <value>mercoledì</value>
+  </data>
+  <data name="SwGiorno3" xml:space="preserve">
+    <value>giovedì</value>
+  </data>
+  <data name="SwGiorno4" xml:space="preserve">
+    <value>venerdì</value>
+  </data>
+  <data name="SwGiorno5" xml:space="preserve">
+    <value>sabato</value>
+  </data>
+  <data name="SwGiorno6" xml:space="preserve">
+    <value>domenica</value>
+  </data>
+  <data name="SwPresaVisioneTitolo" xml:space="preserve">
+    <value>Accordo di lavoro agile dal {0:dd/MM/yyyy} al {1:dd/MM/yyyy}</value>
+  </data>
+  <data name="SwPresaVisioneTesto" xml:space="preserve">
+    <value>Accordo individuale di lavoro agile (L. 81/2017) di {0}: dal {1:dd/MM/yyyy} al {2:dd/MM/yyyy}, al massimo {3} giorni a settimana, nei giorni: {4}. I giorni si richiedono dal calendario del lavoro agile e seguono l'approvazione delle richieste.</value>
+  </data>
+  <data name="SwNessunAccordo" xml:space="preserve">
+    <value>Nessun accordo di lavoro agile valido il {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="SwAccordoNonFirmato" xml:space="preserve">
+    <value>L'accordo di lavoro agile valido il {0:dd/MM/yyyy} non è ancora firmato: conferma la presa visione.</value>
+  </data>
+  <data name="SwGiornoNonConsentito" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} non è un giorno di lavoro agile consentito dall'accordo.</value>
+  </data>
+  <data name="SwGiaRichiesto" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} è già un giorno di lavoro agile richiesto o approvato.</value>
+  </data>
+  <data name="SwOltreLimite" xml:space="preserve">
+    <value>Limite di {0} giorni di lavoro agile superato nella settimana dal {1:dd/MM/yyyy} (già richiesti o approvati: {2}).</value>
+  </data>
 </root>

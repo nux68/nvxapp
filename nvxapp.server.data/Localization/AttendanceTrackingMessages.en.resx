@@ -1642,4 +1642,64 @@
   <data name="TimbBadgeGiaUsato" xml:space="preserve">
     <value>Badge already assigned to another employee.</value>
   </data>
+  <data name="SwNonAutorizzato" xml:space="preserve">
+    <value>Smart working operation not allowed for your role.</value>
+  </data>
+  <data name="SwDipendenteNonValido" xml:space="preserve">
+    <value>Employee not found in the company.</value>
+  </data>
+  <data name="SwPeriodoNonValido" xml:space="preserve">
+    <value>Invalid agreement period.</value>
+  </data>
+  <data name="SwMaxGiorniNonValido" xml:space="preserve">
+    <value>Maximum days per week must be between 1 and 7.</value>
+  </data>
+  <data name="SwGiorniNonValidi" xml:space="preserve">
+    <value>Select at least one allowed weekday.</value>
+  </data>
+  <data name="SwAccordoSovrapposto" xml:space="preserve">
+    <value>The employee already has a smart working agreement in the period.</value>
+  </data>
+  <data name="SwGiorno0" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="SwGiorno1" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="SwGiorno2" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="SwGiorno3" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="SwGiorno4" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="SwGiorno5" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="SwGiorno6" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="SwPresaVisioneTitolo" xml:space="preserve">
+    <value>Smart working agreement from {0:dd/MM/yyyy} to {1:dd/MM/yyyy}</value>
+  </data>
+  <data name="SwPresaVisioneTesto" xml:space="preserve">
+    <value>Individual smart working agreement (Law 81/2017) of {0}: from {1:dd/MM/yyyy} to {2:dd/MM/yyyy}, at most {3} days per week, on: {4}. Days are requested from the smart working calendar and follow the request approval.</value>
+  </data>
+  <data name="SwNessunAccordo" xml:space="preserve">
+    <value>No valid smart working agreement on {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="SwAccordoNonFirmato" xml:space="preserve">
+    <value>The smart working agreement valid on {0:dd/MM/yyyy} is not signed yet: confirm the acknowledgement.</value>
+  </data>
+  <data name="SwGiornoNonConsentito" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is not a smart working day allowed by the agreement.</value>
+  </data>
+  <data name="SwGiaRichiesto" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is already a requested or approved smart working day.</value>
+  </data>
+  <data name="SwOltreLimite" xml:space="preserve">
+    <value>Limit of {0} smart working days exceeded in the week from {1:dd/MM/yyyy} (already requested or approved: {2}).</value>
+  </data>
 </root>
