@@ -29,7 +29,13 @@
       "detail": "Dettaglio",
       "export": "Esporta",
       "pdf": "PDF",
-      "excel": "Excel"
+      "excel": "Excel",
+      "complete": "Completa",
+      "markAllRead": "Segna tutte come lette",
+      "deleteRead": "Cancella lette",
+      "preferences": "Preferenze",
+      "loadMore": "Carica altre",
+      "confirmRead": "Confermo di aver letto"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
@@ -90,7 +96,10 @@
       "1": "Moke",
       "2": "Presenze",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "storageSettings": "Impostazioni spazio",
     "companyStorage": "Spazio documenti",
@@ -103,7 +112,10 @@
     "licenseCatalogs": "Listini licenze",
     "preferences": "Preferenze",
     "payments": "Pagamenti ai centri",
-    "dealerPayments": "Pagamenti del centro"
+    "dealerPayments": "Pagamenti del centro",
+    "notifications": "Notifiche",
+    "deadlines": "Scadenzario",
+    "acknowledgements": "Prese visione"
   },
   "showcase": {
     "menu": {
@@ -777,6 +789,9 @@
       "function2": "Presenze",
       "function3": "CRM",
       "function4": "Documentale",
+      "function5": "Risorse Umane",
+      "function6": "Compliance",
+      "function7": "Risorse aziendali",
       "function100": "Cumulativo (tutte le funzioni)",
       "level1": "Free",
       "level2": "Standard",
@@ -1056,6 +1071,83 @@
       "monthlyDay": "Giorno di generazione dei rendiconti",
       "annualMonth": "Mese del riepilogo annuale",
       "invalid": "Controlla i campi: trattenuta tra 0 e 100."
+    },
+    "deadlineList": {
+      "title": "Scadenzario",
+      "filter": {
+        "open": "Aperte",
+        "closed": "Chiuse",
+        "all": "Tutte"
+      },
+      "withinDays": "Scadenza",
+      "anyDate": "Qualsiasi data",
+      "days": "Entro {{days}} giorni",
+      "onlyMine": "Solo le mie",
+      "columnDate": "Scadenza",
+      "columnDescription": "Descrizione",
+      "columnResponsible": "Responsabile",
+      "columnState": "Stato",
+      "columnSource": "Origine",
+      "manual": "Manuale",
+      "stateOpen": "Aperta",
+      "stateExpiring": "In scadenza",
+      "stateExpired": "Scaduta",
+      "stateClosed": "Chiusa",
+      "newDeadline": "Nuova scadenza",
+      "empty": "Nessuna scadenza."
+    },
+    "deadlineEdit": {
+      "title": "Scadenza",
+      "info": "Dati della scadenza",
+      "description": "Descrizione",
+      "date": "Data di scadenza",
+      "dateRequired": "La data di scadenza è obbligatoria.",
+      "noticeDays": "Giorni di preavviso",
+      "noticeDaysNote": "Il promemoria parte questi giorni prima della scadenza (0 = solo il giorno stesso).",
+      "noticeDaysInvalid": "Indica un numero di giorni da 0 a 365.",
+      "responsible": "Responsabile",
+      "noResponsible": "Nessun responsabile",
+      "note": "Note",
+      "confirmDelete": "Cancellare la scadenza?"
+    },
+    "notificationList": {
+      "title": "Notifiche",
+      "filter": {
+        "all": "Tutte",
+        "unread": "Non lette"
+      },
+      "columnTitle": "Notifica",
+      "columnMessage": "Messaggio",
+      "columnDate": "Data",
+      "empty": "Nessuna notifica.",
+      "confirmDeleteRead": "Cancellare tutte le notifiche già lette?"
+    },
+    "notificationPreference": {
+      "title": "Preferenze notifiche",
+      "note": "Scegli per ogni tipo di notifica se riceverla nell'app e per email.",
+      "emailNotConfigured": "L'invio delle email non è configurato: per ora le notifiche arrivano solo nell'app.",
+      "category": "Tipo di notifica",
+      "app": "App",
+      "email": "Email",
+      "emailNotAllowed": "Non disponibile per email",
+      "empty": "Nessun tipo di notifica disponibile."
+    },
+    "acknowledgementList": {
+      "title": "Prese visione",
+      "filter": {
+        "pending": "Da confermare",
+        "all": "Tutte"
+      },
+      "note": "Conferma di aver letto i documenti e le comunicazioni ricevute. Quelle che richiedono un'altra conferma (es. la firma) si completano aprendo l'oggetto.",
+      "columnTitle": "Oggetto",
+      "columnText": "Testo",
+      "columnCompany": "Azienda",
+      "columnRequested": "Richiesta il",
+      "columnState": "Stato",
+      "pending": "Da confermare",
+      "pendingOther": "Da confermare aprendo l'oggetto",
+      "confirmedOn": "Confermata il {{date}}",
+      "empty": "Nessuna presa visione."
     }
   },
   "components": {
@@ -1230,7 +1322,10 @@
       "2": "Presenze",
       "general": "Generale",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "aiPending": "Risposta automatica in corso",
     "notification": {
@@ -1242,7 +1337,10 @@
       "0": "Funzioni base",
       "2": "Presenze",
       "3": "CRM",
-      "4": "Documentale"
+      "4": "Documentale",
+      "5": "Risorse Umane",
+      "6": "Compliance",
+      "7": "Risorse aziendali"
     },
     "dashboard": {
       "customize": "Personalizza",
@@ -1265,6 +1363,15 @@
     "askAssistant": {
       "title": "Chiedi all'assistente",
       "description": "Campo per fare una domanda all'assistente AI."
+    },
+    "deadlines": {
+      "title": "In scadenza",
+      "description": "Scadenze scadute e in scadenza nei prossimi 30 giorni, con le prime cinque.",
+      "expired": "Scadute",
+      "expiring": "In scadenza (30 giorni)",
+      "none": "Nessuna scadenza nei prossimi 30 giorni.",
+      "noData": "Scadenze non disponibili.",
+      "openAll": "Apri lo scadenzario"
     }
   }
 }

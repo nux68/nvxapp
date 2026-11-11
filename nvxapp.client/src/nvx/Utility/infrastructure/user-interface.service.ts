@@ -377,6 +377,75 @@ export class UserInterfaceService {
     return button;
   }
 
+  // servizi comuni (INF-SVC): chiusura di una scadenza, notifiche, presa visione
+  get Btn_Completa(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.complete'),
+      'checkmark-done-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Completa cliccato'); }
+    );
+  }
+
+  get Btn_SegnaTutteLette(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.markAllRead'),
+      'mail-open-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_SegnaTutteLette cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria a bordo (il colore resta)
+    return button;
+  }
+
+  get Btn_CancellaLette(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.deleteRead'),
+      'trash-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_CancellaLette cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria a bordo (il colore resta)
+    return button;
+  }
+
+  get Btn_Preferenze(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.preferences'),
+      'options-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Preferenze cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
+  }
+
+  get Btn_CaricaAltri(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.loadMore'),
+      'chevron-down-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_CaricaAltri cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
+  }
+
+  get Btn_ConfermaLettura(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.confirmRead'),
+      'eye-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_ConfermaLettura cliccato'); }
+    );
+  }
+
   //trash-outline
 
 }
