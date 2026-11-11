@@ -326,8 +326,8 @@ L'azienda Rossi Spa ha la licenza Documentale Free (1 GB), è all'85% e ha ricev
 ### Attenzione
 - Oltre il 100% l'azienda non può più caricare documenti finché non libera spazio o non passa a una licenza con più spazio.
 - Lo spazio non si cambia da questa pagina: dipende dalla licenza Documentale dell'azienda (o dello studio che la copre).
-- L'elenco mostra solo le aziende con il Documentale attivo.
-- "Senza licenza": il sistema licenze è acceso e l'azienda non ha una licenza Documentale valida; non può caricare documenti finché non la sottoscrive o la rinnova.
+- L'elenco mostra solo le aziende con il Documentale attivo e una licenza Documentale valida (propria, dello studio o cumulativa); con il sistema licenze spento tutte quelle con il Documentale attivo.
+- Un'azienda senza licenza Documentale non compare e non può caricare documenti finché non la sottoscrive o la rinnova; torna nell'elenco appena è coperta.
 
 => /storagesettings /companylist
 
