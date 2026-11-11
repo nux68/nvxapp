@@ -236,6 +236,11 @@
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
                       <ion-label>{{ 'attendance.pages.userDepartmentEdit.segWorkSchedules' | transloco }}</ion-label>
                     </ion-segment-button>
+                    @if (funzionalitaGestionePresenzeService.formulePersonalizzate) {
+                      <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_FORM}}">
+                        <ion-label>{{ 'attendance.pages.userDepartmentEdit.segFormulaProfiles' | transloco }}</ion-label>
+                      </ion-segment-button>
+                    }
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_CONTATORI}}">
                       <ion-label>{{ 'attendance.pages.userDepartmentEdit.segCounters' | transloco }}</ion-label>
                     </ion-segment-button>
@@ -409,6 +414,35 @@
                         </ion-row>
                       }
                     </ion-grid>
+                  </div>
+                }
+                <!-- CONTENUTO: Rapporto lavoro Profilo formule (formule personalizzate del calcolo, piano Pro) -->
+                @if (funzionalitaGestionePresenzeService.formulePersonalizzate && currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_PROF_FORM)) {
+                  <div>
+                    <br />
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.segFormulaProfiles' | transloco }}</ion-label>
+                    </ion-item>
+                    <ion-note class="ion-padding-start">{{ 'attendance.pages.userDepartmentEdit.formulaProfilesNote' | transloco }}</ion-note>
+                    <ion-list>
+                      @for (item of getAll_Dip_ProfiloFormule(); track item.id) {
+                        <ion-item>
+                          <ion-icon name="layers-outline" slot="start"></ion-icon>
+                          <ion-label>
+                            <h3>{{ nomeProfiloFormule(item.idPar_ProfiloFormule) }}</h3>
+                            <p>{{ item.dal | date:'dd/MM/yyyy' }} - {{ item.al | date:'dd/MM/yyyy' }}</p>
+                          </ion-label>
+                          <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="EditDipProfiloFormuleDialog_Open(item.id)">
+                            <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
+                          </ion-button>
+                          <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="Dip_ProfiloFormule_Delete(item)">
+                            <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
+                          </ion-button>
+                        </ion-item>
+                      } @empty {
+                        <ion-item lines="none"><ion-label color="medium">{{ 'attendance.pages.userDepartmentEdit.noFormulaProfile' | transloco }}</ion-label></ion-item>
+                      }
+                    </ion-list>
                   </div>
                 }
                 <!-- CONTENUTO: Rapporto lavoro Spesa (autovetture per i rimborsi km) -->

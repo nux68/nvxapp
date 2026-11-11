@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { AuthService } from '../infrastructure/auth.service';
+import { ApplicationType, LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 /*
  Funzionalita' opzionali della gestione presenze, in un unico punto.
@@ -9,6 +11,16 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class FunzionalitaGestionePresenzeService {
+
+  constructor(private authService: AuthService) { }
+
+  /**
+   * Formule personalizzate del calcolo giornata (ANALISI_FORMULE.md): solo CompanyPowerAdmin con il piano Pro.
+   * Senza, l'anagrafica dipendente non mostra la scheda "Profilo formule" (il server ricontrolla sempre).
+   */
+  get formulePersonalizzate(): boolean {
+    return this.authService.IsCompanyPowerAdmin && this.authService.hasLicenseAtLeast(ApplicationType.AttendanceTracking, LivelloLicenza.Pro);
+  }
 
   /**
    * Sezione "Spesa" del rapporto di lavoro (autovetture per i rimborsi km).

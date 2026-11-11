@@ -5,6 +5,8 @@ import { RoleGuard4CompanyList } from '../../pages/RoleGuard/infrastructure/role
 import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-4-user';
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
 import { RoleGuard4JustClockRequest } from '../../pages/RoleGuard/infrastructure/role-guard-4-just-clock-request';
+import { licenseLevelGuard } from '../../pages/RoleGuard/infrastructure/license-level-guard';
+import { ApplicationType, LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +23,11 @@ export class RouteAttendanceTrackingService {
       { path: 'notaspeseuser', loadChildren: () => import('../../pages/GestionePresenze/nota-spese-user-page/nota-spese-user-page.module').then(m => m.NotaSpeseUserPageModule), canActivate: [RoleGuard4User] },
       { path: 'notaspeseadmin', loadChildren: () => import('../../pages/GestionePresenze/nota-spese-admin-page/nota-spese-admin-page.module').then(m => m.NotaSpeseAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'tipospesalist', loadChildren: () => import('../../pages/GestionePresenze/tipo-spesa-list-page/tipo-spesa-list-page.module').then(m => m.TipoSpesaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      // formule personalizzate del calcolo giornata: CompanyPowerAdmin e piano Pro
+      { path: 'formulelist', loadChildren: () => import('../../pages/GestionePresenze/formule-list-page/formule-list-page.module').then(m => m.FormuleListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin, licenseLevelGuard(ApplicationType.AttendanceTracking, LivelloLicenza.Pro)] },
+      { path: 'formuleedit', loadChildren: () => import('../../pages/GestionePresenze/formule-edit-page/formule-edit-page.module').then(m => m.FormuleEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin, licenseLevelGuard(ApplicationType.AttendanceTracking, LivelloLicenza.Pro)] },
+      { path: 'profiloformulelist', loadChildren: () => import('../../pages/GestionePresenze/profilo-formule-list-page/profilo-formule-list-page.module').then(m => m.ProfiloFormuleListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin, licenseLevelGuard(ApplicationType.AttendanceTracking, LivelloLicenza.Pro)] },
+      { path: 'profiloformuleedit', loadChildren: () => import('../../pages/GestionePresenze/profilo-formule-edit-page/profilo-formule-edit-page.module').then(m => m.ProfiloFormuleEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin, licenseLevelGuard(ApplicationType.AttendanceTracking, LivelloLicenza.Pro)] },
       { path: 'tipospesaedit', loadChildren: () => import('../../pages/GestionePresenze/tipo-spesa-edit-page/tipo-spesa-edit-page.module').then(m => m.TipoSpesaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'usertimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-user-page/time-sheet-user-page.module').then(m => m.TimeSheetUserModule), canActivate: [RoleGuard4User] },
       { path: 'timeclockuser', loadChildren: () => import('../../pages/GestionePresenze/time-clock-user-page/time-clock-user-page.module').then(m => m.TimeClockUserPageModule), canActivate: [RoleGuard4User] },
