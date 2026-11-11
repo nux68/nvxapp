@@ -164,9 +164,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | Etichetta | Area | Branch (`_Dev`) | Worktree | Dipende da | Fase | Stato |
 |---|---|---|---|---|---|---|
 | `ANA` | Analisi di dettaglio e decisioni | Infrastructure_Dev (+ rami dei moduli) | `wt_ana` | – | 1 | 🔄 |
-| `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | 🔄 (manca `.6`) |
-| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ⏳ |
-| `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ server e client fatti (server provato su DB usa e getta, client compilato), da mergiare |
+| `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ✅ mergiata l'11/11/2026 |
+| `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | 🔄 fatta (ramo `Infrastructure_Dev_inf-com`), merge solo insieme ad `AT-COM` |
+| `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ✅ mergiata l'11/11/2026 (server provato su DB usa e getta, client compilato) |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ⏳ |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ⏳ |
@@ -217,7 +217,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-APP.3` Licenze: `AmbitoLicenza` 5..7 (server e client), le tre app in `LicenseGuard.Funzioni` (coperte anche dal Cumulativo) e in `AmbitiOfferta`, **nessun limite** (`LimiteFunzione` = null). I listini propri arrivano con i rami (`ILicenseCatalogSeed`), i livelli con `ANA.10`
 - ✅ `INF-APP.4` Stub vuoti per i tre rami: server `Installers4HumanResources/Compliance/Assets` (in `Program.cs`); client `main-menu-*`, `route-*`, `widget-*` collegati a `MainMenuService` (con `WorkingMode` 4..6), `RouteService`, `app-routing.module`, `WidgetService`; manuali `humanresources`, `compliance`, `assets` nella pagina dei manuali. Showcase: nessuno stub (lo ridefiniscono i rami e AllFunction)
 - ✅ `INF-APP.5` Cancellazione: nessuna modifica, `DropCompanySchemasAsync` trova gli schemi `tenant_<id>_<n>` per nome; ogni ramo aggiungerà il proprio `IApplicationDataDeleter` se tiene dati in `public` o Common
-- ⏳ `INF-APP.6` Creazione dei branch `Compliance_Dev`/`Compliance`, `HumanResources_Dev`/`HumanResources`, `Assets_Dev`/`Assets` da Infrastructure
+- ✅ `INF-APP.6` (11/11/2026) Creazione dei branch `Compliance_Dev`/`Compliance`, `HumanResources_Dev`/`HumanResources`, `Assets_Dev`/`Assets` da Infrastructure
 - ✅ `INF-APP.7` CLAUDE.md: nuovi gruppi nell'elenco dei branch e nella catena di AllFunction (Infrastructure, AttendanceTracking, CRM, DocumentManagement, HumanResources, Compliance, Assets)
 
 #### `INF-COM` – Dati in Common, lato Infrastructure (§6)
