@@ -5,7 +5,7 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Public
 {
-    // piani dei listini delle licenze, uno per livello (ANALISI_LICENZE.md §3.1)
+    // piani dei listini delle licenze, uno per livello (ANALISI_INFRASTRUCTURE_LICENZE.md §3.1)
     public class Lic_PianoRepository : Repository<PublicDbContext, Lic_Piano>, ILic_PianoRepository
     {
         public Lic_PianoRepository(PublicDbContext dbContext, IServiceProvider provider, IHttpContextAccessor httpContextAccessor)

@@ -1,10 +1,10 @@
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Enum delle licenze d'uso (ANALISI_LICENZE.md). Salvati come interi: i valori non vanno rinumerati.
+     Enum delle licenze d'uso (ANALISI_INFRASTRUCTURE_LICENZE.md). Salvati come interi: i valori non vanno rinumerati.
     */
 
-    /// <summary>Chi sottoscrive: azienda o studio (ANALISI_LICENZE.md §5).</summary>
+    /// <summary>Chi sottoscrive: azienda o studio (ANALISI_INFRASTRUCTURE_LICENZE.md §5).</summary>
     public enum TipoSoggettoLicenza
     {
         Company = 1,
@@ -23,7 +23,7 @@ namespace nvxapp.server.data.Entities.Public
         Cumulativo = 100,
     }
 
-    /// <summary>Livello del piano: stessa scala per tutti i listini, il piu' alto vince (ANALISI_LICENZE.md §3.1, §5).</summary>
+    /// <summary>Livello del piano: stessa scala per tutti i listini, il piu' alto vince (ANALISI_INFRASTRUCTURE_LICENZE.md §3.1, §5).</summary>
     public enum LivelloLicenza
     {
         Free = 1,
@@ -61,7 +61,7 @@ namespace nvxapp.server.data.Entities.Public
         Completato = 2,
         Fallito = 3,
         Rimborsato = 4,
-        /// <summary>giro completo senza transazione reale (ANALISI_LICENZE.md §7.2)</summary>
+        /// <summary>giro completo senza transazione reale (ANALISI_INFRASTRUCTURE_LICENZE.md §7.2)</summary>
         Debug = 5,
     }
 }

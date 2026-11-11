@@ -18,7 +18,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 {
     /*
      Ticket di assistenza sui livelli SuperUser, DEV, Dealer, FinancialAdvisor, Company, User
-     (specifica: nvxapp.server.service/ANALISI_TICKET.md).
+     (specifica: nvxapp.server.service/ANALISI_INFRASTRUCTURE_TICKET.md).
 
      - Il ticket sale al primo livello abilitato dal tipo sopra quello corrente; il SuperUser apre verso il basso
        assegnando direttamente il ticket a un PowerAdmin o Admin (DEV).

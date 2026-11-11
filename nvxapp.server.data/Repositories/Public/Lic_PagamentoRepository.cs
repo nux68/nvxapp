@@ -5,7 +5,7 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Public
 {
-    // pagamenti delle licenze (ANALISI_LICENZE.md §3.2)
+    // pagamenti delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §3.2)
     public class Lic_PagamentoRepository : Repository<PublicDbContext, Lic_Pagamento>, ILic_PagamentoRepository
     {
         public Lic_PagamentoRepository(PublicDbContext dbContext, IServiceProvider provider, IHttpContextAccessor httpContextAccessor)

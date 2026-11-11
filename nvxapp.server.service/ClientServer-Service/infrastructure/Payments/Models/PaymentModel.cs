@@ -3,7 +3,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments.Models
 {
     /*
-     Modelli della ripartizione degli incassi ai centri (ANALISI_PAGAMENTI_CENTRI.md §4). Gli enum viaggiano come interi:
+     Modelli della ripartizione degli incassi ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §4). Gli enum viaggiano come interi:
         StatoRendiconto         0 Bozza, 1 Confermato, 2 Liquidato, 3 Annullato
         TipoRiepilogoPagamenti  1 Mensile, 2 Annuale, 3 Liquidazione
         Stato del pagamento, Ambito, Livello, Periodicita: come nelle licenze (LicenseModel.cs)

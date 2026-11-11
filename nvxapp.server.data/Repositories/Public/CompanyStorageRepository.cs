@@ -24,7 +24,7 @@ namespace nvxapp.server.data.Repositories.Public
                 VALUES ({idCompany}, 0, 0, 0, 0, now(), now())
                 ON CONFLICT (""IdCompany"") DO NOTHING", cancellationToken);
 
-        // prenotazione atomica con la quota indicata (ANALISI_LICENZE.md §5.1)
+        // prenotazione atomica con la quota indicata (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1)
         public async Task<bool> ReserveAsync(int idCompany, long bytes, long quotaBytes, CancellationToken cancellationToken = default)
             => await DbContext.Database.ExecuteSqlInterpolatedAsync($@"
                 UPDATE public.""CompanyStorage"" cs

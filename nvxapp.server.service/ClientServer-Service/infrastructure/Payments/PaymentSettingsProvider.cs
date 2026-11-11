@@ -5,7 +5,7 @@ using nvxapp.server.data.Repositories.Public;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
 {
     /*
-     Impostazioni della ripartizione degli incassi ai centri (ANALISI_PAGAMENTI_CENTRI.md §3), nella tabella AppSetting:
+     Impostazioni della ripartizione degli incassi ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3), nella tabella AppSetting:
         - PercentualePiattaforma : trattenuta della piattaforma (0-100) per i centri senza una propria
         - RiepilogoAutomatico    : la manutenzione genera le bozze dei rendiconti e invia i riepiloghi annuali
         - GiornoInvioMensile     : dal giorno del mese in cui si generano le bozze del mese precedente (1-28)

@@ -14,7 +14,7 @@ import {
   PaymentSummarySendInModel, PaymentSummarySendOutModel
 } from './Models/payment-model';
 
-// Pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): SuperUser e utenti del centro
+// Pagamenti delle licenze e ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): SuperUser e utenti del centro
 @Injectable({
   providedIn: 'root'
 })

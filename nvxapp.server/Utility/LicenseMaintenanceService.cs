@@ -4,7 +4,7 @@ using Serilog;
 namespace nvxapp.server.Utility
 {
     /*
-     Manutenzione delle licenze (ANALISI_LICENZE.md §6), una volta al giorno dopo le 3 di notte (e al primo giro dopo l'avvio):
+     Manutenzione delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §6), una volta al giorno dopo le 3 di notte (e al primo giro dopo l'avvio):
         - rinnova gli abbonamenti con rinnovo automatico scaduti (gratuiti, o a pagamento in modalita' debug: con un provider
           reale i rinnovi li addebita il provider)
         - porta a Scaduto gli abbonamenti oltre i giorni di grace

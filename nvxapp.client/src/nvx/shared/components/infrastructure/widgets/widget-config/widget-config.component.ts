@@ -7,7 +7,7 @@ import { WidgetDefinition } from '../../../../../Utility/infrastructure/widget.m
 import { DashboardStato, WidgetService } from '../../../../../Utility/infrastructure/widget.service';
 
 /*
- Configurazione della propria dashboard (ANALISI_WIDGET.md), nelle pagine dei ruoli User, CompanyAdmin e
+ Configurazione della propria dashboard (ANALISI_INFRASTRUCTURE_WIDGET.md), nelle pagine dei ruoli User, CompanyAdmin e
  CompanyPowerAdmin: widget scelti (ordine, rimozione) e widget disponibili raggruppati per applicativo.
  Il salvataggio lo comanda la pagina (barra dei pulsanti) con salva(); le chiavi salvate che il ramo non conosce
  o che oggi non sono disponibili si conservano in coda.

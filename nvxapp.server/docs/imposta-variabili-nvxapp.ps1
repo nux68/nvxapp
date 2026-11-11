@@ -1,4 +1,4 @@
-# Crea le variabili d'ambiente di SISTEMA con i segreti di nvxapp (punti 7 e 7b di ANALISI_DOCKER.md),
+# Crea le variabili d'ambiente di SISTEMA con i segreti di nvxapp (punti 7 e 7b di ANALISI_INFRASTRUCTURE_DOCKER.md),
 # lette da Visual Studio e da IIS sulla stessa macchina. Si esegue UNA VOLTA per macchina
 # (e di nuovo solo per cambiare un valore). Lo script non contiene segreti e non li stampa.
 #

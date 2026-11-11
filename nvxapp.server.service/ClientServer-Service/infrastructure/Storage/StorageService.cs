@@ -24,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         - valore predefinito della soglia di avviso: solo SuperUser
         - spazio delle aziende: SuperUser (tutte), centro (sue aziende; cambia la soglia solo il DealerPowerAdmin),
           studio (sue aziende, sola lettura), azienda (solo la propria, sola lettura)
-     La quota e' quella della licenza Documentale (ANALISI_LICENZE.md §5.1): i pacchetti di spazio sono stati eliminati.
+     La quota e' quella della licenza Documentale (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): i pacchetti di spazio sono stati eliminati.
      Ruoli e nodi sono quelli del token, mai dal client.
     */
     public class StorageService : ServiceBase, IStorageService

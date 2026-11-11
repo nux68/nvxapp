@@ -5,7 +5,7 @@ using nvxapp.server.data.Repositories.Public;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 {
     /*
-     Impostazioni delle licenze (ANALISI_LICENZE.md §5.1, §8.1.1), nella tabella AppSetting:
+     Impostazioni delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1, §8.1.1), nella tabella AppSetting:
         - Attive        : false = ILicenseGuard risponde in modo neutro (come Pro, utenti illimitati), nessuno viene bloccato
         - MaxUtenti*    : utenti predefiniti dei piani dei nuovi listini (Presenze; null = illimitati)
         - MaxClienti*   : clienti predefiniti (CRM), MaxSpazioMB*: spazio predefinito in MB (Documentale)
