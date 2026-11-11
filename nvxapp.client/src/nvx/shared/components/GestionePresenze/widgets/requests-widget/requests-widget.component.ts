@@ -6,7 +6,7 @@ import { DipWidgetService } from '../../../../../ClientServer-Service/GestionePr
 import { Widget_RichiesteGetInModel, Widget_RichiesteGetOutModel } from '../../../../../ClientServer-Service/GestionePresenze/Dip_Widget/Models/dip-widget-model';
 
 /*
- Widget "Richieste" (Presenze, ANALISI_WIDGET_PRESENZE.md):
+ Widget "Richieste" (Presenze, ANALISI_ATTENDANCETRACKING_WIDGET.md):
    - amministratori (CompanyPowerAdmin, CompanyAdmin): richieste da approvare e approvate nel mese;
    - utenti: proprie richieste in attesa e approvate nel mese.
 */

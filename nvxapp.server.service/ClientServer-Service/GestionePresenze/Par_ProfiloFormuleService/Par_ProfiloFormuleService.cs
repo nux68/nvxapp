@@ -17,7 +17,7 @@ using nvxapp.server.service.ServerModels;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloFormuleService
 {
-    // Profili formule: testata + righe (formula, ordine, Dal/Al, fase, sospesa). CompanyPowerAdmin, piano Pro. ANALISI_FORMULE.md
+    // Profili formule: testata + righe (formula, ordine, Dal/Al, fase, sospesa). CompanyPowerAdmin, piano Pro. ANALISI_ATTENDANCETRACKING_FORMULE.md
     public class Par_ProfiloFormuleService : ServiceBase, IPar_ProfiloFormuleService
     {
         private readonly IPar_ProfiloFormuleRepository _par_ProfiloFormuleRepository;

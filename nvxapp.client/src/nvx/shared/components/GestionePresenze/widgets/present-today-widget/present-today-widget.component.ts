@@ -6,7 +6,7 @@ import { DipWidgetService } from '../../../../../ClientServer-Service/GestionePr
 import { Widget_PresenzeOggiGetInModel, Widget_PresenzeOggiGetOutModel } from '../../../../../ClientServer-Service/GestionePresenze/Dip_Widget/Models/dip-widget-model';
 
 /*
- Widget "Presenti oggi" (Presenze, ANALISI_WIDGET_PRESENZE.md): dipendenti presenti e assenti oggi, con gli assenti
+ Widget "Presenti oggi" (Presenze, ANALISI_ATTENDANCETRACKING_WIDGET.md): dipendenti presenti e assenti oggi, con gli assenti
  giustificati; il CompanyAdmin vede solo i reparti che amministra (lo decide il server).
 */
 @Component({

@@ -15,7 +15,7 @@ export class FunzionalitaGestionePresenzeService {
   constructor(private authService: AuthService) { }
 
   /**
-   * Formule personalizzate del calcolo giornata (ANALISI_FORMULE.md): solo CompanyPowerAdmin con il piano Pro.
+   * Formule personalizzate del calcolo giornata (ANALISI_ATTENDANCETRACKING_FORMULE.md): solo CompanyPowerAdmin con il piano Pro.
    * Senza, l'anagrafica dipendente non mostra la scheda "Profilo formule" (il server ricontrolla sempre).
    */
   get formulePersonalizzate(): boolean {

@@ -903,7 +903,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (NelRapporto(d) && results.Any(r => r.Data.Date == d))
                         giorniDaCalcolare.Add(d);
 
-            // formule personalizzate del rapporto nei giorni da calcolare (solo piano Pro, ANALISI_FORMULE.md)
+            // formule personalizzate del rapporto nei giorni da calcolare (solo piano Pro, ANALISI_ATTENDANCETRACKING_FORMULE.md)
             if (giorniDaCalcolare.Count > 0)
             {
                 int.TryParse(this.CurrentCompany, out var idCompanyFormule);
@@ -1264,7 +1264,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return;
         }
 
-        #region "Formule personalizzate (ANALISI_FORMULE.md)"
+        #region "Formule personalizzate (ANALISI_ATTENDANCETRACKING_FORMULE.md)"
 
         private static void AggiungiStatoFormule(ref GG_ResultStato stato, GG_ResultStato statoFormule)
         {

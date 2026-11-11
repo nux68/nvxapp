@@ -6,7 +6,7 @@ import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { Widget_PresenzeOggiGetInModel, Widget_PresenzeOggiGetOutModel, Widget_RichiesteGetInModel, Widget_RichiesteGetOutModel } from './Models/dip-widget-model';
 
-// Dati dei widget della dashboard delle presenze (ANALISI_WIDGET_PRESENZE.md)
+// Dati dei widget della dashboard delle presenze (ANALISI_ATTENDANCETRACKING_WIDGET.md)
 @Injectable({
   providedIn: 'root'
 })

@@ -1,6 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
-// dipendenti presenti e assenti oggi (widget "Presenti oggi", ANALISI_WIDGET_PRESENZE.md)
+// dipendenti presenti e assenti oggi (widget "Presenti oggi", ANALISI_ATTENDANCETRACKING_WIDGET.md)
 export class Widget_PresenzeOggiGetInModel { }
 
 export class Widget_PresenzeOggiGetOutModel extends ModelResult {
