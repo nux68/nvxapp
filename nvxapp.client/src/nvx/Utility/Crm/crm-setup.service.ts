@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { ToastController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { CrmService } from '../../ClientServer-Service/Crm/crm.service';
-import { CrmEmptyInModel, CrmParModel, CrmSetupGetOutModel } from '../../ClientServer-Service/Crm/Models/crm-model';
+import { CrmEmptyInModel, CrmIdInModel, CrmParModel, CrmSetupGetOutModel } from '../../ClientServer-Service/Crm/Models/crm-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 
 /*
@@ -15,7 +17,18 @@ export class CrmSetupService {
 
   public setup: CrmSetupGetOutModel | null = null;
 
-  constructor(private service: CrmService) { }
+  constructor(private service: CrmService, private toastController: ToastController, private transloco: TranslocoService) { }
+
+  /** PDF dell'offerta: lo prepara un job, il file si scarica dalla barra dei job quando e' pronto */
+  pdfOfferta(id: number) {
+    const request = new GenericRequest<CrmIdInModel>(CrmIdInModel);
+    request.data.id = id;
+    this.service.OffertaPdfJob(request).subscribe(async res => {
+      if (!res.success) return;
+      const toast = await this.toastController.create({ message: this.transloco.translate('crm.pages.offerEdit.pdfStarted'), duration: 3000, position: 'bottom' });
+      await toast.present();
+    });
+  }
 
   async load(): Promise<CrmSetupGetOutModel | null> {
     const res = await firstValueFrom(this.service.SetupGet(new GenericRequest<CrmEmptyInModel>(CrmEmptyInModel)));

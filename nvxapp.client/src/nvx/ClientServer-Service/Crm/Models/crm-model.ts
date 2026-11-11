@@ -6,7 +6,12 @@ export enum CrmFaseTipo { Aperta = 0, Vinta = 1, Persa = 2 }
 export enum CrmStatoCliente { Prospect = 0, Cliente = 1, ExCliente = 2, NonInteressato = 3 }
 export enum CrmStatoLead { Nuovo = 0, Contattato = 1, Qualificato = 2, Convertito = 3, Scartato = 4 }
 export enum CrmStatoAttivita { DaFare = 0, Fatta = 1, Annullata = 2 }
-export enum CrmStatoOfferta { Bozza = 0, Inviata = 1, Accettata = 2, Rifiutata = 3 }
+export enum CrmStatoOfferta { Bozza = 0, Inviata = 1, Accettata = 2, Rifiutata = 3, Scaduta = 4 }
+export enum CrmTipoProdotto { Articolo = 0, Servizio = 1 }
+// assistenza ai clienti (CRM-ASS)
+export enum CrmStatoRichiesta { Nuova = 0, InCarico = 1, InAttesaCliente = 2, Risolta = 3, Chiusa = 4, Annullata = 5 }
+export enum CrmPrioritaRichiesta { Bassa = 0, Normale = 1, Alta = 2, Urgente = 3 }
+export enum CrmCanaleRichiesta { Telefono = 0, Email = 1, DiPersona = 2, Sito = 3, Altro = 4 }
 export enum CrmParTabella { Fase = 0, TipoAttivita = 1, MotivoPerdita = 2, Fonte = 3, Prodotto = 4, Tag = 5 }
 
 export class CrmEmptyInModel { }
@@ -41,6 +46,7 @@ export class CrmParModel {
   public prezzo = 0;
   public um: string | null = null;
   public aliquotaIva = 22;
+  public tipoProdotto = CrmTipoProdotto.Articolo;
 }
 
 export class CrmSetupGetOutModel extends ModelResult {
@@ -143,6 +149,7 @@ export class CrmClienteGetOutModel extends ModelResult {
   public offerte: CrmOffertaListModel[] = [];
   public note: CrmNotaModel[] = [];
   public allegati: CrmAllegatoModel[] = [];
+  public richieste: CrmRichiestaListModel[] = [];
   public modificabile = true;
 }
 export class CrmClientePutInModel { public cliente = new CrmClienteModel(); }
@@ -289,6 +296,7 @@ export class CrmOffertaListModel {
   public oggetto: string | null = null;
   public totale = 0;
   public idCrm_Opportunita: number | null = null;
+  public dataEsito: string | null = null;
 }
 export class CrmOffertaListOutModel extends ModelResult { public offerte: CrmOffertaListModel[] = []; }
 export class CrmOffertaRigaModel {
@@ -319,6 +327,9 @@ export class CrmOffertaModel {
   public iva = 0;
   public totale = 0;
   public dataInvio: string | null = null;
+  public dataEsito: string | null = null;
+  // predisposizione dell'ordine dell'Amministrazione (sola lettura)
+  public idOrdineAmministrazione: number | null = null;
   public righe: CrmOffertaRigaModel[] = [];
 }
 export class CrmOffertaGetOutModel extends ModelResult {
@@ -330,6 +341,61 @@ export class CrmOffertaGetOutModel extends ModelResult {
 export class CrmOffertaPutInModel { public offerta = new CrmOffertaModel(); }
 export class CrmOffertaPutOutModel extends ModelResult { public offerta = new CrmOffertaModel(); }
 export class CrmOffertaInviaInModel { public id = 0; public email = ''; public messaggio: string | null = null; }
+// PDF preparato da un job: il file arriva nella barra dei job
+export class CrmOffertaPdfJobOutModel extends ModelResult { public jobId = ''; }
+
+// ---------------------------------------------------------------- assistenza ai clienti (CRM-ASS)
+export class CrmRichiestaListInModel { public idAz_Cliente: number | null = null; public soloAperte = false; public soloMie = false; }
+export class CrmRichiestaListModel {
+  public id = 0;
+  public numeroCompleto = '';
+  public idAz_Cliente = 0;
+  public cliente = '';
+  public oggetto = '';
+  public priorita = CrmPrioritaRichiesta.Normale;
+  public stato = CrmStatoRichiesta.Nuova;
+  public idAssegnatario: string | null = null;
+  public assegnatario: string | null = null;
+  public dataApertura = '';
+  public dataPresaInCarico: string | null = null;
+  public dataRisoluzione: string | null = null;
+  public orePresaInCarico: number | null = null;
+  public oreRisoluzione: number | null = null;
+}
+export class CrmRichiestaListOutModel extends ModelResult { public richieste: CrmRichiestaListModel[] = []; }
+export class CrmRichiestaModel {
+  public id = 0;
+  public numeroCompleto = '';
+  public idAz_Cliente = 0;
+  public idAz_ClienteContatto: number | null = null;
+  public oggetto = '';
+  public descrizione: string | null = null;
+  public canale = CrmCanaleRichiesta.Telefono;
+  public priorita = CrmPrioritaRichiesta.Normale;
+  public stato = CrmStatoRichiesta.Nuova;
+  public idAssegnatario: string | null = null;
+  public dataApertura = '';
+  public dataPresaInCarico: string | null = null;
+  public dataRisoluzione: string | null = null;
+  public dataChiusura: string | null = null;
+  public orePresaInCarico: number | null = null;
+  public oreRisoluzione: number | null = null;
+  public soluzione: string | null = null;
+  public idCrm_Opportunita: number | null = null;
+}
+export class CrmRichiestaMessaggioModel { public id = 0; public data = ''; public autore: string | null = null; public testo = ''; public sistema = false; }
+export class CrmRichiestaGetOutModel extends ModelResult {
+  public richiesta = new CrmRichiestaModel();
+  public cliente = '';
+  public contatti: CrmContattoModel[] = [];
+  public opportunitaCliente: CrmOpportunitaListModel[] = [];
+  public messaggi: CrmRichiestaMessaggioModel[] = [];
+  public modificabile = true;
+}
+export class CrmRichiestaPutInModel { public richiesta = new CrmRichiestaModel(); }
+export class CrmRichiestaPutOutModel extends ModelResult { public richiesta = new CrmRichiestaModel(); }
+export class CrmRichiestaMessaggioPutInModel { public idCrm_Richiesta = 0; public testo = ''; }
+export class CrmRichiestaMessaggioPutOutModel extends ModelResult { public messaggi: CrmRichiestaMessaggioModel[] = []; }
 
 // ---------------------------------------------------------------- note e allegati
 export class CrmNotaModel {

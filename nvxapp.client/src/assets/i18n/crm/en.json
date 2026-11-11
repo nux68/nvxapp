@@ -12,7 +12,8 @@
       "tables": "Tables",
       "settings": "Settings",
       "reassign": "Reassignment",
-      "manual": "CRM manual"
+      "manual": "CRM manual",
+      "requests": "Customer requests"
     },
     "common": {
       "add": "Add",
@@ -28,7 +29,9 @@
       "offerte": "Offers",
       "note": "Notes",
       "allegati": "Attachments",
-      "storico": "History"
+      "storico": "History",
+      "assistenza": "Support",
+      "messaggi": "Messages"
     },
     "fields": {
       "assegnatario": "Assigned to",
@@ -88,11 +91,21 @@
       "validaFinoAl": "Valid until",
       "valore": "Value",
       "valoreAperto": "Open value",
-      "ivaTotale": "VAT"
+      "ivaTotale": "VAT",
+      "apertura": "Opened",
+      "priorita": "Priority",
+      "canale": "Channel",
+      "soluzione": "Solution",
+      "presaInCarico": "Taken in charge",
+      "risoluzione": "Resolution",
+      "orePresaInCarico": "Hours to take charge",
+      "oreRisoluzione": "Hours to resolve",
+      "tipoProdotto": "Type"
     },
     "validation": {
       "checkFields": "Check the highlighted fields.",
-      "customerName": "The company name is required (max 100 characters)."
+      "customerName": "The company name is required (max 100 characters).",
+      "requestSubject": "The subject is required (max 200 characters)."
     },
     "contact": {
       "title": "Contact person",
@@ -153,7 +166,8 @@
         "addContatto": "Contact",
         "addOpportunita": "Opportunity",
         "addAttivita": "Activity",
-        "addOfferta": "Offer"
+        "addOfferta": "Offer",
+        "addRichiesta": "Support request"
       },
       "leadList": {
         "title": "Leads",
@@ -206,7 +220,11 @@
         "addLine": "Add line",
         "delete": "Delete the offer",
         "confirmDelete": "Confirm deletion of the draft offer?",
-        "sentOn": "Sent on {{data}}"
+        "sentOn": "Sent on {{data}}",
+        "pdfStarted": "PDF being prepared: you will find it in the job bar when ready.",
+        "outcomeOn": "· {{stato}} on {{data}}",
+        "order": "· Order no. {{id}}",
+        "lifecycleNote": "Once sent (also with the Send button) the offer is in the deadlines until its validity date; past the validity without an outcome it becomes Expired. Accepted: the linked opportunity, if open, moves to the won phase with the offer value."
       },
       "parList": {
         "title": "CRM tables",
@@ -258,6 +276,25 @@
         "activitiesByUser": "Activities done by user",
         "weighted": "weighted",
         "empty": "No data."
+      },
+      "requestList": {
+        "title": "Support requests",
+        "new": "New request",
+        "open": "Open",
+        "mine": "Assigned to me",
+        "empty": "No requests.",
+        "note": "Requests from the company's customers (not tickets to the platform support). Open requests with high or urgent priority are highlighted."
+      },
+      "requestEdit": {
+        "title": "Support request",
+        "delete": "Delete the request",
+        "confirmDelete": "Delete the request and its messages?",
+        "times": "Times",
+        "hours": "{{ore}} hours",
+        "notePlaceholder": "Internal note",
+        "noMessages": "No messages.",
+        "newNote": "After the first save you can add internal notes; the assignee receives a notification.",
+        "readOnly": "The request is assigned to another user: you can read it and add notes, not change it."
       }
     },
     "enums": {
@@ -283,7 +320,8 @@
         "0": "Draft",
         "1": "Sent",
         "2": "Accepted",
-        "3": "Rejected"
+        "3": "Rejected",
+        "4": "Expired"
       },
       "faseTipo": {
         "0": "Open",
@@ -301,6 +339,31 @@
         "3": "Sources",
         "4": "Products",
         "5": "Tags"
+      },
+      "tipoProdotto": {
+        "0": "Item",
+        "1": "Service"
+      },
+      "statoRichiesta": {
+        "0": "New",
+        "1": "In progress",
+        "2": "Waiting for customer",
+        "3": "Resolved",
+        "4": "Closed",
+        "5": "Cancelled"
+      },
+      "prioritaRichiesta": {
+        "0": "Low",
+        "1": "Normal",
+        "2": "High",
+        "3": "Urgent"
+      },
+      "canaleRichiesta": {
+        "0": "Phone",
+        "1": "Email",
+        "2": "In person",
+        "3": "Website",
+        "4": "Other"
       }
     },
     "showcase": {

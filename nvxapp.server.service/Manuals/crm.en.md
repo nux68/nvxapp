@@ -49,8 +49,9 @@ The **Consent to marketing communications** box records the customer's consent w
 - **Details**: registry and sales data (saved with **Confirm**).
 - **Contacts**: the contact persons; a new contact is added with **+** › **Contact**: the window opens with surname, first name, role, phone, mobile, email, notes and the "Main contact" box (only one per customer).
 - **Opportunities**, **Activities**, **Offers**: the customer's items.
+- **Support**: the history of the customer's support requests (open ones highlighted), with status, assignee and times.
 
-To add something to a saved customer press **+** and choose from the menu that opens from the bottom: **Contact**, **Opportunity**, **Activity** or **Offer**; the item is created already linked to the customer.
+To add something to a saved customer press **+** and choose from the menu that opens from the bottom: **Contact**, **Opportunity**, **Activity**, **Offer** or **Support request**; the item is created already linked to the customer.
 - **Notes** and **Attachments**: as described in the introduction.
 
 > Customers are not deleted from the CRM: they are deactivated (**Active** field). Permanent deletion is done from Administration and is blocked, with a message, if the customer is used by opportunities, offers, activities or attachments.
@@ -120,7 +121,7 @@ Administrators have the **Only mine** switch to also see the activities of other
 Before a to-do activity starts, the assignee receives a pop-up notice with the **Open** button. The notice time (default 30 minutes) is set in CRM settings. The notice only arrives if you are connected to the application; the activity stays in the agenda anyway.
 
 @@ /crmofferlist
-The list shows the visible offers with number, customer, subject, date, status and total; from each row you download the **PDF**.
+The list shows the visible offers (quotes) with number, customer, subject, date, status and total; from each row you prepare the **PDF**.
 
 ### Preparing an offer
 1. Press **+** and choose **New offer**.
@@ -132,13 +133,27 @@ The list shows the visible offers with number, customer, subject, date, status a
 The totals update as you type. You can also add the offer from the customer or opportunity card.
 
 ### PDF and sending
-- **PDF** downloads the offer with the company and customer data, the lines, the totals, the notes and the configured terms.
-- **Send** opens the sending window: the email is proposed from the contact person or the customer; the message is optional (empty = default text). The PDF is attached and the offer becomes **Sent**, with the sending date.
+- **PDF** prepares the offer with the company and customer data, the lines, the totals, the notes and the configured terms. The file is prepared in the background: when ready you download it from the **job bar**.
+- **Send** opens the sending window: the email is proposed from the contact person or the customer; the message is optional (empty = default text). The PDF is attached and the offer becomes **Sent**, with the sending date. The sending is recorded among the customer's **activities** (a done activity, with the recipient). If the email cannot be sent a message appears and the offer is left unchanged.
 
 ### Offer statuses
-Draft, Sent, Accepted, Rejected: the status is changed in the offer header. Only **draft** offers without attachments can be deleted.
+Draft, Sent, Accepted, Rejected, Expired: the status is changed in the offer header. Only **draft** offers without attachments can be deleted.
+- A **sent** offer enters the **deadlines** with its validity date (reminder 7 days before to the owner of the opportunity or of the customer).
+- Past the validity without an outcome the offer becomes **Expired** automatically.
+- **Accepted**: if the offer is linked to a still open opportunity, the opportunity moves to the **won** phase with the offer value (taxable amount); the change is recorded in the history. Rejected or expired offers do not change the opportunity.
+- On the outcome (accepted, rejected, expired) the deadline is closed; going back to draft removes it.
 
 > If email sending is not configured a message appears: in that case download the PDF and send it with your own mail.
+
+@@ /crmrequestlist
+**Support requests** are the reports from the company's customers (a fault, an intervention, a question): they are not tickets to the platform support.
+- The list has three views: **Open**, **Assigned to me**, **All**; open requests with high or urgent priority are highlighted. For each request you see priority, status, assignee and the times to **take charge** and to **resolve** (hours from opening).
+- **+** › **New request**: customer, contact person, opening date, subject, description, channel, priority, assignee. You can also open it from the customer card.
+- Statuses: **New**, **In progress**, **Waiting for customer**, **Resolved**, **Closed**, **Cancelled**. Taking charge is recorded at the first move into progress, resolution when moving to Resolved (or Closed); reopening clears the resolution.
+- The assignee receives a **notification**.
+- The **Messages** section shows the internal notes and the history (opening, assignments, status changes); write a note with **Add**.
+
+> Administrators see all requests and assign them to anyone. A salesperson sees the requests of the customers they see and those assigned to them, can take free requests (assigning them to themselves), works on their own and cannot assign them to others or delete them.
 
 @@ /crmreport
 The reports show, for the chosen period (by default from the start of the year), the sales trend:
@@ -155,7 +170,7 @@ Here you collect the CRM tables, created at activation with default values and r
 - **Phases**: description, type (open, won, lost), proposed probability and order in the pipeline;
 - **Activity types**: icon, colour and proposed duration;
 - **Loss reasons** and **Sources**;
-- **Products**: code, description, price, unit of measure and VAT, proposed in the offer lines;
+- **Products** (the price list): type (item or service), code, description, price, unit of measure and VAT, proposed in the offer lines;
 - **Tags**: to group customers, with a colour.
 
 > A value already in use cannot be deleted: deactivate it, it stays in the history but is no longer offered. At least one active phase of each type and at least one activity type must remain.
@@ -184,7 +199,7 @@ It depends on the **visibility** set by the company. With "Only their own custom
 A sales rep can take a customer without an owner or leave one of their own. Assigning a customer to another user, or moving a sales rep's data in bulk, is up to the administrators (Reassignment).
 
 ### I can't delete a customer: why?
-Customers are not deleted from the CRM, they are deactivated. Permanent deletion is blocked if the customer is used by opportunities, offers, activities or attachments.
+Customers are not deleted from the CRM, they are deactivated. Permanent deletion is blocked if the customer is used by opportunities, offers, activities, attachments or support requests.
 
 ### The offer won't send by email.
 If email sending is not configured a message appears: download the offer PDF and send it with your own mail.
