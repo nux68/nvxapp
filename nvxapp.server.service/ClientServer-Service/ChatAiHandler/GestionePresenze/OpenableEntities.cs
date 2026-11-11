@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_ClienteService;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_ClienteService.Models;
@@ -48,6 +49,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         public IReadOnlyList<string> Roles { get; } = new[] { ChatPresenzeHelper.RuoloHR };
         public string EditRoute { get; }
         public IReadOnlyList<string> Pages { get; }
+        public ApplicationType? Application => ApplicationType.AttendanceTracking;
 
         public abstract Task<List<OpenableItem>> LoadAsync();
 
