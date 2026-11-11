@@ -13,13 +13,16 @@ namespace nvxapp.server.data.Entities.Public
 
     /// <summary>
     /// Funzione coperta dal listino. I valori delle singole funzioni coincidono con ApplicationType
-    /// (Presenze = 2, CRM = 3, Documentale = 4); Cumulativo copre tutte le funzioni.
+    /// (Presenze = 2, CRM = 3, Documentale = 4, Risorse Umane = 5, Compliance = 6, Risorse aziendali = 7); Cumulativo copre tutte le funzioni.
     /// </summary>
     public enum AmbitoLicenza
     {
         AttendanceTracking = 2,
         Crm = 3,
         DocumentManagement = 4,
+        HumanResources = 5,
+        Compliance = 6,
+        Assets = 7,
         Cumulativo = 100,
     }
 

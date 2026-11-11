@@ -164,7 +164,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | Etichetta | Area | Branch (`_Dev`) | Worktree | Dipende da | Fase | Stato |
 |---|---|---|---|---|---|---|
 | `ANA` | Analisi di dettaglio e decisioni | Infrastructure_Dev (+ rami dei moduli) | `wt_ana` | – | 1 | 🔄 |
-| `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | ⏳ |
+| `INF-APP` | Registrazione dei nuovi applicativi | Infrastructure_Dev | `wt_inf-app` | – | 1 | 🔄 (manca `.6`) |
 | `INF-COM` | Dati spostati in Common (lato Infrastructure) | Infrastructure_Dev | `wt_inf-com` | – | 1 | ⏳ |
 | `INF-SVC` | Scadenzario, notifiche, interfaccia di presa visione | Infrastructure_Dev | `wt_inf-svc` | – | 1 | ⏳ |
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ⏳ |
@@ -212,13 +212,13 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
 
 #### `INF-APP` – Registrazione dei nuovi applicativi (§7)
-- ⏳ `INF-APP.1` `ApplicationType`: `HumanResources = 5`, `Compliance = 6`, `Assets = 7` (`Administration = 8` riservato, solo in commento)
-- ⏳ `INF-APP.2` Attivazione per azienda e studio (`CompanyApplication`, `FinancialAdvisorApplication`), testi e traduzioni
-- ⏳ `INF-APP.3` Licenze: voci di listino e `ILicenseGuard` per i nuovi applicativi (livelli secondo `ANA.10`)
-- ⏳ `INF-APP.4` Menu, voci dei manuali e cataloghi dei widget vuoti per i tre rami
-- ⏳ `INF-APP.5` Cancellazione: `DeletionService` elimina anche gli schemi `tenant_<id>_5..7`
+- ✅ `INF-APP.1` `ApplicationType`: `HumanResources = 5`, `Compliance = 6`, `Assets = 7` (`Administration = 8` riservato, solo in commento), anche nella copia del client (`user-load-model.ts`). Un valore senza DbContext registrato non si può attivare e la creazione degli schemi lo salta: le app diventano attivabili quando il loro ramo registra il contesto in `Installers4<App>`
+- ✅ `INF-APP.2` Attivazione per azienda e studio: nessuna modifica necessaria (i servizi filtrano le app registrate). Testi: `LicenseAmbito_5..7`, `VoiceManualApp_5..7` (resx it/en) e nel client `menu.application`, `ticket.application`, `widgets.application`, `pages.license.function5..7`
+- ✅ `INF-APP.3` Licenze: `AmbitoLicenza` 5..7 (server e client), le tre app in `LicenseGuard.Funzioni` (coperte anche dal Cumulativo) e in `AmbitiOfferta`, **nessun limite** (`LimiteFunzione` = null). I listini propri arrivano con i rami (`ILicenseCatalogSeed`), i livelli con `ANA.10`
+- ✅ `INF-APP.4` Stub vuoti per i tre rami: server `Installers4HumanResources/Compliance/Assets` (in `Program.cs`); client `main-menu-*`, `route-*`, `widget-*` collegati a `MainMenuService` (con `WorkingMode` 4..6), `RouteService`, `app-routing.module`, `WidgetService`; manuali `humanresources`, `compliance`, `assets` nella pagina dei manuali. Showcase: nessuno stub (lo ridefiniscono i rami e AllFunction)
+- ✅ `INF-APP.5` Cancellazione: nessuna modifica, `DropCompanySchemasAsync` trova gli schemi `tenant_<id>_<n>` per nome; ogni ramo aggiungerà il proprio `IApplicationDataDeleter` se tiene dati in `public` o Common
 - ⏳ `INF-APP.6` Creazione dei branch `Compliance_Dev`/`Compliance`, `HumanResources_Dev`/`HumanResources`, `Assets_Dev`/`Assets` da Infrastructure
-- ⏳ `INF-APP.7` CLAUDE.md: nuovi gruppi nell'elenco dei branch e nella catena di AllFunction (Infrastructure, AttendanceTracking, CRM, DocumentManagement, HumanResources, Compliance, Assets)
+- ✅ `INF-APP.7` CLAUDE.md: nuovi gruppi nell'elenco dei branch e nella catena di AllFunction (Infrastructure, AttendanceTracking, CRM, DocumentManagement, HumanResources, Compliance, Assets)
 
 #### `INF-COM` – Dati in Common, lato Infrastructure (§6)
 - ⏳ `INF-COM.1` Entità Common `Az_Sedi`, `Az_SediReparto` e migration del contesto Common
