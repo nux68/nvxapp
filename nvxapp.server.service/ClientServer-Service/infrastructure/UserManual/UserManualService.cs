@@ -65,12 +65,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 var provider = _providers.FirstOrDefault(p => string.Equals(p.Code, model.Data.Code, StringComparison.OrdinalIgnoreCase))
                                ?? throw new UserMessageException(InfrastructureMessages.Get("UserManualNotFound"));
 
+                int.TryParse(this.CurrentCompany, out int idCompany);
                 if (provider.Application is { } app)
                 {
-                    int.TryParse(this.CurrentCompany, out int idCompany);
                     if (!await _companyApplicationRepository.FindAll(x => x.IdCompany == idCompany && x.ApplicationType == app && x.Active).AnyAsync())
                         throw new UserMessageException(InfrastructureMessages.Get("UserManualNotActive"));
                 }
+                // applicativi attivi per l'azienda (es. per il manuale dei comandi vocali)
+                var applicativiAttivi = _companyApplicationRepository.ActiveApplications(idCompany);
 
                 var userId = this.UserIdFirstConnection;
                 if (string.IsNullOrEmpty(userId))
@@ -80,7 +82,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
                 // solo le parti per i ruoli dell'utente con cui si lavora (anche impersonificato)
                 var utente = string.IsNullOrEmpty(CurrentUserId) ? null : await _userManager.FindByIdAsync(CurrentUserId);
                 var ruoli = utente == null ? new List<string>() : (await _userManager.GetRolesAsync(utente)).ToList();
-                var manuale = provider.Build(ruoli, model.Data.Menu ?? new List<UserManualMenuSection>());
+                var manuale = provider.Build(ruoli, model.Data.Menu ?? new List<UserManualMenuSection>(), applicativiAttivi);
                 var sito = string.IsNullOrWhiteSpace(model.Data.SiteName) ? manuale.Title : model.Data.SiteName.Trim();
                 var jobId = Guid.NewGuid().ToString();
                 retVal.JobId = jobId;
