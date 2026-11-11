@@ -16,7 +16,12 @@ export class RouteAssetsService {
 
   public getRoutes(): Routes {
     return [
-      { path: 'astsettings', loadChildren: () => import('../../pages/Assets/ast-settings-page/ast-settings-page.module').then(m => m.AstSettingsPageModule), canActivate: [authenticatedGuard] }
+      { path: 'astsettings', loadChildren: () => import('../../pages/Assets/ast-settings-page/ast-settings-page.module').then(m => m.AstSettingsPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astmine', loadChildren: () => import('../../pages/Assets/ast-mine-page/ast-mine-page.module').then(m => m.AstMinePageModule), canActivate: [authenticatedGuard] },
+      // flotta (AST-FLO)
+      { path: 'astvehicles', loadChildren: () => import('../../pages/Assets/ast-vehicle-list-page/ast-vehicle-list-page.module').then(m => m.AstVehicleListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astvehicleedit', loadChildren: () => import('../../pages/Assets/ast-vehicle-edit-page/ast-vehicle-edit-page.module').then(m => m.AstVehicleEditPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astvehicleitemedit', loadChildren: () => import('../../pages/Assets/ast-vehicle-item-edit-page/ast-vehicle-item-edit-page.module').then(m => m.AstVehicleItemEditPageModule), canActivate: [authenticatedGuard] },
     ];
   }
 

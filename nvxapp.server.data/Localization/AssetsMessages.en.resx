@@ -18,4 +18,76 @@
   <data name="DeletionCountCfg" xml:space="preserve">
     <value>Company assets configuration</value>
   </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>Item not found.</value>
+  </data>
+  <data name="DateRequired" xml:space="preserve">
+    <value>Enter the date.</value>
+  </data>
+  <data name="AmountRequired" xml:space="preserve">
+    <value>Enter an amount greater than zero.</value>
+  </data>
+  <data name="InvalidPeriod" xml:space="preserve">
+    <value>Invalid period: the end must follow the start.</value>
+  </data>
+  <data name="EmployeeRequired" xml:space="preserve">
+    <value>Select an employee of the company.</value>
+  </data>
+  <data name="VehiclePlateRequired" xml:space="preserve">
+    <value>Enter the vehicle's licence plate.</value>
+  </data>
+  <data name="VehiclePlateDuplicate" xml:space="preserve">
+    <value>A vehicle with licence plate {0} already exists.</value>
+  </data>
+  <data name="VehiclePoolNotAssignable" xml:space="preserve">
+    <value>The vehicle is a pool vehicle: it is booked, not assigned to an employee.</value>
+  </data>
+  <data name="VehicleAlreadyAssigned" xml:space="preserve">
+    <value>The vehicle is already assigned to another employee in that period.</value>
+  </data>
+  <data name="VehicleDeadlineDescription" xml:space="preserve">
+    <value>{0} - vehicle {1}</value>
+  </data>
+  <data name="VehicleDeadlineKm" xml:space="preserve">
+    <value>Due at {0} km</value>
+  </data>
+  <data name="VehicleContractDescription" xml:space="preserve">
+    <value>{0} contract expiry - vehicle {1}</value>
+  </data>
+  <data name="VehicleDeadlineType_0" xml:space="preserve">
+    <value>Road tax</value>
+  </data>
+  <data name="VehicleDeadlineType_1" xml:space="preserve">
+    <value>Insurance</value>
+  </data>
+  <data name="VehicleDeadlineType_2" xml:space="preserve">
+    <value>Roadworthiness test</value>
+  </data>
+  <data name="VehicleDeadlineType_3" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="VehicleDeadlineType_4" xml:space="preserve">
+    <value>Other deadline</value>
+  </data>
+  <data name="VehicleOwnership_0" xml:space="preserve">
+    <value>ownership</value>
+  </data>
+  <data name="VehicleOwnership_1" xml:space="preserve">
+    <value>rental</value>
+  </data>
+  <data name="VehicleOwnership_2" xml:space="preserve">
+    <value>leasing</value>
+  </data>
+  <data name="FineDriverWithoutUser" xml:space="preserve">
+    <value>The driver is missing or has no user account: the fine cannot be notified.</value>
+  </data>
+  <data name="FineNotificationTitle" xml:space="preserve">
+    <value>Fine on vehicle {0}</value>
+  </data>
+  <data name="FineNotificationText" xml:space="preserve">
+    <value>Offence on {0} with vehicle {1}: amount {2} euro, report {3}.</value>
+  </data>
+  <data name="DeletionCountVehicles" xml:space="preserve">
+    <value>Vehicles (with assignments, deadlines, costs and fines)</value>
+  </data>
 </root>

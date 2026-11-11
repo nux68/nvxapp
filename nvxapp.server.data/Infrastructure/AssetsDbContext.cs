@@ -27,8 +27,18 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Ast_Cfg> Ast_Cfg { get; set; }
 
+        // flotta (AST-FLO)
+        public virtual DbSet<Ast_Veicolo> Ast_Veicolo { get; set; }
+        public virtual DbSet<Ast_VeicoloAssegnazione> Ast_VeicoloAssegnazione { get; set; }
+        public virtual DbSet<Ast_VeicoloScadenza> Ast_VeicoloScadenza { get; set; }
+        public virtual DbSet<Ast_VeicoloCosto> Ast_VeicoloCosto { get; set; }
+        public virtual DbSet<Ast_Multa> Ast_Multa { get; set; }
+
         // tabelle comuni in sola lettura
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
+        public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
+        public virtual DbSet<Az_Sedi> Az_Sedi { get; set; }
+        public virtual DbSet<Dip_RapportoAutovetture> Dip_RapportoAutovetture { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +47,7 @@ namespace nvxapp.server.data.Infrastructure
             IgnoreOtherEntities(modelBuilder);
             Gen_References(modelBuilder);
             Gen_Ast(modelBuilder);
+            Gen_AstFlotta(modelBuilder);
         }
 
         // come nel CRM: si escludono le entita' degli altri applicativi raggiungibili dalle navigazioni delle comuni
@@ -45,7 +56,9 @@ namespace nvxapp.server.data.Infrastructure
             var mie = new HashSet<Type>
             {
                 typeof(Ast_Cfg),
-                typeof(Az_Anagrafica), typeof(Company), typeof(ApplicationUser),
+                typeof(Ast_Veicolo), typeof(Ast_VeicoloAssegnazione), typeof(Ast_VeicoloScadenza), typeof(Ast_VeicoloCosto), typeof(Ast_Multa),
+                typeof(Az_Anagrafica), typeof(Dip_Anagrafica), typeof(Az_Sedi), typeof(Dip_RapportoAutovetture),
+                typeof(Company), typeof(ApplicationUser),
             };
             foreach (var type in typeof(nvxapp.server.data.Entities.BaseEntity).Assembly.GetTypes()
                          .Where(t => t.IsClass && !t.IsAbstract && !t.IsNested && t.Namespace != null
@@ -76,6 +89,27 @@ namespace nvxapp.server.data.Infrastructure
                 entity.ToTable("Az_Anagrafica", t => t.ExcludeFromMigrations());
                 entity.HasOne(t => t.CompanyNavigation).WithOne().HasForeignKey<Az_Anagrafica>(t => t.IdCompany);
             });
+
+            // dipendenti, sedi e autovetture dei dipendenti (Common): sola lettura, le scritture con i repository di Common
+            modelBuilder.Entity<Dip_Anagrafica>(entity =>
+            {
+                entity.ToTable("Dip_Anagrafica", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica);
+                entity.HasOne(t => t.AspNetUsersNavigation).WithMany().HasForeignKey(t => t.IdAspNetUsers);
+            });
+
+            modelBuilder.Entity<Az_Sedi>(entity =>
+            {
+                entity.ToTable("Az_Sedi", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica);
+                entity.Ignore(t => t.Az_Reparto);
+            });
+
+            modelBuilder.Entity<Dip_RapportoAutovetture>(entity =>
+            {
+                entity.ToTable("Dip_RapportoAutovetture", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica);
+            });
         }
 
         private static void Gen_Ast(ModelBuilder modelBuilder)
@@ -83,6 +117,51 @@ namespace nvxapp.server.data.Infrastructure
             modelBuilder.Entity<Ast_Cfg>(entity =>
             {
                 entity.HasOne(t => t.Az_AnagraficaNavigation).WithOne().HasForeignKey<Ast_Cfg>(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
+        /*
+         Flotta (AST-FLO). Cancellazione: tutto in cascata dal veicolo (e dall'azienda); il dipendente cancellato da Common
+         porta via le sue assegnazioni, sulle multe resta la multa senza conducente; sede e autovettura del dipendente
+         cancellate lasciano il riferimento vuoto.
+        */
+        private static void Gen_AstFlotta(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ast_Veicolo>(entity =>
+            {
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.SetNull);
+                // la targa e' unica tra i veicoli dell'azienda
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Targa }).IsUnique();
+            });
+
+            modelBuilder.Entity<Ast_VeicoloAssegnazione>(entity =>
+            {
+                entity.HasOne(t => t.Ast_VeicoloNavigation).WithMany(t => t.Ast_VeicoloAssegnazione).HasForeignKey(t => t.IdAst_Veicolo).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_RapportoAutovettureNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoAutovetture).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => new { t.IdAst_Veicolo, t.DataInizio });
+                entity.HasIndex(t => t.IdDip_Anagrafica);
+            });
+
+            modelBuilder.Entity<Ast_VeicoloScadenza>(entity =>
+            {
+                entity.HasOne(t => t.Ast_VeicoloNavigation).WithMany(t => t.Ast_VeicoloScadenza).HasForeignKey(t => t.IdAst_Veicolo).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdAst_Veicolo, t.DataScadenza });
+            });
+
+            modelBuilder.Entity<Ast_VeicoloCosto>(entity =>
+            {
+                entity.HasOne(t => t.Ast_VeicoloNavigation).WithMany(t => t.Ast_VeicoloCosto).HasForeignKey(t => t.IdAst_Veicolo).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdAst_Veicolo, t.Data });
+            });
+
+            modelBuilder.Entity<Ast_Multa>(entity =>
+            {
+                entity.HasOne(t => t.Ast_VeicoloNavigation).WithMany(t => t.Ast_Multa).HasForeignKey(t => t.IdAst_Veicolo).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => new { t.IdAst_Veicolo, t.DataInfrazione });
+                entity.HasIndex(t => t.IdDip_Anagrafica);
             });
         }
     }

@@ -3,7 +3,9 @@
     "menu": {
       "section": "Risorse aziendali",
       "settings": "Impostazioni",
-      "manual": "Manuale Risorse aziendali"
+      "manual": "Manuale Risorse aziendali",
+      "vehicles": "Veicoli",
+      "mine": "Le mie risorse"
     },
     "pages": {
       "settings": {
@@ -14,6 +16,154 @@
         "notifications": "Notifiche attive",
         "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
         "note": "Note"
+      },
+      "vehicleList": {
+        "title": "Veicoli aziendali",
+        "new": "Nuovo veicolo",
+        "confirmDelete": "Eliminare il veicolo {{targa}} con assegnazioni, scadenze, costi e multe?",
+        "showDisposed": "Mostra i veicoli dismessi",
+        "empty": "Nessun veicolo"
+      },
+      "vehicleEdit": {
+        "title": "Veicolo",
+        "titleNew": "Nuovo veicolo",
+        "noFringe": "Solo uso lavorativo",
+        "add": "Aggiungi",
+        "addAssegnazione": "Assegnazione a un dipendente",
+        "addScadenza": "Scadenza",
+        "addCosto": "Costo",
+        "addMulta": "Multa",
+        "confirmDelete": "Eliminare l'elemento selezionato?",
+        "confirmNotify": "Notificare la multa a {{nome}}?",
+        "contract": "Contratto",
+        "contractNote": "La scadenza del contratto di noleggio o leasing va nello scadenzario comune.",
+        "fringe": "Fringe benefit",
+        "fringeNote": "Il fringe benefit si calcola su 15.000 km convenzionali per il costo chilometrico ACI, con la percentuale dell'assegnazione (dalle emissioni: fino a 60 g/km 25%, fino a 160 30%, fino a 190 50%, oltre 60%). L'export per le paghe resta nelle Presenze.",
+        "section": {
+          "assegnazione": "Assegnazioni",
+          "scadenza": "Scadenze",
+          "costo": "Costi",
+          "multa": "Multe"
+        },
+        "assignmentNote": "Ogni assegnazione crea o aggiorna l'autovettura del dipendente usata dalle note spese delle Presenze per i rimborsi chilometrici.",
+        "totalYear": "Totale costi dell'anno: {{importo}}"
+      },
+      "vehicleItem": {
+        "assegnazione": "Assegnazione",
+        "assegnazioneNew": "Nuova assegnazione",
+        "scadenza": "Scadenza",
+        "scadenzaNew": "Nuova scadenza",
+        "costo": "Costo",
+        "costoNew": "Nuovo costo",
+        "multa": "Multa",
+        "multaNew": "Nuova multa",
+        "fringeNote": "Lasciare 0 per la percentuale dalle emissioni del veicolo ({{co2}} g/km).",
+        "carNote": "L'autovettura del dipendente con questo rimborso è usata dalle note spese delle Presenze.",
+        "deadlineNote": "La scadenza va nello scadenzario comune; indicando la data di esecuzione si chiude.",
+        "driverAuto": "Dall'assegnazione alla data dell'infrazione",
+        "fineNote": "Senza conducente indicato si propone chi aveva il veicolo il giorno dell'infrazione. La notifica al conducente si invia dall'elenco delle multe."
+      },
+      "mine": {
+        "title": "Le mie risorse",
+        "vehicles": "Veicolo assegnato",
+        "noVehicles": "Nessun veicolo assegnato",
+        "fringeNote": "Fringe benefit dell'anno in corso, a titolo informativo: il valore in busta paga lo calcolano le paghe.",
+        "fines": "Multe",
+        "noFines": "Nessuna multa"
+      }
+    },
+    "common": {
+      "none": "Nessuno",
+      "empty": "Nessun elemento"
+    },
+    "fields": {
+      "targa": "Targa",
+      "veicolo": "Veicolo",
+      "uso": "Uso",
+      "assegnatario": "Assegnato a",
+      "sede": "Sede",
+      "prossimaScadenza": "Prossima scadenza",
+      "dipendente": "Dipendente",
+      "dal": "Dal",
+      "al": "Al",
+      "fringeAnnuo": "Fringe benefit annuo",
+      "fringeAnno": "Fringe benefit anno in corso",
+      "data": "Data",
+      "tipo": "Tipo",
+      "km": "Km",
+      "eseguita": "Eseguita il",
+      "descrizione": "Descrizione",
+      "importo": "Importo",
+      "conducente": "Conducente",
+      "stato": "Stato",
+      "marca": "Marca",
+      "modello": "Modello",
+      "alimentazione": "Alimentazione",
+      "dataImmatricolazione": "Immatricolazione",
+      "kmAttuali": "Km attuali",
+      "possesso": "Possesso",
+      "fornitore": "Fornitore",
+      "numeroContratto": "Numero contratto",
+      "scadenzaContratto": "Scadenza contratto",
+      "kmInclusi": "Km inclusi",
+      "canoneMensile": "Canone mensile",
+      "costoKmAci": "Costo chilometrico ACI (€/km)",
+      "emissioniCO2": "Emissioni CO2 (g/km)",
+      "note": "Note",
+      "usoPromiscuo": "Uso promiscuo (lavoro e privato)",
+      "percentualeFringe": "Percentuale fringe benefit (%)",
+      "rimborsoKm": "Rimborso al km (note spese)",
+      "dataScadenza": "Data di scadenza",
+      "documento": "Documento",
+      "dataInfrazione": "Data e ora dell'infrazione",
+      "numeroVerbale": "Numero del verbale",
+      "luogo": "Luogo",
+      "dataPagamento": "Data di pagamento"
+    },
+    "enums": {
+      "uso": {
+        "0": "Assegnato",
+        "1": "Pool (prenotabile)"
+      },
+      "statoVeicolo": {
+        "0": "Attivo",
+        "1": "Dismesso"
+      },
+      "alimentazione": {
+        "0": "Benzina",
+        "1": "Diesel",
+        "2": "GPL",
+        "3": "Metano",
+        "4": "Ibrida",
+        "5": "Elettrica",
+        "6": "Altro"
+      },
+      "possesso": {
+        "0": "Proprietà",
+        "1": "Noleggio",
+        "2": "Leasing"
+      },
+      "tipoScadenza": {
+        "0": "Bollo",
+        "1": "Assicurazione",
+        "2": "Revisione",
+        "3": "Tagliando",
+        "4": "Altra scadenza"
+      },
+      "tipoCosto": {
+        "0": "Carburante",
+        "1": "Manutenzione",
+        "2": "Pedaggi",
+        "3": "Parcheggio",
+        "4": "Assicurazione",
+        "5": "Bollo",
+        "6": "Altro"
+      },
+      "statoMulta": {
+        "0": "Da notificare",
+        "1": "Notificata al conducente",
+        "2": "Pagata",
+        "3": "Contestata"
       }
     }
   }

@@ -3,7 +3,9 @@
     "menu": {
       "section": "Company assets",
       "settings": "Settings",
-      "manual": "Company assets manual"
+      "manual": "Company assets manual",
+      "vehicles": "Vehicles",
+      "mine": "My resources"
     },
     "pages": {
       "settings": {
@@ -14,6 +16,154 @@
         "notifications": "Notifications on",
         "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
         "note": "Notes"
+      },
+      "vehicleList": {
+        "title": "Company vehicles",
+        "new": "New vehicle",
+        "confirmDelete": "Delete vehicle {{targa}} with its assignments, deadlines, costs and fines?",
+        "showDisposed": "Show disposed vehicles",
+        "empty": "No vehicles"
+      },
+      "vehicleEdit": {
+        "title": "Vehicle",
+        "titleNew": "New vehicle",
+        "noFringe": "Business use only",
+        "add": "Add",
+        "addAssegnazione": "Assignment to an employee",
+        "addScadenza": "Deadline",
+        "addCosto": "Cost",
+        "addMulta": "Fine",
+        "confirmDelete": "Delete the selected item?",
+        "confirmNotify": "Notify the fine to {{nome}}?",
+        "contract": "Contract",
+        "contractNote": "The expiry of the rental or leasing contract goes into the shared deadline schedule.",
+        "fringe": "Fringe benefit",
+        "fringeNote": "The fringe benefit is 15,000 conventional km times the ACI cost per km, with the assignment's percentage (from emissions: up to 60 g/km 25%, up to 160 30%, up to 190 50%, above 60%). The payroll export stays in Attendance.",
+        "section": {
+          "assegnazione": "Assignments",
+          "scadenza": "Deadlines",
+          "costo": "Costs",
+          "multa": "Fines"
+        },
+        "assignmentNote": "Each assignment creates or updates the employee's car used by Attendance expense reports for mileage reimbursements.",
+        "totalYear": "Total costs this year: {{importo}}"
+      },
+      "vehicleItem": {
+        "assegnazione": "Assignment",
+        "assegnazioneNew": "New assignment",
+        "scadenza": "Deadline",
+        "scadenzaNew": "New deadline",
+        "costo": "Cost",
+        "costoNew": "New cost",
+        "multa": "Fine",
+        "multaNew": "New fine",
+        "fringeNote": "Leave 0 to use the percentage from the vehicle's emissions ({{co2}} g/km).",
+        "carNote": "The employee's car with this reimbursement is used by Attendance expense reports.",
+        "deadlineNote": "The deadline goes into the shared deadline schedule; entering the date it was done closes it.",
+        "driverAuto": "From the assignment on the offence date",
+        "fineNote": "Without a driver, whoever had the vehicle on the offence date is proposed. The notice to the driver is sent from the list of fines."
+      },
+      "mine": {
+        "title": "My resources",
+        "vehicles": "Assigned vehicle",
+        "noVehicles": "No vehicle assigned",
+        "fringeNote": "Fringe benefit for the current year, for information only: payroll computes the value on the payslip.",
+        "fines": "Fines",
+        "noFines": "No fines"
+      }
+    },
+    "common": {
+      "none": "None",
+      "empty": "No items"
+    },
+    "fields": {
+      "targa": "Licence plate",
+      "veicolo": "Vehicle",
+      "uso": "Use",
+      "assegnatario": "Assigned to",
+      "sede": "Site",
+      "prossimaScadenza": "Next deadline",
+      "dipendente": "Employee",
+      "dal": "From",
+      "al": "To",
+      "fringeAnnuo": "Annual fringe benefit",
+      "fringeAnno": "Fringe benefit this year",
+      "data": "Date",
+      "tipo": "Type",
+      "km": "Km",
+      "eseguita": "Done on",
+      "descrizione": "Description",
+      "importo": "Amount",
+      "conducente": "Driver",
+      "stato": "Status",
+      "marca": "Make",
+      "modello": "Model",
+      "alimentazione": "Fuel",
+      "dataImmatricolazione": "Registration date",
+      "kmAttuali": "Current km",
+      "possesso": "Ownership",
+      "fornitore": "Supplier",
+      "numeroContratto": "Contract number",
+      "scadenzaContratto": "Contract expiry",
+      "kmInclusi": "Included km",
+      "canoneMensile": "Monthly fee",
+      "costoKmAci": "ACI cost per km (€/km)",
+      "emissioniCO2": "CO2 emissions (g/km)",
+      "note": "Notes",
+      "usoPromiscuo": "Mixed use (business and private)",
+      "percentualeFringe": "Fringe benefit percentage (%)",
+      "rimborsoKm": "Reimbursement per km (expense reports)",
+      "dataScadenza": "Due date",
+      "documento": "Document",
+      "dataInfrazione": "Offence date and time",
+      "numeroVerbale": "Report number",
+      "luogo": "Place",
+      "dataPagamento": "Payment date"
+    },
+    "enums": {
+      "uso": {
+        "0": "Assigned",
+        "1": "Pool (bookable)"
+      },
+      "statoVeicolo": {
+        "0": "Active",
+        "1": "Disposed"
+      },
+      "alimentazione": {
+        "0": "Petrol",
+        "1": "Diesel",
+        "2": "LPG",
+        "3": "Natural gas",
+        "4": "Hybrid",
+        "5": "Electric",
+        "6": "Other"
+      },
+      "possesso": {
+        "0": "Owned",
+        "1": "Rental",
+        "2": "Leasing"
+      },
+      "tipoScadenza": {
+        "0": "Road tax",
+        "1": "Insurance",
+        "2": "Roadworthiness test",
+        "3": "Service",
+        "4": "Other deadline"
+      },
+      "tipoCosto": {
+        "0": "Fuel",
+        "1": "Maintenance",
+        "2": "Tolls",
+        "3": "Parking",
+        "4": "Insurance",
+        "5": "Road tax",
+        "6": "Other"
+      },
+      "statoMulta": {
+        "0": "To be notified",
+        "1": "Notified to the driver",
+        "2": "Paid",
+        "3": "Disputed"
       }
     }
   }

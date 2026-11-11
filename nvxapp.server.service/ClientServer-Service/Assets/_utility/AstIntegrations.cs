@@ -79,9 +79,18 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 
         public ApplicationType Application => ApplicationType.Assets;
 
-        // per ora solo la configurazione: i conteggi arrivano con le aree del modulo
-        public Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
-            => Task.FromResult(new List<DeletionCountModel>());
+        public async Task<List<DeletionCountModel>> CompanyCountsAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            await using var db = await AstSchema.ContextAsync(idCompany, _tenancy, _factory, _provisioning, cancellationToken);
+            if (db == null)
+                return new List<DeletionCountModel>();
+            var rep = new AstRepositorySet(db, _sp, _http);
+            var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
+            return new List<DeletionCountModel>
+            {
+                new() { Label = AssetsMessages.Get("DeletionCountVehicles"), Count = await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).CountAsync(cancellationToken) },
+            };
+        }
 
         // multi-tenant: lo schema si elimina con gli altri (DeletionService)
         public async Task DeleteCompanyDataAsync(int idCompany, CancellationToken cancellationToken = default)
@@ -95,6 +104,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             var idAz = await rep.Az_Anagrafica.FindAll(x => x.IdCompany == idCompany).Select(x => x.Id).FirstOrDefaultAsync(cancellationToken);
             if (idAz == 0)
                 return;
+            // le tabelle figlie seguono in cascata
+            await rep.Ast_Veicolo.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Ast_Cfg.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
         }
 

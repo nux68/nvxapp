@@ -19,13 +19,22 @@ export class MainMenuAssetsService implements iMainMenuService {
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] { return []; }
 
   public get Pages4CompanyAdmin(): MainMenuItem[] {
+    const tutti = ['CompanyPowerAdmin', 'CompanyAdmin'];
     return [
-      { menuType: MenuType.MenuHeader, zorder: 700000, group: 70, title: 'ast.menu.section', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 700100, group: 70, title: 'ast.menu.settings', roles: ['CompanyPowerAdmin'], component: 'AstSettingsPageComponent', url: '/astsettings', icon: 'construct' },
+      { menuType: MenuType.MenuHeader, zorder: 700000, group: 70, title: 'ast.menu.section', roles: tutti, component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 700100, group: 70, title: 'ast.menu.vehicles', roles: tutti, component: 'AstVehicleListPageComponent', url: '/astvehicles', icon: 'car' },
+      { menuType: MenuType.MenuItem, zorder: 700800, group: 70, title: 'ast.menu.mine', roles: tutti, component: 'AstMinePageComponent', url: '/astmine', icon: 'person-circle' },
+      { menuType: MenuType.MenuItem, zorder: 700900, group: 70, title: 'ast.menu.settings', roles: ['CompanyPowerAdmin'], component: 'AstSettingsPageComponent', url: '/astsettings', icon: 'construct' },
     ];
   }
 
-  public get Pages4User(): MainMenuItem[] { return []; }
+  // dipendenti: le proprie risorse (veicolo, multe)
+  public get Pages4User(): MainMenuItem[] {
+    return [
+      { menuType: MenuType.MenuHeader, zorder: 710000, group: 71, title: 'ast.menu.section', roles: ['User'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 710100, group: 71, title: 'ast.menu.mine', component: 'AstMinePageComponent', url: '/astmine', icon: 'person-circle' },
+    ];
+  }
 
   // sezione "Assistenza": manuale del modulo in PDF (solo con il modulo attivo, vedi MainMenuService.Pages4Support)
   public get Pages4Support(): MainMenuItem[] {
