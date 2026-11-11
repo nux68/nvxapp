@@ -21,6 +21,7 @@ export class Par_GiustificativiModel {
   public bancaOre: boolean = false; // recupero banca ore: maturato = ore accreditate nei mesi approvati
   public autorizzaStraordinario: boolean = false; // autorizzazione alle ore in piu' (non cambia il dovuto, nessuna causale)
   public annullaPausa: boolean = false; // pausa non fruita: nel giorno non si detrae la pausa automatica
+  public lavoroAgile: boolean = false;  // lavoro agile (AT-SW): giorni richiesti con l'accordo di smart working
 
 }
 

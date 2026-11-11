@@ -1,0 +1,28 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content class="nvx-postazione">
+      <div class="nvx-comandi">
+        <ion-select interface="popover" [(ngModel)]="idAz_Sedi" (ionChange)="cambiaSede()"
+          [label]="'attendance.pages.timbraturaPostazione.site' | transloco" labelPlacement="stacked">
+          @for (s of sedi; track s.idAz_Sedi) {
+            <ion-select-option [value]="s.idAz_Sedi">{{ s.sede }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-button fill="outline" (click)="schermoIntero()">
+          <ion-icon slot="start" name="expand-outline"></ion-icon>{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}
+        </ion-button>
+      </div>
+
+      @if (sedi.length === 0) {
+        <ion-note>{{ 'attendance.pages.timbraturaPostazione.noSites' | transloco }}</ion-note>
+      }
+      @if (qr) {
+        <div class="nvx-ora">{{ ora | date: 'HH:mm' }}</div>
+        <img class="nvx-qr" [src]="'data:image/png;base64,' + qr.immaginePng" alt="QR" />
+        <ion-note class="nvx-istruzioni">{{ 'attendance.pages.timbraturaPostazione.instructions' | transloco: { s: qr.durataSecondi } }}</ion-note>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,135 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+
+      <div class="cdg-filtri">
+        <label>
+          <span class="cdg-nota">{{ 'attendance.pages.cdgCommesse.dalMese' | transloco }}</span>
+          <input type="month" [(ngModel)]="meseDal" />
+        </label>
+        <label>
+          <span class="cdg-nota">{{ 'attendance.pages.cdgCommesse.alMese' | transloco }}</span>
+          <input type="month" [(ngModel)]="meseAl" />
+        </label>
+        <label>
+          <span class="cdg-nota">{{ 'attendance.pages.cdgCommesse.costoPredefinito' | transloco }}</span>
+          <input type="number" min="0" step="0.01" [(ngModel)]="costoPredefinito" />
+        </label>
+        <ion-button size="small" shape="round" [disabled]="caricamento" (click)="calcola()">
+          <ion-icon name="calculator-outline"></ion-icon>&nbsp;{{ 'attendance.pages.cdgCommesse.calcola' | transloco }}
+        </ion-button>
+      </div>
+      <div class="cdg-nota">{{ 'attendance.pages.cdgCommesse.notaCosti' | transloco }}</div>
+
+      @if (caricamento) {
+        <div class="cdg-vuoto"><ion-spinner name="dots"></ion-spinner></div>
+      } @else if (!risultato || risultato.commesse.length === 0) {
+        <div class="cdg-vuoto">{{ 'attendance.pages.cdgCommesse.vuoto' | transloco }}</div>
+      } @else {
+        <div class="cdg-scroll">
+          <table class="cdg-tabella">
+            <thead>
+              <tr>
+                <th>{{ 'attendance.pages.cdgCommesse.colCommessa' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colOre' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colCostoPersonale' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colNoteSpese' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colCosto' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colRicavo' | transloco }}</th>
+                <th class="cdg-num">{{ 'attendance.pages.cdgCommesse.colMargine' | transloco }}</th>
+                <th class="cdg-num">%</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of risultato.commesse; track c.idAz_Commessa) {
+                <tr class="cdg-commessa">
+                  <td><strong>{{ c.descrizione }}</strong> <span class="cdg-nota">{{ c.cliente }}</span></td>
+                  <td class="cdg-num">{{ ore(c.minuti) }}</td>
+                  <td class="cdg-num">{{ c.costoPersonale | number: '1.2-2' }}</td>
+                  <td class="cdg-num">{{ c.noteSpese | number: '1.2-2' }}</td>
+                  <td class="cdg-num">{{ c.costo | number: '1.2-2' }}</td>
+                  <td class="cdg-num">{{ c.ricavo === null ? '-' : (c.ricavo | number: '1.2-2') }}</td>
+                  <td class="cdg-num" [class.cdg-negativo]="(c.margine ?? 0) < 0">{{ c.margine === null ? '-' : (c.margine | number: '1.2-2') }}</td>
+                  <td class="cdg-num">{{ c.marginePerc === null ? '-' : (c.marginePerc | number: '1.2-2') }}</td>
+                </tr>
+                @for (s of c.subCommesse; track s.idAz_SubCommessa) {
+                  <tr class="cdg-sub nvx-row-hover">
+                    <td>
+                      <ion-button size="small" fill="clear" (click)="toggle(s)">
+                        <ion-icon [name]="aperte.has(s.idAz_SubCommessa) ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+                      </ion-button>
+                      {{ s.descrizione }}
+                    </td>
+                    <td class="cdg-num">{{ ore(s.minuti) }}</td>
+                    <td class="cdg-num">{{ s.costoPersonale | number: '1.2-2' }}</td>
+                    <td class="cdg-num">{{ s.noteSpese | number: '1.2-2' }}</td>
+                    <td class="cdg-num">{{ s.costo | number: '1.2-2' }}</td>
+                    <td class="cdg-num">
+                      <input type="number" min="0" step="0.01" class="cdg-input" [(ngModel)]="ricavi[s.idAz_SubCommessa]" (change)="calcola()" />
+                    </td>
+                    <td class="cdg-num" [class.cdg-negativo]="(s.margine ?? 0) < 0">{{ s.margine === null ? '-' : (s.margine | number: '1.2-2') }}</td>
+                    <td class="cdg-num">{{ s.marginePerc === null ? '-' : (s.marginePerc | number: '1.2-2') }}</td>
+                  </tr>
+                  @if (aperte.has(s.idAz_SubCommessa)) {
+                    @for (d of s.dipendenti; track d.idAspNetUsers) {
+                      <tr class="cdg-dettaglio">
+                        <td>{{ d.nomeDipendente }} <span class="cdg-nota">({{ d.costoOrario | number: '1.2-2' }} / h)</span></td>
+                        <td class="cdg-num">{{ ore(d.minuti) }}</td>
+                        <td class="cdg-num">{{ d.costoPersonale | number: '1.2-2' }}</td>
+                        <td class="cdg-num">{{ d.noteSpese | number: '1.2-2' }}</td>
+                        <td colspan="4"></td>
+                      </tr>
+                    }
+                  }
+                }
+              }
+              <tr class="cdg-totale">
+                <td>{{ 'attendance.pages.cdgCommesse.totale' | transloco }}</td>
+                <td class="cdg-num">{{ ore(risultato.totale.minuti) }}</td>
+                <td class="cdg-num">{{ risultato.totale.costoPersonale | number: '1.2-2' }}</td>
+                <td class="cdg-num">{{ risultato.totale.noteSpese | number: '1.2-2' }}</td>
+                <td class="cdg-num">{{ risultato.totale.costo | number: '1.2-2' }}</td>
+                <td class="cdg-num">{{ risultato.totale.ricavo === null ? '-' : (risultato.totale.ricavo | number: '1.2-2') }}</td>
+                <td class="cdg-num" [class.cdg-negativo]="(risultato.totale.margine ?? 0) < 0">{{ risultato.totale.margine === null ? '-' : (risultato.totale.margine | number: '1.2-2') }}</td>
+                <td class="cdg-num">{{ risultato.totale.marginePerc === null ? '-' : (risultato.totale.marginePerc | number: '1.2-2') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        @if (risultato.giornateEscluse > 0) {
+          <div class="cdg-nota cdg-avviso">{{ 'attendance.pages.cdgCommesse.giornateEscluse' | transloco: { n: risultato.giornateEscluse } }}</div>
+        }
+        @if (risultato.noteSpeseNonAttribuite > 0) {
+          <div class="cdg-nota cdg-avviso">{{ 'attendance.pages.cdgCommesse.noteNonAttribuite' | transloco: { n: (risultato.noteSpeseNonAttribuite | number: '1.2-2') } }}</div>
+        }
+        @if (risultato.dipendentiSenzaCosto > 0) {
+          <div class="cdg-nota cdg-avviso">{{ 'attendance.pages.cdgCommesse.senzaCosto' | transloco: { n: risultato.dipendentiSenzaCosto } }}</div>
+        }
+
+        <h3>{{ 'attendance.pages.cdgCommesse.costiOrari' | transloco }}</h3>
+        <table class="cdg-tabella cdg-dipendenti">
+          <tbody>
+            @for (d of risultato.dipendenti; track d.idAspNetUsers) {
+              <tr>
+                <td>{{ d.nomeDipendente }}</td>
+                <td class="cdg-num">{{ ore(d.minuti) }}</td>
+                <td class="cdg-num">
+                  <input type="number" min="0" step="0.01" class="cdg-input" [placeholder]="(risultato.costoOrarioPredefinito | number: '1.2-2') ?? ''"
+                    [(ngModel)]="costi[d.idAspNetUsers]" (change)="calcola()" />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+        <div class="cdg-nota">{{ 'attendance.pages.cdgCommesse.metodo' | transloco }}</div>
+      }
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

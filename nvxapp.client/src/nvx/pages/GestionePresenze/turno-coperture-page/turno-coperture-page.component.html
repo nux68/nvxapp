@@ -1,0 +1,47 @@
+<app-page-toolbar [title]="Title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      @if (_editForm) {
+        <form [formGroup]="_editForm">
+          <ion-item>
+            <ion-label position="stacked">{{ 'attendance.pages.turnoCoperture.department' | transloco }}</ion-label>
+            <ion-select formControlName="idAz_SediReparto" interface="popover" [placeholder]="'attendance.pages.turnoCoperture.departmentPlaceholder' | transloco">
+              @for (r of reparti; track r.id) {
+                <ion-select-option [value]="r.id">{{ r.descrizione }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </form>
+      }
+
+      <ion-note class="nvx-nota">{{ 'attendance.pages.turnoCoperture.note' | transloco }}</ion-note>
+
+      @if (righe.length === 0 && _editForm?.get('idAz_SediReparto')?.value) {
+        <ion-note class="nvx-nota">{{ 'attendance.pages.turnoCoperture.noShifts' | transloco }}</ion-note>
+      }
+
+      @for (r of righe; track r.turno.id) {
+        <div class="nvx-riga" [class.nvx-spento]="!r.usato">
+          <ion-checkbox [(ngModel)]="r.usato" labelPlacement="end">
+            <span class="nvx-chip" [style.background]="r.turno.colore || '#d0d0d0'">{{ r.turno.codice }}</span>
+            {{ r.turno.descrizione }} <small>{{ r.turno.idPar_Orario ? r.turno.orarioTesto : ('attendance.pages.turnoList.rest' | transloco) }}</small>
+          </ion-checkbox>
+          @if (r.usato) {
+            <div class="nvx-dettaglio">
+              <ion-input type="number" min="0" [(ngModel)]="r.minPersone" [label]="'attendance.pages.turnoCoperture.minPeople' | transloco" labelPlacement="stacked" class="nvx-min"></ion-input>
+              <div class="nvx-giorni">
+                @for (i of giorniSettimana; track i) {
+                  <ion-checkbox [(ngModel)]="r.giorni[i]" labelPlacement="stacked">{{ nomeGiorno(i) }}</ion-checkbox>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

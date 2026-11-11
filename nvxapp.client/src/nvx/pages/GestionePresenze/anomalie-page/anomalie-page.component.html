@@ -1,0 +1,148 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+
+      <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
+        [showSediSelect]="false"
+        [showRepartoSelect]="true"
+        [showUserSelect]="false"
+        (periodChange)="onPeriodChange($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)">
+      </app-sedi-reparto-user-navigation>
+
+      <ion-segment [value]="sezione" (ionChange)="sezione = $any($event.detail.value)">
+        <ion-segment-button value="anomalie">
+          <ion-label>{{ 'attendance.pages.anomalie.sezAnomalie' | transloco }}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="previsione">
+          <ion-label>{{ 'attendance.pages.anomalie.sezPrevisione' | transloco }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      @if (sezione === 'anomalie') {
+        @if (!risultato) {
+          <div class="an-vuoto">{{ 'attendance.pages.anomalie.selezionare' | transloco }}</div>
+        } @else {
+          <div class="an-riepilogo">
+            <ion-chip color="danger">{{ 'attendance.pages.anomalie.daSistemare' | transloco: { n: risultato.giornateDaSistemare } }}</ion-chip>
+            <ion-chip color="warning">{{ 'attendance.pages.anomalie.daVerificare' | transloco: { n: risultato.giornateDaVerificare } }}</ion-chip>
+            <ion-chip color="medium">{{ 'attendance.pages.anomalie.dipendenti' | transloco: { n: risultato.dipendentiCoinvolti, tot: risultato.dipendentiAnalizzati } }}</ion-chip>
+            <ion-toggle [checked]="soloDaSistemare" (ionChange)="onSoloDaSistemare($event.detail.checked)" labelPlacement="end">
+              {{ 'attendance.pages.anomalie.soloDaSistemare' | transloco }}
+            </ion-toggle>
+            <ion-button size="small" fill="outline" shape="round" [disabled]="spiegazioneInCorso" (click)="spiega()">
+              <ion-icon name="sparkles-outline"></ion-icon>&nbsp;{{ 'attendance.pages.anomalie.spiega' | transloco }}
+            </ion-button>
+          </div>
+          <div class="an-nota">{{ 'attendance.pages.anomalie.notaRegole' | transloco }}</div>
+
+          @if (spiegazioneInCorso) {
+            <div class="an-vuoto"><ion-spinner name="dots"></ion-spinner></div>
+          }
+          @if (spiegazione) {
+            <div class="an-spiegazione">
+              <div class="an-nota">{{ (spiegazioneAI ? 'attendance.pages.anomalie.testoAI' : 'attendance.pages.anomalie.testoSenzaAI') | transloco }}</div>
+              <div class="an-testo">{{ spiegazione }}</div>
+            </div>
+          }
+
+          @if (risultato.giornate.length === 0) {
+            <div class="an-vuoto">{{ 'attendance.pages.anomalie.nessuna' | transloco }}</div>
+          } @else {
+            <ion-grid class="ion-no-padding">
+              @for (g of risultato.giornate; track g.idDip_RapportoLavoro + g.data; let i = $index) {
+                <ion-row class="an-riga nvx-row-hover" [class.nvx-row-odd]="i % 2 !== 0" [class.nvx-row-even]="i % 2 === 0">
+                  <ion-col size="12" size-md="3">
+                    <ion-icon [name]="g.daSistemare ? 'alert-circle' : 'warning-outline'" [color]="g.daSistemare ? 'danger' : 'warning'"></ion-icon>
+                    &nbsp;<strong>{{ g.data | date: 'EEE dd/MM/yyyy' }}</strong>
+                    <div>{{ g.nomeDipendente }}</div>
+                  </ion-col>
+                  <ion-col size="12" size-md="2" class="an-nota">
+                    {{ g.timbrature.length > 0 ? g.timbrature.join(' ') : ('attendance.pages.anomalie.nessunaTimbratura' | transloco) }}
+                  </ion-col>
+                  <ion-col size="10" size-md="6">
+                    @for (a of g.anomalie; track $index) {
+                      <div [class.an-errore]="a.gravita === Gravita.Errore" [class.an-avviso]="a.gravita === Gravita.Avviso">{{ a.descrizione }}</div>
+                    }
+                  </ion-col>
+                  <ion-col size="2" size-md="1">
+                    <ion-button size="small" fill="clear" (click)="apriCalendario(g)">
+                      <ion-icon name="calendar-number-outline"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              }
+            </ion-grid>
+          }
+
+          @if (risultato.ritardiRicorrenti.length > 0) {
+            <h3>{{ 'attendance.pages.anomalie.ritardiRicorrenti' | transloco }}</h3>
+            @for (r of risultato.ritardiRicorrenti; track r.idDip_Anagrafica) {
+              <div class="an-riga">
+                <strong>{{ r.nomeDipendente }}</strong>:
+                {{ 'attendance.pages.anomalie.ritardi' | transloco: { n: r.ritardi, min: r.ritardoMedioMin } }}
+                <span class="an-nota">({{ r.giorni.map(formatGiorno).join(', ') }})</span>
+              </div>
+            }
+          }
+        }
+      } @else {
+        @if (!previsione) {
+          <div class="an-vuoto">{{ 'attendance.pages.anomalie.selezionare' | transloco }}</div>
+        } @else {
+          <div class="an-riepilogo">
+            <ion-chip color="primary">{{ 'attendance.pages.anomalie.mediaPreviste' | transloco: { n: previsione.mediaPreviste } }}</ion-chip>
+            <ion-chip color="medium">{{ 'attendance.pages.anomalie.tassoMedio' | transloco: { n: previsione.tassoMedio } }}</ion-chip>
+          </div>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="an-testata">
+              <ion-col size="4">{{ 'attendance.pages.anomalie.colGiorno' | transloco }}</ion-col>
+              <ion-col size="2" class="an-num">{{ 'attendance.pages.anomalie.colAttesi' | transloco }}</ion-col>
+              <ion-col size="2" class="an-num">{{ 'attendance.pages.anomalie.colPianificate' | transloco }}</ion-col>
+              <ion-col size="2" class="an-num">{{ 'attendance.pages.anomalie.colStatistiche' | transloco }}</ion-col>
+              <ion-col size="2" class="an-num">{{ 'attendance.pages.anomalie.colPreviste' | transloco }}</ion-col>
+            </ion-row>
+            @for (g of previsione.giorni; track g.data; let i = $index) {
+              @if (g.inServizio > 0) {
+                <ion-row class="an-riga" [class.an-picco]="g.picco" [class.nvx-row-odd]="i % 2 !== 0" [class.nvx-row-even]="i % 2 === 0">
+                  <ion-col size="4">
+                    {{ g.data | date: 'EEE dd/MM' }}
+                    @if (g.picco) { <ion-chip color="danger" class="an-chip">{{ 'attendance.pages.anomalie.picco' | transloco }}</ion-chip> }
+                    @if (g.pianificati.length > 0) { <div class="an-nota">{{ g.pianificati.join(', ') }}</div> }
+                  </ion-col>
+                  <ion-col size="2" class="an-num">{{ g.inServizio }}</ion-col>
+                  <ion-col size="2" class="an-num">{{ g.pianificate }}</ion-col>
+                  <ion-col size="2" class="an-num">{{ g.statistiche | number: '1.1-1' }}</ion-col>
+                  <ion-col size="2" class="an-num"><strong>{{ g.previste | number: '1.1-1' }}</strong></ion-col>
+                </ion-row>
+              }
+            }
+          </ion-grid>
+
+          <h3>{{ 'attendance.pages.anomalie.metodo' | transloco }}</h3>
+          <div class="an-nota an-testo">{{ 'attendance.pages.anomalie.metodoTesto' | transloco: { dal: (previsione.storicoDal | date: 'dd/MM/yyyy'), al: (previsione.storicoAl | date: 'dd/MM/yyyy'), n: previsione.giornateStorico, min: previsione.minimoGiornate, soglia: previsione.sogliaPiccoPerc } }}</div>
+          <div class="an-tassi">
+            <div>
+              <strong>{{ 'attendance.pages.anomalie.tassiSettimana' | transloco }}</strong>
+              @for (t of previsione.tassiSettimana; track t.valore) {
+                <div>{{ giornoSettimana(t.valore) }}: {{ t.tasso | number: '1.2-2' }}% <span class="an-nota">({{ t.giornate }}{{ t.daStorico ? '' : ', ' + ('attendance.pages.anomalie.usaMedia' | transloco) }})</span></div>
+              }
+            </div>
+            <div>
+              <strong>{{ 'attendance.pages.anomalie.fattoriMese' | transloco }}</strong>
+              @for (t of previsione.fattoriMese; track t.valore) {
+                <div>{{ nomeMese(t.valore) }}: × {{ t.tasso | number: '1.2-3' }} <span class="an-nota">({{ t.giornate }})</span></div>
+              }
+            </div>
+          </div>
+        }
+      }
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>

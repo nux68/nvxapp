@@ -71,6 +71,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         // festivita' del calendario aziendale: l'orario e' quello festivo del profilo
         public bool Festivo { get; set; }
 
+        // turno pianificato del giorno (AT-TURNI.4): se c'e', Orari contiene solo l'orario del turno
+        public int? IdDip_Turno { get; set; }
+        public int? IdPar_Turno { get; set; }
+
         // righe orario del giorno ordinate per ZOrder (1=base, 2+=override)
         public List<Dip_ProfiloOrario_DaySlot_GG> Orari { get; set; } = new List<Dip_ProfiloOrario_DaySlot_GG>();
     }

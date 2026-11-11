@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1488,5 +1488,506 @@
   <data name="PausaFinestraObbligatoria" xml:space="preserve">
     <value>Break "{0}": on a single-pair schedule the break window is required.</value>
     <comment>pause</comment>
+  </data>
+  <data name="AnomaliaTipo_TimbratureDispari" xml:space="preserve">
+    <value>Odd clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornataVuota" xml:space="preserve">
+    <value>Day without clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_ErroreCalcolo" xml:space="preserve">
+    <value>Calculation error</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_NonCalcolata" xml:space="preserve">
+    <value>Day not calculated</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_RichiestaInAttesa" xml:space="preserve">
+    <value>Pending request</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_FuoriOrario" xml:space="preserve">
+    <value>Clocking outside the schedule</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornoNonLavorativo" xml:space="preserve">
+    <value>Clockings on a non-working day</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaMancante" xml:space="preserve">
+    <value>Missing or short break</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaEccessiva" xml:space="preserve">
+    <value>Break too long</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_Ritardo" xml:space="preserve">
+    <value>Recurring late arrival</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_TimbratureDispari" xml:space="preserve">
+    <value>Odd number of clockings ({0}): an entry or an exit is missing</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornataVuota" xml:space="preserve">
+    <value>No clocking and no justification with {0} hours expected</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErroreCalcolo" xml:space="preserve">
+    <value>Calculation error: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_NonCalcolata" xml:space="preserve">
+    <value>Day not calculated: run the recalculation</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_RichiestaInAttesa" xml:space="preserve">
+    <value>Requests of the day still to be approved</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_FuoriOrario" xml:space="preserve">
+    <value>Clockings outside the schedule ({0}), schedule from {1} to {2}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornoNonLavorativo" xml:space="preserve">
+    <value>Clockings on a non-working day ({0})</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaMancante" xml:space="preserve">
+    <value>Missing or short break: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaEccessiva" xml:space="preserve">
+    <value>Break too long: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_Ritardo" xml:space="preserve">
+    <value>{0} minutes late (recurring late arrivals)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrTimbratureMancanti" xml:space="preserve">
+    <value>missing clockings</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrOreMancanti" xml:space="preserve">
+    <value>missing hours not justified</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrFormule" xml:space="preserve">
+    <value>formula anomaly</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrSequenza" xml:space="preserve">
+    <value>clocking sequence cannot be interpreted</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrGenerico" xml:space="preserve">
+    <value>day in error</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaDaOrario" xml:space="preserve">
+    <value>according to the schedule break</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_LavoroContinuo" xml:space="preserve">
+    <value>{0} hours of continuous work</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_StaccoLungo" xml:space="preserve">
+    <value>{0} hours away</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Nessuna" xml:space="preserve">
+    <value>No anomalies from {0} to {1}.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Riepilogo" xml:space="preserve">
+    <value>From {0} to {1}: {2} days to fix and {3} to check, {4} employees involved.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioErrore" xml:space="preserve">
+    <value>{0}: {1} (to fix)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioAvviso" xml:space="preserve">
+    <value>{0}: {1} (to check)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_RitardiRicorrenti" xml:space="preserve">
+    <value>{0}: {1} late arrivals, {2} minutes on average</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_PeriodoNonValido" xml:space="preserve">
+    <value>Invalid period (at most {0} days).</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_SoloAmministratori" xml:space="preserve">
+    <value>This function is reserved to the company administrators.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="ChatDaysToFixDisplayName" xml:space="preserve">
+    <value>Days to fix</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixDescription" xml:space="preserve">
+    <value>Days of the month to fix before the payroll export: odd clockings, days without clockings, calculation errors, pending requests</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixFuture" xml:space="preserve">
+    <value>Month {0} has not started yet.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixNone" xml:space="preserve">
+    <value>No days to fix in {0}. Days with warnings to check: {1}.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixTitle" xml:space="preserve">
+    <value>Days to fix in {0}: {1} ({2} employees involved)</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixWarnings" xml:space="preserve">
+    <value>There are also {0} days with warnings to check in the Attendance anomalies page.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="DigestSectionAttendance" xml:space="preserve">
+    <value>Attendance</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToFix" xml:space="preserve">
+    <value>Days to fix before the payroll export: {0} ({1} employees)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToCheck" xml:space="preserve">
+    <value>Days with warnings to check: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestLateness" xml:space="preserve">
+    <value>Employees with recurring late arrivals: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestPlannedAbsences" xml:space="preserve">
+    <value>Planned absences from {1} to {2}: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAbsencePeak" xml:space="preserve">
+    <value>{0}: {1} expected absences out of {2} expected employees</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="Cdg_PeriodoNonValido" xml:space="preserve">
+    <value>Invalid period: from month to month, at most {0} months.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_CostoNonValido" xml:space="preserve">
+    <value>The hourly cost cannot be negative.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_SoloPowerAdmin" xml:space="preserve">
+    <value>This function is reserved to the main company administrator.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Report_GiornateDaSistemare_Titolo" xml:space="preserve">
+    <value>Days to fix</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaSistemare" xml:space="preserve">
+    <value>To fix</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaVerificare" xml:space="preserve">
+    <value>To check</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateErrori" xml:space="preserve">
+    <value>To fix before the payroll export</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateAvvisi" xml:space="preserve">
+    <value>To check</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColTimbrature" xml:space="preserve">
+    <value>Clockings</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColAnomalie" xml:space="preserve">
+    <value>Anomalies</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_RitardiRicorrenti" xml:space="preserve">
+    <value>Recurring late arrivals</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Marginalita_Titolo" xml:space="preserve">
+    <value>Job margins</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Periodo" xml:space="preserve">
+    <value>Period</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoOrarioPredefinito" xml:space="preserve">
+    <value>Default hourly cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoPersonale" xml:space="preserve">
+    <value>Staff cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColNoteSpese" xml:space="preserve">
+    <value>Expenses</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCosto" xml:space="preserve">
+    <value>Total cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColRicavo" xml:space="preserve">
+    <value>Revenue</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMargine" xml:space="preserve">
+    <value>Margin</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMarginePerc" xml:space="preserve">
+    <value>Margin %</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoOrario" xml:space="preserve">
+    <value>Hourly cost</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostiOrari" xml:space="preserve">
+    <value>Employee hourly costs</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoPredefinitoNota" xml:space="preserve">
+    <value>* default hourly cost (not set for the employee).</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_MarginalitaMetodo" xml:space="preserve">
+    <value>Staff cost = timesheet hours × hourly cost. Approved expenses split among sub-jobs in proportion to the employee's hours in the month (no hours: default sub-job of the employment). Costs and revenues are the ones set in the page when printing.</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_NoteNonAttribuite" xml:space="preserve">
+    <value>Expenses not assigned to any job: {0}</value>
+    <comment>report</comment>
+  </data>
+  <data name="TurnoNonAutorizzato" xml:space="preserve">
+    <value>Shift operation not allowed for your role.</value>
+  </data>
+  <data name="TurnoCodiceDescrizione" xml:space="preserve">
+    <value>The shift code and description are required.</value>
+  </data>
+  <data name="TurnoCodiceDuplicato" xml:space="preserve">
+    <value>A shift with code {0} already exists.</value>
+  </data>
+  <data name="TurnoOrarioNonValido" xml:space="preserve">
+    <value>The shift schedule does not exist.</value>
+  </data>
+  <data name="TurnoUsato" xml:space="preserve">
+    <value>Shift {0} is used in the planning: it cannot be deleted.</value>
+  </data>
+  <data name="TurnoRepartoNonValido" xml:space="preserve">
+    <value>Department not found.</value>
+  </data>
+  <data name="TurnoPeriodoNonValido" xml:space="preserve">
+    <value>Invalid period (maximum {0} days).</value>
+  </data>
+  <data name="TurnoConflittoAssenza" xml:space="preserve">
+    <value>shift {0} on a day of approved absence ({1})</value>
+  </data>
+  <data name="TurnoConflittoAssenzaInAttesa" xml:space="preserve">
+    <value>shift {0} on a day of absence awaiting approval ({1})</value>
+  </data>
+  <data name="TurnoDipendenteNonValido" xml:space="preserve">
+    <value>Employee not found in the company.</value>
+  </data>
+  <data name="TurnoNonValido" xml:space="preserve">
+    <value>Shift not found.</value>
+  </data>
+  <data name="ScambioTurnoNonTuo" xml:space="preserve">
+    <value>You can only propose a swap of your own shifts.</value>
+  </data>
+  <data name="ScambioTurnoPassato" xml:space="preserve">
+    <value>Shifts of past days cannot be swapped.</value>
+  </data>
+  <data name="ScambioTurnoCollegaNonValido" xml:space="preserve">
+    <value>Invalid colleague or colleague shift.</value>
+  </data>
+  <data name="ScambioTurnoAltroReparto" xml:space="preserve">
+    <value>Swaps are only possible with a colleague of your department.</value>
+  </data>
+  <data name="ScambioTurnoGiaProposto" xml:space="preserve">
+    <value>There is already a swap proposal in progress for this shift.</value>
+  </data>
+  <data name="ScambioTurnoNotificaProposta" xml:space="preserve">
+    <value>Shift swap proposal</value>
+  </data>
+  <data name="ScambioTurnoNonTrovato" xml:space="preserve">
+    <value>Swap proposal not found.</value>
+  </data>
+  <data name="ScambioTurnoGiaRisposto" xml:space="preserve">
+    <value>The swap proposal is no longer awaiting an answer.</value>
+  </data>
+  <data name="ScambioTurnoNotificaRifiutata" xml:space="preserve">
+    <value>Shift swap refused by the colleague</value>
+  </data>
+  <data name="ScambioTurnoNotificaAccettata" xml:space="preserve">
+    <value>Shift swap accepted: awaiting approval</value>
+  </data>
+  <data name="ScambioTurnoTesto" xml:space="preserve">
+    <value>Shift swap: {0} ({1}) with {2} ({3})</value>
+  </data>
+  <data name="ScambioTurnoTestoCessione" xml:space="preserve">
+    <value>Shift handover: {0} ({1}) to {2}</value>
+  </data>
+  <data name="ScambioTurnoTurniCambiati" xml:space="preserve">
+    <value>The shifts of the swap have been changed in the meantime.</value>
+  </data>
+  <data name="ScambioTurnoGiornoOccupato" xml:space="preserve">
+    <value>The swap is not possible: on {0:dd/MM/yyyy} the receiver already has a shift.</value>
+  </data>
+  <data name="ScambioTurnoNonApplicato" xml:space="preserve">
+    <value>Shift swap not applied: {0}</value>
+  </data>
+  <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
+    <value>Swap shifts not restored: {0}</value>
+  </data>
+  <data name="TimbNonAutorizzato" xml:space="preserve">
+    <value>Clock-in operation not allowed for your role.</value>
+  </data>
+  <data name="TimbSedeNonValida" xml:space="preserve">
+    <value>Site not found.</value>
+  </data>
+  <data name="TimbCoordinateNonValide" xml:space="preserve">
+    <value>Invalid site coordinates (latitude and longitude together).</value>
+  </data>
+  <data name="TimbGeofenceSenzaCoordinate" xml:space="preserve">
+    <value>Geofencing requires the site coordinates.</value>
+  </data>
+  <data name="TimbQrNonAttivo" xml:space="preserve">
+    <value>QR clock-in is not enabled for the site.</value>
+  </data>
+  <data name="TimbQrNonValido" xml:space="preserve">
+    <value>Invalid QR code.</value>
+  </data>
+  <data name="TimbQrScaduto" xml:space="preserve">
+    <value>QR code expired: scan the current station code.</value>
+  </data>
+  <data name="TimbQrGiaUsato" xml:space="preserve">
+    <value>This QR code has already been used: scan the current station code.</value>
+  </data>
+  <data name="TimbQrObbligatorio" xml:space="preserve">
+    <value>At this site you can only clock in with the station QR.</value>
+  </data>
+  <data name="TimbDataDispositivoNonValida" xml:space="preserve">
+    <value>Invalid device time.</value>
+  </data>
+  <data name="TimbDifferitaNonAccettata" xml:space="preserve">
+    <value>The site does not accept deferred clock-ins.</value>
+  </data>
+  <data name="TimbDifferitaFutura" xml:space="preserve">
+    <value>Deferred clock-in with a future time: check the phone clock.</value>
+  </data>
+  <data name="TimbDifferitaOltreLimite" xml:space="preserve">
+    <value>Deferred clock-in beyond the {0}-hour limit: ask HR for a correction.</value>
+  </data>
+  <data name="TimbFuoriGeofence" xml:space="preserve">
+    <value>Clock-in outside the site area ({0} m, radius {1} m).</value>
+  </data>
+  <data name="TimbPosizioneMancante" xml:space="preserve">
+    <value>Position not available: the site requires a position check.</value>
+  </data>
+  <data name="TimbNonRegistrata" xml:space="preserve">
+    <value>Clock-in not recorded.</value>
+  </data>
+  <data name="TimbKioskNonAttivo" xml:space="preserve">
+    <value>The kiosk is not enabled for the site.</value>
+  </data>
+  <data name="TimbKioskNonRegistrato" xml:space="preserve">
+    <value>Device not registered as the site kiosk.</value>
+  </data>
+  <data name="TimbKioskBloccato" xml:space="preserve">
+    <value>Too many wrong attempts: try again in a minute.</value>
+  </data>
+  <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
+    <value>PIN or badge not recognised.</value>
+  </data>
+  <data name="TimbPinNonValido" xml:space="preserve">
+    <value>The PIN must have 4 to 8 digits.</value>
+  </data>
+  <data name="TimbPinGiaUsato" xml:space="preserve">
+    <value>PIN already used by another employee: choose another one.</value>
+  </data>
+  <data name="TimbBadgeNonValido" xml:space="preserve">
+    <value>Invalid badge code (max 50 characters).</value>
+  </data>
+  <data name="TimbBadgeGiaUsato" xml:space="preserve">
+    <value>Badge already assigned to another employee.</value>
+  </data>
+  <data name="SwNonAutorizzato" xml:space="preserve">
+    <value>Smart working operation not allowed for your role.</value>
+  </data>
+  <data name="SwDipendenteNonValido" xml:space="preserve">
+    <value>Employee not found in the company.</value>
+  </data>
+  <data name="SwPeriodoNonValido" xml:space="preserve">
+    <value>Invalid agreement period.</value>
+  </data>
+  <data name="SwMaxGiorniNonValido" xml:space="preserve">
+    <value>Maximum days per week must be between 1 and 7.</value>
+  </data>
+  <data name="SwGiorniNonValidi" xml:space="preserve">
+    <value>Select at least one allowed weekday.</value>
+  </data>
+  <data name="SwAccordoSovrapposto" xml:space="preserve">
+    <value>The employee already has a smart working agreement in the period.</value>
+  </data>
+  <data name="SwGiorno0" xml:space="preserve">
+    <value>Monday</value>
+  </data>
+  <data name="SwGiorno1" xml:space="preserve">
+    <value>Tuesday</value>
+  </data>
+  <data name="SwGiorno2" xml:space="preserve">
+    <value>Wednesday</value>
+  </data>
+  <data name="SwGiorno3" xml:space="preserve">
+    <value>Thursday</value>
+  </data>
+  <data name="SwGiorno4" xml:space="preserve">
+    <value>Friday</value>
+  </data>
+  <data name="SwGiorno5" xml:space="preserve">
+    <value>Saturday</value>
+  </data>
+  <data name="SwGiorno6" xml:space="preserve">
+    <value>Sunday</value>
+  </data>
+  <data name="SwPresaVisioneTitolo" xml:space="preserve">
+    <value>Smart working agreement from {0:dd/MM/yyyy} to {1:dd/MM/yyyy}</value>
+  </data>
+  <data name="SwPresaVisioneTesto" xml:space="preserve">
+    <value>Individual smart working agreement (Law 81/2017) of {0}: from {1:dd/MM/yyyy} to {2:dd/MM/yyyy}, at most {3} days per week, on: {4}. Days are requested from the smart working calendar and follow the request approval.</value>
+  </data>
+  <data name="SwNessunAccordo" xml:space="preserve">
+    <value>No valid smart working agreement on {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="SwAccordoNonFirmato" xml:space="preserve">
+    <value>The smart working agreement valid on {0:dd/MM/yyyy} is not signed yet: confirm the acknowledgement.</value>
+  </data>
+  <data name="SwGiornoNonConsentito" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is not a smart working day allowed by the agreement.</value>
+  </data>
+  <data name="SwGiaRichiesto" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is already a requested or approved smart working day.</value>
+  </data>
+  <data name="SwOltreLimite" xml:space="preserve">
+    <value>Limit of {0} smart working days exceeded in the week from {1:dd/MM/yyyy} (already requested or approved: {2}).</value>
   </data>
 </root>

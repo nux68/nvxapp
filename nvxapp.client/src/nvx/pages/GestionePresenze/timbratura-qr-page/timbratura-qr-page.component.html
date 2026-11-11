@@ -1,0 +1,67 @@
+<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content class="nvx-centro">
+      @if (codice) {
+        <ion-note class="nvx-blocco">{{ 'attendance.pages.timbraturaQr.codeRead' | transloco }}</ion-note>
+      } @else {
+        <ion-select interface="popover" [(ngModel)]="idAz_Sedi" [label]="'attendance.pages.timbraturaQr.site' | transloco" labelPlacement="stacked">
+          @for (s of sedi; track s.idAz_Sedi) {
+            <ion-select-option [value]="s.idAz_Sedi">{{ s.sede }}</ion-select-option>
+          }
+        </ion-select>
+      }
+
+      <ion-button expand="block" size="large" class="nvx-timbra" [disabled]="inCorso" (click)="timbra()">
+        <ion-icon slot="start" name="finger-print"></ion-icon>{{ 'attendance.pages.timbraturaQr.stamp' | transloco }}
+      </ion-button>
+
+      @if (lettoreDisponibile && !scansione) {
+        <ion-button expand="block" fill="outline" (click)="scansiona()">
+          <ion-icon slot="start" name="qr-code-outline"></ion-icon>{{ 'attendance.pages.timbraturaQr.scan' | transloco }}
+        </ion-button>
+      }
+      @if (scansione) {
+        <video #video class="nvx-video" playsinline muted></video>
+        <ion-button expand="block" fill="clear" (click)="fermaScansione()">{{ 'common.buttons.cancel' | transloco }}</ion-button>
+      }
+
+      @if (messaggio) {
+        <ion-note class="nvx-blocco">{{ messaggio }}</ion-note>
+      }
+      @if (ultima) {
+        <ion-item lines="none">
+          <ion-label class="ion-text-wrap">
+            <h3>{{ ultima.timbratura | date: 'dd/MM HH:mm' }} {{ ultima.sede }}</h3>
+            <p>{{ esitoTesto(ultima.esitoGeofence) }}@if (ultima.distanzaMetri != null) { ({{ ultima.distanzaMetri | number: '1.0-0' }} m)}</p>
+          </ion-label>
+        </ion-item>
+      }
+      <ion-note class="nvx-blocco">{{ 'attendance.pages.timbraturaQr.note' | transloco }}</ion-note>
+    </ion-card-content>
+  </ion-card>
+
+  @if (coda.length > 0) {
+    <ion-card>
+      <ion-card-content>
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'attendance.pages.timbraturaQr.queue' | transloco }}</ion-label>
+          <ion-button slot="end" fill="outline" (click)="inviaOra()">{{ 'attendance.pages.timbraturaQr.sendNow' | transloco }}</ion-button>
+        </ion-item>
+        @for (c of coda; track c.id) {
+          <ion-item>
+            <ion-icon slot="start" [name]="c.scartata ? 'close-circle' : 'cloud-offline-outline'" [color]="c.scartata ? 'danger' : 'medium'"></ion-icon>
+            <ion-label class="ion-text-wrap">
+              <h3>{{ c.dataDispositivo | date: 'dd/MM HH:mm' }}</h3>
+              @if (c.scartata) { <p>{{ c.scartata }}</p> }
+            </ion-label>
+            @if (c.scartata) {
+              <ion-button slot="end" fill="clear" color="danger" (click)="togli(c)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button>
+            }
+          </ion-item>
+        }
+      </ion-card-content>
+    </ion-card>
+  }
+</ion-content>
