@@ -42,7 +42,7 @@ Solo CompanyAdmin/CompanyPowerAdmin: restituisce il codice corrente della sede, 
 ### 4.3 Kiosk (`TimbraturaEvoluta/KioskRegistra`, `KioskStamp`)
 - Il kiosk è un dispositivo con un utente **CompanyAdmin/CompanyPowerAdmin** collegato (permesso di timbrare per altri) e **registrato** sulla sede: `KioskRegistra` genera un `KioskToken` casuale (32 byte) salvato nel dispositivo; registrare di nuovo invalida il precedente.
 - `KioskStamp` (sede, token, PIN o badge): token e `KioskAttivo` verificati, dipendente dell'azienda trovato da PIN (HMAC) o badge, ora del server, `Origine = Kiosk`, operatore = utente del dispositivo. Dopo 5 errori in un minuto per dispositivo il kiosk resta bloccato per un minuto.
-- PIN e badge si impostano dall'HR (`TimbraturaEvoluta/PinPut`); il dipendente può cambiare il proprio PIN.
+- PIN e badge li imposta **solo l'HR** (`TimbraturaEvoluta/PinPut`): il PIN è unico nell'azienda e, se lo scegliesse il dipendente, il controllo di unicità gli rivelerebbe i PIN dei colleghi.
 
 ### 4.4 Offline
 Coda nel `localStorage` del client (`TimbraturaOfflineService`): se la chiamata fallisce per rete (o il browser è offline) la timbratura resta in coda con `dataDispositivo`; all'evento `online`, all'avvio della pagina e con "Invia ora" si inviano in ordine con `Offline = true`. Le risposte di rifiuto (oltre il limite) tolgono la timbratura dalla coda e restano visibili come scartate.
@@ -69,8 +69,8 @@ Nessuno: la timbratura evoluta crea una normale `Dip_GG_Timbratura` (stato Diret
 Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 
 - ✅ `AT-TIMB.0` Analisi (questo documento)
-- ⏳ `AT-TIMB.1` QR per sede: configurazione della sede, codice firmato e rotante, immagine, anti-replay; pagine `/timbraturapostazione` e `/timbraturaqr`; NFC documentato
-- ⏳ `AT-TIMB.2` Geofencing: coordinate, raggio e regola per sede, esito registrato su `Dip_GG_TimbraturaInfo`, blocca o segnala
-- ⏳ `AT-TIMB.3` Kiosk: registrazione del dispositivo, PIN/badge, `KioskStamp`, pagina `/timbraturakiosk` a schermo intero, limite dei tentativi
-- ⏳ `AT-TIMB.4` Offline: coda locale, invio alla riconnessione, differite accettate entro il limite e marcate
-- ⏳ `AT-TIMB.5` Prova su DB usa e getta (QR valido/riusato, fuori dal geofence, differita accettata/rifiutata, kiosk con PIN)
+- ✅ `AT-TIMB.1` QR per sede: configurazione della sede, codice firmato e rotante, immagine, anti-replay; pagine `/timbraturapostazione` e `/timbraturaqr`; NFC documentato
+- ✅ `AT-TIMB.2` Geofencing: coordinate, raggio e regola per sede, esito registrato su `Dip_GG_TimbraturaInfo`, blocca o segnala
+- ✅ `AT-TIMB.3` Kiosk: registrazione del dispositivo, PIN/badge, `KioskStamp`, pagina `/timbraturakiosk` a schermo intero, limite dei tentativi
+- ✅ `AT-TIMB.4` Offline: coda locale, invio alla riconnessione, differite accettate entro il limite e marcate
+- ✅ `AT-TIMB.5` Prova su DB usa e getta (QR valido/riusato, fuori dal geofence, differita accettata/rifiutata, kiosk con PIN)

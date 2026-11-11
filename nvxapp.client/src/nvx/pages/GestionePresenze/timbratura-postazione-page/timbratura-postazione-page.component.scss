@@ -1,0 +1,27 @@
+.nvx-postazione {
+  text-align: center;
+}
+
+.nvx-comandi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.nvx-ora {
+  font-size: 3em;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.nvx-qr {
+  width: min(80vw, 420px);
+  image-rendering: pixelated;
+}
+
+.nvx-istruzioni {
+  display: block;
+  margin-top: 12px;
+}

@@ -9,6 +9,75 @@
       "importoObbligatorio": "Indicare un importo maggiore di zero."
     },
     "pages": {
+      "timbraturaSede": {
+        "title": "Timbratura della sede",
+        "site": "Sede",
+        "fabOther": "Postazione, kiosk e PIN",
+        "qrSection": "QR della postazione",
+        "qrActive": "Timbratura con QR attiva",
+        "qrRequired": "QR obbligatorio (senza QR la timbratura è rifiutata)",
+        "qrSeconds": "Il codice cambia ogni (secondi)",
+        "qrRegenerate": "Genera un nuovo segreto (i codici esposti non valgono più)",
+        "geoSection": "Geofencing",
+        "geoRule": "Fuori dall'area o senza posizione",
+        "geoNone": "Nessun controllo",
+        "geoWarn": "Accetta e segnala",
+        "geoBlock": "Rifiuta la timbratura",
+        "latitude": "Latitudine",
+        "longitude": "Longitudine",
+        "usePosition": "Posizione attuale",
+        "radius": "Raggio (metri)",
+        "kioskSection": "Kiosk",
+        "kioskActive": "Postazione condivisa (kiosk) attiva",
+        "kioskRegistered": "Un dispositivo kiosk è registrato: registrarne un altro sostituisce il precedente.",
+        "kioskNotRegistered": "Nessun dispositivo registrato: apri la pagina Kiosk sul dispositivo condiviso.",
+        "offlineSection": "Timbrature offline",
+        "offlineHours": "Timbrature differite accettate entro (ore, 0 = mai)",
+        "note": "Le timbrature con QR, posizione o dal kiosk usano l'ora del server; quelle fatte senza rete l'ora del telefono, entro il limite indicato, e restano marcate come differite."
+      },
+      "timbraturaPin": {
+        "title": "PIN e badge per il kiosk",
+        "employee": "Dipendente",
+        "badge": "Badge",
+        "set": "impostato",
+        "hint": "PIN di 4-8 cifre (vuoto = non cambia). Badge: codice del badge personale (vuoto = nessuno)."
+      },
+      "timbraturaPostazione": {
+        "title": "Postazione QR",
+        "site": "Sede",
+        "fullscreen": "Schermo intero",
+        "noSites": "Nessuna sede con la timbratura QR attiva.",
+        "instructions": "Inquadra il codice con la fotocamera del telefono per timbrare. Il codice cambia ogni {{ s }} secondi e vale una sola volta."
+      },
+      "timbraturaQr": {
+        "title": "Timbratura in sede",
+        "site": "Sede",
+        "codeRead": "Codice QR della postazione letto: conferma la timbratura.",
+        "stamp": "Timbra",
+        "scan": "Leggi il QR della postazione",
+        "done": "Timbratura registrata.",
+        "queued": "Senza rete: la timbratura è in coda e partirà alla riconnessione.",
+        "noCamera": "Fotocamera non disponibile: inquadra il QR con l'app fotocamera del telefono.",
+        "queue": "Timbrature in attesa di invio",
+        "sendNow": "Invia ora",
+        "note": "Per il controllo della sede il telefono chiede la posizione. Senza rete la timbratura resta nel telefono con la sua ora e si invia appena torna la connessione.",
+        "geo0": "Posizione non controllata",
+        "geo1": "Dentro l'area della sede",
+        "geo2": "Fuori dall'area della sede (segnalata)",
+        "geo3": "Posizione non disponibile (segnalata)",
+        "geo4": "Giorno di lavoro agile"
+      },
+      "timbraturaKiosk": {
+        "title": "Kiosk timbrature",
+        "site": "Sede",
+        "noSites": "Nessuna sede con il kiosk attivo.",
+        "registerNote": "Registra questo dispositivo come postazione condivisa della sede: resterà collegato con l'utente attuale.",
+        "register": "Registra il dispositivo",
+        "pinPrompt": "Digita il PIN",
+        "badgePrompt": "oppure passa il badge",
+        "done": "{{ name }}: timbratura delle {{ time }} registrata",
+        "offline": "Server non raggiungibile: riprova."
+      },
       "turni": {
         "wd0": "Lun",
         "wd1": "Mar",
@@ -1398,6 +1467,11 @@
       }
     },
     "menu": {
+      "postazioneQr": "Postazione QR",
+      "kiosk": "Kiosk timbrature",
+      "timbraturaSedi": "Timbratura delle sedi",
+      "timbraturaInSede": "Timbratura in sede",
+      "pinTimbratura": "PIN e badge",
       "pianificazioneTurni": "Pianificazione turni",
       "turni": "Turni",
       "mieiTurni": "I miei turni",

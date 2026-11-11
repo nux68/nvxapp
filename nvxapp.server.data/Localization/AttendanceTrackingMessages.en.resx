@@ -1570,4 +1570,76 @@
   <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
     <value>Swap shifts not restored: {0}</value>
   </data>
+  <data name="TimbNonAutorizzato" xml:space="preserve">
+    <value>Clock-in operation not allowed for your role.</value>
+  </data>
+  <data name="TimbSedeNonValida" xml:space="preserve">
+    <value>Site not found.</value>
+  </data>
+  <data name="TimbCoordinateNonValide" xml:space="preserve">
+    <value>Invalid site coordinates (latitude and longitude together).</value>
+  </data>
+  <data name="TimbGeofenceSenzaCoordinate" xml:space="preserve">
+    <value>Geofencing requires the site coordinates.</value>
+  </data>
+  <data name="TimbQrNonAttivo" xml:space="preserve">
+    <value>QR clock-in is not enabled for the site.</value>
+  </data>
+  <data name="TimbQrNonValido" xml:space="preserve">
+    <value>Invalid QR code.</value>
+  </data>
+  <data name="TimbQrScaduto" xml:space="preserve">
+    <value>QR code expired: scan the current station code.</value>
+  </data>
+  <data name="TimbQrGiaUsato" xml:space="preserve">
+    <value>This QR code has already been used: scan the current station code.</value>
+  </data>
+  <data name="TimbQrObbligatorio" xml:space="preserve">
+    <value>At this site you can only clock in with the station QR.</value>
+  </data>
+  <data name="TimbDataDispositivoNonValida" xml:space="preserve">
+    <value>Invalid device time.</value>
+  </data>
+  <data name="TimbDifferitaNonAccettata" xml:space="preserve">
+    <value>The site does not accept deferred clock-ins.</value>
+  </data>
+  <data name="TimbDifferitaFutura" xml:space="preserve">
+    <value>Deferred clock-in with a future time: check the phone clock.</value>
+  </data>
+  <data name="TimbDifferitaOltreLimite" xml:space="preserve">
+    <value>Deferred clock-in beyond the {0}-hour limit: ask HR for a correction.</value>
+  </data>
+  <data name="TimbFuoriGeofence" xml:space="preserve">
+    <value>Clock-in outside the site area ({0} m, radius {1} m).</value>
+  </data>
+  <data name="TimbPosizioneMancante" xml:space="preserve">
+    <value>Position not available: the site requires a position check.</value>
+  </data>
+  <data name="TimbNonRegistrata" xml:space="preserve">
+    <value>Clock-in not recorded.</value>
+  </data>
+  <data name="TimbKioskNonAttivo" xml:space="preserve">
+    <value>The kiosk is not enabled for the site.</value>
+  </data>
+  <data name="TimbKioskNonRegistrato" xml:space="preserve">
+    <value>Device not registered as the site kiosk.</value>
+  </data>
+  <data name="TimbKioskBloccato" xml:space="preserve">
+    <value>Too many wrong attempts: try again in a minute.</value>
+  </data>
+  <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
+    <value>PIN or badge not recognised.</value>
+  </data>
+  <data name="TimbPinNonValido" xml:space="preserve">
+    <value>The PIN must have 4 to 8 digits.</value>
+  </data>
+  <data name="TimbPinGiaUsato" xml:space="preserve">
+    <value>PIN already used by another employee: choose another one.</value>
+  </data>
+  <data name="TimbBadgeNonValido" xml:space="preserve">
+    <value>Invalid badge code (max 50 characters).</value>
+  </data>
+  <data name="TimbBadgeGiaUsato" xml:space="preserve">
+    <value>Badge already assigned to another employee.</value>
+  </data>
 </root>

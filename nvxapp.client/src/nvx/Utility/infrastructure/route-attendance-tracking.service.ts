@@ -34,6 +34,7 @@ export class RouteAttendanceTrackingService {
       { path: 'requestjustificationuser', loadChildren: () => import('../../pages/GestionePresenze/request-justification-user-page/request-justification-user-page.module').then(m => m.RequestJustificationUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestclockinguser', loadChildren: () => import('../../pages/GestionePresenze/request-clocking-user-page/request-clocking-user-page.module').then(m => m.RequestClockingUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestlistuser', loadChildren: () => import('../../pages/GestionePresenze/request-list-user-page/request-list-user-page.module').then(m => m.RequestListUserPageModule), canActivate: [RoleGuard4User] },
+      { path: 'timbraturaqr', loadChildren: () => import('../../pages/GestionePresenze/timbratura-qr-page/timbratura-qr-page.module').then(m => m.TimbraturaQrPageModule), canActivate: [RoleGuard4User] },
       { path: 'mieiturni', loadChildren: () => import('../../pages/GestionePresenze/miei-turni-page/miei-turni-page.module').then(m => m.MieiTurniPageModule), canActivate: [RoleGuard4User] },
 
       //power admin
@@ -45,6 +46,11 @@ export class RouteAttendanceTrackingService {
       { path: 'pianificazioneturni', loadChildren: () => import('../../pages/GestionePresenze/pianificazione-turni-page/pianificazione-turni-page.module').then(m => m.PianificazioneTurniPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'turnolist', loadChildren: () => import('../../pages/GestionePresenze/turno-list-page/turno-list-page.module').then(m => m.TurnoListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'turnoedit', loadChildren: () => import('../../pages/GestionePresenze/turno-edit-page/turno-edit-page.module').then(m => m.TurnoEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      // timbratura evoluta (AT-TIMB)
+      { path: 'timbraturasede', loadChildren: () => import('../../pages/GestionePresenze/timbratura-sede-page/timbratura-sede-page.module').then(m => m.TimbraturaSedePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'timbraturapin', loadChildren: () => import('../../pages/GestionePresenze/timbratura-pin-page/timbratura-pin-page.module').then(m => m.TimbraturaPinPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'timbraturapostazione', loadChildren: () => import('../../pages/GestionePresenze/timbratura-postazione-page/timbratura-postazione-page.module').then(m => m.TimbraturaPostazionePageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'timbraturakiosk', loadChildren: () => import('../../pages/GestionePresenze/timbratura-kiosk-page/timbratura-kiosk-page.module').then(m => m.TimbraturaKioskPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'turnocoperture', loadChildren: () => import('../../pages/GestionePresenze/turno-coperture-page/turno-coperture-page.module').then(m => m.TurnoCoperturePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       { path: 'quadraturamensile', loadChildren: () => import('../../pages/GestionePresenze/quadratura-mensile-page/quadratura-mensile-page.module').then(m => m.QuadraturaMensilePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },

@@ -90,6 +90,11 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_SediRepartoTurno> Az_SediRepartoTurno { get; set; }
         public virtual DbSet<Dip_Turno> Dip_Turno { get; set; }
         public virtual DbSet<Dip_TurnoScambio> Dip_TurnoScambio { get; set; }
+
+        // timbratura evoluta (AT-TIMB)
+        public virtual DbSet<Az_SediTimbratura> Az_SediTimbratura { get; set; }
+        public virtual DbSet<Dip_GG_TimbraturaInfo> Dip_GG_TimbraturaInfo { get; set; }
+        public virtual DbSet<Dip_TimbraturaPin> Dip_TimbraturaPin { get; set; }
         
         
 
@@ -98,6 +103,34 @@ namespace nvxapp.server.data.Infrastructure
             Gen_PublicReferences_GestionePresenze(modelBuilder);
             Gen_Init_GestionePresenze(modelBuilder);
             Gen_Turni(modelBuilder);
+            Gen_TimbraturaEvoluta(modelBuilder);
+        }
+
+        /* Timbratura evoluta (AT-TIMB, ANALISI_ATTENDANCETRACKING_TIMBRATURA.md) */
+        private void Gen_TimbraturaEvoluta(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Az_SediTimbratura>(entity =>
+            {
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.IdAz_Sedi).IsUnique();
+            });
+
+            modelBuilder.Entity<Dip_GG_TimbraturaInfo>(entity =>
+            {
+                entity.HasOne(t => t.Dip_GG_TimbraturaNavigation).WithMany().HasForeignKey(t => t.IdDip_GG_Timbratura).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => t.IdDip_GG_Timbratura).IsUnique();
+                // anti-replay del QR: lo stesso codice (sede + slot) una sola volta per dipendente
+                entity.HasIndex(t => new { t.IdAz_Sedi, t.QrSlot, t.IdDip_RapportoLavoro }).IsUnique().HasFilter("\"QrSlot\" IS NOT NULL");
+            });
+
+            modelBuilder.Entity<Dip_TimbraturaPin>(entity =>
+            {
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.IdDip_Anagrafica).IsUnique();
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.PinHash }).IsUnique().HasFilter("\"PinHash\" IS NOT NULL");
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Badge }).IsUnique().HasFilter("\"Badge\" IS NOT NULL");
+            });
         }
 
         /* Turni e pianificazione (AT-TURNI, ANALISI_ATTENDANCETRACKING_TURNI.md) */

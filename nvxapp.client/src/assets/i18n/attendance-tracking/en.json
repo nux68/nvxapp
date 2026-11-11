@@ -9,6 +9,75 @@
       "importoObbligatorio": "Enter an amount greater than zero."
     },
     "pages": {
+      "timbraturaSede": {
+        "title": "Site clock-in",
+        "site": "Site",
+        "fabOther": "Station, kiosk and PIN",
+        "qrSection": "Station QR",
+        "qrActive": "QR clock-in enabled",
+        "qrRequired": "QR required (clock-ins without QR are refused)",
+        "qrSeconds": "The code changes every (seconds)",
+        "qrRegenerate": "Generate a new secret (displayed codes stop working)",
+        "geoSection": "Geofencing",
+        "geoRule": "Outside the area or without position",
+        "geoNone": "No check",
+        "geoWarn": "Accept and flag",
+        "geoBlock": "Refuse the clock-in",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "usePosition": "Current position",
+        "radius": "Radius (metres)",
+        "kioskSection": "Kiosk",
+        "kioskActive": "Shared station (kiosk) enabled",
+        "kioskRegistered": "A kiosk device is registered: registering another one replaces it.",
+        "kioskNotRegistered": "No device registered: open the Kiosk page on the shared device.",
+        "offlineSection": "Offline clock-ins",
+        "offlineHours": "Deferred clock-ins accepted within (hours, 0 = never)",
+        "note": "QR, position and kiosk clock-ins use the server time; those made without network use the phone time, within the limit, and stay flagged as deferred."
+      },
+      "timbraturaPin": {
+        "title": "Kiosk PIN and badges",
+        "employee": "Employee",
+        "badge": "Badge",
+        "set": "set",
+        "hint": "PIN of 4-8 digits (empty = unchanged). Badge: personal badge code (empty = none)."
+      },
+      "timbraturaPostazione": {
+        "title": "QR station",
+        "site": "Site",
+        "fullscreen": "Full screen",
+        "noSites": "No site with QR clock-in enabled.",
+        "instructions": "Frame the code with the phone camera to clock in. The code changes every {{ s }} seconds and can be used once."
+      },
+      "timbraturaQr": {
+        "title": "On-site clock-in",
+        "site": "Site",
+        "codeRead": "Station QR code read: confirm the clock-in.",
+        "stamp": "Clock in",
+        "scan": "Read the station QR",
+        "done": "Clock-in recorded.",
+        "queued": "No network: the clock-in is queued and will be sent when back online.",
+        "noCamera": "Camera not available: frame the QR with the phone camera app.",
+        "queue": "Clock-ins waiting to be sent",
+        "sendNow": "Send now",
+        "note": "For the site check the phone asks for the position. Without network the clock-in stays on the phone with its time and is sent as soon as the connection returns.",
+        "geo0": "Position not checked",
+        "geo1": "Inside the site area",
+        "geo2": "Outside the site area (flagged)",
+        "geo3": "Position not available (flagged)",
+        "geo4": "Smart working day"
+      },
+      "timbraturaKiosk": {
+        "title": "Clock-in kiosk",
+        "site": "Site",
+        "noSites": "No site with the kiosk enabled.",
+        "registerNote": "Register this device as the shared station of the site: it stays logged in with the current user.",
+        "register": "Register the device",
+        "pinPrompt": "Enter your PIN",
+        "badgePrompt": "or swipe your badge",
+        "done": "{{ name }}: clock-in at {{ time }} recorded",
+        "offline": "Server not reachable: try again."
+      },
       "turni": {
         "wd0": "Mon",
         "wd1": "Tue",
@@ -1398,6 +1467,11 @@
       }
     },
     "menu": {
+      "postazioneQr": "QR station",
+      "kiosk": "Clock-in kiosk",
+      "timbraturaSedi": "Site clock-in settings",
+      "timbraturaInSede": "On-site clock-in",
+      "pinTimbratura": "PIN and badges",
       "pianificazioneTurni": "Shift planning",
       "turni": "Shifts",
       "mieiTurni": "My shifts",

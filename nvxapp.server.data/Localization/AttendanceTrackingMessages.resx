@@ -1574,4 +1574,76 @@
   <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
     <value>Turni dello scambio non ripristinati: {0}</value>
   </data>
+  <data name="TimbNonAutorizzato" xml:space="preserve">
+    <value>Operazione di timbratura non consentita al tuo ruolo.</value>
+  </data>
+  <data name="TimbSedeNonValida" xml:space="preserve">
+    <value>Sede non trovata.</value>
+  </data>
+  <data name="TimbCoordinateNonValide" xml:space="preserve">
+    <value>Coordinate della sede non valide (latitudine e longitudine insieme).</value>
+  </data>
+  <data name="TimbGeofenceSenzaCoordinate" xml:space="preserve">
+    <value>Per il geofencing servono le coordinate della sede.</value>
+  </data>
+  <data name="TimbQrNonAttivo" xml:space="preserve">
+    <value>La timbratura con QR non è attiva per la sede.</value>
+  </data>
+  <data name="TimbQrNonValido" xml:space="preserve">
+    <value>Codice QR non valido.</value>
+  </data>
+  <data name="TimbQrScaduto" xml:space="preserve">
+    <value>Codice QR scaduto: inquadra il codice attuale della postazione.</value>
+  </data>
+  <data name="TimbQrGiaUsato" xml:space="preserve">
+    <value>Questo codice QR è già stato usato: inquadra il codice attuale della postazione.</value>
+  </data>
+  <data name="TimbQrObbligatorio" xml:space="preserve">
+    <value>Nella sede si timbra solo con il QR della postazione.</value>
+  </data>
+  <data name="TimbDataDispositivoNonValida" xml:space="preserve">
+    <value>Ora del dispositivo non valida.</value>
+  </data>
+  <data name="TimbDifferitaNonAccettata" xml:space="preserve">
+    <value>La sede non accetta timbrature differite.</value>
+  </data>
+  <data name="TimbDifferitaFutura" xml:space="preserve">
+    <value>Timbratura differita con un'ora nel futuro: controlla l'orologio del telefono.</value>
+  </data>
+  <data name="TimbDifferitaOltreLimite" xml:space="preserve">
+    <value>Timbratura differita oltre il limite di {0} ore: chiedi la correzione all'ufficio del personale.</value>
+  </data>
+  <data name="TimbFuoriGeofence" xml:space="preserve">
+    <value>Timbratura fuori dall'area della sede ({0} m, raggio {1} m).</value>
+  </data>
+  <data name="TimbPosizioneMancante" xml:space="preserve">
+    <value>Posizione non disponibile: la sede richiede il controllo della posizione.</value>
+  </data>
+  <data name="TimbNonRegistrata" xml:space="preserve">
+    <value>Timbratura non registrata.</value>
+  </data>
+  <data name="TimbKioskNonAttivo" xml:space="preserve">
+    <value>Il kiosk non è attivo per la sede.</value>
+  </data>
+  <data name="TimbKioskNonRegistrato" xml:space="preserve">
+    <value>Dispositivo non registrato come kiosk della sede.</value>
+  </data>
+  <data name="TimbKioskBloccato" xml:space="preserve">
+    <value>Troppi tentativi errati: riprova tra un minuto.</value>
+  </data>
+  <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
+    <value>PIN o badge non riconosciuto.</value>
+  </data>
+  <data name="TimbPinNonValido" xml:space="preserve">
+    <value>Il PIN deve avere da 4 a 8 cifre.</value>
+  </data>
+  <data name="TimbPinGiaUsato" xml:space="preserve">
+    <value>PIN già usato da un altro dipendente: scegline un altro.</value>
+  </data>
+  <data name="TimbBadgeNonValido" xml:space="preserve">
+    <value>Codice del badge non valido (massimo 50 caratteri).</value>
+  </data>
+  <data name="TimbBadgeGiaUsato" xml:space="preserve">
+    <value>Badge già assegnato a un altro dipendente.</value>
+  </data>
 </root>

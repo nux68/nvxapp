@@ -1595,6 +1595,70 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Az_SediRepartoTurno");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SediTimbratura", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("DifferitaMaxOre")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdAz_Sedi")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("KioskAttivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KioskToken")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<double?>("Latitudine")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitudine")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("QrAttivo")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("QrDurataSecondi")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("QrObbligatorio")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("QrSegreto")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("RaggioMetri")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RegolaGeofence")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Sedi")
+                        .IsUnique();
+
+                    b.ToTable("Az_SediTimbratura");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
                 {
                     b.Property<int>("Id")
@@ -1662,6 +1726,127 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsUnique();
 
                     b.ToTable("Az_SubCommessaUser");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_GG_TimbraturaInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataDispositivo")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataRicezione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Differita")
+                        .HasColumnType("boolean");
+
+                    b.Property<double?>("DistanzaMetri")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("EsitoGeofence")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IdAspNetUsers_Operatore")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdAz_Sedi")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_GG_Timbratura")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("Latitudine")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("Longitudine")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Origine")
+                        .HasColumnType("integer");
+
+                    b.Property<double?>("PrecisioneMetri")
+                        .HasColumnType("double precision");
+
+                    b.Property<long?>("QrSlot")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_GG_Timbratura")
+                        .IsUnique();
+
+                    b.HasIndex("IdAz_Sedi", "QrSlot", "IdDip_RapportoLavoro")
+                        .IsUnique()
+                        .HasFilter("\"QrSlot\" IS NOT NULL");
+
+                    b.ToTable("Dip_GG_TimbraturaInfo");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_TimbraturaPin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Badge")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("PinHash")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_Anagrafica")
+                        .IsUnique();
+
+                    b.HasIndex("IdAz_Anagrafica", "Badge")
+                        .IsUnique()
+                        .HasFilter("\"Badge\" IS NOT NULL");
+
+                    b.HasIndex("IdAz_Anagrafica", "PinHash")
+                        .IsUnique()
+                        .HasFilter("\"PinHash\" IS NOT NULL");
+
+                    b.ToTable("Dip_TimbraturaPin");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", b =>
@@ -3381,6 +3566,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_TurnoNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SediTimbratura", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Sedi", "Az_SediNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Sedi")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
@@ -3417,6 +3613,35 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("AspNetUsersNavigation");
 
                     b.Navigation("Az_SubCommessaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_GG_TimbraturaInfo", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Sedi", "Az_SediNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Sedi")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_GG_Timbratura", "Dip_GG_TimbraturaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_GG_Timbratura")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediNavigation");
+
+                    b.Navigation("Dip_GG_TimbraturaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_TimbraturaPin", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_AnagraficaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_Turno", b =>
