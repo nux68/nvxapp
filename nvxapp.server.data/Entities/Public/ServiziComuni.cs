@@ -8,6 +8,7 @@ namespace nvxapp.server.data.Entities.Public
         - Notifica          : avvisi conservati per l'utente (nell'app e, se scelto, per email)
         - NotificaPreferenza: come l'utente vuole ricevere una categoria di avvisi
         - PresaVisione      : richiesta a un utente di confermare di aver letto (o firmato) qualcosa
+        - CalendarioFeed    : feed iCalendar (.ics) personale dell'utente in un'azienda (area INF-CAL, decisione D9)
      Tabelle in public con IdCompany (come Ticket e UserDashboard): il promemoria notturno legge tutte le aziende
      con una sola query. Chiavi esterne senza navigation: i contesti degli applicativi mappano Company e AspNetUsers
      e non devono scoprire queste tabelle.
@@ -184,5 +185,30 @@ namespace nvxapp.server.data.Entities.Public
 
         /// <summary>richiesta ritirata dal modulo (non si mostra piu')</summary>
         public bool Annullata { get; set; }
+    }
+
+    /// <summary>
+    /// Feed iCalendar (.ics) personale in sola lettura (INF-CAL, D9): Google Calendar, Outlook e Apple Calendar lo
+    /// sottoscrivono con l'indirizzo che contiene il token, senza autenticazione. Uno per utente e azienda.
+    /// Il token e' l'unica protezione: casuale (32 byte, base64url) e rigenerabile (il vecchio smette di funzionare).
+    /// </summary>
+    public class CalendarioFeed : BaseEntity
+    {
+        [Required]
+        [MaxLength(450)]
+        public string IdAspNetUsers { get; set; } = string.Empty;
+
+        [Required]
+        public int IdCompany { get; set; }
+
+        [Required]
+        [MaxLength(64)]
+        public string Token { get; set; } = string.Empty;
+
+        /// <summary>creazione del token attuale (cambia quando si rigenera)</summary>
+        public DateTime DataCreazione { get; set; }
+
+        /// <summary>ultimo scaricamento del feed da parte di un calendario</summary>
+        public DateTime? DataUltimoAccesso { get; set; }
     }
 }
