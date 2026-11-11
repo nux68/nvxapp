@@ -1,11 +1,14 @@
+using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration.Models
 {
-    // registrazione di una nuova azienda dalla pagina pubblica (showcase), prima del login:
+    // registrazione di una nuova azienda o di un nuovo studio dalla pagina pubblica (showcase), prima del login:
     // si salva la richiesta e si invia il link di conferma all'email indicata
     public class CompanyRegisterInModel
     {
+        // azienda (nello studio DEMO) o studio (nel centro DEMO)
+        public TipoRegistrazione Tipo { get; set; } = TipoRegistrazione.Azienda;
         public string? RagioneSociale { get; set; } = string.Empty;
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
@@ -39,13 +42,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
     }
 
 
-    // conferma dal link ricevuto: crea l'azienda con i suoi utenti
+    // conferma dal link ricevuto: crea l'azienda o lo studio con i suoi utenti
     public class CompanyRegisterConfirmInModel
     {
         public string? Token { get; set; } = string.Empty;
     }
 
-    // utente creato per la nuova azienda, da mostrare per il primo accesso
+    // utente creato per la nuova azienda o il nuovo studio, da mostrare per il primo accesso
     public class CompanyRegisterUserModel
     {
         public string UserName { get; set; } = string.Empty;
@@ -54,7 +57,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
     public class CompanyRegisterConfirmOutModel : ModelResult
     {
+        // cosa e' stato creato: l'azienda (IdCompany) o lo studio (IdFinancialAdvisor)
+        public TipoRegistrazione Tipo { get; set; }
         public int IdCompany { get; set; }
+        public int IdFinancialAdvisor { get; set; }
         public string Descrizione { get; set; } = string.Empty;
         public List<CompanyRegisterUserModel> Users { get; set; } = new List<CompanyRegisterUserModel>();
     }
