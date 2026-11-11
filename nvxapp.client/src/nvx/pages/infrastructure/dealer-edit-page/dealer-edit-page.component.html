@@ -85,6 +85,20 @@
           <ion-toggle formControlName="disabled" justify="start">{{ 'pages.dealerEdit.disabled' | transloco }}</ion-toggle>
         </ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'pages.dealerEdit.disabledNote' | transloco }}</ion-note>
+
+        <!-- trattenuta della piattaforma sugli incassi dei clienti del centro (solo SuperUser) -->
+        @if (_editModel?.canEditPercentuale) {
+          <ion-item class="nvx-item-4-title">
+            <ion-label>{{ 'pages.dealerEdit.platformFee' | transloco }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-input type="number" formControlName="percentualePiattaforma" [label]="'pages.dealerEdit.platformFeePercent' | transloco" labelPlacement="floating" min="0" max="100" step="0.01"></ion-input>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'pages.dealerEdit.platformFeeNote' | transloco: { generale: _editModel?.percentualeGenerale } }}</ion-note>
+          @if (_editForm.get('percentualePiattaforma')?.invalid) {
+            <ion-note color="danger">{{ 'pages.dealerEdit.platformFeeInvalid' | transloco }}</ion-note>
+          }
+        }
       </form>
 
       <br />
