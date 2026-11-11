@@ -33,11 +33,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage.Mode
         public int IdCompany { get; set; }
         public string Azienda { get; set; } = string.Empty;
         public string Studio { get; set; } = string.Empty;
-        // piano della licenza Documentale oppure "illimitato"
+        // piano della licenza Documentale, "illimitato" (licenze spente) o "senza licenza"
         public string Pacchetto { get; set; } = string.Empty;
         public int QuotaMB { get; set; }
-        // nessuna licenza Documentale (o sistema licenze spento): nessun limite di spazio
+        // sistema licenze spento: nessun limite di spazio
         public bool Illimitato { get; set; }
+        // sistema licenze acceso e nessuna licenza Documentale: quota zero, caricamenti bloccati
+        public bool SenzaLicenza { get; set; }
         public long UsedBytes { get; set; }
         public int FileCount { get; set; }
         public int UsedPercent { get; set; }

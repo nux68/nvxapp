@@ -680,7 +680,8 @@
       "columnUsed": "Usato",
       "columnPercent": "%",
       "columnFiles": "File",
-      "unlimited": "illimitato"
+      "unlimited": "illimitato",
+      "noLicense": "senza licenza"
     },
     "companyStorageEdit": {
       "title": "Spazio documenti dell'azienda",
@@ -688,6 +689,7 @@
       "warning": "Soglia di avviso (%)",
       "used": "Usati {{used}} MB su {{quota}} MB ({{percent}}%), {{files}} file",
       "usedUnlimited": "Usati {{used}} MB, spazio illimitato, {{files}} file",
+      "usedNoLicense": "Usati {{used}} MB, {{files}} file. Senza licenza Documentale non si caricano documenti.",
       "note": "Vuota = soglia predefinita (ora {{warning}}%)."
     },
     "customerEdit": {

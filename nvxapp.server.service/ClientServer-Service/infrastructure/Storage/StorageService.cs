@@ -8,6 +8,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
@@ -31,6 +32,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private readonly ICompanyStorageRepository _companyStorageRepository;
         private readonly IAppSettingRepository _appSettingRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly IStorageQuotaService _storageQuotaService;
         private readonly IApplicationActivationAuthorizer _authorizer;
 
@@ -43,12 +45,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                               ICompanyStorageRepository companyStorageRepository,
                               IAppSettingRepository appSettingRepository,
                               ICompanyRepository companyRepository,
+                              ICompanyApplicationRepository companyApplicationRepository,
                               IStorageQuotaService storageQuotaService,
                               IApplicationActivationAuthorizer authorizer) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _companyStorageRepository = companyStorageRepository;
             _appSettingRepository = appSettingRepository;
             _companyRepository = companyRepository;
+            _companyApplicationRepository = companyApplicationRepository;
             _storageQuotaService = storageQuotaService;
             _authorizer = authorizer;
         }
@@ -92,6 +96,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             {
                 var aziende = await AziendeVisibili()
                               ?? throw new UserMessageException(InfrastructureMessages.Get("StorageNotAllowed"));
+
+                // solo le aziende con il Documentale attivo: le altre non usano lo spazio dei documenti
+                var conDocumentale = await _companyApplicationRepository
+                    .FindAll(x => x.ApplicationType == ApplicationType.DocumentManagement && x.Active && aziende.Contains(x.IdCompany))
+                    .Select(x => x.IdCompany)
+                    .ToListAsync();
+                aziende = aziende.Where(conDocumentale.Contains).ToList();
 
                 var retVal = new CompanyStorageListOutModel();
                 foreach (var idCompany in aziende)
@@ -174,13 +185,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
                 Pacchetto = status.Pacchetto,
                 QuotaMB = status.QuotaMB,
                 Illimitato = status.Illimitato,
+                SenzaLicenza = status.SenzaLicenza,
                 UsedBytes = status.UsedBytes,
                 FileCount = status.FileCount,
                 UsedPercent = status.UsedPercent,
                 WarningPercent = status.WarningPercent,
                 WarningPercentAzienda = row.WarningPercent,
-                OverWarning = status.UsedPercent >= status.WarningPercent,
-                OverQuota = status.UsedBytes >= status.QuotaBytes,
+                OverWarning = !status.SenzaLicenza && status.UsedPercent >= status.WarningPercent,
+                OverQuota = !status.SenzaLicenza && status.UsedBytes >= status.QuotaBytes,
                 CanManage = await _authorizer.CanManageCompanyAsync(idCompany)
             };
         }
