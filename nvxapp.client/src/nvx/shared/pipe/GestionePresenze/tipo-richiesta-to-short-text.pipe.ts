@@ -22,6 +22,8 @@ export class TipoRichiestaToShortTextPipe implements PipeTransform {
         return translate('attendance.pipes.tipoRichiestaToShortText.giustificativo');
       case TipoRichiesta.NotaSpesa:
         return translate('attendance.pipes.tipoRichiestaToShortText.notaSpesa');
+      case TipoRichiesta.ScambioTurno:
+        return translate('attendance.pipes.tipoRichiestaToShortText.scambioTurno');
     
       default:
         return '';

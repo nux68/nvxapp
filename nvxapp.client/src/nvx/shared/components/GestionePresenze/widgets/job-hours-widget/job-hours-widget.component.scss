@@ -1,0 +1,28 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+.nvx-jh-righe {
+  margin: 10px 0 6px;
+}
+
+.nvx-jh-riga {
+  display: grid;
+  grid-template-columns: minmax(0, 40%) 1fr 56px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.nvx-jh-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.nvx-jh-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}

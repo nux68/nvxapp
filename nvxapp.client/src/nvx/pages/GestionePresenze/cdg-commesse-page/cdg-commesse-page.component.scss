@@ -1,0 +1,95 @@
+.cdg-filtri {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 6px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  input {
+    padding: 4px 6px;
+    border: 1px solid var(--ion-color-medium-tint);
+    border-radius: 4px;
+    background: var(--ion-background-color);
+    color: var(--ion-text-color);
+  }
+}
+
+.cdg-vuoto {
+  padding: 16px;
+  color: var(--ion-color-medium);
+}
+
+.cdg-nota {
+  font-size: 0.8em;
+  color: var(--ion-color-medium);
+}
+
+.cdg-avviso {
+  color: var(--ion-color-warning-shade);
+  margin-top: 4px;
+}
+
+.cdg-scroll {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.cdg-tabella {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+
+  th, td {
+    padding: 3px 6px;
+    border-bottom: 1px solid var(--ion-color-light-shade);
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: 600;
+    text-align: left;
+  }
+}
+
+.cdg-num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.cdg-commessa {
+  background: var(--ion-color-light);
+}
+
+.cdg-dettaglio td {
+  font-size: 0.9em;
+  color: var(--ion-color-medium-shade);
+  padding-left: 40px;
+}
+
+.cdg-totale td {
+  font-weight: 700;
+  border-top: 2px solid var(--ion-color-medium);
+}
+
+.cdg-negativo {
+  color: var(--ion-color-danger);
+}
+
+.cdg-input {
+  width: 90px;
+  text-align: right;
+  padding: 2px 4px;
+  border: 1px solid var(--ion-color-medium-tint);
+  border-radius: 4px;
+  background: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+.cdg-dipendenti {
+  max-width: 520px;
+}

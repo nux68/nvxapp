@@ -1,4 +1,4 @@
-﻿<?xml version='1.0' encoding='utf-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1492,5 +1492,506 @@
   <data name="PausaFinestraObbligatoria" xml:space="preserve">
     <value>Pausa "{0}": su un orario a coppia unica bisogna indicare la finestra della pausa.</value>
     <comment>pause</comment>
+  </data>
+  <data name="AnomaliaTipo_TimbratureDispari" xml:space="preserve">
+    <value>Timbrature dispari</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornataVuota" xml:space="preserve">
+    <value>Giornata senza timbrature</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_ErroreCalcolo" xml:space="preserve">
+    <value>Errore del calcolo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_NonCalcolata" xml:space="preserve">
+    <value>Giornata non calcolata</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_RichiestaInAttesa" xml:space="preserve">
+    <value>Richiesta in attesa</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_FuoriOrario" xml:space="preserve">
+    <value>Timbratura fuori orario</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_GiornoNonLavorativo" xml:space="preserve">
+    <value>Timbrature in giorno non lavorativo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaMancante" xml:space="preserve">
+    <value>Pausa mancante o insufficiente</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_PausaEccessiva" xml:space="preserve">
+    <value>Pausa eccessiva</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="AnomaliaTipo_Ritardo" xml:space="preserve">
+    <value>Ritardo ricorrente</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_TimbratureDispari" xml:space="preserve">
+    <value>Numero dispari di timbrature ({0}): manca un'entrata o un'uscita</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornataVuota" xml:space="preserve">
+    <value>Nessuna timbratura e nessun giustificativo con {0} ore previste</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErroreCalcolo" xml:space="preserve">
+    <value>Errore del calcolo: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_NonCalcolata" xml:space="preserve">
+    <value>Giornata non calcolata: eseguire il ricalcolo</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_RichiestaInAttesa" xml:space="preserve">
+    <value>Richieste del giorno ancora da approvare</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_FuoriOrario" xml:space="preserve">
+    <value>Timbrature fuori orario ({0}), orario dalle {1} alle {2}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_GiornoNonLavorativo" xml:space="preserve">
+    <value>Timbrature in un giorno non lavorativo ({0})</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaMancante" xml:space="preserve">
+    <value>Pausa mancante o insufficiente: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaEccessiva" xml:space="preserve">
+    <value>Pausa eccessiva: {0}</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_Ritardo" xml:space="preserve">
+    <value>Ritardo di {0} minuti (ritardi ricorrenti)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrTimbratureMancanti" xml:space="preserve">
+    <value>timbrature mancanti</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrOreMancanti" xml:space="preserve">
+    <value>ore mancanti non giustificate</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrFormule" xml:space="preserve">
+    <value>anomalia delle formule</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrSequenza" xml:space="preserve">
+    <value>sequenza di timbrature non interpretabile</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_ErrGenerico" xml:space="preserve">
+    <value>giornata in errore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_PausaDaOrario" xml:space="preserve">
+    <value>secondo la pausa dell'orario</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_LavoroContinuo" xml:space="preserve">
+    <value>lavoro continuo di {0} ore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalia_StaccoLungo" xml:space="preserve">
+    <value>stacco di {0} ore</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Nessuna" xml:space="preserve">
+    <value>Nessuna anomalia dal {0} al {1}.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_Riepilogo" xml:space="preserve">
+    <value>Dal {0} al {1}: {2} giornate da sistemare e {3} da verificare, {4} dipendenti coinvolti.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioErrore" xml:space="preserve">
+    <value>{0}: {1} (da sistemare)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_ConteggioAvviso" xml:space="preserve">
+    <value>{0}: {1} (da verificare)</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_RitardiRicorrenti" xml:space="preserve">
+    <value>{0}: {1} ritardi, in media {2} minuti</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_PeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido (al massimo {0} giorni).</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="Anomalie_SoloAmministratori" xml:space="preserve">
+    <value>Funzione riservata agli amministratori dell'azienda.</value>
+    <comment>anomalie</comment>
+  </data>
+  <data name="ChatDaysToFixDisplayName" xml:space="preserve">
+    <value>Giornate da sistemare</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixDescription" xml:space="preserve">
+    <value>Giornate del mese da sistemare prima dell'export paghe: timbrature dispari, giornate senza timbrature, errori del calcolo, richieste in attesa</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixFuture" xml:space="preserve">
+    <value>Il mese {0} non è ancora iniziato.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixNone" xml:space="preserve">
+    <value>Nessuna giornata da sistemare in {0}. Giornate con avvisi da verificare: {1}.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixTitle" xml:space="preserve">
+    <value>Giornate da sistemare in {0}: {1} ({2} dipendenti coinvolti)</value>
+    <comment>chat</comment>
+  </data>
+  <data name="ChatDaysToFixWarnings" xml:space="preserve">
+    <value>Ci sono anche {0} giornate con avvisi da verificare nella pagina Anomalie presenze.</value>
+    <comment>chat</comment>
+  </data>
+  <data name="DigestSectionAttendance" xml:space="preserve">
+    <value>Presenze</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToFix" xml:space="preserve">
+    <value>Giornate da sistemare prima dell'export paghe: {0} ({1} dipendenti)</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestDaysToCheck" xml:space="preserve">
+    <value>Giornate con avvisi da verificare: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestLateness" xml:space="preserve">
+    <value>Dipendenti con ritardi ricorrenti: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestPlannedAbsences" xml:space="preserve">
+    <value>Assenze pianificate dal {1} al {2}: {0}</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="DigestAbsencePeak" xml:space="preserve">
+    <value>{0}: assenze previste {1} su {2} dipendenti attesi</value>
+    <comment>riepilogo</comment>
+  </data>
+  <data name="Cdg_PeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido: dal mese al mese, al massimo {0} mesi.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_CostoNonValido" xml:space="preserve">
+    <value>Il costo orario non può essere negativo.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Cdg_SoloPowerAdmin" xml:space="preserve">
+    <value>Funzione riservata all'amministratore principale dell'azienda.</value>
+    <comment>controllo di gestione</comment>
+  </data>
+  <data name="Report_GiornateDaSistemare_Titolo" xml:space="preserve">
+    <value>Giornate da sistemare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaSistemare" xml:space="preserve">
+    <value>Da sistemare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_DaVerificare" xml:space="preserve">
+    <value>Da verificare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateErrori" xml:space="preserve">
+    <value>Da sistemare prima dell'export paghe</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_GiornateAvvisi" xml:space="preserve">
+    <value>Da verificare</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColTimbrature" xml:space="preserve">
+    <value>Timbrature</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColAnomalie" xml:space="preserve">
+    <value>Anomalie</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_RitardiRicorrenti" xml:space="preserve">
+    <value>Ritardi ricorrenti</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Marginalita_Titolo" xml:space="preserve">
+    <value>Marginalità commesse</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_Periodo" xml:space="preserve">
+    <value>Periodo</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoOrarioPredefinito" xml:space="preserve">
+    <value>Costo orario predefinito</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoPersonale" xml:space="preserve">
+    <value>Costo personale</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColNoteSpese" xml:space="preserve">
+    <value>Note spese</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCosto" xml:space="preserve">
+    <value>Costo totale</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColRicavo" xml:space="preserve">
+    <value>Ricavo</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMargine" xml:space="preserve">
+    <value>Margine</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColMarginePerc" xml:space="preserve">
+    <value>Margine %</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_ColCostoOrario" xml:space="preserve">
+    <value>Costo orario</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostiOrari" xml:space="preserve">
+    <value>Costi orari dei dipendenti</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_CostoPredefinitoNota" xml:space="preserve">
+    <value>* costo orario predefinito (non impostato per il dipendente).</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_MarginalitaMetodo" xml:space="preserve">
+    <value>Costo personale = ore del timesheet × costo orario. Note spese approvate ripartite sulle sottocommesse in proporzione alle ore del dipendente nel mese (senza ore: sottocommessa predefinita del rapporto). Costi e ricavi sono quelli impostati nella pagina al momento della stampa.</value>
+    <comment>report</comment>
+  </data>
+  <data name="Report_NoteNonAttribuite" xml:space="preserve">
+    <value>Note spese non attribuite a nessuna commessa: {0}</value>
+    <comment>report</comment>
+  </data>
+  <data name="TurnoNonAutorizzato" xml:space="preserve">
+    <value>Operazione sui turni non consentita al tuo ruolo.</value>
+  </data>
+  <data name="TurnoCodiceDescrizione" xml:space="preserve">
+    <value>Il codice e la descrizione del turno sono obbligatori.</value>
+  </data>
+  <data name="TurnoCodiceDuplicato" xml:space="preserve">
+    <value>Esiste già un turno con codice {0}.</value>
+  </data>
+  <data name="TurnoOrarioNonValido" xml:space="preserve">
+    <value>L'orario del turno non esiste.</value>
+  </data>
+  <data name="TurnoUsato" xml:space="preserve">
+    <value>Il turno {0} è usato nella pianificazione: non si può eliminare.</value>
+  </data>
+  <data name="TurnoRepartoNonValido" xml:space="preserve">
+    <value>Reparto non trovato.</value>
+  </data>
+  <data name="TurnoPeriodoNonValido" xml:space="preserve">
+    <value>Periodo non valido (massimo {0} giorni).</value>
+  </data>
+  <data name="TurnoConflittoAssenza" xml:space="preserve">
+    <value>turno {0} in un giorno di assenza approvata ({1})</value>
+  </data>
+  <data name="TurnoConflittoAssenzaInAttesa" xml:space="preserve">
+    <value>turno {0} in un giorno di assenza in attesa di approvazione ({1})</value>
+  </data>
+  <data name="TurnoDipendenteNonValido" xml:space="preserve">
+    <value>Dipendente non trovato nell'azienda.</value>
+  </data>
+  <data name="TurnoNonValido" xml:space="preserve">
+    <value>Turno non trovato.</value>
+  </data>
+  <data name="ScambioTurnoNonTuo" xml:space="preserve">
+    <value>Puoi proporre lo scambio solo dei tuoi turni.</value>
+  </data>
+  <data name="ScambioTurnoPassato" xml:space="preserve">
+    <value>Non si possono scambiare turni di giorni passati.</value>
+  </data>
+  <data name="ScambioTurnoCollegaNonValido" xml:space="preserve">
+    <value>Collega o turno del collega non valido.</value>
+  </data>
+  <data name="ScambioTurnoAltroReparto" xml:space="preserve">
+    <value>Lo scambio è possibile solo con un collega del tuo reparto.</value>
+  </data>
+  <data name="ScambioTurnoGiaProposto" xml:space="preserve">
+    <value>Per questo turno c'è già una proposta di scambio in corso.</value>
+  </data>
+  <data name="ScambioTurnoNotificaProposta" xml:space="preserve">
+    <value>Proposta di scambio turno</value>
+  </data>
+  <data name="ScambioTurnoNonTrovato" xml:space="preserve">
+    <value>Proposta di scambio non trovata.</value>
+  </data>
+  <data name="ScambioTurnoGiaRisposto" xml:space="preserve">
+    <value>La proposta di scambio non è più in attesa di risposta.</value>
+  </data>
+  <data name="ScambioTurnoNotificaRifiutata" xml:space="preserve">
+    <value>Scambio turno rifiutato dal collega</value>
+  </data>
+  <data name="ScambioTurnoNotificaAccettata" xml:space="preserve">
+    <value>Scambio turno accettato: in approvazione</value>
+  </data>
+  <data name="ScambioTurnoTesto" xml:space="preserve">
+    <value>Scambio turno: {0} ({1}) con {2} ({3})</value>
+  </data>
+  <data name="ScambioTurnoTestoCessione" xml:space="preserve">
+    <value>Cessione turno: {0} ({1}) a {2}</value>
+  </data>
+  <data name="ScambioTurnoTurniCambiati" xml:space="preserve">
+    <value>I turni dello scambio sono stati cambiati nel frattempo.</value>
+  </data>
+  <data name="ScambioTurnoGiornoOccupato" xml:space="preserve">
+    <value>Lo scambio non è possibile: il {0:dd/MM/yyyy} chi riceve il turno ne ha già uno.</value>
+  </data>
+  <data name="ScambioTurnoNonApplicato" xml:space="preserve">
+    <value>Scambio turno non applicato: {0}</value>
+  </data>
+  <data name="ScambioTurnoNonRipristinato" xml:space="preserve">
+    <value>Turni dello scambio non ripristinati: {0}</value>
+  </data>
+  <data name="TimbNonAutorizzato" xml:space="preserve">
+    <value>Operazione di timbratura non consentita al tuo ruolo.</value>
+  </data>
+  <data name="TimbSedeNonValida" xml:space="preserve">
+    <value>Sede non trovata.</value>
+  </data>
+  <data name="TimbCoordinateNonValide" xml:space="preserve">
+    <value>Coordinate della sede non valide (latitudine e longitudine insieme).</value>
+  </data>
+  <data name="TimbGeofenceSenzaCoordinate" xml:space="preserve">
+    <value>Per il geofencing servono le coordinate della sede.</value>
+  </data>
+  <data name="TimbQrNonAttivo" xml:space="preserve">
+    <value>La timbratura con QR non è attiva per la sede.</value>
+  </data>
+  <data name="TimbQrNonValido" xml:space="preserve">
+    <value>Codice QR non valido.</value>
+  </data>
+  <data name="TimbQrScaduto" xml:space="preserve">
+    <value>Codice QR scaduto: inquadra il codice attuale della postazione.</value>
+  </data>
+  <data name="TimbQrGiaUsato" xml:space="preserve">
+    <value>Questo codice QR è già stato usato: inquadra il codice attuale della postazione.</value>
+  </data>
+  <data name="TimbQrObbligatorio" xml:space="preserve">
+    <value>Nella sede si timbra solo con il QR della postazione.</value>
+  </data>
+  <data name="TimbDataDispositivoNonValida" xml:space="preserve">
+    <value>Ora del dispositivo non valida.</value>
+  </data>
+  <data name="TimbDifferitaNonAccettata" xml:space="preserve">
+    <value>La sede non accetta timbrature differite.</value>
+  </data>
+  <data name="TimbDifferitaFutura" xml:space="preserve">
+    <value>Timbratura differita con un'ora nel futuro: controlla l'orologio del telefono.</value>
+  </data>
+  <data name="TimbDifferitaOltreLimite" xml:space="preserve">
+    <value>Timbratura differita oltre il limite di {0} ore: chiedi la correzione all'ufficio del personale.</value>
+  </data>
+  <data name="TimbFuoriGeofence" xml:space="preserve">
+    <value>Timbratura fuori dall'area della sede ({0} m, raggio {1} m).</value>
+  </data>
+  <data name="TimbPosizioneMancante" xml:space="preserve">
+    <value>Posizione non disponibile: la sede richiede il controllo della posizione.</value>
+  </data>
+  <data name="TimbNonRegistrata" xml:space="preserve">
+    <value>Timbratura non registrata.</value>
+  </data>
+  <data name="TimbKioskNonAttivo" xml:space="preserve">
+    <value>Il kiosk non è attivo per la sede.</value>
+  </data>
+  <data name="TimbKioskNonRegistrato" xml:space="preserve">
+    <value>Dispositivo non registrato come kiosk della sede.</value>
+  </data>
+  <data name="TimbKioskBloccato" xml:space="preserve">
+    <value>Troppi tentativi errati: riprova tra un minuto.</value>
+  </data>
+  <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
+    <value>PIN o badge non riconosciuto.</value>
+  </data>
+  <data name="TimbPinNonValido" xml:space="preserve">
+    <value>Il PIN deve avere da 4 a 8 cifre.</value>
+  </data>
+  <data name="TimbPinGiaUsato" xml:space="preserve">
+    <value>PIN già usato da un altro dipendente: scegline un altro.</value>
+  </data>
+  <data name="TimbBadgeNonValido" xml:space="preserve">
+    <value>Codice del badge non valido (massimo 50 caratteri).</value>
+  </data>
+  <data name="TimbBadgeGiaUsato" xml:space="preserve">
+    <value>Badge già assegnato a un altro dipendente.</value>
+  </data>
+  <data name="SwNonAutorizzato" xml:space="preserve">
+    <value>Operazione sul lavoro agile non consentita al tuo ruolo.</value>
+  </data>
+  <data name="SwDipendenteNonValido" xml:space="preserve">
+    <value>Dipendente non trovato nell'azienda.</value>
+  </data>
+  <data name="SwPeriodoNonValido" xml:space="preserve">
+    <value>Periodo dell'accordo non valido.</value>
+  </data>
+  <data name="SwMaxGiorniNonValido" xml:space="preserve">
+    <value>I giorni massimi a settimana vanno da 1 a 7.</value>
+  </data>
+  <data name="SwGiorniNonValidi" xml:space="preserve">
+    <value>Indicare almeno un giorno della settimana consentito.</value>
+  </data>
+  <data name="SwAccordoSovrapposto" xml:space="preserve">
+    <value>Il dipendente ha già un accordo di lavoro agile nel periodo.</value>
+  </data>
+  <data name="SwGiorno0" xml:space="preserve">
+    <value>lunedì</value>
+  </data>
+  <data name="SwGiorno1" xml:space="preserve">
+    <value>martedì</value>
+  </data>
+  <data name="SwGiorno2" xml:space="preserve">
+    <value>mercoledì</value>
+  </data>
+  <data name="SwGiorno3" xml:space="preserve">
+    <value>giovedì</value>
+  </data>
+  <data name="SwGiorno4" xml:space="preserve">
+    <value>venerdì</value>
+  </data>
+  <data name="SwGiorno5" xml:space="preserve">
+    <value>sabato</value>
+  </data>
+  <data name="SwGiorno6" xml:space="preserve">
+    <value>domenica</value>
+  </data>
+  <data name="SwPresaVisioneTitolo" xml:space="preserve">
+    <value>Accordo di lavoro agile dal {0:dd/MM/yyyy} al {1:dd/MM/yyyy}</value>
+  </data>
+  <data name="SwPresaVisioneTesto" xml:space="preserve">
+    <value>Accordo individuale di lavoro agile (L. 81/2017) di {0}: dal {1:dd/MM/yyyy} al {2:dd/MM/yyyy}, al massimo {3} giorni a settimana, nei giorni: {4}. I giorni si richiedono dal calendario del lavoro agile e seguono l'approvazione delle richieste.</value>
+  </data>
+  <data name="SwNessunAccordo" xml:space="preserve">
+    <value>Nessun accordo di lavoro agile valido il {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="SwAccordoNonFirmato" xml:space="preserve">
+    <value>L'accordo di lavoro agile valido il {0:dd/MM/yyyy} non è ancora firmato: conferma la presa visione.</value>
+  </data>
+  <data name="SwGiornoNonConsentito" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} non è un giorno di lavoro agile consentito dall'accordo.</value>
+  </data>
+  <data name="SwGiaRichiesto" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} è già un giorno di lavoro agile richiesto o approvato.</value>
+  </data>
+  <data name="SwOltreLimite" xml:space="preserve">
+    <value>Limite di {0} giorni di lavoro agile superato nella settimana dal {1:dd/MM/yyyy} (già richiesti o approvati: {2}).</value>
   </data>
 </root>

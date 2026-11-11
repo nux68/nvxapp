@@ -9,6 +9,9 @@ utente, tabella `UserDashboard`, stili comuni) è in `ANALISI_INFRASTRUCTURE_WID
 |---|---|---|---|---|---|
 | `attendance.presentToday` | Presenti oggi | small (1/3) | CompanyPowerAdmin, CompanyAdmin | sì | `Dip_Widget/Widget_PresenzeOggiGet` |
 | `attendance.requests` | Richieste | small (1/3) | CompanyPowerAdmin, CompanyAdmin, User | sì | `Dip_Widget/Widget_RichiesteGet` |
+| `attendance.daysToFix` | Giornate da sistemare | small (1/3) | CompanyPowerAdmin, CompanyAdmin | no | `Dip_Anomalie/Widget_GiornateDaSistemareGet` (ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md) |
+| `attendance.absenceForecast` | Assenze previste | small (1/3) | CompanyPowerAdmin, CompanyAdmin | no | `Dip_Anomalie/Widget_PrevisioneAssenzeGet` (ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md) |
+| `attendance.jobHours` | Ore sulle commesse | small (1/3) | CompanyPowerAdmin | no | `Az_CommessaCdg/Widget_OreCommesseGet` (ANALISI_ATTENDANCETRACKING_CONTROLLO_GESTIONE.md) |
 
 - Compaiono solo se le **presenze sono attive** per l'azienda (applicativo attivo e licenza: ANALISI_INFRASTRUCTURE_LICENZE.md §15.6).
 - Dichiarazione: `Utility/infrastructure/widget-attendance-tracking.service.ts` (in Infrastructure è vuoto).

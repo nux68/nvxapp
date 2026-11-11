@@ -1,0 +1,33 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.noData' | transloco }}</div>
+} @else if (dati.commesse.length === 0) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.jobHours.empty' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat primary">
+      <div class="valore">{{ ore(dati.minutiTotali) }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.jobHours.hours' | transloco }}</div>
+    </div>
+    @if (dati.costoTotale !== null) {
+      <div class="nvx-w-stat">
+        <div class="valore">{{ dati.costoTotale | number: '1.0-0' }}</div>
+        <div class="etichetta">{{ 'attendance.widgets.jobHours.cost' | transloco }}</div>
+      </div>
+    }
+  </div>
+  <div class="nvx-jh-righe">
+    @for (c of dati.commesse; track c.idAz_Commessa) {
+      <div class="nvx-jh-riga">
+        <span class="nvx-jh-nome" [title]="c.cliente">{{ c.descrizione }}</span>
+        <div class="nvx-w-bar"><div [style.width.%]="perc(c.minuti)"></div></div>
+        <span class="nvx-jh-num">{{ ore(c.minuti) }}</span>
+      </div>
+    }
+  </div>
+  @if (dati.costoTotale === null) {
+    <div class="nvx-w-muted">{{ 'attendance.widgets.jobHours.noCost' | transloco }}</div>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'attendance.widgets.jobHours.open' | transloco }}</button>
+}

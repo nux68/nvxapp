@@ -22,6 +22,8 @@ export class TipoRichiestaToLongTextPipe implements PipeTransform {
         return translate('attendance.pipes.tipoRichiestaToLongText.giustificativo');
       case TipoRichiesta.NotaSpesa:
         return translate('attendance.pipes.tipoRichiestaToLongText.notaSpesa');
+      case TipoRichiesta.ScambioTurno:
+        return translate('attendance.pipes.tipoRichiestaToLongText.scambioTurno');
 
       default:
         return '';

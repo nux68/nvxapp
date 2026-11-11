@@ -84,6 +84,20 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_ProfiloFormuleDett> Par_ProfiloFormuleDett { get; set; }
         public virtual DbSet<Dip_ProfiloFormule> Dip_ProfiloFormule { get; set; }
         public virtual DbSet<Dip_GG_FormuleLog> Dip_GG_FormuleLog { get; set; }
+
+        // turni e pianificazione (AT-TURNI)
+        public virtual DbSet<Par_Turno> Par_Turno { get; set; }
+        public virtual DbSet<Az_SediRepartoTurno> Az_SediRepartoTurno { get; set; }
+        public virtual DbSet<Dip_Turno> Dip_Turno { get; set; }
+        public virtual DbSet<Dip_TurnoScambio> Dip_TurnoScambio { get; set; }
+
+        // timbratura evoluta (AT-TIMB)
+        public virtual DbSet<Az_SediTimbratura> Az_SediTimbratura { get; set; }
+        public virtual DbSet<Dip_GG_TimbraturaInfo> Dip_GG_TimbraturaInfo { get; set; }
+        public virtual DbSet<Dip_TimbraturaPin> Dip_TimbraturaPin { get; set; }
+
+        // smart working (AT-SW)
+        public virtual DbSet<Dip_AccordoSW> Dip_AccordoSW { get; set; }
         
         
 
@@ -91,6 +105,77 @@ namespace nvxapp.server.data.Infrastructure
         {
             Gen_PublicReferences_GestionePresenze(modelBuilder);
             Gen_Init_GestionePresenze(modelBuilder);
+            Gen_Turni(modelBuilder);
+            Gen_TimbraturaEvoluta(modelBuilder);
+
+            /* Smart working (AT-SW, ANALISI_ATTENDANCETRACKING_SMARTWORKING.md) */
+            modelBuilder.Entity<Dip_AccordoSW>(entity =>
+            {
+                entity.HasOne(t => t.Dip_RapportoLavoroNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdDip_RapportoLavoro, t.Dal });
+            });
+        }
+
+        /* Timbratura evoluta (AT-TIMB, ANALISI_ATTENDANCETRACKING_TIMBRATURA.md) */
+        private void Gen_TimbraturaEvoluta(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Az_SediTimbratura>(entity =>
+            {
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.IdAz_Sedi).IsUnique();
+            });
+
+            modelBuilder.Entity<Dip_GG_TimbraturaInfo>(entity =>
+            {
+                entity.HasOne(t => t.Dip_GG_TimbraturaNavigation).WithMany().HasForeignKey(t => t.IdDip_GG_Timbratura).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => t.IdDip_GG_Timbratura).IsUnique();
+                // anti-replay del QR: lo stesso codice (sede + slot) una sola volta per dipendente
+                entity.HasIndex(t => new { t.IdAz_Sedi, t.QrSlot, t.IdDip_RapportoLavoro }).IsUnique().HasFilter("\"QrSlot\" IS NOT NULL");
+            });
+
+            modelBuilder.Entity<Dip_TimbraturaPin>(entity =>
+            {
+                entity.HasOne(t => t.Dip_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdDip_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.IdDip_Anagrafica).IsUnique();
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.PinHash }).IsUnique().HasFilter("\"PinHash\" IS NOT NULL");
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Badge }).IsUnique().HasFilter("\"Badge\" IS NOT NULL");
+            });
+        }
+
+        /* Turni e pianificazione (AT-TURNI, ANALISI_ATTENDANCETRACKING_TURNI.md) */
+        private void Gen_Turni(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Par_Turno>(entity =>
+            {
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Par_OrarioNavigation).WithMany().HasForeignKey(t => t.IdPar_Orario).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Az_SediRepartoTurno>(entity =>
+            {
+                entity.HasOne(t => t.Az_SediRepartoNavigation).WithMany().HasForeignKey(t => t.IdAz_SediReparto).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Par_TurnoNavigation).WithMany().HasForeignKey(t => t.IdPar_Turno).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdAz_SediReparto, t.IdPar_Turno }).IsUnique();
+            });
+
+            modelBuilder.Entity<Dip_Turno>(entity =>
+            {
+                entity.HasOne(t => t.Dip_RapportoLavoroNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Par_TurnoNavigation).WithMany().HasForeignKey(t => t.IdPar_Turno).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(t => t.Az_SediRepartoNavigation).WithMany().HasForeignKey(t => t.IdAz_SediReparto).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => new { t.IdDip_RapportoLavoro, t.Data }).IsUnique();
+                entity.HasIndex(t => new { t.IdAz_SediReparto, t.Data });
+            });
+
+            modelBuilder.Entity<Dip_TurnoScambio>(entity =>
+            {
+                entity.HasOne(t => t.Dip_TurnoNavigation).WithMany().HasForeignKey(t => t.IdDip_Turno).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_Turno_CollegaNavigation).WithMany().HasForeignKey(t => t.IdDip_Turno_Collega).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_RapportoLavoroNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_RapportoLavoro_CollegaNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro_Collega).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_GG_RichiestaNavigation).WithMany().HasForeignKey(t => t.IdDip_GG_Richiesta).OnDelete(DeleteBehavior.SetNull);
+            });
         }
 
         /*

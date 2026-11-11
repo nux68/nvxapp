@@ -1,0 +1,96 @@
+.nvx-comandi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.nvx-reparto {
+  min-width: 200px;
+}
+
+.nvx-periodo {
+  display: flex;
+  align-items: center;
+}
+
+.nvx-avviso {
+  display: block;
+  padding: 6px 4px;
+}
+
+.nvx-griglia-wrap {
+  overflow-x: auto;
+}
+
+.nvx-griglia {
+  border-collapse: collapse;
+  font-size: 0.85em;
+  min-width: 100%;
+
+  th, td {
+    border: 1px solid var(--ion-color-light-shade, #ddd);
+    padding: 3px;
+    text-align: center;
+    min-width: 46px;
+  }
+
+  .nvx-nome {
+    text-align: left;
+    white-space: nowrap;
+    min-width: 140px;
+    position: sticky;
+    left: 0;
+    background: var(--ion-background-color, #fff);
+  }
+
+  .nvx-cella {
+    cursor: pointer;
+    vertical-align: top;
+    height: 44px;
+  }
+
+  .nvx-weekend {
+    background: var(--ion-color-light, #f4f5f8);
+  }
+
+  .nvx-conflitto {
+    outline: 2px solid var(--ion-color-danger, #eb445a);
+    outline-offset: -2px;
+  }
+
+  .nvx-copertura {
+    font-weight: 600;
+  }
+}
+
+.nvx-chip {
+  display: inline-block;
+  min-width: 28px;
+  padding: 1px 4px;
+  border-radius: 5px;
+  font-weight: 600;
+}
+
+.nvx-assenza {
+  display: block;
+  margin-top: 2px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.nvx-attesa {
+  opacity: 0.6;
+  border: 1px dashed #888;
+}
+
+.nvx-consuntivo {
+  display: block;
+  color: var(--ion-color-medium, #92949c);
+}
+
+.nvx-ko {
+  color: var(--ion-color-danger, #eb445a);
+  font-weight: 700;
+}

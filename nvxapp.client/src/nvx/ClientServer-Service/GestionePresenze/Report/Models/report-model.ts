@@ -1,5 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-model";
+import { CdgParametri } from "../../Az_CommessaCdg/Models/az-commessa-cdg-model";
 
 // report PDF delle pagine HR (pulsante Report del FAB): stessi valori dell'enum ReportTipo del server
 export enum ReportTipo {
@@ -8,7 +9,9 @@ export enum ReportTipo {
   PianoFerie = 2,
   QuadraturaMensile = 3,
   NotaSpesePerTipo = 4,
-  NotaSpesePerDipendente = 5
+  NotaSpesePerDipendente = 5,
+  GiornateDaSistemare = 6,
+  MarginalitaCommesse = 7
 }
 
 export class ReportModel {
@@ -22,6 +25,8 @@ export class ReportModel {
   // note spese: stessi filtri della pagina
   public idPar_TipoSpesa: number | null = null;
   public stati: StatoRichiesta[] | null = null;
+  // marginalita' commesse: periodo, costi orari e ricavi impostati nella pagina (non salvati sul server)
+  public cdg?: CdgParametri | null;
 }
 
 export class Report_InModel {

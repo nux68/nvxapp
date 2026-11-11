@@ -1,0 +1,59 @@
+.nvx-blocco {
+  display: block;
+  padding: 8px 4px;
+}
+
+.nvx-kiosk {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  gap: 12px;
+}
+
+.nvx-sede {
+  font-size: 1.4em;
+}
+
+.nvx-ora {
+  font-size: 3.5em;
+  font-weight: 700;
+}
+
+.nvx-pin {
+  font-size: 2em;
+  min-height: 1.5em;
+  letter-spacing: 0.3em;
+}
+
+.nvx-tastiera {
+  display: grid;
+  grid-template-columns: repeat(3, 96px);
+  gap: 10px;
+
+  ion-button {
+    height: 72px;
+    font-size: 1.6em;
+  }
+}
+
+.nvx-badge {
+  max-width: 320px;
+  text-align: center;
+}
+
+.nvx-esito {
+  font-size: 1.4em;
+  padding: 12px 20px;
+  border-radius: 10px;
+}
+
+.nvx-ok {
+  background: var(--ion-color-success, #2dd36f);
+  color: #fff;
+}
+
+.nvx-ko {
+  background: var(--ion-color-danger, #eb445a);
+  color: #fff;
+}

@@ -171,16 +171,16 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `INF-CAL` | Sincronizzazione dei calendari | Infrastructure_Dev | `wt_inf-cal` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (feed .ics; OAuth = `INF-CAL.4`, decisione D9 da confermare) |
 | `INF-AI` | Riepilogo AI periodico | Infrastructure_Dev | `wt_inf-ai` | `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `AT-COM` | Dati spostati in Common (lato Presenze) | AttendanceTracking_Dev | `wt_at-com` | `INF-COM` | 2 | ✅ mergiata l'11/11/2026 (provata su DB nuovo, esistente multi-tenant e nuovo single-tenant) |
-| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ⏳ |
-| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ⏳ |
-| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ⏳ |
-| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ⏳ |
-| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
+| `AT-TURNI` | Turni e pianificazione | AttendanceTracking_Dev | `wt_at-turni` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-TIMB` | Timbratura evoluta | AttendanceTracking_Dev | `wt_at-timb` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-SW` | Smart working | AttendanceTracking_Dev | `wt_at-sw` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-AI` | Analisi AI delle timbrature | AttendanceTracking_Dev | `wt_at-ai` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
-| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
-| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
+| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
+| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ✅ mergiata il 12/11/2026 (fase 4) |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
@@ -236,8 +236,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `INF-SVC.4` Notifiche: servizio unico (email con Brevo, notifiche nell'app con SignalR) e preferenze per utente — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/notifications` (paginata, non lette, apri, segna tutte lette, cancella lette), preferenze `/notificationpreference` (App/Email per categoria), voce di menu "Notifiche" per tutti con badge delle non lette (`NotificationNotifierService`, evento SignalR `NotificationNew`)
 - ✅ `INF-SVC.5` Promemoria automatici delle scadenze (job pianificato) — server fatto e provato su DB usa e getta con 24 controlli API; client: il promemoria apre `/deadlines` (o l'oggetto della scadenza)
 - ✅ `INF-SVC.6` Interfaccia di presa visione (`IAcknowledgementService`): implementazione base con semplice conferma di lettura, sostituita dal Documentale quando è attivo (`DM-FIRMA`) — server fatto e provato su DB usa e getta con 24 controlli API; client: pagina `/acknowledgements` (da confermare / tutte, "Confermo di aver letto" o apertura dell'oggetto per gli altri canali), voce di menu "Prese visione" (ruoli dell'azienda) con badge di quelle da confermare
-- ⏳ `INF-SVC.7` Titolo delle categorie di notifica fornito dal modulo (oggi sta nei testi di Infrastructure: Compliance, Risorse Umane e Risorse aziendali usano per ora `generale`/`scadenze`)
-- ⏳ `INF-SVC.8` Alla creazione dell'account di un dipendente gia' presente, collegare l'utente alla `Dip_Anagrafica` esistente invece di crearne una nuova (oggi lo corregge Risorse Umane, `HR-ONB.4`)
+- ✅ `INF-SVC.7` Titolo delle categorie di notifica fornito dal modulo — mergiata il 12/11/2026: `NotificationCategory.TitoloText` (`Func<string>`, letta a ogni uso nella lingua della richiesta; null = resx di Infrastructure `NotificationCategory_<code>`, categorie esistenti invariate). Ogni modulo dichiara il proprio `INotificationCategoryProvider` con `Application` = applicativo (la pagina Preferenze mostra la categoria solo se è attivo) e codici con prefisso: Risorse Umane `hr.cedolini`, Compliance `cmp.gdpr`, Risorse aziendali `ast.flotta`, `ast.beni`, `ast.prenotazioni`; le scadenze restano `scadenze` e le prese visione `presevisione`. Provata sul ramo HR (DB usa e getta `nvx_test_svc78`, 42 controlli con `INF-SVC.8`): preferenze con `hr.cedolini` solo con HR attivo, titolo it/en, preferenza App/Email rispettata (email sul server SMTP finto, avviso a comparsa via SignalR)
+- ✅ `INF-SVC.8` Alla creazione dell'account di un dipendente gia' presente, collegare l'utente alla `Dip_Anagrafica` esistente invece di crearne una nuova — mergiata il 12/11/2026: `UserCompanyEditModel.IdDip_Anagrafica` (facoltativo, solo in creazione, anche nel modello del client). `Account/UserCompanyPut` verifica prima di creare l'utente che l'anagrafica sia dell'azienda corrente e senza utente (altrimenti `UserCompanyEmployeeNotLinkable`), poi la collega con un aggiornamento condizionato (`ICommonDipendenteUtility.AgganciaDip_AnagraficaAsync`) prima degli inizializzatori, che la trovano e non ne creano una nuova. Risorse Umane usa il parametro (`HR-ONB.4`). Senza il parametro comportamento invariato. Provata sul ramo HR (stesso DB): nessuna anagrafica nuova, rifiuti senza creare l'utente
 
 #### `INF-CAL` – Sincronizzazione dei calendari
 - ✅ `INF-CAL.1` (ridefinito con D9) Feed iCalendar personale per utente e azienda: tabella `CalendarioFeed` in `public` (token casuale di 32 byte base64url, date di creazione e ultimo accesso), migration `CalendarioFeed`
@@ -258,32 +258,32 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `AT-COM.5` Prova completa: calcolo delle giornate, report ed export paghe invariati — `dotnet build` e `ng build` ok; prova API su DB usa e getta: creazione azienda, CRUD sedi/reparti (anche figlio)/competenze, anagrafica con competenze e autovetture, nota spese con rimborso km (100 km × 0,40 = 40,00), autovettura usata non cancellabile, `TimeSheet_Engine/Calculate`, cancellazioni a cascata; dati verificati con psql in `tenant_<id>_0`. Export paghe non provato (job; il codice non legge le tabelle spostate)
 
 #### `AT-TURNI` – Turni e pianificazione
-- ⏳ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime)
-- ⏳ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie
-- ⏳ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione
-- ⏳ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata
+- ✅ `AT-TURNI.1` Modello dei turni (modelli, assegnazioni per reparto e sede, coperture minime) — fatta, da mergiare: `Par_Turno` (orario o riposo), `Az_SediRepartoTurno` (turni del reparto comune con copertura minima e giorni), `Dip_Turno` (uno per dipendente e giorno); pagine `/turnolist`, `/turnoedit`, `/turnocoperture`
+- ✅ `AT-TURNI.2` Pagina di pianificazione con controllo delle coperture e delle ferie — fatta, da mergiare: `/pianificazioneturni` (reparto, settimana/mese), coperture insufficienti, assenze approvate/in attesa e conflitti, consuntivo dei giorni calcolati
+- ✅ `AT-TURNI.3` Scambio di turni tra colleghi con approvazione — fatta, da mergiare: `Dip_TurnoScambio`, accettazione del collega e richiesta `TipoRichiesta.ScambioTurno` con gli approvatori esistenti, revoca che ripristina i turni; `/mieiturni`
+- ✅ `AT-TURNI.4` Confronto tra turni previsti e timbrature nel calcolo della giornata — fatta, da mergiare: il turno pianificato sostituisce l'orario del profilo nel `DaySlot` del motore e in `GestionePresenzeOreTeoriche`; senza turni nulla cambia (prova: 49 controlli + regressione)
 
 #### `AT-TIMB` – Timbratura evoluta
-- ⏳ `AT-TIMB.1` Timbratura con QR o NFC per sede
-- ⏳ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede
-- ⏳ `AT-TIMB.3` Postazione condivisa in modalità kiosk
-- ⏳ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo
+- ✅ `AT-TIMB.1` Timbratura con QR o NFC per sede — fatta, da mergiare: QR firmato HMAC rotante per sede (immagine con QRCoder), anti-replay per dipendente, `/timbraturapostazione` e `/timbraturaqr`; NFC documentato come estensione
+- ✅ `AT-TIMB.2` Geofencing: controllo della posizione rispetto alla sede — fatta, da mergiare: `Az_SediTimbratura` (Presenze, collegata alla sede comune), regola segnala/blocca, esito in `Dip_GG_TimbraturaInfo`
+- ✅ `AT-TIMB.3` Postazione condivisa in modalità kiosk — fatta, da mergiare: dispositivo registrato per sede con un amministratore collegato, PIN (HMAC) o badge assegnati dall'HR, limite dei tentativi; `/timbraturakiosk`, `/timbraturapin`
+- ✅ `AT-TIMB.4` PWA che timbra offline e sincronizza dopo — fatta, da mergiare: coda nel `localStorage` e invio alla riconnessione; il server accetta le differite entro `DifferitaMaxOre` della sede e le marca (prova TIMB: 41 controlli). Il caricamento offline dell'app richiede un service worker: estensione
 
 #### `AT-SW` – Smart working
-- ⏳ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile)
-- ⏳ `AT-SW.2` Calendario del lavoro agile e limite di giorni
-- ⏳ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata
+- ✅ `AT-SW.1` Accordi individuali (con firma tramite `INF-SVC.6` se disponibile) — fatta, da mergiare: `Dip_AccordoSW`, presa visione `at.accordo-sw` (verbale di accordo con il Documentale), `/accordiswlist`, `/accordoswedit`
+- ✅ `AT-SW.2` Calendario del lavoro agile e limite di giorni — fatta, da mergiare: `/lavoroagile`, richiesta del giorno con la richiesta di giustificativo; controllo di accordo firmato, giorni consentiti e limite settimanale in `Send`
+- ✅ `AT-SW.3` Causale o giustificativo dedicato nel calcolo della giornata — fatta, da mergiare: flag `Par_Giustificativi.LavoroAgile`, giustificativo e causale `SW` (neutro) nei parametri di default e al primo uso; geofence escluso nei giorni agili (prova SW: 32 controlli)
 
 #### `AT-AI` – Analisi AI delle timbrature
-- ⏳ `AT-AI.1` Segnalazione delle timbrature anomale
-- ⏳ `AT-AI.2` Giornate da sistemare prima dell'export paghe
-- ⏳ `AT-AI.3` Previsione delle assenze
-- ⏳ `AT-AI.4` Widget e comandi vocali
+- ✅ `AT-AI.1` Segnalazione delle timbrature anomale — fatta, da mergiare: regole deterministiche (`GestionePresenzeAnomalie`: dispari, giornata vuota, errori del calcolo, non calcolata, richieste in attesa, fuori orario, giorno non lavorativo, pause, ritardi ricorrenti), spiegazione con l'AI solo dai fatti (`AI:AnomalieLLM`) e ripiego senza AI (`ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md`)
+- ✅ `AT-AI.2` Giornate da sistemare prima dell'export paghe — fatta, da mergiare: pagina `/attendanceanomalies` e report PDF tramite job
+- ✅ `AT-AI.3` Previsione delle assenze — fatta, da mergiare: tassi per giorno della settimana x fattore del mese sullo storico, massimo con il piano ferie
+- ✅ `AT-AI.4` Widget e comandi vocali — fatta, da mergiare: widget `attendance.daysToFix`, `attendance.absenceForecast`, comando `DaysToFix`, `AttendanceTrackingDigestProvider` per il riepilogo AI (INF-AI)
 
 #### `AT-CDG` – Controllo di gestione sulle commesse (D2)
-- ⏳ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro
-- ⏳ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese
-- ⏳ `AT-CDG.3` Report di marginalità e widget
+- ✅ `AT-CDG.1` Costo orario del dipendente dal rapporto di lavoro — fatta, da mergiare con scelta provvisoria: `Dip_RapportoLavoro` non ha un campo di costo e la migration non era possibile, quindi costo predefinito e per dipendente impostati nella pagina (non salvati, ricordati dal browser); campo persistente da aggiungere con una migration (`ANALISI_ATTENDANCETRACKING_CONTROLLO_GESTIONE.md`)
+- ✅ `AT-CDG.2` Costi della commessa: ore del timesheet per costo orario, più le note spese — fatta, da mergiare: note spese ripartite in proporzione alle ore del mese (senza ore: sottocommessa predefinita del rapporto)
+- ✅ `AT-CDG.3` Report di marginalità e widget — fatta, da mergiare: pagina `/jobmargins` (ricavi per sottocommessa impostati nella pagina), PDF tramite job, widget `attendance.jobHours`
 
 #### `DM-PEC` – Acquisizione delle PEC
 - ⏳ `DM-PEC.1` Configurazione della casella PEC per azienda (credenziali protette)
@@ -395,6 +395,8 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ 11/11/2026 – Fase 1 (`INF-APP`, `INF-SVC`) mergiata; fase 2 (`INF-COM`+`AT-COM`, `INF-CAL`, `DM-FIRMA`, `CMP-BASE`, `HR-BASE`, `AST-BASE`, analisi `ANA.7`–`ANA.9`) mergiata dopo la prova completa della catena (8 rami compilati, AllFunction avviato con tutte le app: 15 controlli)
 
 - ✅ 11/11/2026 – Fase 3 mergiata: `CMP-81`, `CMP-GDPR`, `HR-CED`, `HR-FOR`, `HR-ONB`, `AST-FLO`, `AST-BENI`, `AST-PREN`, `INF-AI`, `CRM-CAL` (prova completa: 8 rami compilati, AllFunction avviato con tutte le app). `CMP-WB` fermo in attesa di `ANA.5`/`ANA.6`
+
+- ✅ 12/11/2026 – Fase 4 mergiata: `INF-SVC.7`, `INF-SVC.8` (con l'adeguamento di Risorse Umane, Compliance e Risorse aziendali), `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `CRM-PREV`, `CRM-ASS`. Restano: `DM-PEC` e `DM-CONS` (scelta dei fornitori), `CMP-WB` (`ANA.5`/`ANA.6`), `INF-CAL.4` (OAuth, D9), `ADM`
 
 ### Da fare (per fase, §8)
 - ⏳ **Fase 1**: `ANA.5`–`ANA.10`, `INF-APP`, `INF-COM`, `INF-SVC`; in parallelo, quando si vuole, `AT-TURNI`, `AT-TIMB`, `AT-SW`, `AT-AI`, `AT-CDG`, `DM-PEC`, `DM-CONS`, `CRM-PREV`, `CRM-ASS`

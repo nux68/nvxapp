@@ -221,6 +221,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 giust.BancaOre = false;
                 giust.AutorizzaStraordinario = false;
                 giust.AnnullaPausa = false;
+                giust.LavoroAgile = false;
                 giust.VisualizzaInPianoFerie = false;
             }
 
