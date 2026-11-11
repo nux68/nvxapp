@@ -1001,7 +1001,8 @@
       "actions": "Azioni"
     },
     "pageToolbar": {
-      "searchPlaceholder": "Cerca"
+      "searchPlaceholder": "Cerca",
+      "dashboard": "Vai alla dashboard"
     },
     "parameterLoader": {
       "title": "Caricamento in corso...",
