@@ -3,6 +3,14 @@
   <ion-toolbar [color]="headerColor">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
+      <!-- scorciatoia alla dashboard, solo con un login attivo -->
+      @if (isLoggedIn) {
+        <ion-button (click)="goToDashboard()"
+          [title]="'components.pageToolbar.dashboard' | transloco"
+          [attr.aria-label]="'components.pageToolbar.dashboard' | transloco">
+          <ion-icon slot="icon-only" name="home-outline"></ion-icon>
+        </ion-button>
+      }
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
     <!-- utente collegato (quello del login); durante l'impersonificazione anche l'utente impersonato -->
