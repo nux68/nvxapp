@@ -21,6 +21,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'attendance.menu.richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create', badge: this.richiestaNotifierService.daApprovare },
       { menuType: MenuType.MenuItem, zorder: 2200, group: 0, title: 'attendance.menu.calendarioHR', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem, zorder: 2240, group: 0, title: 'attendance.menu.anomalie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AnomaliePageComponent", url: '/attendanceanomalies', icon: 'alert-circle' },
       { menuType: MenuType.MenuItem, zorder: 2250, group: 0, title: 'attendance.menu.quadraturaMensile', roles: ['CompanyPowerAdmin'], component: "QuadraturaMensilePageComponent", url: '/quadraturamensile', icon: 'checkmark-done-circle' },
 
       { menuType: MenuType.MenuItem, zorder: 2400, group: 0, title: 'attendance.menu.exportCausali', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'cloud-download' },
@@ -53,6 +54,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'attendance.menu.gestioneCommesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 205150, group: 2, title: 'attendance.menu.marginalitaCommesse', roles: ['CompanyPowerAdmin'], component: "CdgCommessePageComponent", url: '/jobmargins', icon: 'trending-up' },
       { menuType: MenuType.MenuItem, zorder: 205100, group: 2, title: 'attendance.menu.commesse', roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'layers' },
       { menuType: MenuType.MenuItem, zorder: 205300, group: 2, title: 'attendance.menu.reparti', roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'grid' },
       { menuType: MenuType.MenuItem, zorder: 205400, group: 2, title: 'attendance.menu.sedi', roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },

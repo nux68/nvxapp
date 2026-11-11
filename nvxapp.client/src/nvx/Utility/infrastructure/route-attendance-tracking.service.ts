@@ -41,6 +41,8 @@ export class RouteAttendanceTrackingService {
       { path: 'presentstaff', loadChildren: () => import('../../pages/GestionePresenze/present-staff-page/present-staff-page.module').then(m => m.PresentStaffPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'vacationplan', loadChildren: () => import('../../pages/GestionePresenze/vacation-plan-page/vacation-plan-page.module').then(m => m.VacationPlanPageModule), canActivate: [RoleGuard4CompanyAdmin] },
 
+      { path: 'attendanceanomalies', loadChildren: () => import('../../pages/GestionePresenze/anomalie-page/anomalie-page.module').then(m => m.AnomaliePageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'jobmargins', loadChildren: () => import('../../pages/GestionePresenze/cdg-commesse-page/cdg-commesse-page.module').then(m => m.CdgCommessePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'quadraturamensile', loadChildren: () => import('../../pages/GestionePresenze/quadratura-mensile-page/quadratura-mensile-page.module').then(m => m.QuadraturaMensilePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'festivitalist', loadChildren: () => import('../../pages/GestionePresenze/festivita-list-page/festivita-list-page.module').then(m => m.FestivitaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'festivitaedit', loadChildren: () => import('../../pages/GestionePresenze/festivita-edit-page/festivita-edit-page.module').then(m => m.FestivitaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },

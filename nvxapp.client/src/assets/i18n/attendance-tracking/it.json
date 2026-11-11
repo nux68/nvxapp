@@ -9,6 +9,59 @@
       "importoObbligatorio": "Indicare un importo maggiore di zero."
     },
     "pages": {
+      "anomalie": {
+        "title": "Anomalie presenze",
+        "sezAnomalie": "Giornate da sistemare",
+        "sezPrevisione": "Previsione assenze",
+        "selezionare": "Selezionare il mese e i dipendenti.",
+        "daSistemare": "Da sistemare: {{n}}",
+        "daVerificare": "Da verificare: {{n}}",
+        "dipendenti": "Dipendenti coinvolti: {{n}} su {{tot}}",
+        "soloDaSistemare": "Solo da sistemare",
+        "spiega": "Spiega",
+        "notaRegole": "Regole fisse (fino a ieri): in rosso cio' che blocca l'export paghe (timbrature dispari, giornate senza timbrature, errori o giornate non calcolate, richieste in attesa), in arancione gli avvisi da verificare.",
+        "testoAI": "Riassunto scritto dall'AI a partire dalle anomalie calcolate:",
+        "testoSenzaAI": "Riassunto delle anomalie calcolate (AI non disponibile):",
+        "nessuna": "Nessuna anomalia nel periodo.",
+        "nessunaTimbratura": "nessuna timbratura",
+        "ritardiRicorrenti": "Ritardi ricorrenti",
+        "ritardi": "{{n}} ritardi, in media {{min}} minuti",
+        "mediaPreviste": "Assenze previste al giorno: {{n}}",
+        "tassoMedio": "Tasso medio dello storico: {{n}}%",
+        "colGiorno": "Giorno",
+        "colAttesi": "Attesi",
+        "colPianificate": "Pianificate",
+        "colStatistiche": "Statistica",
+        "colPreviste": "Previste",
+        "picco": "Picco",
+        "metodo": "Come si calcola",
+        "metodoTesto": "Storico dal {{dal}} al {{al}} ({{n}} giornate lavorative calcolate). Per ogni giornata la quota di assenza e' il rapporto tra le ore di assenza giustificata e le ore previste. Tasso per giorno della settimana = media delle quote (con meno di {{min}} giornate si usa il tasso medio); fattore del mese = tasso del mese / tasso medio. Statistica = somma, sui dipendenti attesi al lavoro, di tasso del giorno x fattore del mese. Pianificate = ferie e permessi del piano ferie (approvati o in attesa). Previste = il maggiore dei due. Picco = previste almeno il {{soglia}}% degli attesi, oppure pianificate almeno 2 e il doppio della media.",
+        "tassiSettimana": "Tasso per giorno della settimana",
+        "fattoriMese": "Fattore del mese",
+        "usaMedia": "tasso medio"
+      },
+      "cdgCommesse": {
+        "title": "Marginalità commesse",
+        "dalMese": "Dal mese",
+        "alMese": "Al mese",
+        "costoPredefinito": "Costo orario predefinito (€)",
+        "calcola": "Calcola",
+        "notaCosti": "Costi orari e ricavi non si salvano sul server: li ricorda questo browser e valgono per il calcolo e per il report PDF.",
+        "vuoto": "Nessuna ora o nota spese sulle commesse nel periodo.",
+        "colCommessa": "Commessa / sottocommessa",
+        "colOre": "Ore",
+        "colCostoPersonale": "Costo personale",
+        "colNoteSpese": "Note spese",
+        "colCosto": "Costo totale",
+        "colRicavo": "Ricavo",
+        "colMargine": "Margine",
+        "totale": "Totale",
+        "giornateEscluse": "Giornate non conteggiate perché con errori o non calcolate: {{n}} (vedi Anomalie presenze).",
+        "noteNonAttribuite": "Note spese non attribuite a nessuna commessa: € {{n}}.",
+        "senzaCosto": "Dipendenti con ore ma senza costo orario: {{n}}.",
+        "costiOrari": "Costo orario dei dipendenti (vuoto = predefinito)",
+        "metodo": "Costo personale = ore del timesheet x costo orario. Le note spese approvate di ogni dipendente si ripartiscono sulle sottocommesse in proporzione alle sue ore del mese (senza ore: sottocommessa predefinita del rapporto). Margine = ricavo - costo totale."
+      },
       "presentStaff": {
         "title": "Personale presente"
       },
@@ -1323,6 +1376,8 @@
       }
     },
     "menu": {
+      "anomalie": "Anomalie presenze",
+      "marginalitaCommesse": "Marginalità commesse",
       "richieste": "Richieste",
       "calendarioHR": "Calendario HR",
       "quadraturaMensile": "Quadratura mensile",
@@ -1528,6 +1583,8 @@
     },
     "services": {
       "report": {
+        "giornateDaSistemare": "Giornate da sistemare",
+        "marginalita": "Marginalità commesse",
         "titolo": "Report",
         "attivitaTotali": "Totali attività",
         "attivitaPerDipendente": "Per dipendente",
@@ -1624,6 +1681,31 @@
       }
     },
     "widgets": {
+      "daysToFix": {
+        "title": "Giornate da sistemare",
+        "description": "Giornate da sistemare prima dell'export paghe e avvisi da verificare (fino a ieri).",
+        "toFix": "Da sistemare",
+        "toCheck": "Da verificare",
+        "period": "Dal {{dal}} al {{al}} · {{n}} dipendenti",
+        "open": "Vai alle anomalie"
+      },
+      "absenceForecast": {
+        "title": "Assenze previste",
+        "description": "Assenze previste nei prossimi 7 giorni (storico e piano ferie) e giorni di picco.",
+        "average": "Media al giorno",
+        "peaks": "Giorni di picco",
+        "planned": "Assenze già pianificate: {{n}}",
+        "noDays": "Nessun giorno lavorativo nei prossimi 7 giorni."
+      },
+      "jobHours": {
+        "title": "Ore sulle commesse",
+        "description": "Ore del mese per commessa e costo stimato.",
+        "hours": "Ore del mese",
+        "cost": "Costo stimato (€)",
+        "noCost": "Imposta il costo orario in Marginalità commesse per vedere il costo.",
+        "empty": "Nessuna ora sulle commesse nel mese.",
+        "open": "Vai alla marginalità"
+      },
       "noData": "Dati non disponibili.",
       "details": "Dettagli",
       "presentToday": {

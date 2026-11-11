@@ -9,6 +9,59 @@
       "importoObbligatorio": "Enter an amount greater than zero."
     },
     "pages": {
+      "anomalie": {
+        "title": "Attendance anomalies",
+        "sezAnomalie": "Days to fix",
+        "sezPrevisione": "Absence forecast",
+        "selezionare": "Select the month and the employees.",
+        "daSistemare": "To fix: {{n}}",
+        "daVerificare": "To check: {{n}}",
+        "dipendenti": "Employees involved: {{n}} of {{tot}}",
+        "soloDaSistemare": "Only to fix",
+        "spiega": "Explain",
+        "notaRegole": "Fixed rules (until yesterday): in red what blocks the payroll export (odd clockings, days without clockings, errors or days not calculated, pending requests), in orange the warnings to check.",
+        "testoAI": "Summary written by AI from the calculated anomalies:",
+        "testoSenzaAI": "Summary of the calculated anomalies (AI not available):",
+        "nessuna": "No anomalies in the period.",
+        "nessunaTimbratura": "no clockings",
+        "ritardiRicorrenti": "Recurring late arrivals",
+        "ritardi": "{{n}} late arrivals, {{min}} minutes on average",
+        "mediaPreviste": "Expected absences per day: {{n}}",
+        "tassoMedio": "Average rate in the history: {{n}}%",
+        "colGiorno": "Day",
+        "colAttesi": "Expected",
+        "colPianificate": "Planned",
+        "colStatistiche": "Statistics",
+        "colPreviste": "Forecast",
+        "picco": "Peak",
+        "metodo": "How it is calculated",
+        "metodoTesto": "History from {{dal}} to {{al}} ({{n}} calculated working days). For each day the absence share is the ratio between justified absence hours and expected hours. Rate per weekday = average share (with fewer than {{min}} days the average rate is used); month factor = month rate / average rate. Statistics = sum, over the employees expected at work, of weekday rate x month factor. Planned = holidays and leaves in the vacation plan (approved or pending). Forecast = the greater of the two. Peak = forecast at least {{soglia}}% of the expected employees, or planned at least 2 and twice the average.",
+        "tassiSettimana": "Rate per weekday",
+        "fattoriMese": "Month factor",
+        "usaMedia": "average rate"
+      },
+      "cdgCommesse": {
+        "title": "Job margins",
+        "dalMese": "From month",
+        "alMese": "To month",
+        "costoPredefinito": "Default hourly cost (€)",
+        "calcola": "Calculate",
+        "notaCosti": "Hourly costs and revenues are not saved on the server: this browser remembers them and they are used for the calculation and the PDF report.",
+        "vuoto": "No hours or expenses on jobs in the period.",
+        "colCommessa": "Job / sub-job",
+        "colOre": "Hours",
+        "colCostoPersonale": "Staff cost",
+        "colNoteSpese": "Expenses",
+        "colCosto": "Total cost",
+        "colRicavo": "Revenue",
+        "colMargine": "Margin",
+        "totale": "Total",
+        "giornateEscluse": "Days not counted because with errors or not calculated: {{n}} (see Attendance anomalies).",
+        "noteNonAttribuite": "Expenses not assigned to any job: € {{n}}.",
+        "senzaCosto": "Employees with hours but no hourly cost: {{n}}.",
+        "costiOrari": "Employee hourly cost (empty = default)",
+        "metodo": "Staff cost = timesheet hours x hourly cost. Each employee's approved expenses are split among sub-jobs in proportion to the employee's hours in the month (no hours: default sub-job of the employment). Margin = revenue - total cost."
+      },
       "presentStaff": {
         "title": "Staff present"
       },
@@ -1323,6 +1376,8 @@
       }
     },
     "menu": {
+      "anomalie": "Attendance anomalies",
+      "marginalitaCommesse": "Job margins",
       "richieste": "Requests",
       "calendarioHR": "HR calendar",
       "quadraturaMensile": "Monthly reconciliation",
@@ -1528,6 +1583,8 @@
     },
     "services": {
       "report": {
+        "giornateDaSistemare": "Days to fix",
+        "marginalita": "Job margins",
         "titolo": "Report",
         "attivitaTotali": "Activity totals",
         "attivitaPerDipendente": "By employee",
@@ -1624,6 +1681,31 @@
       }
     },
     "widgets": {
+      "daysToFix": {
+        "title": "Days to fix",
+        "description": "Days to fix before the payroll export and warnings to check (until yesterday).",
+        "toFix": "To fix",
+        "toCheck": "To check",
+        "period": "From {{dal}} to {{al}} · {{n}} employees",
+        "open": "Go to anomalies"
+      },
+      "absenceForecast": {
+        "title": "Expected absences",
+        "description": "Expected absences in the next 7 days (history and vacation plan) and peak days.",
+        "average": "Average per day",
+        "peaks": "Peak days",
+        "planned": "Already planned absences: {{n}}",
+        "noDays": "No working days in the next 7 days."
+      },
+      "jobHours": {
+        "title": "Hours on jobs",
+        "description": "Month's hours per job and estimated cost.",
+        "hours": "Month's hours",
+        "cost": "Estimated cost (€)",
+        "noCost": "Set the hourly cost in Job margins to see the cost.",
+        "empty": "No hours on jobs this month.",
+        "open": "Go to job margins"
+      },
       "noData": "Data not available.",
       "details": "Details",
       "presentToday": {
