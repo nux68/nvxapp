@@ -21,6 +21,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'attendance.menu.richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create', badge: this.richiestaNotifierService.daApprovare },
       { menuType: MenuType.MenuItem, zorder: 2200, group: 0, title: 'attendance.menu.calendarioHR', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem, zorder: 2240, group: 0, title: 'attendance.menu.anomalie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AnomaliePageComponent", url: '/attendanceanomalies', icon: 'alert-circle' },
       { menuType: MenuType.MenuItem, zorder: 2250, group: 0, title: 'attendance.menu.quadraturaMensile', roles: ['CompanyPowerAdmin'], component: "QuadraturaMensilePageComponent", url: '/quadraturamensile', icon: 'checkmark-done-circle' },
 
       { menuType: MenuType.MenuItem, zorder: 2400, group: 0, title: 'attendance.menu.exportCausali', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'cloud-download' },
@@ -28,6 +29,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
       { menuType: MenuType.MenuItem, zorder: 2600, group: 0, title: 'attendance.menu.personalePresente', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "PresentStaffPageComponent", url: '/presentstaff', icon: 'people-circle' },
       { menuType: MenuType.MenuItem, zorder: 2700, group: 0, title: 'attendance.menu.pianoFerie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "VacationPlanPageComponent", url: '/vacationplan', icon: 'calendar-clear' },
+      { menuType: MenuType.MenuItem, zorder: 2780, group: 0, title: 'attendance.menu.accordiSw', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AccordiSwListPageComponent", url: '/accordiswlist', icon: 'home' },
+      { menuType: MenuType.MenuItem, zorder: 2760, group: 0, title: 'attendance.menu.postazioneQr', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaPostazionePageComponent", url: '/timbraturapostazione', icon: 'qr-code' },
+      { menuType: MenuType.MenuItem, zorder: 2770, group: 0, title: 'attendance.menu.kiosk', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaKioskPageComponent", url: '/timbraturakiosk', icon: 'tablet-landscape' },
+      { menuType: MenuType.MenuItem, zorder: 2750, group: 0, title: 'attendance.menu.pianificazioneTurni', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "PianificazioneTurniPageComponent", url: '/pianificazioneturni', icon: 'repeat' },
 
 
       { menuType: MenuType.MenuItem, zorder: 2300, group: 0, title: 'attendance.menu.calendario', roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
@@ -41,6 +46,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 205000, group: 1, title: 'attendance.menu.orari', roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'time' },
       { menuType: MenuType.MenuItem, zorder: 206000, group: 1, title: 'attendance.menu.profiliOrari', roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'timer' },
       { menuType: MenuType.MenuItem, zorder: 206500, group: 1, title: 'attendance.menu.festivita', roles: ['CompanyPowerAdmin'], component: "FestivitaListPageComponent", url: '/festivitalist', icon: 'flag' },
+      { menuType: MenuType.MenuItem, zorder: 206700, group: 1, title: 'attendance.menu.timbraturaSedi', roles: ['CompanyPowerAdmin'], component: "TimbraturaSedePageComponent", url: '/timbraturasede', icon: 'location' },
+      { menuType: MenuType.MenuItem, zorder: 206600, group: 1, title: 'attendance.menu.turni', roles: ['CompanyPowerAdmin'], component: "TurnoListPageComponent", url: '/turnolist', icon: 'repeat-outline' },
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'attendance.menu.modelliExport', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
       { menuType: MenuType.MenuItem, zorder: 207500, group: 1, title: 'attendance.menu.tipiSpesa', roles: ['CompanyPowerAdmin'], component: "TipoSpesaListPageComponent", url: '/tipospesalist', icon: 'pricetags' },
       // formule personalizzate del calcolo giornata: funzione del piano Pro (senza Pro le voci restano nel menu, disattivate)
@@ -53,6 +60,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'attendance.menu.gestioneCommesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 205150, group: 2, title: 'attendance.menu.marginalitaCommesse', roles: ['CompanyPowerAdmin'], component: "CdgCommessePageComponent", url: '/jobmargins', icon: 'trending-up' },
       { menuType: MenuType.MenuItem, zorder: 205100, group: 2, title: 'attendance.menu.commesse', roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'layers' },
       { menuType: MenuType.MenuItem, zorder: 205300, group: 2, title: 'attendance.menu.reparti', roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'grid' },
       { menuType: MenuType.MenuItem, zorder: 205400, group: 2, title: 'attendance.menu.sedi', roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
@@ -76,9 +84,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4User(): MainMenuItem[] {
     return [
       { menuType: MenuType.MenuHeader, zorder: 1000, group: 1, title: 'attendance.menu.presenze', roles: ['User'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 2050, group: 1, title: 'attendance.menu.timbraturaInSede', component: "TimbraturaQrPageComponent", url: '/timbraturaqr', icon: 'qr-code-outline' },
       { menuType: MenuType.MenuItem, zorder: 2000, group: 1, title: 'attendance.menu.timbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'finger-print' },
       { menuType: MenuType.MenuItem, zorder: 3000, group: 1, title: 'attendance.menu.richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'create', badge: this.richiestaNotifierService.inAttesa },
       { menuType: MenuType.MenuItem, zorder: 4000, group: 1, title: 'attendance.menu.calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem, zorder: 4200, group: 1, title: 'attendance.menu.lavoroAgile', component: "LavoroAgilePageComponent", url: '/lavoroagile', icon: 'home-outline' },
+      { menuType: MenuType.MenuItem, zorder: 4100, group: 1, title: 'attendance.menu.mieiTurni', component: "MieiTurniPageComponent", url: '/mieiturni', icon: 'repeat' },
       { menuType: MenuType.MenuItem, zorder: 5000, group: 1, title: 'attendance.menu.richiestaGiustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'document-text' },
       { menuType: MenuType.MenuItem, zorder: 6000, group: 1, title: 'attendance.menu.richiestaTimbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'time' },
 

@@ -134,6 +134,14 @@
         <ion-item [hidden]="aImporto">
           <ion-toggle formControlName="annullaPausa" justify="space-between">{{ 'attendance.pages.justificationEdit.annullaPausa' | transloco }}</ion-toggle>
         </ion-item>
+        <ion-item [hidden]="aImporto">
+          <ion-toggle formControlName="lavoroAgile" justify="space-between">{{ 'attendance.pages.justificationEdit.lavoroAgile' | transloco }}</ion-toggle>
+        </ion-item>
+        @if (_editForm.get('lavoroAgile')?.value) {
+          <ion-note>
+            {{ 'attendance.pages.justificationEdit.lavoroAgileNote' | transloco }}
+          </ion-note>
+        }
         @if (_editForm.get('annullaPausa')?.value) {
           <ion-note>
             {{ 'attendance.pages.justificationEdit.annullaPausaNote' | transloco }}

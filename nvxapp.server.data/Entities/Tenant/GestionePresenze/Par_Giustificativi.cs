@@ -56,6 +56,10 @@ namespace nvxapp.server.data.Entities.Tenant
         // non cambia il dovuto e non ha causale
         public Boolean AnnullaPausa { get; set; }
 
+        // lavoro agile (AT-SW): giorni richiesti con l'accordo di smart working (limite settimanale e giorni consentiti);
+        // nel calcolo e' un normale giustificativo (di default segno neutro e causale SW)
+        public Boolean LavoroAgile { get; set; }
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
 

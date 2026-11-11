@@ -1,0 +1,29 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.noData' | transloco }}</div>
+} @else if (lavorativi.length === 0) {
+  <div class="nvx-w-empty">{{ 'attendance.widgets.absenceForecast.noDays' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat primary">
+      <div class="valore">{{ dati.mediaPreviste | number: '1.1-1' }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.absenceForecast.average' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat" [class.danger]="picchi > 0">
+      <div class="valore">{{ picchi }}</div>
+      <div class="etichetta">{{ 'attendance.widgets.absenceForecast.peaks' | transloco }}</div>
+    </div>
+  </div>
+  <div class="nvx-af-giorni">
+    @for (g of lavorativi; track g.data) {
+      <div class="nvx-af-giorno">
+        <span class="nvx-w-muted">{{ g.data | date: 'EEE dd' }}</span>
+        <div class="nvx-w-bar" [class.danger]="g.picco"><div [style.width.%]="perc(g)"></div></div>
+        <span class="nvx-af-num">{{ g.previste | number: '1.1-1' }}/{{ g.inServizio }}</span>
+      </div>
+    }
+  </div>
+  <div class="nvx-w-muted">{{ 'attendance.widgets.absenceForecast.planned' | transloco: { n: dati.pianificate } }}</div>
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'attendance.widgets.details' | transloco }}</button>
+}

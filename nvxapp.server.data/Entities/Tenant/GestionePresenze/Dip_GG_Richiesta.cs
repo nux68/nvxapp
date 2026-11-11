@@ -52,7 +52,9 @@ namespace nvxapp.server.data.Entities.Tenant
         Timbratura,
         Giustificativo,
         NotaSpesa,
-        ApprovazioneStraordinario
+        ApprovazioneStraordinario,
+        // scambio di turni tra colleghi (AT-TURNI.3): Dati = { idDip_TurnoScambio, testo }
+        ScambioTurno
     }
 
     public enum StatoRichiesta

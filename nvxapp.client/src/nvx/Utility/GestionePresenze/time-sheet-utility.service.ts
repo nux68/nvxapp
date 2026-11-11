@@ -50,6 +50,9 @@ export class TimeSheetUtilityService {
           }
 
           break;
+        case TipoRichiesta.ScambioTurno:
+          // scambio di turni (AT-TURNI.3): testo preparato dal server
+          return (dati as any)?.testo ?? (dati as any)?.Testo ?? '';
         case TipoRichiesta.NotaSpesa: {
           const nota = riepilogoNotaSpesa(item.dati);
           const totale = nota.totale.toLocaleString(this.languageService.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false });

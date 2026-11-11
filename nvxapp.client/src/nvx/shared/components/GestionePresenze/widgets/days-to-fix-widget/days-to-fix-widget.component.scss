@@ -1,0 +1,7 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+.nvx-dtf-info {
+  margin: 8px 0 4px;
+}

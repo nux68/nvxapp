@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     // Un orario senza coppie (es. RIPOSO) vale 0 ore: giorno non lavorativo.
     // La pausa pranzo varia il teorico come nel motore (GestionePresenzePause.VariazioneTeorico).
     // Nelle festivita' del calendario aziendale vale l'orario festivo del profilo.
+    // Turno pianificato (AT-TURNI.4): come nel motore, nel giorno vale l'orario del turno (riposo = orario festivo).
     public class GestionePresenzeOreTeoriche : IGestionePresenzeOreTeoriche
     {
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
@@ -21,6 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
         private readonly IPar_OrarioPausaRepository _par_OrarioPausaRepository;
+        private readonly IDip_TurnoRepository _dip_TurnoRepository;
+        private readonly IPar_TurnoRepository _par_TurnoRepository;
 
         public GestionePresenzeOreTeoriche(IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                            IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
@@ -28,8 +31,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IPar_OrarioRepository par_OrarioRepository,
                                            IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
                                            IPar_FestivitaRepository par_FestivitaRepository,
-                                           IPar_OrarioPausaRepository par_OrarioPausaRepository)
+                                           IPar_OrarioPausaRepository par_OrarioPausaRepository,
+                                           IDip_TurnoRepository dip_TurnoRepository,
+                                           IPar_TurnoRepository par_TurnoRepository)
         {
+            _dip_TurnoRepository = dip_TurnoRepository;
+            _par_TurnoRepository = par_TurnoRepository;
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
@@ -54,8 +61,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             var parProfili = _par_ProfiloOrarioRepository.FindAll(p => idProfili.Contains(p.Id)).ToList();
             var parProfiliGG = _par_ProfiloOrarioGGRepository.FindAll(g => idProfili.Contains(g.IdPar_ProfiloOrario)).ToList();
 
+            var turni = _dip_TurnoRepository.FindAll(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro && t.Data >= Dal.Date && t.Data <= Al.Date).ToList();
+            var idParTurni = turni.Select(t => t.IdPar_Turno).Distinct().ToList();
+            var parTurni = idParTurni.Count > 0 ? _par_TurnoRepository.FindAll(p => idParTurni.Contains(p.Id)).ToList() : new List<Par_Turno>();
+
             var idOrari = parProfiliGG.Select(g => g.IdPar_Orario)
                                       .Concat(parProfili.Select(p => p.IdPar_Orario_Festivo))
+                                      .Concat(parTurni.Where(p => p.IdPar_Orario != null).Select(p => p.IdPar_Orario!.Value))
                                       .Distinct().ToList();
 
             // calendario festivita' dell'azienda (nei festivi vale l'orario festivo del profilo, come nel motore)
@@ -89,6 +101,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 var orario = orarioBase != null ? orari.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario) : null;
                 if (parProfilo.IdPar_Orario_Festivo > 0 && GestionePresenzeFestivita.IsFestivita(festivita, giorno))
                     orario = orari.FirstOrDefault(o => o.Id == parProfilo.IdPar_Orario_Festivo);
+
+                var turno = turni.FirstOrDefault(t => t.Data.Date == giorno);
+                if (turno != null)
+                {
+                    var idOrarioTurno = parTurni.FirstOrDefault(p => p.Id == turno.IdPar_Turno)?.IdPar_Orario ?? parProfilo.IdPar_Orario_Festivo;
+                    orario = orari.FirstOrDefault(o => o.Id == idOrarioTurno);
+                }
 
                 var ore = TimeSpan.Zero;
                 if (orario?.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)

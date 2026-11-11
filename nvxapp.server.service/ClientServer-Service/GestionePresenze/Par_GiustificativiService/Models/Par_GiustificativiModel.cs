@@ -28,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public bool BancaOre { get; set; }
         public bool AutorizzaStraordinario { get; set; }
         public bool AnnullaPausa { get; set; }
+        public bool LavoroAgile { get; set; }
     }
 
 
