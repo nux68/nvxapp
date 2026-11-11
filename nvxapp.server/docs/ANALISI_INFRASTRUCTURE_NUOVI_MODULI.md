@@ -177,7 +177,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `AT-CDG` | Controllo di gestione sulle commesse | AttendanceTracking_Dev | `wt_at-cdg` | – | 1 | ⏳ |
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
-| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ⏳ |
+| `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ svolta l'11/11/2026 nel ramo `DocumentManagement_Dev_dm-firma`, da mergiare (server provato su DB usa e getta con 35 controlli API, client compilato senza modifiche) |
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ⏳ |
@@ -292,9 +292,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `DM-CONS.3` Regole per tipologia di documento
 
 #### `DM-FIRMA` – Presa visione e verbali per gli altri moduli
-- ⏳ `DM-FIRMA.1` Implementazione di `IAcknowledgementService` (`INF-SVC.6`) con la FES già realizzata
-- ⏳ `DM-FIRMA.2` Modelli di verbale (consegna di beni, consegna di DPI, accordi)
-- ⏳ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove
+- ✅ `DM-FIRMA.1` Implementazione di `IAcknowledgementService` (`INF-SVC.6`) con la FES già realizzata — canale `doc.fes` (`DocumentManagementAcknowledgementChannel`, priorità 10): disponibile con documentale attivo e inizializzato e tipologia `PRESAVIS` "Verbali e prese visione" non disattivata (disattivarla = tornare al canale base; nelle aziende già inizializzate la crea il canale alla prima richiesta, nelle nuove è tra le predefinite); crea un documento del personale pubblicato (file del modulo se c'è, altrimenti verbale PDF) con il destinatario (e il suo dipendente, se collegato), presa visione richiesta e firma FES proposta dalla tipologia (accesa di default); riferimento nel canale `"<IdCompany>:<Doc_Destinatario.Id>"` (gli id del documentale sono per schema), url della richiesta `/docmine` ("I miei documenti"); la firma — o la presa visione se la firma non è richiesta — chiama `ConfirmFromChannelAsync` con data, IP e browser (`IAcknowledgementService` risolto in modo lazy in `Doc_DocumentoService`); se il documento non si può creare (es. senza licenza/spazio) la richiesta passa al canale base. Provato su DB usa e getta: creazione, firma prima del download rifiutata, conferma con IP e browser, presa visione senza firma, tipologia disattivata/eliminata, documentale disattivato, senza licenza
+- ✅ `DM-FIRMA.2` Modelli di verbale (consegna di beni, consegna di DPI, accordi) — basta un testo predefinito: `DocumentManagementVerbale` genera il PDF (azienda, titolo, destinatario, data, testo del modulo riga per riga, dichiarazione e modalità di conferma); la dichiarazione dipende dal modello scelto dalla fonte della richiesta (`dpi` → consegna DPI con richiamo al D.Lgs. 81/2008 artt. 20 e 78, `beni`/`consegna`/`asset` → consegna di beni, `accordo`/`agreement` → accordo, altrimenti presa visione generica; testi in `DocumentManagementMessages`, italiano e inglese). L'elenco dei beni o il testo dell'accordo li scrive il modulo nel testo; un modulo che vuole un modello proprio passa il file (`Contenuto`/`NomeFile`)
+- ✅ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove — verificato: il documento resta nel documentale (tipologia `PRESAVIS`, categoria Personale, conservazione 10 anni, versioni non potate perché con presa visione/firma); le prove sono su `Doc_Destinatario` (`DataFirma`, `FirmaVersione`, `FirmaHash` SHA-256 della versione, `FirmaIp`, `FirmaUserAgent`, `IdAspNetUsersFirma`, `DataPresaVisione`) e nel registro `Doc_Log` (caricamento con la fonte della richiesta, download, presa visione, `Firma` con `FES sha256:<hash>`); in `public.PresaVisione` restano data di conferma, IP e browser. Nessun attestato PDF separato (resta nel piano della firma, `ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md` §13 F1)
 
 #### `CRM-PREV` – Preventivi e offerte
 - ⏳ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati)
