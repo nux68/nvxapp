@@ -2,7 +2,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_WidgetService.Models
 {
-    // dipendenti presenti e assenti oggi (widget "Presenti oggi", ANALISI_WIDGET_PRESENZE.md)
+    // dipendenti presenti e assenti oggi (widget "Presenti oggi", ANALISI_ATTENDANCETRACKING_WIDGET.md)
     public class Widget_PresenzeOggiGetInModel
     {
     }
@@ -18,7 +18,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
         public int AssentiGiustificati { get; set; }
     }
 
-    // richieste approvate e da approvare (widget "Richieste", ANALISI_WIDGET_PRESENZE.md)
+    // richieste approvate e da approvare (widget "Richieste", ANALISI_ATTENDANCETRACKING_WIDGET.md)
     public class Widget_RichiesteGetInModel
     {
     }

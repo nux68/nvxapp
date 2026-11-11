@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.GestionePresenze
 {
-    // Dati dei widget della dashboard delle presenze (ANALISI_WIDGET_PRESENZE.md): i permessi li controlla il servizio
+    // Dati dei widget della dashboard delle presenze (ANALISI_ATTENDANCETRACKING_WIDGET.md): i permessi li controlla il servizio
     [ApiController]
     [Route("api/[controller]")]
     public class Dip_WidgetController : NvxControllerBase

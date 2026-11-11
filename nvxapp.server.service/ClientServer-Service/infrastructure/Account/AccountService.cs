@@ -993,7 +993,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 if (nuovaAzienda && company != null)
                 {
                     // gli applicativi che l'utente puo' cambiare li ha gia' decisi con le spunte (SuperUser, DealerPowerAdmin e, con la
-                    // licenza, lo studio: CompanyApplicationService.CanChangeAsync, ANALISI_LICENZE.md [branch Infrastructure] §15.6);
+                    // licenza, lo studio: CompanyApplicationService.CanChangeAsync, ANALISI_INFRASTRUCTURE_LICENZE.md [branch Infrastructure] §15.6);
                     // gli altri previsti dal ramo si attivano comunque, senza controllo del ruolo
                     var richiesti = new List<ApplicationType>();
                     foreach (var application in model.Data.CompanyEdit.Applications ?? new List<CompanyApplicationModel>())

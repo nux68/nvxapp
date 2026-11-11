@@ -21,7 +21,7 @@ using System.Text.Json;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_FormuleService
 {
-    // Formule personalizzate del calcolo giornata (parametro dell'azienda, CompanyPowerAdmin, piano Pro). ANALISI_FORMULE.md
+    // Formule personalizzate del calcolo giornata (parametro dell'azienda, CompanyPowerAdmin, piano Pro). ANALISI_ATTENDANCETRACKING_FORMULE.md
     public class Par_FormuleService : ServiceBase, IPar_FormuleService
     {
         private readonly IPar_FormuleRepository _par_FormuleRepository;

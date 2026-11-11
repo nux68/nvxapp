@@ -277,7 +277,7 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdDip_GG_NotaSpesa)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            /* Formule del calcolo giornata (ANALISI_FORMULE.md) */
+            /* Formule del calcolo giornata (ANALISI_ATTENDANCETRACKING_FORMULE.md) */
             modelBuilder.Entity<Par_Formule>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
                 .WithMany()

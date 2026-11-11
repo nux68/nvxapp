@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models
 {
     /*
-     Metadati dell'export verso le paghe (analisi ANALISI_EXPORT_AI.md, par. 4): i dati di tutti i dipendenti
+     Metadati dell'export verso le paghe (analisi ANALISI_ATTENDANCETRACKING_EXPORT_AI.md, par. 4): i dati di tutti i dipendenti
      esportati, con le causali del modello raggruppate per codice di output e periodo (giorno o mese).
      Senza documentazione e' il file restituito (JSON); con documentazione e' l'ingresso del renderer della ricetta.
     */

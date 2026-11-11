@@ -4,7 +4,7 @@ using static nvxapp.server.service.ClientServer_Service.Infrastructure.License.S
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initializer.LicenseCatalog
 {
-    // Listini iniziali delle Presenze (ANALISI_LICENZE.md §15.5 [branch Infrastructure]): uno per gli studi (valido anche per le
+    // Listini iniziali delle Presenze (ANALISI_INFRASTRUCTURE_LICENZE.md §15.5 [branch Infrastructure]): uno per gli studi (valido anche per le
     // loro aziende) e uno per le aziende che si abbonano da sole. Limiti dei piani: i valori predefiniti della funzione (LicenseDefaults). Creati una sola volta all'avvio da LicenseCatalogSeeder (Infrastructure).
     public class GestionePresenzeLicenseCatalogSeed : ILicenseCatalogSeed
     {
