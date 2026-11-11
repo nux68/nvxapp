@@ -633,4 +633,56 @@
     <value>Invalid widget: {0}.</value>
     <comment>dashboard</comment>
   </data>
+  <data name="VoiceManualApp_0" xml:space="preserve">
+    <value>Basic functions</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_2" xml:space="preserve">
+    <value>Attendance tracking</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_3" xml:space="preserve">
+    <value>CRM</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_4" xml:space="preserve">
+    <value>Document management</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualAppIntro" xml:space="preserve">
+    <value>{0} commands, by topic: {1}.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualExamples" xml:space="preserve">
+    <value>You can say, for example:</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualKeywords" xml:space="preserve">
+    <value>Recognised words: {0}</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualConfirmation" xml:space="preserve">
+    <value>Before running it, the assistant shows a summary and asks for confirmation.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualNoCommands" xml:space="preserve">
+    <value>There are no commands available for your roles and for the applications active for your company.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndex" xml:space="preserve">
+    <value>Command index</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexCommand" xml:space="preserve">
+    <value>Command</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexFunction" xml:space="preserve">
+    <value>Function</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexWhere" xml:space="preserve">
+    <value>Application › Topic</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
 </root>
