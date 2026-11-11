@@ -120,6 +120,9 @@ namespace nvxapp.server.Controllers.DocumentManagement
         [Authorize, HttpPost, Route("Doc_DocumentoPresaVisione")]
         public async Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoPresaVisione(GenericRequest<Doc_DocumentoIdInModel> inModel) => await _service.Doc_DocumentoPresaVisione(inModel, false);
 
+        [Authorize, HttpPost, Route("Doc_DocumentoFirma")]
+        public async Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoFirma(GenericRequest<Doc_DocumentoFirmaInModel> inModel) => await _service.Doc_DocumentoFirma(inModel, false);
+
         [Authorize, HttpPost, Route("Doc_LogList")]
         public async Task<GenericResult<Doc_LogListOutModel>> Doc_LogList(GenericRequest<Doc_LogListInModel> inModel) => await _service.Doc_LogList(inModel, false);
 

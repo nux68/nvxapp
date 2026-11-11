@@ -163,6 +163,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 tipo.AnniConservazione = dati.AnniConservazione;
                 tipo.HaScadenza = dati.HaScadenza;
                 tipo.PresaVisioneRichiesta = dati.PresaVisioneRichiesta;
+                // la firma si chiede ai destinatari, che oggi ci sono solo nei documenti del personale
+                tipo.FirmaRichiesta = dati.Categoria == Doc_Categoria.Personale && dati.FirmaRichiesta;
                 tipo.HaCompetenza = dati.HaCompetenza;
                 tipo.Ordine = dati.Ordine;
                 tipo.Active = dati.Active;
@@ -405,7 +407,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                    .Select(x => new Doc_Par_TipoModel
                    {
                        Id = x.Id, Codice = x.Codice, Descrizione = x.Descrizione, Categoria = x.Categoria, TipoInvio = x.TipoInvio, AnniConservazione = x.AnniConservazione,
-                       HaScadenza = x.HaScadenza, PresaVisioneRichiesta = x.PresaVisioneRichiesta, HaCompetenza = x.HaCompetenza,
+                       HaScadenza = x.HaScadenza, PresaVisioneRichiesta = x.PresaVisioneRichiesta, FirmaRichiesta = x.FirmaRichiesta, HaCompetenza = x.HaCompetenza,
                        Ordine = x.Ordine, Active = x.Active, Documenti = conteggi.FirstOrDefault(c => c.Key == x.Id)?.Count ?? 0
                    })
                    .ToList();

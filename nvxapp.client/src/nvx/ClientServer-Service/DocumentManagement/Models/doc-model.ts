@@ -30,6 +30,8 @@ export class DocTipoModel {
   public anniConservazione: number | null = null;
   public haScadenza = false;
   public presaVisioneRichiesta = false;
+  // firma proposta all'invio (si puo' togliere o aggiungere documento per documento)
+  public firmaRichiesta = false;
   public haCompetenza = false;
   public ordine = 0;
   public active = true;
@@ -96,6 +98,9 @@ export class DocDocumentoListModel {
   public nelCestino = false;
   public presaVisioneRichiesta = false;
   public dataPresaVisione: string | null = null;
+  // per l'utente corrente come destinatario: firma richiesta e fatta (versione corrente)
+  public firmaRichiesta = false;
+  public dataFirma: string | null = null;
   public nuovo = false;
   public oltreConservazione = false;
 }
@@ -113,6 +118,8 @@ export class DocDocumentoEditModel {
   public mese: number | null = null;
   public dataScadenza: string | null = null;
   public stato: DocStato = DocStato.Pubblicato;
+  // richiesta di firma ai destinatari: null = quella proposta dalla tipologia
+  public firmaRichiesta: boolean | null = null;
   public noteVersione: string | null = null;
 }
 
@@ -145,6 +152,11 @@ export class DocDestinatarioModel {
   public dataPrimaApertura: string | null = null;
   public dataPresaVisione: string | null = null;
   public dataDownload: string | null = null;
+  public firmaRichiesta = false;
+  public dataFirma: string | null = null;
+  public firmaVersione: number | null = null;
+  public firmaHash: string | null = null;
+  public firmaIp: string | null = null;
 }
 
 export class DocDettaglioModel {
@@ -171,6 +183,8 @@ export class DocClienteModel {
 // ---------------------------------------------------------------- richieste e risposte
 export class DocEmptyInModel { }
 export class DocIdInModel { public id = 0; }
+// firma del destinatario sulla versione che ha davanti
+export class DocFirmaInModel { public id = 0; public versione = 0; }
 export class DocIdOutModel extends ModelResult { public id = 0; }
 export class DocDeleteOutModel extends ModelResult { public deleted = false; }
 
