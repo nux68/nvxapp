@@ -657,4 +657,290 @@
     <value>Application › Topic</value>
     <comment>manuale comandi vocali</comment>
   </data>
+  <data name="PaymentNotAllowed" xml:space="preserve">
+    <value>Operation not allowed on payments.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPeriodInvalid" xml:space="preserve">
+    <value>Invalid period.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPeriodNotClosed" xml:space="preserve">
+    <value>A statement can only be generated for a month that has ended.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementAlreadyConfirmed" xml:space="preserve">
+    <value>This month's statement is already confirmed: new payments will go into next month's statement.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementStateInvalid" xml:space="preserve">
+    <value>Operation not allowed in the current state of the statement.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNothingToSettle" xml:space="preserve">
+    <value>No payments to settle.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementChanged" xml:space="preserve">
+    <value>The payments to settle have changed in the meantime: regenerate the draft and try again.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementPayInvalid" xml:space="preserve">
+    <value>Enter a valid settlement date, not in the future.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementNotFound" xml:space="preserve">
+    <value>Statement not found.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerNotFound" xml:space="preserve">
+    <value>Centre not found.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerRequired" xml:space="preserve">
+    <value>Choose a centre.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerConfigInvalid" xml:space="preserve">
+    <value>Invalid settlement data: check fee (0-100), IBAN and email.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettingsInvalid" xml:space="preserve">
+    <value>Invalid settings: fee 0-100, day 1-28, month 1-12.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentEmailNotConfigured" xml:space="preserve">
+    <value>Email sending is not configured.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNoRecipients" xml:space="preserve">
+    <value>The centre has no recipients: enter the administration email in the settlement data or a DealerPowerAdmin with an email.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendFailed" xml:space="preserve">
+    <value>Email not sent.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_0" xml:space="preserve">
+    <value>Draft</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_1" xml:space="preserve">
+    <value>Confirmed</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_2" xml:space="preserve">
+    <value>Paid</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_3" xml:space="preserve">
+    <value>Cancelled</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_0" xml:space="preserve">
+    <value>Created</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_1" xml:space="preserve">
+    <value>Pending</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_2" xml:space="preserve">
+    <value>Completed</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_3" xml:space="preserve">
+    <value>Failed</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_4" xml:space="preserve">
+    <value>Refunded</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_5" xml:space="preserve">
+    <value>Debug</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementSubject" xml:space="preserve">
+    <value>{0}: statement for {1}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementText" xml:space="preserve">
+    <value>Statement for {1} for the centre {0}.
+Net collected: {2}
+Platform fee {3}: {4}
+Centre share: {5}
+The payment details are attached.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPaidSubject" xml:space="preserve">
+    <value>{0}: share for {1} paid</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPaidText" xml:space="preserve">
+    <value>The share of the centre {0} for {1}, amounting to {2}, was transferred on {3}.
+Transfer reference: {4}
+The statement is attached.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSummarySubject" xml:space="preserve">
+    <value>{0}: payment summary {1}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSummaryText" xml:space="preserve">
+    <value>Attached is the summary of licence payments by the customers of the centre {0} for {1}.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentFileName" xml:space="preserve">
+    <value>Payments</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentAllDealers" xml:space="preserve">
+    <value>All</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNoDealer" xml:space="preserve">
+    <value>No centre</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleSettlement" xml:space="preserve">
+    <value>Statement for {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleMonthly" xml:space="preserve">
+    <value>Payment summary for {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleAnnual" xml:space="preserve">
+    <value>Payment summary {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealer" xml:space="preserve">
+    <value>Centre</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfState" xml:space="preserve">
+    <value>State</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPayments" xml:space="preserve">
+    <value>Payments</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfCollected" xml:space="preserve">
+    <value>Collected</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfRefunded" xml:space="preserve">
+    <value>Refunded</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfAdjustments" xml:space="preserve">
+    <value>Adjustments (refunds)</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfFee" xml:space="preserve">
+    <value>Platform fee</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealerShare" xml:space="preserve">
+    <value>Centre share</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealerShareEstimated" xml:space="preserve">
+    <value>Centre share (estimate)</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPaid" xml:space="preserve">
+    <value>Paid</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfToPay" xml:space="preserve">
+    <value>Confirmed, to be paid</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPaidOn" xml:space="preserve">
+    <value>Paid on</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfInvoice" xml:space="preserve">
+    <value>Centre invoice</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfSettlement" xml:space="preserve">
+    <value>Statement</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDetail" xml:space="preserve">
+    <value>Payment details</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfMonths" xml:space="preserve">
+    <value>Month by month</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColDate" xml:space="preserve">
+    <value>Date</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColSubject" xml:space="preserve">
+    <value>Customer</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColFunction" xml:space="preserve">
+    <value>Function and plan</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColPeriod" xml:space="preserve">
+    <value>Period covered</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColAmount" xml:space="preserve">
+    <value>Amount</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColMonth" xml:space="preserve">
+    <value>Month</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfRefund" xml:space="preserve">
+    <value>refund</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfEstimatedNote" xml:space="preserve">
+    <value>Share estimated on the period's collections with the current fee; the final amounts are those of the confirmed statements.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfGenerated" xml:space="preserve">
+    <value>generated on {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPage" xml:space="preserve">
+    <value>Page</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsSummary" xml:space="preserve">
+    <value>Summary</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsLevel" xml:space="preserve">
+    <value>Plan</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsFrom" xml:space="preserve">
+    <value>Covered from</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsTo" xml:space="preserve">
+    <value>Covered to</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsCurrency" xml:space="preserve">
+    <value>Currency</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsPaymentState" xml:space="preserve">
+    <value>Payment state</value>
+    <comment>pagamenti</comment>
+  </data>
 </root>

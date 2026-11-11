@@ -574,6 +574,75 @@ The SuperUser sets as default, for the Company level, the AI answer on with 2 at
 
 => /aidocumentlist /tickettypelist /ticketlist
 
+@@ /paymentreport
+### What you can do
+Companies and firms pay their licences to the platform; every month the platform passes each centre its share, that is the amount collected from the centre's customers minus the platform fee. On this page the SuperUser sees, by year or by month, each centre's collected amount, the fee, the centre's share, how much has already been paid and how much is confirmed but still to be transferred.
+
+### How to
+1. Choose year and month (or **Whole year**).
+2. Once the month has ended, from the round button choose **Generate the month's statements**: a draft is created for each centre with payments to settle.
+3. With **Detail** open the centre, check the draft and confirm it: the centre receives the email with the statement PDF.
+4. After the transfer, choose **Pay** on the statement and enter date and reference: the centre receives the confirmation.
+
+### Watch out
+- Only successful payments count; test (debug) payments are shown but are not included in statements.
+- Shares and fees in the list are estimates with the current percentage; the final amounts are those of the statements.
+- Payments of customers without a centre stay entirely with the platform.
+
+=> /paymentdealer /paymentsettings
+
+@@ /paymentdealer
+### What you can do
+The licence payments of the centre's customers and the monthly statements with which the platform pays the centre its share. The SuperUser chooses the centre; the centre's users always see their own and only confirmed statements.
+
+### Statement states
+| State | Description |
+|---|---|
+| Draft | Preview the SuperUser can regenerate or delete; not visible to the centre. |
+| Confirmed | The payments are locked on the statement and the centre has received the email; the share is to be transferred. |
+| Paid | The share has been transferred: date and reference of the transfer are on the statement. |
+| Cancelled | The statement is no longer valid and its payments go back to be settled. |
+
+### How to
+- **Send a summary**: choose the month or **Whole year** and, from the round button, **Send the summary by email**; it goes to the centre's administration email with the PDF.
+- **Record the centre's invoice** (DealerPowerAdmin or SuperUser): on a confirmed or paid statement choose **Invoice** and enter number and date.
+- **Download the data**: from the round button **PDF** (summary of the period) or **Excel** (summary and payment details).
+
+### Example
+A company of the centre pays 100 euros on 10 September, the fee is 20%. On 5 October the SuperUser generates and confirms the September statement: centre share 80 euros. The centre receives the email; when the transfer is made the statement shows **Paid**.
+
+### Watch out
+- A payment confirmed after its month's statement was closed goes into the next statement.
+- If an already paid payment is refunded, the next statement deducts it as an adjustment.
+
+=> /paymentdealerconfig /paymentreport
+
+@@ /paymentdealerconfig
+### Fields
+| Field | Description |
+|---|---|
+| Fee in % | From 0 to 100; empty uses the general fee. Only the SuperUser changes it, and it applies to statements generated from then on. |
+| IBAN | Account receiving the transfer, letters and digits only (spaces are removed). |
+| Account holder | Holder of the account. |
+| Administration email | Receives statements and summaries; separate multiple addresses with ;. Empty: the centre's DealerPowerAdmins. |
+
+=> /paymentdealer
+
+@@ /paymentsettings
+### Fields
+| Field | Description |
+|---|---|
+| General fee in % | From 0 to 100, for centres without their own fee. |
+| Automatic statements and summaries | On: every month, from the given day, the draft statements of the previous month are generated; in the given month each centre receives the summary of the previous year. |
+| Statement generation day | From 1 to 28. |
+| Annual summary month | Month in which the previous year's summary is sent. |
+
+### Watch out
+- Automatic drafts must always be confirmed by the SuperUser: confirming sends the email to the centre.
+- Without email sending configured, summaries are not sent.
+
+=> /paymentreport
+
 ## Glossary
 - **Dealer**: the reseller that creates financial advisors and activates the companies' applications (in Italian Centro).
 - **Financial advisor**: the professional firm that follows a group of companies (in Italian Studio).
