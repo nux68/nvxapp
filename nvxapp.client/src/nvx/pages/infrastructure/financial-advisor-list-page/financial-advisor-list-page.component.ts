@@ -122,7 +122,7 @@ export class FinancialAdvisorListPageComponent {
 
 
 
-  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_CANCELLAZIONE.md
+  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_INFRASTRUCTURE_CANCELLAZIONE.md
   get canDelete(): boolean {
     return this.userNavigationService.LoginIsSuperUser || this.authService.IsDealerPowerAdmin;
   }

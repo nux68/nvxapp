@@ -1,6 +1,6 @@
 namespace nvxapp.server.data.Entities.Public
 {
-    /// <summary>stato del rendiconto con cui il SuperUser liquida al centro la sua quota (ANALISI_PAGAMENTI_CENTRI.md §3)</summary>
+    /// <summary>stato del rendiconto con cui il SuperUser liquida al centro la sua quota (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3)</summary>
     public enum StatoRendiconto
     {
         /// <summary>generato, modificabile e rigenerabile; il centro non lo vede ancora</summary>

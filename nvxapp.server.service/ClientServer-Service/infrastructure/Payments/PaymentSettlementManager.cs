@@ -19,7 +19,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
     }
 
     /*
-     Ripartizione degli incassi delle licenze ai centri (ANALISI_PAGAMENTI_CENTRI.md §2, §3, §5).
+     Ripartizione degli incassi delle licenze ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §2, §3, §5).
      Non dipende dall'utente corrente: chi puo' fare cosa lo controlla PaymentReportService; lo usa anche la manutenzione.
         - criterio di cassa: conta Lic_Pagamento.DataPagamento
         - incassati: Completato e anche Debug (pagamenti di prova, contati come incassati: decisione dell'11/11/2026)

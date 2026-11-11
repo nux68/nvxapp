@@ -15,7 +15,7 @@ namespace nvxapp.server.data.Entities.Public
     }
 
     /*
-     Registro delle cancellazioni fisiche (vedi nvxapp.server/docs/ANALISI_CANCELLAZIONE.md): dopo la cancellazione
+     Registro delle cancellazioni fisiche (vedi nvxapp.server/docs/ANALISI_INFRASTRUCTURE_CANCELLAZIONE.md): dopo la cancellazione
      non resta altra traccia di chi ha eliminato cosa. Nessun dato personale: tipo e id dell'elemento, il suo nome
      (centro, studio, azienda o nome utente), chi ha eliminato e il riepilogo dei conteggi.
     */

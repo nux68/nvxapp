@@ -17,7 +17,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     }
 
     /*
-     Sottoscrizione, rinnovo e scadenza delle licenze (ANALISI_LICENZE.md §6, §7).
+     Sottoscrizione, rinnovo e scadenza delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §6, §7).
      Non dipende dall'utente corrente: i controlli su chi puo' farlo stanno in LicenseService; lo usa anche la manutenzione notturna.
         - il prezzo lo calcola sempre il server dal listino risolto (§7.3), mai dal client
         - i piani a prezzo 0 (Free) non passano dal pagamento
@@ -415,7 +415,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         }
 
         /*
-         Centro del cliente che paga (ANALISI_PAGAMENTI_CENTRI.md §2): azienda -> studio -> centro, oppure studio -> centro.
+         Centro del cliente che paga (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §2): azienda -> studio -> centro, oppure studio -> centro.
          Si fotografa sul pagamento perche' la quota va al centro a cui il cliente apparteneva quando ha pagato.
          Non e' IdDealerListino: quello e' il proprietario del listino (null = listino globale), non il centro del cliente.
         */

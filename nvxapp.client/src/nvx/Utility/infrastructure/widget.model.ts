@@ -2,7 +2,7 @@ import { Type } from '@angular/core';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 /*
- Widget della dashboard (ANALISI_WIDGET.md).
+ Widget della dashboard (ANALISI_INFRASTRUCTURE_WIDGET.md).
  Ogni applicativo dichiara i propri widget in un fornitore (iWidgetProvider) nel proprio ramo:
    - widget-infrastructure.service.ts       : Infrastructure (sempre presente)
    - widget-attendance-tracking.service.ts  : Presenze      (in Infrastructure e' vuoto, lo riempie il ramo AttendanceTracking)

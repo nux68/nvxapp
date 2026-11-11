@@ -4,7 +4,7 @@ namespace nvxapp.server.data.Entities.Public
 {
     /*
      Spazio dei file di un'azienda (una riga per azienda), solo per i file del documentale.
-     La quota non sta qui: e' quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync, ANALISI_LICENZE.md §5.1);
+     La quota non sta qui: e' quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync, ANALISI_INFRASTRUCTURE_LICENZE.md §5.1);
      senza licenza (o con il sistema licenze spento) lo spazio e' illimitato. I pacchetti di spazio (StoragePlan) sono stati eliminati.
         - WarningPercent  : soglia di avviso propria dell'azienda (null = predefinita dell'installazione)
         - UsedBytes       : spazio occupato (aggiornato a ogni caricamento ed eliminazione, riallineato di notte)

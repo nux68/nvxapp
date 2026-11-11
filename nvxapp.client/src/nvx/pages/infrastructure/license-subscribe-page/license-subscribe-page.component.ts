@@ -14,7 +14,7 @@ import {
 import { LivelloLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 /*
- Sottoscrizione (o cambio piano) di una licenza (ANALISI_LICENZE.md §6, §7), in forma di pagina prezzi:
+ Sottoscrizione (o cambio piano) di una licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §6, §7), in forma di pagina prezzi:
     - in alto la scelta Mensile / Annuale, con il risparmio massimo dell'annuale
     - una scheda per piano (Free, Standard, Pro): prezzo al mese, importo annuale, limiti della funzione, pulsante di scelta;
       il piano consigliato (Standard) e il piano attuale sono evidenziati

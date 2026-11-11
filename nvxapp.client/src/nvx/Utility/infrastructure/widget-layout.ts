@@ -1,7 +1,7 @@
 import { WidgetDefinition, WidgetSize } from './widget.model';
 
 /*
- Disposizione dei widget nella dashboard (ANALISI_WIDGET.md §5.1), in funzione del numero e delle dimensioni:
+ Disposizione dei widget nella dashboard (ANALISI_INFRASTRUCTURE_WIDGET.md §5.1), in funzione del numero e delle dimensioni:
    1. nell'ordine scelto dall'utente i widget riempiono righe da 12 colonne (small 4, medium 6, large 12);
    2. una riga con piu' widget che non arriva a 12 colonne si riempie allargandoli in proporzione
       (es. due small -> meta' e meta'; small + medium -> 40% e 60%), cosi' non restano buchi;

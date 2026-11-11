@@ -1,4 +1,4 @@
-# Override per il server (VPS Contabo, sezione 9 di nvxapp.server/docs/ANALISI_DOCKER.md), insieme a docker-compose.yml.
+# Override per il server (VPS Contabo, sezione 9 di nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md), insieme a docker-compose.yml.
 # File di ambiente: DockerVps.env, copiato sul server come .env, con COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 #
 # Da Internet si raggiunge solo Caddy (80 e 443): ottiene e rinnova da solo il certificato HTTPS

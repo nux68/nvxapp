@@ -146,9 +146,9 @@ namespace nvxapp.server.Utility
             builder.Services.AddHostedService<JobFileCleanupService>();
             // spazio dei file delle aziende: riallineamento notturno e fotografia mensile
             builder.Services.AddHostedService<StorageMaintenanceService>();
-            // licenze: rinnovi automatici, scadenze e avvisi notturni (ANALISI_LICENZE.md §6)
+            // licenze: rinnovi automatici, scadenze e avvisi notturni (ANALISI_INFRASTRUCTURE_LICENZE.md §6)
             builder.Services.AddHostedService<LicenseMaintenanceService>();
-            // pagamenti ai centri: bozze mensili dei rendiconti e riepiloghi annuali (ANALISI_PAGAMENTI_CENTRI.md §5)
+            // pagamenti ai centri: bozze mensili dei rendiconti e riepiloghi annuali (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §5)
             builder.Services.AddHostedService<PaymentMaintenanceService>();
 
 
@@ -531,7 +531,7 @@ namespace nvxapp.server.Utility
             // Segreti (connessione DB, chiave JWT, password RabbitMQ e SMTP, API key AI): NON negli appsettings ma in
             // variabili d'ambiente con prefisso NVXAPP_ e "__" al posto di ":" (es. NVXAPP_JwtParameter__Key -> JwtParameter:Key).
             // Aggiunte per ultime: vincono sugli appsettings. Il prefisso evita che le leggano altre applicazioni .NET
-            // della macchina. Impostazione: nvxapp.server/docs/imposta-variabili-nvxapp.ps1 (vedi ANALISI_DOCKER.md, punto 7)
+            // della macchina. Impostazione: nvxapp.server/docs/imposta-variabili-nvxapp.ps1 (vedi ANALISI_INFRASTRUCTURE_DOCKER.md, punto 7)
             builder.Configuration.AddEnvironmentVariables("NVXAPP_");
 
             CheckRequiredSecrets(builder.Configuration);
@@ -554,7 +554,7 @@ namespace nvxapp.server.Utility
             if (missing.Count > 0)
                 throw new InvalidOperationException(
                     "Segreti non configurati, impostare le variabili d'ambiente: " + string.Join(", ", missing) +
-                    ". Vedi nvxapp.server/docs/ANALISI_DOCKER.md, punto 7.");
+                    ". Vedi nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md, punto 7.");
         }
 
     }

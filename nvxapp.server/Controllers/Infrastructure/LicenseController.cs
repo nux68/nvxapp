@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.Infrastructure
 {
-    // Licenze d'uso (ANALISI_LICENZE.md): impostazioni e listini (SuperUser, centro abilitato), licenze dell'azienda o dello studio.
+    // Licenze d'uso (ANALISI_INFRASTRUCTURE_LICENZE.md): impostazioni e listini (SuperUser, centro abilitato), licenze dell'azienda o dello studio.
     // I ruoli li controlla il servizio.
     [ApiController]
     [Route("api/[controller]")]
