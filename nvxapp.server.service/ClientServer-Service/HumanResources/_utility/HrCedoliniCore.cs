@@ -343,7 +343,7 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources._utility
                 {
                     UserIds = notificare.Distinct().ToList(),
                     IdCompany = ctx.IdCompany,
-                    Categoria = NotificationCategory.Generale.Code,
+                    Categoria = HrNotificationCategoryProvider.Cedolini.Code,
                     Titolo = HumanResourcesMessages.Get("PayslipNotificationTitle", titolo),
                     Messaggio = HumanResourcesMessages.Get("PayslipNotificationText", titolo),
                     Url = "/hrmypayslips"
