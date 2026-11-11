@@ -98,6 +98,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
                 new() { Label = CrmMessages.Get("DeletionCountActivities"), Count = await rep.Crm_Attivita.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
                 new() { Label = CrmMessages.Get("DeletionCountOffers"), Count = await rep.Crm_Offerta.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
                 new() { Label = CrmMessages.Get("DeletionCountLeads"), Count = await rep.Crm_Lead.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
+                new() { Label = CrmMessages.Get("DeletionCountRequests"), Count = await rep.Crm_Richiesta.FindAll(_ => true).CountAsync(x => x.IdAz_Anagrafica == idAz, cancellationToken) },
             };
         }
 
@@ -114,6 +115,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             if (idAz == 0)
                 return;
             await rep.Crm_Allegato.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
+            // richieste di assistenza (i messaggi in cascata)
+            await rep.Crm_Richiesta.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Crm_Nota.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Crm_Attivita.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
             await rep.Crm_Offerta.FindAll(x => x.IdAz_Anagrafica == idAz).ExecuteDeleteAsync(cancellationToken);
@@ -153,6 +156,11 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAutore, (string?)null), cancellationToken);
             await rep.Crm_Allegato.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAutore, (string?)null), cancellationToken);
+            // richieste di assistenza: restano senza assegnatario, i messaggi senza autore
+            await rep.Crm_Richiesta.FindAll(x => x.IdAz_Anagrafica == idAz && x.IdAspNetUsersAssegnatario == idAspNetUsers)
+                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAssegnatario, (string?)null), cancellationToken);
+            await rep.Crm_RichiestaMessaggio.FindAll(x => x.Crm_RichiestaNavigation!.IdAz_Anagrafica == idAz && x.IdAspNetUsersAutore == idAspNetUsers)
+                    .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAspNetUsersAutore, (string?)null), cancellationToken);
         }
 
         private static Task<int> IdAzAsync(CrmRepositorySet rep, int idCompany, CancellationToken cancellationToken)
@@ -191,6 +199,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             Aggiungi(await rep.Crm_Offerta.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByOffers");
             Aggiungi(await rep.Crm_Attivita.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByActivities");
             Aggiungi(await rep.Crm_Allegato.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByAttachments");
+            Aggiungi(await rep.Crm_Richiesta.FindAll(_ => true).CountAsync(x => x.IdAz_Cliente == idAz_Cliente, cancellationToken), "CustomerUsedByRequests");
             return usi;
         }
     }

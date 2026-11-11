@@ -27,7 +27,7 @@ Con la Fase 1 del CRM (04/11/2026) esistono già:
   le attività del cliente.
 - Nessun legame automatico con la pipeline, nessuna scadenza nello scadenzario, nessuno stato "scaduta".
 
-## 2. Modello dati (migration incrementale `Crm_Preventivi` del contesto Crm)
+## 2. Modello dati (migration incrementale `Crm_PreventiviAssistenza` del contesto Crm, comune alle due aree)
 
 | Modifica | Dettaglio |
 |---|---|
@@ -131,7 +131,7 @@ Tabelle del CRM (solo CompanyPowerAdmin). PDF e invio: chi vede l'offerta.
 
 ## 10. Checklist
 
-- [ ] `CRM-PREV.1` Modello: stato `Scaduta`, `DataEsito`, `IdOrdineAmministrazione`, tipo del prodotto; migration `Crm_Preventivi`
+- [ ] `CRM-PREV.1` Modello: stato `Scaduta`, `DataEsito`, `IdOrdineAmministrazione`, tipo del prodotto; migration `Crm_PreventiviAssistenza`
 - [ ] `CRM-PREV.1` Scadenza automatica (servizio in background + apertura di elenco/scheda) e scadenzario `crm.preventivo` (registrata, chiusa all'esito, tolta in bozza/cancellazione)
 - [ ] `CRM-PREV.2` PDF tramite job (`Crm_OffertaPdfJob`), tolto il download diretto
 - [ ] `CRM-PREV.2` Invio email al contatto con PDF allegato, errore gestito, invio registrato come attività

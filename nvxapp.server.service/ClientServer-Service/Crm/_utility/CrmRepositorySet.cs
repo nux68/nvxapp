@@ -56,6 +56,10 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         private ICrm_NotaRepository? _Crm_Nota;
         public ICrm_AllegatoRepository Crm_Allegato => _Crm_Allegato ??= new Crm_AllegatoRepository(_db, _sp, _http);
         private ICrm_AllegatoRepository? _Crm_Allegato;
+        public ICrm_RichiestaRepository Crm_Richiesta => _Crm_Richiesta ??= new Crm_RichiestaRepository(_db, _sp, _http);
+        private ICrm_RichiestaRepository? _Crm_Richiesta;
+        public ICrm_RichiestaMessaggioRepository Crm_RichiestaMessaggio => _Crm_RichiestaMessaggio ??= new Crm_RichiestaMessaggioRepository(_db, _sp, _http);
+        private ICrm_RichiestaMessaggioRepository? _Crm_RichiestaMessaggio;
         public ICrm_Az_AnagraficaReadRepository Az_Anagrafica => _Az_Anagrafica ??= new Crm_Az_AnagraficaReadRepository(_db, _sp, _http);
         private ICrm_Az_AnagraficaReadRepository? _Az_Anagrafica;
         public ICrm_Az_ClienteReadRepository Az_Cliente => _Az_Cliente ??= new Crm_Az_ClienteReadRepository(_db, _sp, _http);

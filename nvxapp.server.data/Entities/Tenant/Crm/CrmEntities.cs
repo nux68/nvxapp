@@ -55,6 +55,43 @@ namespace nvxapp.server.data.Entities.Tenant.Crm
         Inviata = 1,
         Accettata = 2,
         Rifiutata = 3,
+        // validita' passata senza esito (CRM-PREV, ANALISI_CRM_PREVENTIVI.md §3)
+        Scaduta = 4,
+    }
+
+    // listino del CRM: articoli e servizi (Crm_Par_Prodotto)
+    public enum Crm_TipoProdotto
+    {
+        Articolo = 0,
+        Servizio = 1,
+    }
+
+    // richieste di assistenza dei clienti dell'azienda (CRM-ASS, ANALISI_CRM_ASSISTENZA.md)
+    public enum Crm_StatoRichiesta
+    {
+        Nuova = 0,
+        InCarico = 1,
+        InAttesaCliente = 2,
+        Risolta = 3,
+        Chiusa = 4,
+        Annullata = 5,
+    }
+
+    public enum Crm_PrioritaRichiesta
+    {
+        Bassa = 0,
+        Normale = 1,
+        Alta = 2,
+        Urgente = 3,
+    }
+
+    public enum Crm_CanaleRichiesta
+    {
+        Telefono = 0,
+        Email = 1,
+        DiPersona = 2,
+        Sito = 3,
+        Altro = 4,
     }
 
     // tabelle di configurazione (Crm_Par_*): i valori predefiniti li crea l'attivazione
@@ -142,6 +179,7 @@ namespace nvxapp.server.data.Entities.Tenant.Crm
         public string? Um { get; set; }
         [Column(TypeName = "numeric(5,2)")]
         public decimal AliquotaIva { get; set; } = 22;
+        public Crm_TipoProdotto TipoProdotto { get; set; } = Crm_TipoProdotto.Articolo;
     }
 
     public class Crm_Par_Tag : Crm_ParBase
@@ -371,6 +409,12 @@ namespace nvxapp.server.data.Entities.Tenant.Crm
 
         public DateTime? DataInvio { get; set; }
 
+        // accettata, rifiutata o scaduta
+        public DateTime? DataEsito { get; set; }
+
+        // predisposizione: ordine creato nell'Amministrazione (applicativo 8, piu' avanti); ID senza FK (altro applicativo)
+        public int? IdOrdineAmministrazione { get; set; }
+
         public List<Crm_OffertaRiga> Righe { get; set; } = new();
     }
 
@@ -449,5 +493,64 @@ namespace nvxapp.server.data.Entities.Tenant.Crm
 
         [MaxLength(450)]
         public string? IdAspNetUsersAutore { get; set; }
+    }
+
+    // richiesta di assistenza di un cliente dell'azienda (diversa dai ticket di Infrastructure verso la piattaforma)
+    public class Crm_Richiesta : BaseEntity
+    {
+        [Required]
+        public int IdAz_Anagrafica { get; set; }
+        public Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
+
+        public int Anno { get; set; }
+        public int Numero { get; set; }
+
+        [Required]
+        public int IdAz_Cliente { get; set; }
+        public Az_Cliente? Az_ClienteNavigation { get; set; }
+        public int? IdAz_ClienteContatto { get; set; }
+        public Az_ClienteContatto? Az_ClienteContattoNavigation { get; set; }
+
+        [Required, MaxLength(200)]
+        public string Oggetto { get; set; } = string.Empty;
+        [MaxLength(4000)]
+        public string? Descrizione { get; set; }
+
+        public Crm_CanaleRichiesta Canale { get; set; } = Crm_CanaleRichiesta.Telefono;
+        public Crm_PrioritaRichiesta Priorita { get; set; } = Crm_PrioritaRichiesta.Normale;
+        public Crm_StatoRichiesta Stato { get; set; } = Crm_StatoRichiesta.Nuova;
+
+        [MaxLength(450)]
+        public string? IdAspNetUsersAssegnatario { get; set; }
+
+        public DateTime DataApertura { get; set; }
+        public DateTime? DataPresaInCarico { get; set; }
+        public DateTime? DataRisoluzione { get; set; }
+        public DateTime? DataChiusura { get; set; }
+
+        [MaxLength(2000)]
+        public string? Soluzione { get; set; }
+
+        public int? IdCrm_Opportunita { get; set; }
+        public Crm_Opportunita? Crm_OpportunitaNavigation { get; set; }
+    }
+
+    // nota interna o evento (assegnazione, cambio di stato) di una richiesta di assistenza
+    public class Crm_RichiestaMessaggio : BaseEntity
+    {
+        [Required]
+        public int IdCrm_Richiesta { get; set; }
+        public Crm_Richiesta? Crm_RichiestaNavigation { get; set; }
+
+        public DateTime Data { get; set; }
+
+        [MaxLength(450)]
+        public string? IdAspNetUsersAutore { get; set; }
+
+        [Required, MaxLength(4000)]
+        public string Testo { get; set; } = string.Empty;
+
+        // evento registrato dal sistema (non modificabile)
+        public bool Sistema { get; set; }
     }
 }

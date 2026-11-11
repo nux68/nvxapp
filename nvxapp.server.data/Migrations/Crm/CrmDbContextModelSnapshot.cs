@@ -773,6 +773,9 @@ namespace nvxapp.server.data.Migrations.Crm
                     b.Property<DateTime>("Data")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("DataEsito")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("DataInvio")
                         .HasColumnType("timestamp without time zone");
 
@@ -786,6 +789,9 @@ namespace nvxapp.server.data.Migrations.Crm
                         .HasColumnType("integer");
 
                     b.Property<int?>("IdCrm_Opportunita")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdOrdineAmministrazione")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Imponibile")
@@ -1189,6 +1195,9 @@ namespace nvxapp.server.data.Migrations.Crm
                     b.Property<decimal>("Prezzo")
                         .HasColumnType("numeric(18,4)");
 
+                    b.Property<int>("TipoProdotto")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Um")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)");
@@ -1291,6 +1300,141 @@ namespace nvxapp.server.data.Migrations.Crm
                     b.HasIndex("IdAz_Anagrafica");
 
                     b.ToTable("Crm_Par_TipoAttivita");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Crm.Crm_Richiesta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Canale")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataApertura")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataChiusura")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataPresaInCarico")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataRisoluzione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("IdAspNetUsersAssegnatario")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdAz_Cliente")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdAz_ClienteContatto")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCrm_Opportunita")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Numero")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Oggetto")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Priorita")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Soluzione")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsersAssegnatario");
+
+                    b.HasIndex("IdAz_Cliente");
+
+                    b.HasIndex("IdAz_ClienteContatto");
+
+                    b.HasIndex("IdCrm_Opportunita");
+
+                    b.HasIndex("IdAz_Anagrafica", "Stato");
+
+                    b.HasIndex("IdAz_Anagrafica", "Anno", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("Crm_Richiesta");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Crm.Crm_RichiestaMessaggio", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsersAutore")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdCrm_Richiesta")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Sistema")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Testo")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCrm_Richiesta");
+
+                    b.ToTable("Crm_RichiestaMessaggio");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>
@@ -1705,6 +1849,55 @@ namespace nvxapp.server.data.Migrations.Crm
                         .IsRequired();
 
                     b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Crm.Crm_Richiesta", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsersAssegnatario")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Cliente", "Az_ClienteNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Cliente")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_ClienteContatto", "Az_ClienteContattoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_ClienteContatto")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Crm.Crm_Opportunita", "Crm_OpportunitaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCrm_Opportunita")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Az_ClienteContattoNavigation");
+
+                    b.Navigation("Az_ClienteNavigation");
+
+                    b.Navigation("Crm_OpportunitaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Crm.Crm_RichiestaMessaggio", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Crm.Crm_Richiesta", "Crm_RichiestaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCrm_Richiesta")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Crm_RichiestaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>

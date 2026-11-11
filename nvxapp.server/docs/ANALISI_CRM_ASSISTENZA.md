@@ -19,7 +19,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare.
 - Nessun portale per il cliente finale e nessuna email al cliente in questa fase (*scelta provvisoria*): le richieste
   le registra l'azienda (telefonata, email ricevuta, ...); i messaggi sono **interni**.
 
-## 2. Modello dati (schema `tenant_<id>_3`, migration incrementale `Crm_Assistenza` del contesto Crm)
+## 2. Modello dati (schema `tenant_<id>_3`, migration incrementale `Crm_PreventiviAssistenza` del contesto Crm, comune con `CRM-PREV`)
 
 ### `Crm_Richiesta`
 
@@ -122,7 +122,7 @@ Controlli tutti lato server (`CrmUtility.RichiesteVisibili`), le pagine li rispe
 
 ## 9. Checklist
 
-- [ ] `CRM-ASS.1` Entità `Crm_Richiesta`, `Crm_RichiestaMessaggio`, enum, migration `Crm_Assistenza`, repository
+- [ ] `CRM-ASS.1` Entità `Crm_Richiesta`, `Crm_RichiestaMessaggio`, enum, migration `Crm_PreventiviAssistenza`, repository
 - [ ] `CRM-ASS.1` Servizio e API (`Crm_Richiesta`: elenco, scheda, salvataggio, nota, cancellazione) con stati, tempi, visibilità per ruolo
 - [ ] `CRM-ASS.1` Notifica all'assegnatario (`INotificationSender`) ed eventi nello storico
 - [ ] `CRM-ASS.1` Uso del cliente comune e cancellazione fisica (`CrmCommonEntityUsage`, `CrmDataDeleter`)
