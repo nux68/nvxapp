@@ -31,9 +31,9 @@ Azienda/Studio ──paga la licenza──▶ SuperUser (Lic_Pagamento, con il c
 - **A chi va la quota**: al centro del cliente che ha pagato, **fotografato al momento del pagamento** (`Lic_Pagamento.IdDealer`, `DealerDescrizione`). Se il cliente passa a un altro centro, i pagamenti già fatti restano al centro di prima. Cliente senza centro → l'incasso resta tutto alla piattaforma.
 - **Criterio di cassa**: conta `DataPagamento` (quando il pagamento è andato a buon fine). Un annuale si liquida per intero nel mese in cui è incassato.
 - **Liquidazione mensile**: l'unità operativa è il mese. Il **riepilogo annuale** è la somma dei 12 rendiconti, con una sua vista e una sua email, ma senza liquidazione propria.
-- **Nessun doppio conteggio**: da liquidare = `Stato = Completato`, `Debug = false`, `IdDealer` valorizzato, `IdRendiconto` null, `DataPagamento` entro la fine del mese del rendiconto. Un pagamento confermato in ritardo entra nel primo rendiconto aperto.
+- **Nessun doppio conteggio**: da liquidare = `Stato` Completato o Debug, `IdDealer` valorizzato, `IdRendiconto` null, `DataPagamento` entro la fine del mese del rendiconto. Un pagamento confermato in ritardo entra nel primo rendiconto aperto.
 - **Rimborsi**: un pagamento già liquidato e poi rimborsato (`Stato = Rimborsato`) entra come rettifica negativa nel primo rendiconto successivo (`Lic_Pagamento.IdRendicontoRettifica`, `Pag_Rendiconto.TotaleRettifiche`). Un pagamento rimborsato prima della liquidazione semplicemente non entra.
-- **Pagamenti in debug esclusi** dai rendiconti (oggi `Payments:Debug = true` ovunque: finché non arrivano i pagamenti reali i rendiconti risultano vuoti, ma i pagamenti debug si vedono negli elenchi, segnati come tali, per le prove).
+- **Pagamenti in debug compresi** nel cumulo (totali, quote, rendiconti, riepiloghi), segnati come tali negli elenchi e nei PDF (decisione dell'11/11/2026; prima erano esclusi). Oggi `Payments:Debug = true` ovunque, quindi tutti gli incassi sono in debug.
 - **Calcolo**: `Base = TotaleIncassato − TotaleRettifiche`; `QuotaPiattaforma = round(Base × Percentuale / 100, 2)`; `QuotaCentro = Base − QuotaPiattaforma`. Una base negativa (rimborsi superiori agli incassi del mese) resta negativa: è un credito della piattaforma verso il centro, che si compensa nei mesi successivi.
 
 ## 3. Modello dati (schema `public`)
@@ -102,7 +102,7 @@ Il calcolo e i cambi di stato stanno in `PaymentSettlementManager` (non dipende 
 2. Trattenuta della piattaforma: percentuale per centro, con un valore generale per i centri senza una propria. Non per funzione.
 3. I rendiconti si generano in bozza; il SuperUser li conferma prima dell'invio.
 4. Fattura del centro: campi informativi sul rendiconto, nessun blocco.
-5. Pagamenti in debug esclusi dai rendiconti.
+5. Pagamenti in debug compresi nel cumulo e nei rendiconti (rivisto l'11/11/2026: in un primo tempo erano esclusi).
 6. Criterio di cassa; liquidazione mensile; riepilogo annuale come somma.
 
 ## 8. Fasi
@@ -141,3 +141,17 @@ Con i pagamenti reali (Fase 3 delle licenze) la conferma del provider via webhoo
 | Testi | `InfrastructureMessages*.resx` (chiavi `Payment*`), `assets/i18n/infrastructure/*.json` (`pages.payment*`, `menu.payments`, `menu.dealerPayments`), manuale `Manuals/infrastructure*.md` |
 
 **Verifica.** Build di server e client; prova completa delle API su un database PostgreSQL usa e getta con un server SMTP finto (49 controlli): riepiloghi e totali per centro (con debug, senza centro, centri senza movimenti), permessi (SuperUser, DealerPowerAdmin, DealerAdmin, studio, SuperUser che impersona un centro), mese non concluso, bozze, conferma con ricalcolo e aggancio dei pagamenti, doppia conferma, liquidazione (data futura rifiutata), fattura, annullamento, rimborso dopo la liquidazione come rettifica negativa, PDF ed Excel, email con PDF ai DealerPowerAdmin e all'email dell'amministrazione, dati di liquidazione (IBAN non valido, trattenuta solo dal SuperUser), sottoscrizione reale in debug che fotografa centro e data di incasso, giro della manutenzione (una bozza generata, marcatore del mese scritto).
+
+## Checklist
+
+- [x] Analisi e decisioni (§1-§7)
+- [x] Fase 1 – modello dati: campi su `Lic_Pagamento`, entità `Pag_*`, impostazioni, migration `PagamentiCentri` con riempimento dei pagamenti esistenti
+- [x] Fase 2 – consultazione: riepilogo per centro e dettaglio del centro (API e pagine)
+- [x] Fase 3 – rendiconti: bozza, conferma, liquidazione, annullamento, fattura, rettifiche dei rimborsi, dati di liquidazione
+- [x] Fase 4 – email e documenti: invio con PDF, esportazione PDF ed Excel, registro degli invii
+- [x] Fase 5 – automatismi: `PaymentMaintenanceService`
+- [x] Manuale it/en
+- [x] Pagamenti in debug compresi nel cumulo (11/11/2026)
+- [ ] Schermate del manuale (`nvxapp.server/Tools/ManualScreenshots`)
+- [ ] Impostare la trattenuta generale reale (oggi 0%)
+- [ ] Con i pagamenti reali (Fase 3 delle licenze): valorizzare `DataPagamento` alla conferma del provider (webhook) e decidere se i pagamenti di debug devono restare nel cumulo
