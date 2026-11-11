@@ -23,5 +23,9 @@ namespace nvxapp.server.data.Entities.Tenant.Compliance
         // note interne della configurazione
         [MaxLength(2000)]
         public string? Note { get; set; }
+
+        // CMP-81.2: utenti abilitati ai dati sanitari delle visite (medico competente / RSPP designato), id separati da ';'
+        [MaxLength(2000)]
+        public string? UtentiDatiSanitari { get; set; }
     }
 }

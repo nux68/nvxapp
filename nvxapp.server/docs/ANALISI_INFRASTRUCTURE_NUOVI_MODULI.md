@@ -183,9 +183,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `Compliance_Dev_cmp-base`, provata su DB usa e getta), da mergiare |
-| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 |
+| `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-f3` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `Compliance_Dev_f3`, provata su DB usa e getta), da mergiare |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | 🔍 bloccata: serve la verifica legale (`ANA.5`) e l'analisi di sicurezza (`ANA.6`) |
-| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ✅ mergiata l'11/11/2026 |
+| `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-f3` | `CMP-BASE` | 3 | ✅ fatta l'11/11/2026 (ramo `Compliance_Dev_f3`, con lato studio ed export Excel via job), da mergiare |
 | `HR-BASE` | Avvio del modulo Risorse Umane | HumanResources_Dev (nuovo) | `wt_hr-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_hr-base`, provata su DB usa e getta), da mergiare |
 | `HR-CED` | Portale con cedolini e CU | HumanResources_Dev | `wt_hr-ced` | `HR-BASE`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_f3`, worktree `wt_hr-f3`, provata su DB usa e getta: 80 controlli), da mergiare |
 | `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `HumanResources_Dev_f3`, worktree `wt_hr-f3`, provata su DB usa e getta: 80 controlli), da mergiare |
@@ -318,11 +318,11 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `CMP-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `CMP-81` – Sicurezza sul lavoro (D.Lgs 81/08)
-- ⏳ `CMP-81.1` Corsi obbligatori per mansione e scadenze
-- ⏳ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`)
-- ⏳ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`)
-- ⏳ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR
-- ⏳ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`)
+- ✅ `CMP-81.1` Corsi obbligatori per mansione e scadenze — mansioni, corsi per mansione, assegnazioni, corsi svolti con rinnovo e situazione della formazione
+- ✅ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`) — esito e scadenza agli amministratori, dati sanitari cifrati solo agli abilitati (scelta provvisoria in attesa di `ANA.6`)
+- ✅ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`) — presa visione `cmp.dpi` (con il documentale: verbale DPI)
+- ✅ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR — presa visione del nominato; allegati solo come riferimento
+- ✅ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`) — `cmp.formazione`, `cmp.visita`, `cmp.nomina`, `cmp.documento` a ogni salvataggio/cancellazione
 
 #### `CMP-WB` – Whistleblowing (D7: nel modulo, senza una licenza separata)
 - ⏳ `CMP-WB.1` Canale di segnalazione con anonimato e codice per seguire la segnalazione
@@ -330,10 +330,10 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CMP-WB.3` Scadenze di legge (7 giorni, 3 mesi) e registro
 
 #### `CMP-GDPR` – Registro GDPR
-- ⏳ `CMP-GDPR.1` Registro dei trattamenti
-- ⏳ `CMP-GDPR.2` Nomine e responsabili esterni
-- ⏳ `CMP-GDPR.3` Registro delle violazioni
-- ⏳ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende
+- ✅ `CMP-GDPR.1` Registro dei trattamenti — con export Excel tramite job
+- ✅ `CMP-GDPR.2` Nomine e responsabili esterni — scadenza del contratto `cmp.responsabile`
+- ✅ `CMP-GDPR.3` Registro delle violazioni — 72 ore nello scadenzario (`cmp.violazione`), notifica agli amministratori
+- ✅ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende — pagina `/cmpstudio` (registro GDPR e scadenze del modulo)
 
 #### `HR-BASE` – Avvio del modulo Risorse Umane
 - ✅ `HR-BASE.1` `HumanResourcesDbContext` registrato in `DataLayerInstaller` e migration iniziale — `HumanResourcesDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitHumanResources` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`

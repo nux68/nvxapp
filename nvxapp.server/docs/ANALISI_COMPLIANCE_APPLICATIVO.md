@@ -3,7 +3,7 @@
 Branch: **Compliance_Dev** (riceve i merge da Infrastructure, si mergia in Compliance).
 Documento generale: `ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md` (§4.2, aree `CMP-*` in §10.2), punto `ANA.7`.
 
-Stato (11/11/2026): **analisi scritta, scheletro del modulo fatto** (`CMP-BASE`, ramo di lavoro `Compliance_Dev_cmp-base`). Le aree funzionali (`CMP-81`, `CMP-WB`, `CMP-GDPR`) sono da fare. **Il whistleblowing non si rilascia senza la verifica legale (`ANA.5`) e l'analisi della sicurezza (`ANA.6`)**. Decisioni aperte in §8.
+Stato (11/11/2026): **analisi scritta, scheletro del modulo fatto** (`CMP-BASE`), **sicurezza sul lavoro e registro GDPR fatti** (`CMP-81`, `CMP-GDPR`, ramo di lavoro `Compliance_Dev_f3`, §7.1). Il whistleblowing (`CMP-WB`) è da fare. **Il whistleblowing non si rilascia senza la verifica legale (`ANA.5`) e l'analisi della sicurezza (`ANA.6`)**. Decisioni aperte in §8.
 
 ---
 
@@ -99,6 +99,22 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 - Widget e comandi vocali: nessuno per ora.
 - Prova su DB usa e getta: azienda, attivazione come SuperUser (non bloccata dalle licenze), schema `tenant_<id>_6` con `Cmp_Cfg`, Get/Put del CompanyPowerAdmin, Put rifiutata al CompanyAdmin (12 controlli, tutti ok).
 
+### 7.1 Fatto in `CMP-81` e `CMP-GDPR` (11/11/2026, ramo `Compliance_Dev_f3`)
+
+- **Dati** (migration `Cmp81Gdpr` del contesto Compliance): `Cmp_Mansione`, `Cmp_MansioneCorso`, `Cmp_DipendenteMansione`, `Cmp_Formazione`, `Cmp_Visita`, `Cmp_Dpi`, `Cmp_DpiConsegna`, `Cmp_Nomina`, `Cmp_Documento`, `Cmp_Trattamento`, `Cmp_Responsabile`, `Cmp_Violazione`; `Cmp_Cfg.UtentiDatiSanitari`. `Dip_Anagrafica` e `Az_Sedi` mappate in sola lettura (`Cmp_Dip_AnagraficaReadRepository`, `Cmp_Az_SediReadRepository`); dati del dipendente in cascata con il dipendente. Codici (tipo di corso, visita, esito, nomina, documento, base giuridica, rischio) come interi, descrizioni in `cmp.enums.*` e `ComplianceMessages`.
+- **Server**: `Cmp_SicurezzaService`/`Cmp_SicurezzaController` (CMP-81: elenco/salvataggio/cancellazione per sezione, `Cmp_Lookup`, `Cmp_FormazioneStato`, `Cmp_Mine`), `Cmp_GdprService`/`Cmp_GdprController` (CMP-GDPR, export `Cmp_GdprExport` con job ClosedXML, `Cmp_StudioAziende`, `Cmp_StudioScadenze`). `CmpUtility.ContestoAsync(idCompany)` riconosce anche lo studio: verifica azienda dello studio, Compliance abilitato e coperto da licenza per lo studio, attivo per l'azienda, poi apre i contesti sugli schemi dell'azienda (`TenantScope`). `CmpScadenze` registra/aggiorna/chiude/toglie le scadenze (`cmp.formazione`, `cmp.visita`, `cmp.nomina`, `cmp.documento`, `cmp.responsabile`, `cmp.violazione`); il corso o la visita più recente chiude le scadenze dei precedenti, cancellandolo si riapre la precedente. Prese visione: consegna DPI (`cmp.dpi`, testo del verbale nella richiesta: con il documentale diventa il verbale DPI firmato) e nomina del dipendente (`cmp.nomina`). Violazione: 72 ore dalla scoperta (preavviso 3 giorni), chiusa alla notifica al Garante, assente con rischio improbabile; notifica agli amministratori (categoria `scadenze`). `CmpDataDeleter` con conteggi e cancellazione in modalità singola; utente rimosso tolto dagli abilitati ai dati sanitari.
+- **Client**: pagina elenco unica `CmpListPageComponent` (`/cmp81`, `/cmpgdpr`, lato studio `/cmpstudio` con la scelta dell'azienda) a sezioni, + del fab per la sezione aperta, Excel (job) per il registro GDPR; pagina di modifica unica `CmpEditPageComponent` (`/cmpedit`, `/cmpstudioedit`) da `BasePageConfirmCancelComponent` con i campi descritti in `Utility/Compliance/cmp-sezioni.ts`; `CmpMinePageComponent` (`/cmpmine`) per il dipendente; impostazioni con gli abilitati ai dati sanitari. Menu: Sicurezza sul lavoro, Registro GDPR, I miei adempimenti (amministratori e dipendenti), Compliance aziende (studio). i18n it/en, manuale aggiornato.
+- **Prova** su DB usa e getta (82 controlli, tutti ok): attivazione, migration, CRUD di tutte le sezioni, rinnovi e scadenze nello scadenzario (visibili in `Deadline/DeadlineList`), dati sanitari cifrati e visibili solo agli abilitati, presa visione DPI creata e confermata dal dipendente, nomina con presa visione, violazione 72 ore e notifica, export via job, permessi (dipendente, CompanyAdmin, studio non abilitato/senza licenza/azienda estranea).
+
+**Scelte provvisorie**
+- Dati sanitari (`ANA.6`/`CMP-D3` aperte): campo note sanitarie cifrato con DataProtection (chiavi su DB, scopo `nvxapp.Compliance.DatiSanitari.v1`), visibile e scrivibile solo dagli utenti scelti nelle impostazioni (`UtentiDatiSanitari`); nessun referto caricabile; nessun registro degli accessi. Gli abilitati non amministratori raggiungono le visite da `/cmp81` (nessuna voce di menu propria).
+- Attestati, documenti di nomina, DVR e contratti: **solo riferimento** testuale (l'analisi prevede `IFileStorage`/documentale, da collegare in seguito).
+- Catalogo dei corsi proprio di Compliance (`CMP-D4` aperta): tipo di corso come codice; con HR si deciderà la condivisione.
+- Scadenza del corso non indicata: validità più breve tra i corsi richiesti dalle mansioni per quel tipo. Rinnovo per dipendente + tipo di corso.
+- Nessuna categoria di notifiche propria (il titolo andrebbe nella resx di Infrastructure): avvisi nella categoria `scadenze`.
+- Lato studio: registro GDPR completo e scadenze del modulo in sola lettura; nessun accesso alla sicurezza sul lavoro (dati dei dipendenti). Serve Compliance abilitato e coperto da licenza per lo studio.
+- Responsabili esterni non collegati ai clienti/fornitori comuni (`Az_Cliente`): collegamento facoltativo da fare.
+
 ## 8. Decisioni aperte
 
 | # | Decisione | Note |
@@ -121,11 +137,11 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `CMP-BASE.3` Menu, rotta, manuale e i18n; widget e comandi vocali: nessuno per ora
 
 #### `CMP-81` – Sicurezza sul lavoro (D.Lgs 81/08)
-- ⏳ `CMP-81.1` Corsi obbligatori per mansione e scadenze (`Cmp_Mansione`, `Cmp_MansioneCorso`, `Cmp_Formazione`)
-- ⏳ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`)
-- ⏳ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`)
-- ⏳ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR
-- ⏳ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`)
+- ✅ `CMP-81.1` Corsi obbligatori per mansione e scadenze (`Cmp_Mansione`, `Cmp_MansioneCorso`, `Cmp_Formazione`) — più assegnazioni e situazione della formazione
+- ✅ `CMP-81.2` Visite mediche e idoneità (dati sanitari protetti, `ANA.6`) — scelta provvisoria in §7.1
+- ✅ `CMP-81.3` Consegna dei DPI con verbale (`INF-SVC.6`) — presa visione `cmp.dpi`
+- ✅ `CMP-81.4` Nomine (RSPP, RLS, preposti, addetti alle emergenze) e documenti DVR — allegati solo come riferimento
+- ✅ `CMP-81.5` Scadenze registrate nello scadenzario (`INF-SVC.2`)
 
 #### `CMP-WB` – Whistleblowing (richiede `ANA.5` e `ANA.6`)
 - ⏳ `CMP-WB.1` Canale di segnalazione con anonimato e codice per seguire la segnalazione
@@ -133,10 +149,16 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ⏳ `CMP-WB.3` Scadenze di legge (7 giorni, 3 mesi) e registro
 
 #### `CMP-GDPR` – Registro GDPR
-- ⏳ `CMP-GDPR.1` Registro dei trattamenti
-- ⏳ `CMP-GDPR.2` Nomine e responsabili esterni
-- ⏳ `CMP-GDPR.3` Registro delle violazioni
-- ⏳ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende
+- ✅ `CMP-GDPR.1` Registro dei trattamenti — export Excel con un job
+- ✅ `CMP-GDPR.2` Nomine e responsabili esterni
+- ✅ `CMP-GDPR.3` Registro delle violazioni — 72 ore nello scadenzario
+- ✅ `CMP-GDPR.4` Gestione da parte dello studio per conto delle aziende — `/cmpstudio`
 
 #### Decisioni
 - 🔍 `CMP-D1`…`CMP-D7` (§8)
+
+#### Punti aperti emersi da `CMP-81`/`CMP-GDPR`
+- ⏳ `CMP-81.6` File di attestati, nomine, DVR e contratti nello storage/documentale (oggi solo riferimento); referto cifrato del medico
+- ⏳ `CMP-81.7` Registro degli accessi ai dati sanitari e decisione finale sulla cifratura (con `ANA.6`)
+- ⏳ `CMP-81.8` Presa visione del DVR e delle procedure da parte dei dipendenti (`cmp.documento`)
+- ⏳ `CMP-GDPR.5` Collegamento dei responsabili esterni ai fornitori comuni (`Az_Cliente`)
