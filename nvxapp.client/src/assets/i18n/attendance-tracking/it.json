@@ -1264,7 +1264,7 @@
       },
       "rimborsoKmDialog": {
         "title": "Rimborso chilometrico",
-        "nessunaAutovettura": "Nel tuo rapporto di lavoro non ci sono autovetture: chiedi all'amministratore di inserirle.",
+        "nessunaAutovettura": "Non hai autovetture registrate: chiedi all'amministratore di inserirle.",
         "autovettura": "Autovettura",
         "scegli": "Scegli",
         "erroreAutovettura": "Scegli l'autovettura.",

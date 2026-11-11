@@ -153,6 +153,69 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany()
                       .HasForeignKey(t => t.IdAspNetUsers);
             });
+
+            /*
+             Sedi, reparti, competenze e autovetture (AT-COM.1): tabelle comuni create da CommonDbContext (INF-COM),
+             qui con la stessa configurazione e in sola lettura (scritture con i repository *CommonRepository).
+             Le relazioni dalle tabelle delle presenze (Az_SediAttivita, Az_SediRepartoAttivita, Az_SediRepartoUser,
+             Az_SubCommessaSediReparto, Par_AttivitaCompetenza, Dip_GG_NotaSpesa) restano configurate sotto: le loro
+             chiavi esterne puntano alle tabelle comuni (migration AttendanceTracking_CommonTables).
+            */
+            modelBuilder.Entity<Az_Sedi>(entity =>
+            {
+                entity.ToTable("Az_Sedi", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Az_SediReparto>(entity =>
+            {
+                entity.ToTable("Az_SediReparto", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_SediNavigation)
+                      .WithMany(t => t.Az_Reparto)
+                      .HasForeignKey(t => t.IdAz_Sedi)
+                      .OnDelete(DeleteBehavior.Cascade);
+                // Relazione ricorsiva: un reparto può avere altri reparti come figli
+                entity.HasOne(t => t.Az_SediRepartoNavigation)
+                      .WithMany(t => t.Az_SediReparto_Sub)
+                      .HasForeignKey(t => t.IdAz_SediReparto)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<Par_Competenza>(entity =>
+            {
+                entity.ToTable("Par_Competenza", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Dip_Competenza>(entity =>
+            {
+                entity.ToTable("Dip_Competenza", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany(t => t.Dip_Competenza)
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Par_CompetenzaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdPar_Competenza)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => new { t.IdDip_Anagrafica, t.IdPar_Competenza }).IsUnique();
+            });
+
+            // autovettura del dipendente (prima era legata al rapporto di lavoro)
+            modelBuilder.Entity<Dip_RapportoAutovetture>(entity =>
+            {
+                entity.ToTable("Dip_RapportoAutovetture", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         private void Gen_Init_GestionePresenze(ModelBuilder modelBuilder)
@@ -264,13 +327,6 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoAutovetture)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            /* Dip_RapportoAutovetture */
-            modelBuilder.Entity<Dip_RapportoAutovetture>()
-                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
-                .WithMany(t_figlio => t_figlio.Dip_RapportoAutovetture)
-                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
-                .OnDelete(DeleteBehavior.Cascade);
-
             /* Dip_GG_NotaSpesa_Allegato */
             modelBuilder.Entity<Dip_GG_NotaSpesa_Allegato>()
                 .HasOne(t_padre => t_padre.Dip_GG_NotaSpesaNavigation)
@@ -368,29 +424,7 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.SetNull);
 
 
-            /* Az_Sedi */
-            modelBuilder.Entity<Az_Sedi>()
-                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany()
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
-                .OnDelete(DeleteBehavior.Cascade);
-
-
-
-            /* Az_Reparto */
-            modelBuilder.Entity<Az_SediReparto>()
-                .HasOne(t_padre => t_padre.Az_SediNavigation)
-                .WithMany(t_figlio => t_figlio.Az_Reparto)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Sedi)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Relazione ricorsiva: un reparto può avere altri reparti come figli
-            modelBuilder.Entity<Az_SediReparto>()
-                .HasOne(t => t.Az_SediRepartoNavigation)
-                .WithMany(t => t.Az_SediReparto_Sub)
-                .HasForeignKey(t => t.IdAz_SediReparto)
-                .OnDelete(DeleteBehavior.Restrict); // Evita eliminazioni a cascata
-
+            /* Az_Sedi, Az_SediReparto: tabelle comuni (AT-COM.1), mappate in Gen_PublicReferences_GestionePresenze */
 
             /* Az_RepartoAttivita */
             modelBuilder.Entity<Az_SediRepartoAttivita>()
@@ -670,18 +704,6 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrario)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-            /* Dip_Competenza */
-            modelBuilder.Entity<Dip_Competenza>()
-                .HasOne(t_padre => t_padre.Dip_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Dip_Competenza)
-                .HasForeignKey(key_esterna => key_esterna.IdDip_Anagrafica)
-                .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Dip_Competenza>()
-                .HasOne(t_padre => t_padre.Par_CompetenzaNavigation)
-                .WithMany()
-                .HasForeignKey(key_esterna => key_esterna.IdPar_Competenza)
-                .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_SubCommessaSediReparto */
             modelBuilder.Entity<Az_SubCommessaSediReparto>()

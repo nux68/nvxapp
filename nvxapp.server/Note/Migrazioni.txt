@@ -99,7 +99,11 @@ storico migrazioni create
           Dip_RapportoAutovetture (legata a Dip_Anagrafica) e Dip_Anagrafica.DataAssunzione; i dati delle presenze li sposta AT-COM
   Moke:   InitMoke
   AttendanceTracking: AttendanceTracking_Init (Az_Anagrafica, Az_Cliente e Dip_Anagrafica in Common, mappate escluse;
-                      cliente predefinito in Az_Cfg.IdAz_ClienteDefault)
+                      cliente predefinito in Az_Cfg.IdAz_ClienteDefault; dall'11/11/2026, AT-COM, senza Az_Sedi, Az_SediReparto,
+                      Par_Competenza, Dip_Competenza, Dip_RapportoAutovetture: ora in Common)
+                      AttendanceTracking_CommonTables (11/11/2026, AT-COM): sui DB multi-tenant esistenti copia sedi, reparti,
+                      competenze e autovetture da tenant_<id>_2 a tenant_<id>_0 (stessi Id), ripunta le FK e toglie le vecchie
+                      tabelle; allinea Dip_Anagrafica.DataAssunzione/DataCessazione ai rapporti di lavoro
 
 
 aggiorna db

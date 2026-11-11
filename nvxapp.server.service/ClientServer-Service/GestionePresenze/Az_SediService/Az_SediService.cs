@@ -9,6 +9,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
@@ -23,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 
     public class Az_SediService : ServiceBase, IAz_SediService
     {
-        private readonly IAz_SediRepository _az_SediRepository;
+        private readonly IAz_SediCommonRepository _az_SediRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
         private readonly IAz_SediAttivitaService _az_SediAttivitaService;
@@ -40,7 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                                   IAz_SediAttivitaRepository az_SediAttivitaRepository,
                                   IAz_SediAttivitaService az_SediAttivitaService,
 
-                                  IAz_SediRepository az_SediRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SediCommonRepository az_SediRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SediRepository = az_SediRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;

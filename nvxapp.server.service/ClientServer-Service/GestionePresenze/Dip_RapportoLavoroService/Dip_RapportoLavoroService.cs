@@ -120,6 +120,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                             par_ProfiloOrarioGG = await _dip_RapportoLavoroRepository.UpsertAsync(par_ProfiloOrarioGG);
                         }
 
+                        // date di assunzione e cessazione del dipendente comune (AT-COM.3)
+                        await _gestionePresenzeUserUtility.AllineaDateDipendente(model.Data.Id);
+
 
                         //rileggo i dati dopo le varizioni per ritornare il valore corrente
                         Orig_Data = await Dip_RapportoLavoroGet(reqOrig_Data, true);    

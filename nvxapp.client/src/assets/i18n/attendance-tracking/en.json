@@ -1264,7 +1264,7 @@
       },
       "rimborsoKmDialog": {
         "title": "Mileage allowance",
-        "nessunaAutovettura": "There are no cars in your employment: ask your administrator to add them.",
+        "nessunaAutovettura": "You have no registered cars: ask your administrator to add them.",
         "autovettura": "Car",
         "scegli": "Choose",
         "erroreAutovettura": "Choose the car.",
