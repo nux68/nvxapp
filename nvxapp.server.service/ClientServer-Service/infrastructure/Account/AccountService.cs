@@ -18,6 +18,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplicati
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Payments;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
@@ -56,6 +57,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IFinancialAdvisorApplicationRepository _financialAdvisorApplicationRepository;
         private readonly IEnumerable<IUserCompanyListExtension> _userCompanyListExtensions;
         private readonly ILicenseGuard _licenseGuard;
+        private readonly IPaymentSettlementManager _paymentSettlementManager;
+        private readonly IApplicationActivationAuthorizer _authorizer;
 
 
         public AccountService(IMapper mapper,
@@ -86,6 +89,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IFinancialAdvisorApplicationService financialAdvisorApplicationService,
                               IFinancialAdvisorApplicationRepository financialAdvisorApplicationRepository,
                               ILicenseGuard licenseGuard,
+                              IPaymentSettlementManager paymentSettlementManager,
+                              IApplicationActivationAuthorizer authorizer,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -110,6 +115,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _financialAdvisorApplicationService = financialAdvisorApplicationService;
             _financialAdvisorApplicationRepository = financialAdvisorApplicationRepository;
             _licenseGuard = licenseGuard;
+            _paymentSettlementManager = paymentSettlementManager;
+            _authorizer = authorizer;
             _hubContext = hubContext;
         }
 
@@ -408,11 +415,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     }
 
 
+                    var (propria, generale) = await _paymentSettlementManager.PercentualiAsync(dealer.Id);
                     retVal.DealerEdit = new DealerEditModel()
                     {
                         Descrizione = dealer.Descrizione,
                         IdDealer = dealer.Id,
-                        Disabled = _userDealerRepository.FindAll(x => x.IdDealer == dealer.Id && x.MainUser).Any(x => x.Disabled)
+                        Disabled = _userDealerRepository.FindAll(x => x.IdDealer == dealer.Id && x.MainUser).Any(x => x.Disabled),
+                        PercentualePiattaforma = propria,
+                        PercentualeGenerale = generale,
+                        CanEditPercentuale = await _authorizer.IsSuperUserAsync()
                     };
                 }
                 else
@@ -420,7 +431,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.DealerEdit = new DealerEditModel()
                     {
                         Descrizione = "",
-                        IdDealer = 0
+                        IdDealer = 0,
+                        PercentualeGenerale = (await _paymentSettlementManager.PercentualiAsync(0)).Generale,
+                        CanEditPercentuale = await _authorizer.IsSuperUserAsync()
                     };
                 }
 
@@ -515,6 +528,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
 
                 }
+
+                // trattenuta della piattaforma del centro (ANALISI_PAGAMENTI_CENTRI.md): solo il SuperUser; vuota = quella generale
+                if (await _authorizer.IsSuperUserAsync())
+                    await _paymentSettlementManager.SalvaPercentualeAsync(dealer.Id, model.Data.DealerEdit.PercentualePiattaforma);
 
 
 
