@@ -38,7 +38,8 @@
       "confirmRead": "I confirm I have read it",
       "copy": "Copy",
       "regenerate": "New address",
-      "calendar": "Calendar"
+      "calendar": "Calendar",
+      "generateNow": "Generate now"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",
@@ -119,7 +120,8 @@
     "notifications": "Notifications",
     "deadlines": "Deadlines",
     "calendarFeed": "Calendar",
-    "acknowledgements": "Acknowledgements"
+    "acknowledgements": "Acknowledgements",
+    "digests": "Summaries"
   },
   "showcase": {
     "menu": {
@@ -1173,6 +1175,32 @@
       "pendingOther": "To confirm by opening the item",
       "confirmedOn": "Confirmed on {{date}}",
       "empty": "No acknowledgements."
+    },
+    "digestList": {
+      "title": "Summaries",
+      "note": "Every week you receive a summary of deadlines, acknowledgements and notifications, written by the AI from the application's data only. The firm receives the list of companies with critical issues.",
+      "columnPeriod": "Period",
+      "columnSubject": "Company / firm",
+      "columnText": "Summary",
+      "columnSource": "Text",
+      "type": {
+        "0": "company",
+        "1": "firm"
+      },
+      "sourceAi": "Written by AI",
+      "sourcePlain": "Without AI",
+      "generating": "Generating, it may take a few seconds...",
+      "empty": "No summaries."
+    },
+    "digestDetail": {
+      "title": "Summary",
+      "generatedAi": "Written by the AI on {{date}} from the facts below.",
+      "generatedPlain": "Generated without AI on {{date}}.",
+      "manual": "(generated with \"Generate now\")",
+      "facts": "Facts of the period",
+      "factsNote": "The data provided by the modules the summary was written from.",
+      "critical": "Needs attention",
+      "noFacts": "No facts available."
     }
   },
   "components": {
