@@ -132,7 +132,7 @@ La documentazione che l'assistente AI usa per rispondere ai ticket: documenti ca
 Per ogni tipo di richiesta scegli se e come l'assistente AI propone una risposta ai ticket.
 
 @@ /paymentreport
-I pagamenti delle licenze incassati dalla piattaforma, suddivisi per centro, per anno o per mese: incassato, trattenuta della piattaforma, quota dei centri, liquidato e da liquidare. Con **Dettaglio** apri i rendiconti e i pagamenti di un centro; dal pulsante rotondo generi le bozze dei rendiconti del mese, scarichi l'Excel e apri le impostazioni.
+I pagamenti delle licenze incassati dalla piattaforma, suddivisi per centro, per anno o per mese: incassato, trattenuta della piattaforma, quota dei centri, liquidato e da liquidare. Con **Dettaglio** apri i rendiconti e i pagamenti di un centro; dal pulsante rotondo generi le bozze dei rendiconti del mese, prepari l'Excel (si scarica dalla barra dei lavori) e apri le impostazioni. La trattenuta di un singolo centro si imposta dalla sua scheda (Centri).
 
 @@ /paymentdealer
 I pagamenti delle licenze dei clienti del centro e i rendiconti con cui la piattaforma gira al centro la sua quota: per ogni mese incassato, trattenuta, quota del centro e, quando bonificata, data e riferimento del bonifico. Dal pulsante rotondo invii il riepilogo via email, scarichi PDF ed Excel e apri i dati di liquidazione.

@@ -41,6 +41,8 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
 
       descrizione: [null, [Validators.required, Validators.maxLength(20)]],
       disabled: [false],
+      // vuota = trattenuta generale (ANALISI_PAGAMENTI_CENTRI.md)
+      percentualePiattaforma: [null, [Validators.min(0), Validators.max(100)]],
 
     });
   }
@@ -79,7 +81,11 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
   SaveData = (editModel: DealerEditModel): Observable<boolean> => {
     let request: GenericRequest<DealerPutInModel> =
       new GenericRequest<DealerPutInModel>(DealerPutInModel);
-    request.data.dealerEdit = editModel;
+    const perc = editModel.percentualePiattaforma as any;
+    request.data.dealerEdit = {
+      ...editModel,
+      percentualePiattaforma: perc === null || perc === undefined || perc === '' ? null : Number(perc)
+    };
     
     return this.accountService.DealerPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo

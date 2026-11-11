@@ -237,6 +237,7 @@ Il SuperUser gestisce l'installazione:
 | Password | Solo alla creazione, obbligatoria: password iniziale dei due amministratori principali. |
 | Conferma Password | Deve coincidere con la password. |
 | Disabilitato | Toglie il centro dagli elenchi (vale per i suoi amministratori principali). |
+| Trattenuta del centro in % | Solo SuperUser, da 0 a 100: la trattenuta della piattaforma sugli incassi dei clienti del centro. Vuota vale quella generale delle impostazioni dei pagamenti; se indicata comanda questa. |
 Mentre scrivi il nome, un avviso mostra i nomi utente che verranno creati, per esempio Nord_Admin e Nord_PowerAdmin.
 
 ### Come fare
@@ -606,9 +607,9 @@ I pagamenti delle licenze dei clienti del centro e i rendiconti mensili con cui 
 | Annullato | Il rendiconto non vale più e i suoi pagamenti tornano da liquidare. |
 
 ### Come fare
-- **Inviare un riepilogo**: scegli il mese o **Tutto l'anno** e, dal pulsante rotondo, **Invia il riepilogo via email**; arriva all'email dell'amministrazione del centro con il PDF.
+- **Inviare un riepilogo**: scegli il mese o **Tutto l'anno** e, dal pulsante rotondo, **Invia il riepilogo via email**; arriva all'email dell'amministrazione del centro con il PDF. L'invio avviene in background: l'esito compare nella barra dei lavori.
 - **Registrare la fattura del centro** (DealerPowerAdmin o SuperUser): sul rendiconto confermato o liquidato scegli **Fattura** e indica numero e data.
-- **Scaricare i dati**: dal pulsante rotondo **PDF** (riepilogo del periodo) o **Excel** (riepilogo e dettaglio dei pagamenti).
+- **Scaricare i dati**: dal pulsante rotondo **PDF** (riepilogo del periodo) o **Excel** (riepilogo e dettaglio dei pagamenti); il file si prepara in background e, quando è pronto, si scarica dalla barra dei lavori in alto.
 
 ### Esempio
 Un'azienda del centro paga 100 euro il 10 settembre, la trattenuta è il 20%. Il 5 ottobre il SuperUser genera e conferma il rendiconto di settembre: quota del centro 80 euro. Il centro riceve l'email; quando arriva il bonifico il rendiconto risulta **Liquidato**.
