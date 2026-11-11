@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
@@ -45,6 +45,7 @@ export class PaymentReportPageComponent {
               public monthNavigator: MonthNavigatorService,
               private paymentService: PaymentService,
               private collectionDialogService: CollectionDialogService,
+              private toastController: ToastController,
               private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('pages.paymentReport.title');
@@ -125,9 +126,12 @@ export class PaymentReportPageComponent {
     request.data.anno = this.anno;
     request.data.mese = this.mese > 0 ? this.mese : null;
     request.data.formato = 'xlsx';
-    this.paymentService.PaymentExport(request).subscribe(res => {
-      if (res.success && res.data?.file)
-        PaymentService.Download(res.data.fileName, res.data.contentType, res.data.file);
+    // il file si prepara con un job: lo si scarica dalla barra dei job quando e' pronto
+    this.paymentService.PaymentExport(request).subscribe(async res => {
+      if (!res.success)
+        return;
+      const toast = await this.toastController.create({ message: this.transloco.translate('pages.payment.exportStarted'), duration: 3000, position: 'bottom' });
+      await toast.present();
     });
   }
 

@@ -237,6 +237,7 @@ The SuperUser manages the installation:
 | Password | Only on creation, required: initial password of the two main administrators. |
 | Confirm Password | Must match the password. |
 | Disabled | Removes the dealer from the lists (applies to its main administrators). |
+| Centre fee in % | SuperUser only, from 0 to 100: the platform fee on the payments of the centre's customers. Empty uses the general fee of the payment settings; if set, it prevails. |
 While you type the name, a warning shows the user names that will be created, for example Nord_Admin and Nord_PowerAdmin.
 
 ### How to
@@ -606,9 +607,9 @@ The licence payments of the centre's customers and the monthly statements with w
 | Cancelled | The statement is no longer valid and its payments go back to be settled. |
 
 ### How to
-- **Send a summary**: choose the month or **Whole year** and, from the round button, **Send the summary by email**; it goes to the centre's administration email with the PDF.
+- **Send a summary**: choose the month or **Whole year** and, from the round button, **Send the summary by email**; it goes to the centre's administration email with the PDF. Sending runs in the background: the outcome appears in the jobs bar.
 - **Record the centre's invoice** (DealerPowerAdmin or SuperUser): on a confirmed or paid statement choose **Invoice** and enter number and date.
-- **Download the data**: from the round button **PDF** (summary of the period) or **Excel** (summary and payment details).
+- **Download the data**: from the round button **PDF** (summary of the period) or **Excel** (summary and payment details); the file is prepared in the background and, when ready, is downloaded from the jobs bar at the top.
 
 ### Example
 A company of the centre pays 100 euros on 10 September, the fee is 20%. On 5 October the SuperUser generates and confirms the September statement: centre share 80 euros. The centre receives the email; when the transfer is made the statement shows **Paid**.
