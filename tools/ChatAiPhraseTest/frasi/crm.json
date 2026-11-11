@@ -1,0 +1,26 @@
+// Frasi di prova dei comandi del CRM (formato: vedi README.md; analisi: ANALISI_VOCALI_CRM.md)
+[
+  { "frase": "cosa ho in agenda oggi?", "intent": "CrmAgenda", "ruolo": "User" },
+  { "frase": "che appuntamenti ho domani?", "intent": "CrmAgenda", "slots": { "from": "=domani" } },
+  { "frase": "attività della prossima settimana", "intent": "CrmAgenda", "pagina": "/crmactivitylist" },
+  { "frase": "opportunità in chiusura questo mese", "intent": "CrmOpportunities" },
+  { "frase": "che trattative ho aperte con Rossi?", "intent": "CrmOpportunities", "slots": { "customerName": "Rossi" } },
+  { "frase": "com'è la pipeline?", "intent": "CrmPipeline" },
+  { "frase": "how is the pipeline?", "intent": "CrmPipeline" },
+  { "frase": "dimmi del cliente Bianchi srl", "intent": "CrmCustomerInfo", "slots": { "customerName": "Bianchi srl" } },
+  { "frase": "che telefono ha Verdi?", "intent": "CrmCustomerInfo", "slots": { "customerName": "Verdi" }, "ruolo": "User" },
+  { "frase": "fissa una chiamata con Rossi domani alle 10", "intent": "CrmNewActivity",
+    "slots": { "customerName": "Rossi", "date": "=domani", "time": "10:00" } },
+  { "frase": "appuntamento con Bianchi srl lunedì alle 15 per la demo", "intent": "CrmNewActivity",
+    "slots": { "customerName": "Bianchi srl", "time": "15:00" } },
+  { "messaggi": ["fissa una chiamata", "con Verdi venerdì alle 9"], "intent": "CrmNewActivity",
+    "slots": { "customerName": "Verdi", "date": "=venerdì", "time": "09:00" } },
+  { "frase": "segna come fatta la chiamata con Rossi, esito: richiamare a gennaio", "intent": "CrmCompleteActivity",
+    "slots": { "customerName": "Rossi" } },
+  { "frase": "aggiungi una nota al cliente Rossi: vuole il listino nuovo", "intent": "CrmAddNote",
+    "slots": { "customerName": "Rossi" } },
+  { "frase": "apri la scheda cliente Rossi", "intent": "OpenEntity" },
+  { "frase": "apri l'offerta 12/2026", "intent": "OpenEntity", "slots": { "entity": "offerta" } },
+  { "frase": "portami alla pipeline", "intent": "Navigate", "slots": { "page": "pipeline" } },
+  { "frase": "take me to the crm agenda", "intent": "Navigate" }
+]
