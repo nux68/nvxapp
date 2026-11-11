@@ -18,4 +18,211 @@
   <data name="DeletionCountCfg" xml:space="preserve">
     <value>Human Resources configuration</value>
   </data>
+  <data name="AccountAlreadyPresent" xml:space="preserve">
+    <value>The employee already has an account.</value>
+  </data>
+  <data name="AccountDataRequired" xml:space="preserve">
+    <value>User name and password are required.</value>
+  </data>
+  <data name="AccountNotCreated" xml:space="preserve">
+    <value>Account not created: check user name, email and password.</value>
+  </data>
+  <data name="AccountNotPresent" xml:space="preserve">
+    <value>The employee has no company account.</value>
+  </data>
+  <data name="AccountSelf" xml:space="preserve">
+    <value>You cannot disable your own account.</value>
+  </data>
+  <data name="AccountUserNameUsed" xml:space="preserve">
+    <value>The user name is already in use.</value>
+  </data>
+  <data name="AcknowledgementNoAccount" xml:space="preserve">
+    <value>The employee has no account: the acknowledgement cannot be requested.</value>
+  </data>
+  <data name="ChecklistCancelled" xml:space="preserve">
+    <value>The checklist is cancelled.</value>
+  </data>
+  <data name="ChecklistDeadline" xml:space="preserve">
+    <value>{0} - {1}</value>
+  </data>
+  <data name="ChecklistItemNotFound" xml:space="preserve">
+    <value>Checklist item not found.</value>
+  </data>
+  <data name="ChecklistNoEndDate" xml:space="preserve">
+    <value>The employee has no end date.</value>
+  </data>
+  <data name="ChecklistNoHireDate" xml:space="preserve">
+    <value>The employee has no hire date.</value>
+  </data>
+  <data name="ChecklistNotFound" xml:space="preserve">
+    <value>Checklist not found.</value>
+  </data>
+  <data name="CourseDeadline" xml:space="preserve">
+    <value>Course {0} - {1}</value>
+  </data>
+  <data name="CourseInUse" xml:space="preserve">
+    <value>The course has editions or is in a training plan: it cannot be deleted (it can be disabled).</value>
+  </data>
+  <data name="CourseNotFound" xml:space="preserve">
+    <value>Course not found.</value>
+  </data>
+  <data name="CourseTitleRequired" xml:space="preserve">
+    <value>The course title is required.</value>
+  </data>
+  <data name="DeletionCountChecklists" xml:space="preserve">
+    <value>Human Resources checklists</value>
+  </data>
+  <data name="DeletionCountCourses" xml:space="preserve">
+    <value>Human Resources courses</value>
+  </data>
+  <data name="DeletionCountDocuments" xml:space="preserve">
+    <value>Employee payslips and CU</value>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Document not found.</value>
+  </data>
+  <data name="EditionDatesInvalid" xml:space="preserve">
+    <value>The end date is before the start date.</value>
+  </data>
+  <data name="EditionNotFound" xml:space="preserve">
+    <value>Edition not found.</value>
+  </data>
+  <data name="EmployeeDatesInvalid" xml:space="preserve">
+    <value>The end date is before the hire date.</value>
+  </data>
+  <data name="EmployeeNotFound" xml:space="preserve">
+    <value>Employee not found.</value>
+  </data>
+  <data name="EmployeeNumberDuplicated" xml:space="preserve">
+    <value>Employee number already used by another employee.</value>
+  </data>
+  <data name="EmployeeSurnameRequired" xml:space="preserve">
+    <value>The surname is required.</value>
+  </data>
+  <data name="EmployeeTaxCodeDuplicated" xml:space="preserve">
+    <value>Tax code already used by another employee.</value>
+  </data>
+  <data name="EmployeeTaxCodeInvalid" xml:space="preserve">
+    <value>Invalid tax code.</value>
+  </data>
+  <data name="FileEmpty" xml:space="preserve">
+    <value>The file is empty.</value>
+  </data>
+  <data name="FileTooLarge" xml:space="preserve">
+    <value>The file exceeds {0} MB.</value>
+  </data>
+  <data name="JobPublishDone" xml:space="preserve">
+    <value>Publication completed.</value>
+  </data>
+  <data name="JobPublishFailed" xml:space="preserve">
+    <value>Publication failed.</value>
+  </data>
+  <data name="JobPublishStarted" xml:space="preserve">
+    <value>Publishing the documents...</value>
+  </data>
+  <data name="JobSplitDone" xml:space="preserve">
+    <value>PDF split completed.</value>
+  </data>
+  <data name="JobSplitFailed" xml:space="preserve">
+    <value>PDF split failed.</value>
+  </data>
+  <data name="JobSplitStarted" xml:space="preserve">
+    <value>Splitting the PDF by employee...</value>
+  </data>
+  <data name="Month13" xml:space="preserve">
+    <value>13th month</value>
+  </data>
+  <data name="ParticipantDuplicated" xml:space="preserve">
+    <value>An employee is enrolled more than once in the edition.</value>
+  </data>
+  <data name="ParticipantNotFound" xml:space="preserve">
+    <value>Participant not found.</value>
+  </data>
+  <data name="PayslipMonthInvalid" xml:space="preserve">
+    <value>Invalid payslip month.</value>
+  </data>
+  <data name="PayslipNoPages" xml:space="preserve">
+    <value>The PDF has no pages.</value>
+  </data>
+  <data name="PayslipNotPublishable" xml:space="preserve">
+    <value>The upload cannot be published in its current state.</value>
+  </data>
+  <data name="PayslipNotReadable" xml:space="preserve">
+    <value>The PDF could not be read.</value>
+  </data>
+  <data name="PayslipNotReady" xml:space="preserve">
+    <value>The upload is still being processed or has failed.</value>
+  </data>
+  <data name="PayslipNotificationText" xml:space="preserve">
+    <value>{0} is available in your area: open it and confirm you have read it.</value>
+  </data>
+  <data name="PayslipNotificationTitle" xml:space="preserve">
+    <value>New document: {0}</value>
+  </data>
+  <data name="PayslipPdfRequired" xml:space="preserve">
+    <value>A PDF file is required.</value>
+  </data>
+  <data name="PayslipTypeInvalid" xml:space="preserve">
+    <value>Invalid document type.</value>
+  </data>
+  <data name="PayslipUploadNotDeletable" xml:space="preserve">
+    <value>The upload is published or being processed: it cannot be deleted.</value>
+  </data>
+  <data name="PayslipUploadNotFound" xml:space="preserve">
+    <value>Upload not found.</value>
+  </data>
+  <data name="PayslipYearInvalid" xml:space="preserve">
+    <value>Invalid year.</value>
+  </data>
+  <data name="PlanDescriptionRequired" xml:space="preserve">
+    <value>The plan description is required.</value>
+  </data>
+  <data name="PlanNotFound" xml:space="preserve">
+    <value>Training plan not found.</value>
+  </data>
+  <data name="ScrapAlreadyAssigned" xml:space="preserve">
+    <value>The page is already assigned.</value>
+  </data>
+  <data name="ScrapNotFound" xml:space="preserve">
+    <value>Page to check not found.</value>
+  </data>
+  <data name="ScrapReasonMany" xml:space="preserve">
+    <value>Several employees on the same page</value>
+  </data>
+  <data name="ScrapReasonNoCode" xml:space="preserve">
+    <value>No tax code or employee number recognised</value>
+  </data>
+  <data name="ScrapReasonNoText" xml:space="preserve">
+    <value>Page without text (scan)</value>
+  </data>
+  <data name="SiteNotFound" xml:space="preserve">
+    <value>Site not found.</value>
+  </data>
+  <data name="SkillNotFound" xml:space="preserve">
+    <value>Skill not found.</value>
+  </data>
+  <data name="StudioCompanyNotFound" xml:space="preserve">
+    <value>Company not found among the firm's companies with Human Resources active.</value>
+  </data>
+  <data name="StudioNotEnabled" xml:space="preserve">
+    <value>Human Resources is not enabled for the firm.</value>
+  </data>
+  <data name="TemplateDescriptionRequired" xml:space="preserve">
+    <value>The template description is required.</value>
+  </data>
+  <data name="TemplateItemRequired" xml:space="preserve">
+    <value>Each item needs a description.</value>
+  </data>
+  <data name="TemplateNotFound" xml:space="preserve">
+    <value>Checklist template not found.</value>
+  </data>
+  <data name="TemplateTypeInvalid" xml:space="preserve">
+    <value>Invalid checklist type.</value>
+  </data>
+  <data name="TitleCu" xml:space="preserve">
+    <value>CU {0}</value>
+  </data>
+  <data name="TitlePayslip" xml:space="preserve">
+    <value>Payslip {0} {1}</value>
+  </data>
 </root>

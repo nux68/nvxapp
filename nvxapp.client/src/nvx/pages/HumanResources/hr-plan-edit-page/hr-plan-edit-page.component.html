@@ -1,0 +1,44 @@
+<app-page-toolbar [title]="Title" [showFilter]="ShowFilter" [showBreadcrumbs]="true"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <form [formGroup]="_editForm">
+        <ion-item><ion-input type="number" formControlName="anno" [label]="'hr.fields.anno' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-input formControlName="descrizione" maxlength="200" [label]="'hr.fields.descrizione' | transloco" labelPlacement="floating"></ion-input></ion-item>
+        <ion-item><ion-textarea formControlName="note" rows="2" maxlength="2000" [autoGrow]="true" [label]="'hr.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header><ion-card-title>{{ 'hr.pages.planEdit.rows' | transloco }} ({{ righe.length }})</ion-card-title></ion-card-header>
+    <ion-card-content>
+      @if (!righeValide) { <ion-note color="danger">{{ 'hr.pages.planEdit.courseRequired' | transloco }}</ion-note> }
+      <ion-list>
+        @for (r of righe; track $index) {
+          <ion-item>
+            <ion-grid class="ion-no-padding">
+              <ion-row class="ion-align-items-center">
+                <ion-col size="12" size-md="3"><ion-label><h3>{{ r.dipendente }}</h3>
+                  @if (r.svolto) { <p><ion-badge color="success">{{ 'hr.pages.planEdit.done' | transloco }} {{ data(r.dataSvolto) }}</ion-badge></p> }</ion-label></ion-col>
+                <ion-col size="12" size-md="4">
+                  <ion-select [(ngModel)]="r.idHr_Corso" [label]="'hr.fields.corso' | transloco" labelPlacement="floating" interface="popover">
+                    @for (c of corsi; track c.id) { <ion-select-option [value]="c.id">{{ c.titolo }}</ion-select-option> }
+                  </ion-select>
+                </ion-col>
+                <ion-col size="10" size-md="4"><ion-input type="date" [(ngModel)]="r.entroIl" [label]="'hr.fields.entroIl' | transloco" labelPlacement="floating"></ion-input></ion-col>
+                <ion-col size="2" size-md="1" class="ion-text-end">
+                  <ion-button fill="clear" size="small" color="danger" (click)="togli(r)"><ion-icon slot="icon-only" name="trash-outline"></ion-icon></ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-item>
+        } @empty {
+          <ion-item lines="none"><ion-label color="medium">{{ 'hr.pages.planEdit.noRows' | transloco }}</ion-label></ion-item>
+        }
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
