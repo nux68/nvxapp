@@ -4,7 +4,7 @@ import { MainMenuDocumentManagementService } from './main-menu-document-manageme
 import { MainMenuCrmService } from './main-menu-crm.service';
 import { MainMenuInfrastructureService } from './main-menu-infrastructure.service';
 import { AuthService } from './auth.service';
-import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { ApplicationType, LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { DIALOG_REDEFINITION } from './dialog-redefinition';
 
 @Injectable({
@@ -365,6 +365,7 @@ export class MainMenuItem {
   badge?: () => number; // numero mostrato accanto alla voce (es. un signal degli applicativi), 0 = nessuno
   application?: ApplicationType; // applicativo della voce (lo imposta MainMenuService); assente = Infrastructure
   anyApplication?: ApplicationType[]; // voce di Infrastructure visibile solo se l'azienda ha almeno uno di questi applicativi
+  minLicense?: LivelloLicenza; // livello di licenza minimo dell'applicativo della voce: sotto quel livello la voce resta nel menu ma disattivata
 
   constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;

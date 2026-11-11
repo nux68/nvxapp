@@ -22,7 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
      Ripartizione degli incassi delle licenze ai centri (ANALISI_PAGAMENTI_CENTRI.md §2, §3, §5).
      Non dipende dall'utente corrente: chi puo' fare cosa lo controlla PaymentReportService; lo usa anche la manutenzione.
         - criterio di cassa: conta Lic_Pagamento.DataPagamento
-        - da liquidare: Completato, non debug, con centro, senza rendiconto, incassato entro la fine del mese del rendiconto
+        - incassati: Completato e anche Debug (pagamenti di prova, contati come incassati: decisione dell'11/11/2026)
+        - da liquidare: incassato, con centro, senza rendiconto, incassato entro la fine del mese del rendiconto
         - rettifiche: pagamenti gia' liquidati (IdRendiconto) e poi rimborsati, non ancora stornati
         - la bozza e' un'anteprima: i pagamenti si agganciano al rendiconto solo alla conferma, ricalcolando
         - un solo rendiconto non annullato per centro e mese; si genera solo per un mese concluso
@@ -99,6 +100,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             => mese == null ? (new DateTime(anno, 1, 1), new DateTime(anno + 1, 1, 1))
                             : (new DateTime(anno, mese.Value, 1), new DateTime(anno, mese.Value, 1).AddMonths(1));
 
+        /// <summary>stati dei pagamenti incassati: andati a buon fine, anche in modalita' debug</summary>
+        public static bool Incassato(StatoPagamento stato) => stato is StatoPagamento.Completato or StatoPagamento.Debug;
+
         public static decimal Trattenuta(decimal imponibile, decimal percentuale)
             => Math.Round(imponibile * percentuale / 100m, 2, MidpointRounding.AwayFromZero);
 
@@ -145,7 +149,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             {
                 var propri = gruppi.Where(g => g.IdDealer == chiave).ToList();
                 var suoi = rendiconti.Where(r => r.IdDealer == chiave).ToList();
-                var incassati = propri.Where(g => g.Stato == StatoPagamento.Completato && !g.Debug).ToList();
+                var incassati = propri.Where(g => Incassato(g.Stato)).ToList();
                 decimal perc = chiave == null ? 100m : config.TryGetValue(chiave.Value, out var p) ? p : generale;
 
                 var riga = new PaymentDealerSummaryModel
@@ -157,7 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
                                ?? suoi.Select(r => r.DealerDescrizione).FirstOrDefault(),
                     NumeroPagamenti = incassati.Sum(g => g.Numero),
                     Incassato = incassati.Sum(g => g.Totale),
-                    Rimborsato = propri.Where(g => g.Stato == StatoPagamento.Rimborsato && !g.Debug).Sum(g => g.Totale),
+                    Rimborsato = propri.Where(g => g.Stato == StatoPagamento.Rimborsato).Sum(g => g.Totale),
                     NumeroDebug = propri.Where(g => g.Debug).Sum(g => g.Numero),
                     ImportoDebug = propri.Where(g => g.Debug).Sum(g => g.Totale),
                     PercentualePiattaforma = perc,
@@ -189,11 +193,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
         }
 
         private IQueryable<Lic_Pagamento> DaLiquidare(int idDealer, DateTime al)
-            => _pagamentoRepository.FindAll(x => x.IdDealer == idDealer && x.Stato == StatoPagamento.Completato && !x.Debug
+            => _pagamentoRepository.FindAll(x => x.IdDealer == idDealer && (x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Debug)
                                                  && x.IdRendiconto == null && x.DataPagamento != null && x.DataPagamento < al);
 
         private IQueryable<Lic_Pagamento> DaStornare(int idDealer)
-            => _pagamentoRepository.FindAll(x => x.IdDealer == idDealer && x.Stato == StatoPagamento.Rimborsato && !x.Debug
+            => _pagamentoRepository.FindAll(x => x.IdDealer == idDealer && x.Stato == StatoPagamento.Rimborsato
                                                  && x.IdRendiconto != null && x.IdRendicontoRettifica == null);
 
         private async Task<Calcolo> CalcolaAsync(int idDealer, DateTime al)
@@ -256,8 +260,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
         public async Task<int> GeneraTuttiAsync(int anno, int mese)
         {
             var (_, al) = Periodo(anno, mese);
-            var conMovimenti = await _pagamentoRepository.FindAll(x => x.IdDealer != null && !x.Debug
-                                                                       && ((x.Stato == StatoPagamento.Completato && x.IdRendiconto == null && x.DataPagamento != null && x.DataPagamento < al)
+            var conMovimenti = await _pagamentoRepository.FindAll(x => x.IdDealer != null
+                                                                       && (((x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Debug) && x.IdRendiconto == null && x.DataPagamento != null && x.DataPagamento < al)
                                                                            || (x.Stato == StatoPagamento.Rimborsato && x.IdRendiconto != null && x.IdRendicontoRettifica == null)))
                                                          .Select(x => x.IdDealer!.Value)
                                                          .Distinct()
@@ -480,8 +484,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
         public async Task<PaymentDocument> DocumentoPeriodoAsync(int idDealer, int anno, int? mese)
         {
             var riepilogo = (await RiepilogoAsync(anno, mese, idDealer)).FirstOrDefault(x => x.IdDealer == idDealer) ?? new PaymentDealerSummaryModel { IdDealer = idDealer };
-            var pagamenti = await PagamentiPeriodo(anno, mese, idDealer).Where(x => x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Rimborsato)
-                                                                       .Where(x => !x.Debug)
+            var pagamenti = await PagamentiPeriodo(anno, mese, idDealer).Where(x => x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Debug
+                                                                                    || x.Stato == StatoPagamento.Rimborsato)
                                                                        .OrderBy(x => x.DataPagamento)
                                                                        .ToListAsync();
             var doc = new PaymentDocument
@@ -514,7 +518,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
                 };
                 for (int m = 1; m <= 12; m++)
                 {
-                    var delMese = pagamenti.Where(p => p.DataPagamento!.Value.Month == m && p.Stato == StatoPagamento.Completato).ToList();
+                    var delMese = pagamenti.Where(p => p.DataPagamento!.Value.Month == m && Incassato(p.Stato)).ToList();
                     var r = rendiconti.FirstOrDefault(x => x.Mese == m);
                     if (delMese.Count == 0 && r == null)
                         continue;
@@ -601,7 +605,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments
             if (!_emailService.Configured)
                 return 0;
             var (dal, al) = Periodo(anno, null);
-            var conMovimenti = await _pagamentoRepository.FindAll(x => x.IdDealer != null && !x.Debug && x.Stato == StatoPagamento.Completato
+            var conMovimenti = await _pagamentoRepository.FindAll(x => x.IdDealer != null && (x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Debug)
                                                                        && x.DataPagamento >= dal && x.DataPagamento < al)
                                                          .Select(x => x.IdDealer!.Value)
                                                          .Distinct()

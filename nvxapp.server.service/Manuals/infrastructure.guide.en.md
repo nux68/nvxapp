@@ -587,7 +587,7 @@ Companies and firms pay their licences to the platform; every month the platform
 4. After the transfer, choose **Pay** on the statement and enter date and reference: the centre receives the confirmation.
 
 ### Watch out
-- Only successful payments count; test (debug) payments are shown but are not included in statements.
+- Successful payments count, including test (debug) payments, which are marked as such in lists and PDFs.
 - Shares and fees in the list are estimates with the current percentage; the final amounts are those of the statements.
 - Payments of customers without a centre stay entirely with the platform.
 
