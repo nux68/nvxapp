@@ -11,7 +11,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm
     // Schede del CRM che la chat sa aprire con il comando unico OpenEntity ("apri la scheda cliente Rossi",
     // "apri l'offerta 12/2026"). Le pagine di modifica del CRM leggono history.state.id.
     // Gli elenchi vengono dai servizi del CRM, quindi rispettano la visibilità dell'utente.
-    // La chiave del cliente è "cliente crm": "cliente" resta quello delle presenze (ANALISI_VOCALI_CRM.md §3.3).
+    // La chiave del cliente è "cliente crm": "cliente" resta quello delle presenze (ANALISI_CRM_VOCALI.md §3.3).
     public abstract class OpenableCrmEntity : IOpenableEntity
     {
         private readonly string _labelKey;

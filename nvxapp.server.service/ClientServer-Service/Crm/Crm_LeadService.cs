@@ -23,7 +23,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Lead (ANALISI_CRM.md §5.2): contatti non ancora qualificati. Con la conversione diventano un cliente (nuovo, con i
+     Lead (ANALISI_CRM_APPLICATIVO.md §5.2): contatti non ancora qualificati. Con la conversione diventano un cliente (nuovo, con i
      dati del lead, o uno esistente) con il contatto e, se richiesta, un'opportunita' nella prima fase aperta.
      Un commerciale vede i lead suoi e quelli senza responsabile.
     */
@@ -196,7 +196,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                 else
                 {
                     var nominativo = string.Join(" ", new[] { lead.Cognome, lead.Nome }.Where(x => !string.IsNullOrWhiteSpace(x)));
-                    // limite clienti della licenza CRM (ANALISI_LICENZE.md [branch Infrastructure] §5.1): il lead diventa un cliente nuovo
+                    // limite clienti della licenza CRM (ANALISI_INFRASTRUCTURE_LICENZE.md [branch Infrastructure] §5.1): il lead diventa un cliente nuovo
                     if (int.TryParse(this.CurrentCompany, out var idCompany))
                         await _licenseGuard.EnsureCanAddClientAsync(idCompany);
                     cliente = await _clienteRepository.UpsertAsync(new Az_Cliente

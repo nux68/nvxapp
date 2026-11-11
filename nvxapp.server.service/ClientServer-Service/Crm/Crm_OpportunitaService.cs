@@ -20,7 +20,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Opportunita' (trattative) e pipeline (ANALISI_CRM.md §6.1). Ogni cambio di fase o di valore finisce nello storico
+     Opportunita' (trattative) e pipeline (ANALISI_CRM_APPLICATIVO.md §6.1). Ogni cambio di fase o di valore finisce nello storico
      (Crm_OpportunitaStorico), base dei report. Una fase "vinta" o "persa" chiude l'opportunita' (data di chiusura);
      tornando a una fase aperta la data si svuota. Il motivo di perdita serve solo nelle fasi "perse".
     */

@@ -20,7 +20,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Attivita' commerciali e agenda (ANALISI_CRM.md §6.1): collegate a un cliente (e contatto/opportunita') o a un lead.
+     Attivita' commerciali e agenda (ANALISI_CRM_APPLICATIVO.md §6.1): collegate a un cliente (e contatto/opportunita') o a un lead.
      L'assegnatario e' l'utente corrente salvo diversa scelta di un amministratore (o del commerciale verso se stesso).
      I promemoria li manda CrmReminderService (avviso SignalR) prima dell'inizio, secondo Crm_Cfg.MinutiPreavviso.
     */
