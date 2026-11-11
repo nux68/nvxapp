@@ -1,0 +1,11 @@
+ion-segment {
+  margin-bottom: 8px;
+}
+
+// filtri su una riga (vanno a capo su schermi stretti)
+.nvx-deadline-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 16px;
+}
