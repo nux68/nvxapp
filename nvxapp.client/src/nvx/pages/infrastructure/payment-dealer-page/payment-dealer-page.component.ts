@@ -15,7 +15,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/Payment/Models/payment-model';
 
 /*
- Pagamenti di un centro (ANALISI_PAGAMENTI_CENTRI.md §4, §6): SuperUser (centro scelto dal riepilogo o dal filtro) e utenti
+ Pagamenti di un centro (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §4, §6): SuperUser (centro scelto dal riepilogo o dal filtro) e utenti
  del centro (sempre il proprio, lo decide il server; le bozze non si vedono).
     - totali del periodo, rendiconti dell'anno, pagamenti del periodo, email inviate
     - SuperUser: genera la bozza del mese, conferma (parte l'email al centro), liquida (data e riferimento del bonifico), annulla

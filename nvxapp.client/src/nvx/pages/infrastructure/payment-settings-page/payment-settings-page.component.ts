@@ -13,7 +13,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/Payment/Models/payment-model';
 
 /*
- Impostazioni dei pagamenti ai centri (SuperUser, ANALISI_PAGAMENTI_CENTRI.md §3, §5):
+ Impostazioni dei pagamenti ai centri (SuperUser, ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3, §5):
     - trattenuta generale della piattaforma, per i centri senza una propria
     - invio automatico: dal giorno indicato le bozze dei rendiconti del mese precedente, nel mese indicato
       il riepilogo annuale dell'anno precedente

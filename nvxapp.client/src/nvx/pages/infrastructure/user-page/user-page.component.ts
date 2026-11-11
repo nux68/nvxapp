@@ -4,7 +4,7 @@ import { UserInterfaceService } from '../../../Utility/infrastructure/user-inter
 import { DashboardConfigPageBase } from '../../../shared/components/infrastructure/widgets/widget-config/dashboard-config-page.base';
 
 /*
- Pagina del ruolo User: l'utente configura i widget della propria dashboard (ANALISI_WIDGET.md).
+ Pagina del ruolo User: l'utente configura i widget della propria dashboard (ANALISI_INFRASTRUCTURE_WIDGET.md).
 */
 @Component({
   selector: 'app-user-page',

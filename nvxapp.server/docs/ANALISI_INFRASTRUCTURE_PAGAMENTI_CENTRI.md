@@ -1,6 +1,6 @@
 # Analisi – Ripartizione degli incassi delle licenze ai centri
 
-Data: 11/11/2026. Ramo: **Infrastructure** (funzioni base). Si appoggia al sistema licenze (`ANALISI_LICENZE.md`).
+Data: 11/11/2026. Ramo: **Infrastructure** (funzioni base). Si appoggia al sistema licenze (`ANALISI_INFRASTRUCTURE_LICENZE.md`).
 
 **Scopo.** Le aziende e gli studi pagano le licenze al **SuperUser** (la piattaforma), che incassa tutto e poi **gira ai centri** (`Dealer`) la loro quota. Il SuperUser deve vedere i pagamenti per mese e per anno suddivisi per centro, liquidare i centri e mandare loro riepiloghi mensili e annuali via email; ogni centro vede le stesse informazioni limitate a sé.
 
@@ -8,7 +8,7 @@ Data: 11/11/2026. Ramo: **Infrastructure** (funzioni base). Si appoggia al siste
 
 ## 1. Situazione di partenza
 
-- **Centro = `Dealer`** (gerarchia Dealer → FinancialAdvisor/studio → Company/azienda → User, `ANALISI_LICENZE.md` §1.1).
+- **Centro = `Dealer`** (gerarchia Dealer → FinancialAdvisor/studio → Company/azienda → User, `ANALISI_INFRASTRUCTURE_LICENZE.md` §1.1).
 - **`Lic_Pagamento`** registra già ogni incasso (una riga per sottoscrizione o rinnovo, scritta da `LicenseSubscriptionManager.PagaAsync`) e resta anche dopo la cancellazione del soggetto, "per i resoconti degli incassi".
 - Mancavano:
   - il **centro** sul pagamento: si poteva ricavare solo risalendo azienda → studio → centro, impossibile dopo una cancellazione. `IdDealerListino` è il proprietario del listino (null = listino globale), non il centro del cliente;

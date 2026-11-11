@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Listino delle licenze (ANALISI_LICENZE.md §3.1, §4): una combinazione (proprietario, tipo soggetto, ambito).
+     Listino delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §3.1, §4): una combinazione (proprietario, tipo soggetto, ambito).
         - IdDealer null       : listino globale del SuperUser
         - IdDealer valorizzato: listino del centro (Dealer con PuoGestireListini), ridefinisce quello globale
         - DisponibileSuCompany: solo per TipoSoggetto = FinancialAdvisor, le licenze dello studio coprono tutte le sue aziende (§4.3)

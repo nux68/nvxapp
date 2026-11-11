@@ -4,7 +4,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { FabMenuService } from '../../../../../Utility/infrastructure/fab-menu.service';
 
 /*
- Widget "Chiedi all'assistente" (Infrastructure, ANALISI_WIDGET.md): campo a pillola che apre la chat del FAB.
+ Widget "Chiedi all'assistente" (Infrastructure, ANALISI_INFRASTRUCTURE_WIDGET.md): campo a pillola che apre la chat del FAB.
 */
 @Component({
   selector: 'app-ask-assistant-widget',

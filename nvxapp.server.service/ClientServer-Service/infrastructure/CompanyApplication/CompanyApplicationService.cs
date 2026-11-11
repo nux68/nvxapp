@@ -22,7 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         - attivazione: registra l'applicativo come attivo, crea/migra il suo schema (multi-tenant)
           ed esegue gli inizializzatori di quell'applicativo per l'azienda
         - disattivazione: blocca l'accesso; schema e dati restano (riattivando si ritrova tutto)
-     Chi cambia lo stato di un applicativo (ANALISI_LICENZE.md §15.6):
+     Chi cambia lo stato di un applicativo (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6):
         - SuperUser: sempre
         - sistema licenze spento: il DealerPowerAdmin del centro (regola di sempre)
         - sistema licenze acceso: solo se l'azienda e' coperta da una licenza per l'applicativo (propria, dello studio o
@@ -173,7 +173,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         }
 
         /*
-         Attivazione per una licenza sottoscritta dall'azienda (ANALISI_LICENZE.md §15.6): schema e dati iniziali come in
+         Attivazione per una licenza sottoscritta dall'azienda (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6): schema e dati iniziali come in
          companyedit, senza controllo del ruolo (la sottoscrizione e' gia' autorizzata). Cumulativo = tutte le funzioni.
          Restituisce gli applicativi attivati adesso (quelli gia' attivi o non presenti in questo ramo sono saltati).
         */
@@ -284,7 +284,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         // applicativi che il ramo attiva sulle aziende appena create (senza controllo del ruolo)
         public Task ActivateForNewCompanyAsync(int idCompany, ApplicationType application);
 
-        // licenze (ANALISI_LICENZE.md §15.6): chi puo' cambiare lo stato, elenco con licenza e diritti, attivazione da sottoscrizione
+        // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6): chi puo' cambiare lo stato, elenco con licenza e diritti, attivazione da sottoscrizione
         public Task<bool> CanChangeAsync(int idCompany, ApplicationType application, int idFinancialAdvisor = 0);
         public Task<List<CompanyApplicationModel>> ApplicationsWithRightsAsync(int idCompany, int idFinancialAdvisor = 0);
         public Task<List<ApplicationType>> ActivateForLicenseAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito);
