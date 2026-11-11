@@ -100,7 +100,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
 
                 retVal.Min_Saldo = giorni.Where(r => r.Data.Date < DateTime.Today).Sum(r => r.Min_Ecc);
 
-                retVal.Giorni = giorni.Where(r => r.Min_Ecc > 0 || r.Min_NonAutorizzate > 0)
+                retVal.Giorni = giorni.Where(r => r.Min_Ecc > 0 || r.Min_NonAutorizzate > 0 || r.Min_PausaDetratta > 0)
                                       .Select(r => new Dip_Periodo_Giorno
                                       {
                                           Data = r.Data,
@@ -120,7 +120,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
                                           Min_EccOrd = r.Min_EccOrd,
                                           Min_NonRiconosciute = r.Min_NonRiconosciute,
                                           Min_NonAutorizzate = r.Min_NonAutorizzate,
-                                          Min_DaAutorizzare = r.Min_DaAutorizzare
+                                          Min_DaAutorizzare = r.Min_DaAutorizzare,
+                                          Min_PausaDetratta = r.Min_PausaDetratta
                                       })
                                       .ToList();
 

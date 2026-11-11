@@ -537,6 +537,20 @@ export class TimeSheetService {
    * null se il giorno non e' calcolato o quadra con il lavorabile.
    * Con il conteggio settimanale/mensile, finche' il periodo e' in corso, le ore sono "in attesa di quadratura".
    */
+  /**
+   * Pausa del giorno (ANALISI_ATTENDANCETRACKING_PAUSE.md): minuti timbrati, tolti dal lavorato (pausa automatica)
+   * e rimasti pagati. null se il giorno non ha pause.
+   */
+  pausaGiorno(r: Dip_GG_ResultModel | null | undefined): string | null {
+    if (!r || (!r.min_PausaRilevata && !r.min_PausaDetratta && !r.min_PausaRetribuita))
+      return null;
+    const parti: string[] = [];
+    if (r.min_PausaRilevata) parti.push(this.t('pausa.timbrata', { ore: minutiToHHMM(r.min_PausaRilevata) }));
+    if (r.min_PausaDetratta) parti.push(this.t('pausa.detratta', { ore: minutiToHHMM(r.min_PausaDetratta) }));
+    if (r.min_PausaRetribuita) parti.push(this.t('pausa.retribuita', { ore: minutiToHHMM(r.min_PausaRetribuita) }));
+    return parti.join(' · ');
+  }
+
   eccedenzaGiorno(r: Dip_GG_ResultModel | null | undefined): { minuti: number, testo: string, provvisoria: boolean, qualifica: string, dettaglio: string } | null {
     const nonAutorizzate = r?.min_NonAutorizzate ?? 0;
     if (!r || (!r.min_Ecc && !nonAutorizzate))
@@ -1007,7 +1021,7 @@ export class TimeSheetService {
       [GG_ResultStato.Err_2]:  this.t('giornata.err.oreInferiori'),
       [GG_ResultStato.Err_3]:  this.t('giornata.oreSuperiori'),
       [GG_ResultStato.Err_4]:  this.t('giornata.formulaAnomalia'),
-      [GG_ResultStato.Err_5]:  this.t('giornata.erroreN', { n: 5 }),
+      [GG_ResultStato.Err_5]:  this.t('giornata.err.sequenzaNonInterpretabile'),
       [GG_ResultStato.Err_6]:  this.t('giornata.erroreN', { n: 6 }),
       [GG_ResultStato.Err_7]:  this.t('giornata.erroreN', { n: 7 }),
       [GG_ResultStato.Err_8]:  this.t('giornata.erroreN', { n: 8 }),
@@ -1029,9 +1043,9 @@ export class TimeSheetService {
     const warnLabels: Partial<Record<GG_ResultStato, string>> = {
       [GG_ResultStato.Warning_1]:  this.t('giornata.oreSuperiori'),
       [GG_ResultStato.Warning_2]:  this.t('giornata.formulaAvviso'),
-      [GG_ResultStato.Warning_3]:  this.t('giornata.avvertimentoN', { n: 3 }),
-      [GG_ResultStato.Warning_4]:  this.t('giornata.avvertimentoN', { n: 4 }),
-      [GG_ResultStato.Warning_5]:  this.t('giornata.avvertimentoN', { n: 5 }),
+      [GG_ResultStato.Warning_3]:  this.t('giornata.pausaInsufficiente'),
+      [GG_ResultStato.Warning_4]:  this.t('giornata.pausaOltreMassimo'),
+      [GG_ResultStato.Warning_5]:  this.t('giornata.timbratureInterpretate'),
       [GG_ResultStato.Warning_6]:  this.t('giornata.avvertimentoN', { n: 6 }),
       [GG_ResultStato.Warning_7]:  this.t('giornata.avvertimentoN', { n: 7 }),
       [GG_ResultStato.Warning_8]:  this.t('giornata.avvertimentoN', { n: 8 }),
@@ -1066,6 +1080,8 @@ export class TimeSheetService {
     const extraInfo: Record<string, string> = {};
     if (result.hH_Teo != null) extraInfo[this.t('popup.oreTeoriche')] = result.hH_Teo;
     if (result.hH_Lav != null) extraInfo[this.t('popup.oreLavorate')] = result.hH_Lav;
+    const pausa = this.pausaGiorno(result);
+    if (pausa) extraInfo[this.t('popup.pausa')] = pausa;
 
     return {
       title: result.data

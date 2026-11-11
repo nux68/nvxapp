@@ -44,6 +44,17 @@ La timbratura si registra senza verso. Il calcolo ordina le timbrature del giorn
 
 Ogni timbratura conserva l'orario originale (**Timbratura Originale**), quello eventualmente corretto dall'HR (**Timbratura**) e quello usato nei conteggi (**Timbratura Arrotondata**). Il **Giorno Competenza** è il giorno a cui la timbratura appartiene: di norma coincide con la data, ma per un turno che finisce dopo la mezzanotte l'HR può attribuire l'uscita al giorno precedente.
 
+Le timbrature che cadono **dentro** una coppia, tra l'entrata e l'uscita, sono un'uscita e un rientro (per esempio la pausa caffè): il tempo tra le due non conta come lavorato. Quelle prima o dopo l'orario sono lavoro fuori orario. Una timbratura ripetuta entro 2 minuti viene ignorata; un'uscita anticipata o un rientro in ritardo oltre la tolleranza viene comunque agganciato all'orario, con un avviso.
+
+### Pause
+La pausa pranzo si configura nell'orario, scheda **Pause**:
+- **Da timbrare**: il dipendente timbra uscita e rientro; il calcolo segnala la pausa più corta del minimo o più lunga del massimo, ma non corregge le ore.
+- **Automatica**: la timbratura della pausa è facoltativa. Se manca, o la pausa è più corta del minimo, il calcolo toglie dalle ore lavorate i minuti mancanti. Se il dipendente ha lavorato durante la pausa, l'HR inserisce il giustificativo **Pausa non fruita** e nel giorno non si toglie nulla.
+
+La pausa è dovuta solo oltre la soglia di ore lavorate (di solito 6 ore). La **finestra** indica quando cade la pausa; lasciata vuota vale lo stacco tra le coppie, dal limite sinistro dell'uscita al limite destro del rientro. I **minuti retribuiti** restano pagati anche se il dipendente è in pausa.
+
+Le **pause brevi** (caffè, uscite) vanno sempre timbrate e si tolgono dalle ore lavorate, salvo i minuti retribuiti al giorno. Il dettaglio del giorno nel cartellino mostra la pausa timbrata, detratta e pagata; la quadratura mensile riporta il totale della pausa detratta.
+
 ### Stato della giornata
 | Stato | Significato |
 |---|---|

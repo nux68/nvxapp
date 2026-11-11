@@ -23,6 +23,11 @@
                 <ion-label>{{ 'attendance.pages.orariEdit.tabHoursBank' | transloco }}</ion-label>
               </ion-segment-button>
             }
+            @if (isSez2Visible) {
+              <ion-segment-button value="sez4" content-id="sez4">
+                <ion-label>{{ 'attendance.pages.orariEdit.tabBreaks' | transloco }}</ion-label>
+              </ion-segment-button>
+            }
           </ion-segment>
           <div [hidden]="currSection!=='sez1'">
             <br />
@@ -282,6 +287,92 @@
             </ion-card>
           </div>
         }
+      </div>
+      <!-- pause (ANALISI_ATTENDANCETRACKING_PAUSE.md) -->
+      <div [hidden]="currSection!=='sez4' || !isSez2Visible">
+        <br />
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'attendance.pages.orariEdit.breakLunch' | transloco }}</ion-label>
+        </ion-item>
+        <ion-card>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakMode' | transloco }}</ion-label>
+              <ion-select [(ngModel)]="pausaPranzoModalita" [ngModelOptions]="{ standalone: true }" interface="popover">
+                <ion-select-option [value]="null">{{ 'attendance.pages.orariEdit.breakModeNone' | transloco }}</ion-select-option>
+                <ion-select-option [value]="pausaModalitaEnum.Rilevata">{{ 'attendance.pages.orariEdit.breakModeClocked' | transloco }}</ion-select-option>
+                <ion-select-option [value]="pausaModalitaEnum.Automatica">{{ 'attendance.pages.orariEdit.breakModeAutomatic' | transloco }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            @if (isPausaPranzoAttiva) {
+              <ion-note>
+                {{ (pausaPranzoModalita === pausaModalitaEnum.Automatica ? 'attendance.pages.orariEdit.breakModeAutomaticNote' : 'attendance.pages.orariEdit.breakModeClockedNote') | transloco }}
+              </ion-note>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakMinDuration' | transloco }}</ion-label>
+                <ion-input type="number" min="1" [(ngModel)]="pausaPranzo.durataMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakMaxDuration' | transloco }}</ion-label>
+                <ion-input type="number" min="0" [(ngModel)]="pausaPranzo.durataMaxMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakThreshold' | transloco }}</ion-label>
+                <ion-input type="number" min="0" [(ngModel)]="pausaPranzo.sogliaMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakWindowFrom' | transloco }}</ion-label>
+                <ion-input type="time" [(ngModel)]="pausaPranzo.finestraDalle" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakWindowTo' | transloco }}</ion-label>
+                <ion-input type="time" [(ngModel)]="pausaPranzo.finestraAlle" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-note [color]="isCoppiaUnica && !pausaPranzo.finestraDalle ? 'danger' : undefined">
+                {{ (isCoppiaUnica ? 'attendance.pages.orariEdit.breakWindowRequired' : 'attendance.pages.orariEdit.breakWindowNote') | transloco }}
+              </ion-note>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakPaid' | transloco }}</ion-label>
+                <ion-input type="number" min="0" [(ngModel)]="pausaPranzo.retribuitaMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakPayCode' | transloco }}</ion-label>
+                <ion-select [(ngModel)]="pausaPranzo.idCausale_Pausa" [ngModelOptions]="{ standalone: true }" interface="popover">
+                  <ion-select-option [value]="null">{{ 'attendance.pages.orariEdit.none' | transloco }}</ion-select-option>
+                  @for (causale of par_CausaliModelList; track causale.id) {
+                    <ion-select-option [value]="causale.id">{{ causale.descrizione }}</ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            }
+          </ion-card-content>
+        </ion-card>
+
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'attendance.pages.orariEdit.breakShort' | transloco }}</ion-label>
+        </ion-item>
+        <ion-card>
+          <ion-card-content>
+            <ion-item>
+              <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakShortManaged' | transloco }}</ion-label>
+              <ion-select [(ngModel)]="pausaBreveAttiva" [ngModelOptions]="{ standalone: true }" interface="popover">
+                <ion-select-option [value]="false">{{ 'attendance.pages.orariEdit.breakShortNo' | transloco }}</ion-select-option>
+                <ion-select-option [value]="true">{{ 'attendance.pages.orariEdit.breakShortYes' | transloco }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note>{{ 'attendance.pages.orariEdit.breakShortNote' | transloco }}</ion-note>
+            @if (pausaBreveAttiva) {
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakShortPaid' | transloco }}</ion-label>
+                <ion-input type="number" min="0" [(ngModel)]="pausaBreve.retribuitaMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">{{ 'attendance.pages.orariEdit.breakShortMax' | transloco }}</ion-label>
+                <ion-input type="number" min="0" [(ngModel)]="pausaBreve.durataMaxMin" [ngModelOptions]="{ standalone: true }"></ion-input>
+              </ion-item>
+            }
+          </ion-card-content>
+        </ion-card>
       </div>
     </form>
     <br />

@@ -34,6 +34,7 @@ export class Dip_PeriodoModel {
   public min_BancaOre: number;
   public min_NonAutorizzate: number;
   public min_DaAutorizzare: number;
+  public min_PausaDetratta: number = 0;
   public min_Riconosciute: number | null;
 
   public note: string | null;
@@ -60,6 +61,7 @@ export class Dip_Periodo_Giorno {
   public min_NonRiconosciute: number;
   public min_NonAutorizzate: number;
   public min_DaAutorizzare: number;
+  public min_PausaDetratta: number = 0;
 }
 
 export class Dip_Periodo_Settimana {

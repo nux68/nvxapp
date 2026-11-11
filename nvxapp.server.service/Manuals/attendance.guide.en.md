@@ -44,6 +44,17 @@ A clocking is recorded without a direction. The calculation sorts the clockings 
 
 Every clocking keeps the originally recorded time (**Original clocking**), the time possibly corrected by HR (**Clocking**) and the time used in the calculation (**Rounded clocking**). The **Reference day** is the day the clocking belongs to: it is normally its date, but for a shift ending after midnight HR can assign the exit to the previous day.
 
+Clockings that fall **inside** a pair, between its entry and exit, are an exit and a return (for example a coffee break): the time between them is not counted as worked. Clockings before or after the schedule are work outside the schedule. A clocking repeated within 2 minutes is ignored; an early exit or a late return beyond the tolerance is still matched to the schedule, with a warning.
+
+### Breaks
+The lunch break is set in the schedule, **Breaks** tab:
+- **Clocked**: the employee clocks out and back in; the calculation flags a break shorter than the minimum or longer than the maximum, but does not correct the hours.
+- **Automatic**: clocking the break is optional. If it is missing, or the break is shorter than the minimum, the calculation deducts the missing minutes from the hours worked. If the employee worked through the break, HR enters the **Break not taken** justification and nothing is deducted that day.
+
+The break is due only beyond the threshold of hours worked (usually 6 hours). The **window** says when the break falls; if left empty, the gap between the pairs applies, from the exit's left limit to the return's right limit. The **paid minutes** stay paid even though the employee is on a break.
+
+**Short breaks** (coffee, errands) must always be clocked and are deducted from the hours worked, except for the paid minutes per day. The day detail in the timesheet shows the break clocked, deducted and paid; the monthly reconciliation shows the total break deducted.
+
 ### Day status
 | Status | Meaning |
 |---|---|
