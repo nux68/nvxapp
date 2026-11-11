@@ -1,4 +1,5 @@
 ## ATTENZIONE !!! 
+Si dialoga in italiano
 
 La solution si porta avanti su branch differenti che rappresentano i gruppi "logici" dell'applicativo
 
@@ -25,3 +26,5 @@ quando richiesto, produci quasta sequenza di merge
    
 
 Se richiedo modifiche che sono da fare su un brach differente da quello corrente, ci si sposte perchè devono essere fatte nel brach di pertinenza
+
+Quando viene richiesta un analisi, in fondo al documento va prodotta la checklist dei punti da svolgere e man mano che i lavori vengono svolti, va aggiornata la checklist

@@ -386,16 +386,8 @@
     <value>Firm not found.</value>
     <comment>applicativi dello studio</comment>
   </data>
-  <data name="StorageNoPlan" xml:space="preserve">
-    <value>No active storage plan: the SuperUser must create one.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StorageFileTooLarge" xml:space="preserve">
-    <value>The file is too large ({0} MB): the maximum size is {1} MB.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
   <data name="StorageQuotaExceeded" xml:space="preserve">
-    <value>Out of space: the file takes {0} MB but only {1} MB of the plan's {2} MB are left. Delete some documents or ask the centre for a larger plan.</value>
+    <value>Out of space: the file takes {0} MB but only {1} MB of the licence's {2} MB are left. Delete some documents or upgrade to a higher plan.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageWarningSubject" xml:space="preserve">
@@ -403,7 +395,7 @@
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageWarningText" xml:space="preserve">
-    <value>The document storage of {0} is at {1}%: {2} MB used out of {3} MB (plan {4}). Beyond 100% no more documents can be uploaded.</value>
+    <value>The document storage of {0} is at {1}%: {2} MB used out of {3} MB ({4}). Beyond 100% no more documents can be uploaded.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageNotAllowed" xml:space="preserve">
@@ -411,31 +403,7 @@
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageSettingsInvalid" xml:space="preserve">
-    <value>Invalid values: the maximum file size must be greater than zero and the warning threshold between 1 and 99.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanInvalid" xml:space="preserve">
-    <value>Invalid plan: description and space greater than zero are required.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanDuplicate" xml:space="preserve">
-    <value>A plan named "{0}" already exists.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanNotFound" xml:space="preserve">
-    <value>Plan not found.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanDefaultRequired" xml:space="preserve">
-    <value>The default plan stays active and cannot be deleted: first make another plan the default.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanInactive" xml:space="preserve">
-    <value>The plan "{0}" can no longer be assigned.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanBelowUsed" xml:space="preserve">
-    <value>The new plan is smaller than the space already used: the company will not be able to upload documents until it goes below.</value>
+    <value>Invalid values: the warning threshold must be between 1 and 99.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="CustomerEditNotAllowed" xml:space="preserve">
@@ -621,6 +589,10 @@
     <value>Licence {0}</value>
     <comment>licenze</comment>
   </data>
+  <data name="StorageUnlimited" xml:space="preserve">
+    <value>Unlimited storage</value>
+    <comment>spazio a disposizione</comment>
+  </data>
   <data name="DashboardNotConfigurable" xml:space="preserve">
     <value>The dashboard can only be configured while working in a company with the User, CompanyAdmin or CompanyPowerAdmin role.</value>
     <comment>dashboard</comment>
@@ -632,6 +604,58 @@
   <data name="DashboardWidgetInvalid" xml:space="preserve">
     <value>Invalid widget: {0}.</value>
     <comment>dashboard</comment>
+  </data>
+  <data name="VoiceManualApp_0" xml:space="preserve">
+    <value>Basic functions</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_2" xml:space="preserve">
+    <value>Attendance tracking</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_3" xml:space="preserve">
+    <value>CRM</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_4" xml:space="preserve">
+    <value>Document management</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualAppIntro" xml:space="preserve">
+    <value>{0} commands, by topic: {1}.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualExamples" xml:space="preserve">
+    <value>You can say, for example:</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualKeywords" xml:space="preserve">
+    <value>Recognised words: {0}</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualConfirmation" xml:space="preserve">
+    <value>Before running it, the assistant shows a summary and asks for confirmation.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualNoCommands" xml:space="preserve">
+    <value>There are no commands available for your roles and for the applications active for your company.</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndex" xml:space="preserve">
+    <value>Command index</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexCommand" xml:space="preserve">
+    <value>Command</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexFunction" xml:space="preserve">
+    <value>Function</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualIndexWhere" xml:space="preserve">
+    <value>Application › Topic</value>
+    <comment>manuale comandi vocali</comment>
   </data>
   <data name="PaymentNotAllowed" xml:space="preserve">
     <value>Operation not allowed on payments.</value>

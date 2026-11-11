@@ -91,12 +91,13 @@
       "3": "CRM",
       "4": "Document management"
     },
-    "storagePlans": "Storage plans",
+    "storageSettings": "Storage settings",
     "companyStorage": "Document storage",
     "administration": "Administration",
     "registry": "Registry",
     "customers": "Customers",
     "manualInfrastructure": "Basic functions manual",
+    "manualVoiceCommands": "Voice commands",
     "licenseManagement": "Licence management",
     "licenseCatalogs": "Licence price lists",
     "preferences": "Preferences",
@@ -663,60 +664,31 @@
       "defaultOwnDocuments": "node documentation only",
       "infoParentDocuments": "\"Use the documentation of the upper levels\": the assistant also uses the documents of the upper levels (and of the SuperUser) published for the lower levels; off, it uses only the node's own documents."
     },
-    "storagePlanList": {
-      "title": "Storage plans",
-      "columnDescription": "Plan",
-      "columnQuota": "Space",
-      "columnMaxFile": "Max file",
-      "columnDefault": "Default",
-      "columnCompanies": "Companies",
-      "defaultValue": "default",
-      "newPlan": "New plan",
-      "settings": "Default values",
-      "showDisabled": "Also show inactive",
-      "confirmDelete": "Delete the plan?",
-      "confirmDeactivate": "The plan is used by {{companies}} companies: it will only be deactivated (no longer assignable). Continue?",
-      "settingsSummary": "Default maximum file size: {{maxFile}} MB · warning at {{warning}}% · space used by all companies: {{used}} MB"
-    },
-    "storagePlanEdit": {
-      "title": "Storage plan",
-      "info": "Plan",
-      "description": "Description",
-      "quota": "Space (MB)",
-      "quotaRequired": "Enter a space greater than zero.",
-      "maxFile": "Maximum file size (MB)",
-      "maxFileNote": "Empty = installation default.",
-      "order": "Order",
-      "active": "Active",
-      "activeNote": "An inactive plan stays with the companies that have it but can no longer be assigned.",
-      "default": "Default",
-      "defaultNote": "Assigned to companies when they activate document management. There is always only one."
-    },
     "storageSettings": {
-      "title": "Storage default values",
+      "title": "Document storage settings",
       "info": "Default values",
-      "maxFile": "Maximum file size (MB)",
-      "maxFileInvalid": "Enter a value greater than zero.",
       "warning": "Warning threshold (%)",
       "warningInvalid": "Enter a value between 1 and 99.",
-      "note": "They apply to plans and companies without their own values. At the threshold and at 100% the CompanyPowerAdmin and the DealerPowerAdmin are notified; beyond 100% no documents can be uploaded."
+      "totalUsed": "Space used by all companies: {{used}} MB",
+      "note": "Applies to companies without their own threshold. Each company's space is the one of its Document management licence (unlimited without a licence). At the threshold and at 100% the CompanyPowerAdmin and the DealerPowerAdmin are notified; beyond 100% no documents can be uploaded."
     },
     "companyStorageList": {
       "title": "Company document storage",
       "columnCompany": "Company",
       "columnStudio": "Firm",
-      "columnPlan": "Plan",
+      "columnPlan": "Licence",
       "columnUsed": "Used",
       "columnPercent": "%",
-      "columnFiles": "Files"
+      "columnFiles": "Files",
+      "unlimited": "unlimited"
     },
     "companyStorageEdit": {
       "title": "Company document storage",
-      "plan": "Plan",
-      "maxFile": "Maximum file size (MB)",
+      "quota": "Space: {{plan}}. It changes with the company's Document management licence.",
       "warning": "Warning threshold (%)",
       "used": "{{used}} MB used of {{quota}} MB ({{percent}}%), {{files}} files",
-      "note": "Empty = plan or default values (now {{maxFile}} MB and {{warning}}%)."
+      "usedUnlimited": "{{used}} MB used, unlimited space, {{files}} files",
+      "note": "Empty = default threshold (now {{warning}}%)."
     },
     "customerEdit": {
       "title": "Customer",
@@ -775,6 +747,11 @@
         "infrastructure": {
           "title": "Basic functions manual",
           "description": "Access, menu, users and roles, impersonation, customers and shared registries, support and background jobs."
+        },
+        "voicecommands": {
+          "title": "Assistant voice commands",
+          "description": "List of the commands the assistant recognises, spoken or typed, with the function they perform and sample phrases, organised by application and topic.",
+          "note": "The list only contains the commands available to you: those for your roles and for the applications active for your company. Press Download: the PDF is prepared in a few seconds and appears at the top, in the jobs bar, with the download button."
         }
       },
       "download": "Download",
@@ -1126,7 +1103,8 @@
       "actions": "Actions"
     },
     "pageToolbar": {
-      "searchPlaceholder": "Search"
+      "searchPlaceholder": "Search",
+      "dashboard": "Go to dashboard"
     },
     "parameterLoader": {
       "title": "Loading...",

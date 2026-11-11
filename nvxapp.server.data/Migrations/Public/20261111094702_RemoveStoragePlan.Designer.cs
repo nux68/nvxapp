@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261111090731_PagamentiCentri")]
-    partial class PagamentiCentri
+    [Migration("20261111094702_RemoveStoragePlan")]
+    partial class RemoveStoragePlan
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -171,11 +171,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasData(
                         new
                         {
-                            Key = "Storage_MaxFileMB",
-                            Value = "50"
-                        },
-                        new
-                        {
                             Key = "Storage_WarningPercent",
                             Value = "80"
                         },
@@ -238,26 +233,6 @@ namespace nvxapp.server.data.Migrations.Public
                         {
                             Key = "Licenze_AvvisoGiorni",
                             Value = "10"
-                        },
-                        new
-                        {
-                            Key = "Pagamenti_PercentualePiattaforma",
-                            Value = "0"
-                        },
-                        new
-                        {
-                            Key = "Pagamenti_RiepilogoAutomatico",
-                            Value = "false"
-                        },
-                        new
-                        {
-                            Key = "Pagamenti_GiornoInvioMensile",
-                            Value = "5"
-                        },
-                        new
-                        {
-                            Key = "Pagamenti_MeseInvioAnnuale",
-                            Value = "1"
                         });
                 });
 
@@ -568,9 +543,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int>("IdCompany")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdStoragePlan")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("LastRecalc")
                         .HasColumnType("timestamp without time zone");
 
@@ -578,9 +550,6 @@ namespace nvxapp.server.data.Migrations.Public
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("LastWarningPercent")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("MaxFileMB")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -599,8 +568,6 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.HasIndex("IdCompany")
                         .IsUnique();
-
-                    b.HasIndex("IdStoragePlan");
 
                     b.ToTable("CompanyStorage", "public");
                 });
@@ -1134,13 +1101,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime>("DataInizioCoperta")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("DataPagamento")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("DealerDescrizione")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<bool>("Debug")
                         .HasColumnType("boolean");
 
@@ -1150,19 +1110,10 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int?>("IdCompany")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdDealer")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("IdDealerListino")
                         .HasColumnType("integer");
 
                     b.Property<int?>("IdFinancialAdvisor")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdRendiconto")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdRendicontoRettifica")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Importo")
@@ -1209,15 +1160,9 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.HasIndex("IdFinancialAdvisor");
 
-                    b.HasIndex("IdRendiconto");
-
-                    b.HasIndex("IdRendicontoRettifica");
-
                     b.HasIndex("RiferimentoGateway")
                         .IsUnique()
                         .HasFilter("\"RiferimentoGateway\" IS NOT NULL");
-
-                    b.HasIndex("IdDealer", "DataPagamento");
 
                     b.ToTable("Lic_Pagamento", "public");
                 });
@@ -1284,257 +1229,6 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsUnique();
 
                     b.ToTable("Lic_Piano", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_DealerConfig", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("EmailAmministrazione")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("Iban")
-                        .HasMaxLength(34)
-                        .HasColumnType("character varying(34)");
-
-                    b.Property<int>("IdDealer")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Intestatario")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<decimal?>("PercentualePiattaforma")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdDealer")
-                        .IsUnique();
-
-                    b.ToTable("Pag_DealerConfig", "public", t =>
-                        {
-                            t.HasCheckConstraint("CK_Pag_DealerConfig_Percentuale", "\"PercentualePiattaforma\" IS NULL OR \"PercentualePiattaforma\" BETWEEN 0 AND 100");
-                        });
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_InvioEmail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Anno")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Automatico")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Destinatari")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
-                    b.Property<string>("Errore")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("Esito")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("IdDealer")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("IdRendiconto")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("Mese")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Tipo")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdDealer", "Anno", "Mese", "Tipo");
-
-                    b.ToTable("Pag_InvioEmail", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_Rendiconto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Anno")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DataConferma")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DataFatturaCentro")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DataLiquidazione")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("DealerDescrizione")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("IdDealer")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Mese")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("NumeroFatturaCentro")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("NumeroPagamenti")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("PercentualePiattaforma")
-                        .HasPrecision(5, 2)
-                        .HasColumnType("numeric(5,2)");
-
-                    b.Property<decimal>("QuotaCentro")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)");
-
-                    b.Property<decimal>("QuotaPiattaforma")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)");
-
-                    b.Property<string>("RiferimentoBonifico")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int>("Stato")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("TotaleIncassato")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)");
-
-                    b.Property<decimal>("TotaleRettifiche")
-                        .HasPrecision(12, 2)
-                        .HasColumnType("numeric(12,2)");
-
-                    b.Property<string>("Valuta")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Anno", "Mese");
-
-                    b.HasIndex("IdDealer", "Anno", "Mese")
-                        .IsUnique()
-                        .HasFilter("\"Stato\" <> 3");
-
-                    b.ToTable("Pag_Rendiconto", "public", t =>
-                        {
-                            t.HasCheckConstraint("CK_Pag_Rendiconto_Mese", "\"Mese\" BETWEEN 1 AND 12");
-
-                            t.HasCheckConstraint("CK_Pag_Rendiconto_Percentuale", "\"PercentualePiattaforma\" BETWEEN 0 AND 100");
-                        });
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.StoragePlan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int?>("MaxFileMB")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("Ordine")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("Predefinito")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("QuotaMB")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Descrizione")
-                        .IsUnique();
-
-                    b.HasIndex("Predefinito")
-                        .IsUnique()
-                        .HasFilter("\"Predefinito\"");
-
-                    b.ToTable("StoragePlan", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
@@ -2194,15 +1888,7 @@ namespace nvxapp.server.data.Migrations.Public
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("nvxapp.server.data.Entities.Public.StoragePlan", "StoragePlanNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdStoragePlan")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("CompanyNavigation");
-
-                    b.Navigation("StoragePlanNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Document", b =>
@@ -2312,21 +1998,7 @@ namespace nvxapp.server.data.Migrations.Public
                         .HasForeignKey("IdAbbonamento")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("nvxapp.server.data.Entities.Public.Pag_Rendiconto", "RendicontoNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdRendiconto")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("nvxapp.server.data.Entities.Public.Pag_Rendiconto", "RendicontoRettificaNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdRendicontoRettifica")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("AbbonamentoNavigation");
-
-                    b.Navigation("RendicontoNavigation");
-
-                    b.Navigation("RendicontoRettificaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Lic_Piano", b =>
@@ -2338,17 +2010,6 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired();
 
                     b.Navigation("ListinoNavigation");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_DealerConfig", b =>
-                {
-                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdDealer")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DealerNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>

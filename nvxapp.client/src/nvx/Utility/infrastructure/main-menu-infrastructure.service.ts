@@ -37,7 +37,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
       { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storagePlans', component: "StoragePlanListPageComponent", url: '/storageplanlist', icon: 'server' },
+      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.storageSettings', component: "StorageSettingsPageComponent", url: '/storagesettings', icon: 'server' },
       { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.companyStorage', component: "CompanyStorageListPageComponent", url: '/companystoragelist', icon: 'pie-chart' },
       // pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md)
       { menuType: MenuType.MenuItem, zorder: 700, group: 0, title: 'menu.payments', component: "PaymentReportPageComponent", url: '/paymentreport', icon: 'wallet' }
@@ -123,6 +123,9 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
       // manuali in PDF: quello delle funzioni base qui, quelli degli applicativi nei loro rami (Pages4Support), dopo questa voce
       { menuType: MenuType.MenuItem,   zorder: 900, group: 0, title: 'menu.manualInfrastructure', component: "UserManualPageComponent", url: '/usermanual/infrastructure', icon: 'book', nonConfigurabile: true },
+      // manuale dei comandi vocali dell'assistente: dopo i manuali degli applicativi (910-930); il server lo compone dai
+      // comandi presenti nel ramo, filtrati su ruoli e applicativi attivi (VoiceCommandsUserManualProvider)
+      { menuType: MenuType.MenuItem,   zorder: 940, group: 0, title: 'menu.manualVoiceCommands', component: "UserManualPageComponent", url: '/usermanual/voicecommands', icon: 'mic', nonConfigurabile: true },
       // "Configurazione" dell'assistenza (gruppo 1, dopo la sezione Assistenza e i manuali), come quelle di CRM e documentale
       { menuType: MenuType.MenuHeader, zorder: 950, group: 1, title: 'menu.supportSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 960, group: 1, title: 'menu.aiDocuments', roles: RUOLI_DOCUMENTAZIONE_AI, component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },

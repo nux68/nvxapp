@@ -86,8 +86,6 @@ export class RouteInfrastructureService {
       { path: 'tickettypelist', loadChildren: () => import('../../pages/infrastructure/ticket-type-list-page/ticket-type-list-page.module').then(m => m.TicketTypeListPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'tickettypeedit', loadChildren: () => import('../../pages/infrastructure/ticket-type-edit-page/ticket-type-edit-page.module').then(m => m.TicketTypeEditPageModule), canActivate: [RoleGuard4SuperUser] },
       // spazio dei documenti: pacchetti e valori predefiniti (SuperUser); spazio delle aziende (SuperUser, centro, studio: i ruoli li controlla il server)
-      { path: 'storageplanlist', loadChildren: () => import('../../pages/infrastructure/storage-plan-list-page/storage-plan-list-page.module').then(m => m.StoragePlanListPageModule), canActivate: [RoleGuard4SuperUser] },
-      { path: 'storageplanedit', loadChildren: () => import('../../pages/infrastructure/storage-plan-edit-page/storage-plan-edit-page.module').then(m => m.StoragePlanEditPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'storagesettings', loadChildren: () => import('../../pages/infrastructure/storage-settings-page/storage-settings-page.module').then(m => m.StorageSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'companystoragelist', loadChildren: () => import('../../pages/infrastructure/company-storage-list-page/company-storage-list-page.module').then(m => m.CompanyStorageListPageModule), canActivate: [authenticatedGuard] },
       { path: 'companystorageedit', loadChildren: () => import('../../pages/infrastructure/company-storage-edit-page/company-storage-edit-page.module').then(m => m.CompanyStorageEditPageModule), canActivate: [authenticatedGuard] },
