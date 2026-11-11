@@ -38,7 +38,8 @@
       "confirmRead": "Confermo di aver letto",
       "copy": "Copia",
       "regenerate": "Nuovo indirizzo",
-      "calendar": "Calendario"
+      "calendar": "Calendario",
+      "generateNow": "Genera ora"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
@@ -119,7 +120,8 @@
     "notifications": "Notifiche",
     "deadlines": "Scadenzario",
     "calendarFeed": "Calendario",
-    "acknowledgements": "Prese visione"
+    "acknowledgements": "Prese visione",
+    "digests": "Riepiloghi"
   },
   "showcase": {
     "menu": {
@@ -1173,6 +1175,32 @@
       "pendingOther": "Da confermare aprendo l'oggetto",
       "confirmedOn": "Confermata il {{date}}",
       "empty": "Nessuna presa visione."
+    },
+    "digestList": {
+      "title": "Riepiloghi",
+      "note": "Ogni settimana ricevi un riepilogo di scadenze, prese visione e notifiche, scritto dall'AI a partire dai soli dati dell'applicazione. Lo studio riceve l'elenco delle aziende con criticità.",
+      "columnPeriod": "Periodo",
+      "columnSubject": "Azienda / studio",
+      "columnText": "Riepilogo",
+      "columnSource": "Testo",
+      "type": {
+        "0": "azienda",
+        "1": "studio"
+      },
+      "sourceAi": "Scritto dall'AI",
+      "sourcePlain": "Senza AI",
+      "generating": "Generazione in corso, può richiedere qualche secondo...",
+      "empty": "Nessun riepilogo."
+    },
+    "digestDetail": {
+      "title": "Riepilogo",
+      "generatedAi": "Scritto dall'AI il {{date}} a partire dai fatti qui sotto.",
+      "generatedPlain": "Generato senza AI il {{date}}.",
+      "manual": "(generato con \"Genera ora\")",
+      "facts": "Fatti del periodo",
+      "factsNote": "I dati forniti dai moduli da cui è stato scritto il riepilogo.",
+      "critical": "Da gestire subito",
+      "noFacts": "Nessun fatto disponibile."
     }
   },
   "components": {

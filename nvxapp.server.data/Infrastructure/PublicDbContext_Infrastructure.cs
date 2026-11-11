@@ -29,6 +29,8 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<PresaVisione> PresaVisione { get; set; }
         // feed iCalendar personale (INF-CAL)
         public DbSet<CalendarioFeed> CalendarioFeed { get; set; }
+        // riepilogo AI periodico (INF-AI)
+        public DbSet<Riepilogo> Riepilogo { get; set; }
         public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
@@ -227,6 +229,9 @@ namespace nvxapp.server.data.Infrastructure
         public const string Key_PagamentiMeseInvioAnnuale = "Pagamenti_MeseInvioAnnuale";
         // ultimo mese di cui la manutenzione ha generato le bozze ("aaaa-mm"); scritta dalla manutenzione, non seminata
         public const string Key_PagamentiUltimaGenerazione = "Pagamenti_UltimaGenerazione";
+        // riepilogo AI periodico (INF-AI): ultima settimana generata in automatico ("aaaa-Wss", settimana ISO); scritta dal
+        // servizio in background, non seminata
+        public const string Key_RiepilogoUltimaSettimana = "Riepilogo_UltimaSettimana";
 
         private void Gen_Payments(ModelBuilder modelBuilder)
         {
@@ -635,6 +640,21 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasIndex(e => e.Token).IsUnique();
                 entity.HasIndex(e => new { e.IdAspNetUsers, e.IdCompany }).IsUnique();
                 entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // riepilogo AI periodico (INF-AI): si cerca per destinatario (azienda) o per studio, dal piu' recente
+            modelBuilder.Entity<Riepilogo>(entity =>
+            {
+                entity.ToTable("Riepilogo", Schema);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Dal).HasColumnType("date");
+                entity.Property(e => e.Al).HasColumnType("date");
+                entity.HasIndex(e => new { e.IdAspNetUsers, e.Al });
+                entity.HasIndex(e => new { e.IdFinancialAdvisor, e.Al });
+                entity.HasIndex(e => new { e.IdCompany, e.Al });
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<FinancialAdvisor>().WithMany().HasForeignKey(e => e.IdFinancialAdvisor).OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
             });
         }
