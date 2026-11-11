@@ -1,0 +1,73 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+      <div class="nvx-pay-filters">
+        <ion-select [(ngModel)]="anno" (ionChange)="periodChanged()" [label]="'pages.payment.year' | transloco" labelPlacement="floating" interface="popover">
+          @for (a of anni; track a) {
+            <ion-select-option [value]="a">{{ a }}</ion-select-option>
+          }
+        </ion-select>
+        <ion-select [(ngModel)]="mese" (ionChange)="periodChanged()" [label]="'pages.payment.month' | transloco" labelPlacement="floating" interface="popover">
+          <ion-select-option [value]="0">{{ 'pages.payment.wholeYear' | transloco }}</ion-select-option>
+          @for (m of monthNavigator.monthNames; track $index) {
+            <ion-select-option [value]="$index + 1">{{ m }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <div class="nvx-pay-tiles">
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.payments' | transloco }}</span>
+          <strong>{{ totali.numeroPagamenti }}</strong>
+        </div>
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.collected' | transloco }}</span>
+          <strong>{{ totali.incassato | number:'1.2-2' }}</strong>
+        </div>
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.platformShare' | transloco }}</span>
+          <strong>{{ totali.quotaPiattaforma | number:'1.2-2' }}</strong>
+        </div>
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.dealersShare' | transloco }}</span>
+          <strong>{{ totali.quotaCentri | number:'1.2-2' }}</strong>
+        </div>
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.paid' | transloco }}</span>
+          <strong>{{ totali.liquidato | number:'1.2-2' }}</strong>
+        </div>
+        <div class="nvx-pay-tile">
+          <span>{{ 'pages.payment.toPay' | transloco }}</span>
+          <strong>{{ totali.daLiquidare | number:'1.2-2' }}</strong>
+        </div>
+      </div>
+      <p class="nvx-nota-disabled">{{ 'pages.payment.estimateNote' | transloco }}</p>
+      @if (debugPagamenti) {
+        <ion-note color="warning">{{ 'pages.payment.debugNote' | transloco }}</ion-note>
+      }
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <nvx-list
+        [items]="centri"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="idDealer"
+        icon="wallet-outline"
+        [searchText]="searchText"
+        [rowDisabled]="isDisabled"
+        [disabledToggleLabel]="'pages.paymentReport.showInactive' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
