@@ -32,6 +32,7 @@ using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Globalization;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportService
 {
@@ -50,7 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
 
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
-        private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
+        private readonly IAz_SediRepartoCommonRepository _az_SediRepartoRepository;
 
         public ReportService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
@@ -61,7 +62,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
 
                              IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                              IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
-                             IAz_SediRepartoRepository az_SediRepartoRepository
+                             IAz_SediRepartoCommonRepository az_SediRepartoRepository
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;

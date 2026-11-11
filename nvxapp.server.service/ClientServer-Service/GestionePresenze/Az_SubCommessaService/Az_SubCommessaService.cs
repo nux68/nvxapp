@@ -19,6 +19,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessa
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService
 {
@@ -35,12 +36,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         private readonly IAz_SubCommessaAttivitaService _az_SubCommessaAttivitaService;
         private readonly IAz_SubCommessaSediRepartoService _az_SubCommessaSediRepartoService;
 
-        private readonly IAz_SediRepository _az_SediRepository;
-        private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
+        private readonly IAz_SediCommonRepository _az_SediRepository;
+        private readonly IAz_SediRepartoCommonRepository _az_SediRepartoRepository;
         private readonly IAz_SediRepartoAttivitaRepository _az_SediRepartoAttivitaRepository;
         private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
-        private readonly IDip_CompetenzaRepository _dip_CompetenzaRepository;
+        private readonly IDip_CompetenzaCommonRepository _dip_CompetenzaRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
         public Az_SubCommessaService(IMapper mapper,
@@ -59,12 +60,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
                                   IAz_SubCommessaRepository az_SubCommessaRepository,
                                   IAz_SubCommessaSediRepartoService az_SubCommessaSediRepartoService,
-                                  IAz_SediRepository az_SediRepository,
-                                  IAz_SediRepartoRepository az_SediRepartoRepository,
+                                  IAz_SediCommonRepository az_SediRepository,
+                                  IAz_SediRepartoCommonRepository az_SediRepartoRepository,
                                   IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
                                   IPar_AttivitaCompetenzaRepository par_AttivitaCompetenzaRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
-                                  IDip_CompetenzaRepository dip_CompetenzaRepository,
+                                  IDip_CompetenzaCommonRepository dip_CompetenzaRepository,
                                   IUserCompanyRepository userCompanyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SubCommessaRepository = az_SubCommessaRepository;

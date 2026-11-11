@@ -9,6 +9,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoAttivitaService;
@@ -33,7 +34,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         private readonly IAz_SediRepartoAttivitaService _az_SediRepartoAttivitaService;
 
 
-        private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
+        private readonly IAz_SediRepartoCommonRepository _az_SediRepartoRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAz_SediRepartoUserRepository _az_RepartoUserRepository;
@@ -56,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IAccountService accountService,
                                   IAz_SediRepartoUserService az_SediRepartoUserService,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IAz_SediRepartoRepository az_RepartoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SediRepartoCommonRepository az_RepartoRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SediRepartoRepository = az_RepartoRepository;
             _accountService = accountService;

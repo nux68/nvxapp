@@ -16,12 +16,13 @@ using nvxapp.server.service.ServerModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_CompetenzaService
 {
     public class Dip_CompetenzaService : ServiceBase, IDip_CompetenzaService
     {
-        private readonly IDip_CompetenzaRepository _dip_CompetenzaRepository;
+        private readonly IDip_CompetenzaCommonRepository _dip_CompetenzaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
         public Dip_CompetenzaService(IMapper mapper,
@@ -31,7 +32,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Compet
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IDip_CompetenzaRepository dip_CompetenzaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_CompetenzaCommonRepository dip_CompetenzaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dip_CompetenzaRepository = dip_CompetenzaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;

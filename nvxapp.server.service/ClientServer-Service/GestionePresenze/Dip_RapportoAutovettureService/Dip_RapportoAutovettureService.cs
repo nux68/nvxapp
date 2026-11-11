@@ -14,16 +14,19 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoAu
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoAutovettureService
 {
     /*
-     Autovetture del rapporto di lavoro (sezione "Spesa" dell'anagrafica dipendente): servono alle spese
+     Autovetture del dipendente (sezione "Spesa" dell'anagrafica dipendente): servono alle spese
      di rimborso chilometrico, dove l'importo e' km x rimborso per km dell'autovettura scelta.
+     Tabella comune (schema Common, AT-COM): legata al dipendente (IdDip_Anagrafica), non piu' al rapporto di lavoro;
+     letture e scritture con il repository comune.
     */
     public class Dip_RapportoAutovettureService : ServiceBase, IDip_RapportoAutovettureService
     {
-        private readonly IDip_RapportoAutovettureRepository _dip_RapportoAutovettureRepository;
+        private readonly IDip_RapportoAutovettureCommonRepository _dip_RapportoAutovettureRepository;
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
@@ -33,7 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                                           IOptions<JwtParameter> jwtParameter,
                                           IHttpContextAccessor httpContextAccessor,
                                           IConfiguration configuration,
-                                          IDip_RapportoAutovettureRepository dip_RapportoAutovettureRepository,
+                                          IDip_RapportoAutovettureCommonRepository dip_RapportoAutovettureRepository,
                                           IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -48,7 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
             {
                 var retVal = new Dip_RapportoAutovetture_Get_OutModel();
 
-                var entity = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_RapportoLavoro == model.Data.Id).OrderBy(x => x.Descrizione).ToList();
+                var entity = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_Anagrafica == model.Data.Id).OrderBy(x => x.Descrizione).ToList();
                 retVal.Dip_RapportoAutovetture = _mapper.Map<List<Dip_RapportoAutovettureModel>>(entity);
 
                 await Task.Delay(DelayAsyncMethod);
@@ -56,7 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
             }, isSubProcess);
         }
 
-        // allinea le autovetture del rapporto a quelle arrivate dal client (nuove con id negativo, mancanti cancellate)
+        // allinea le autovetture del dipendente a quelle arrivate dal client (nuove con id negativo, mancanti cancellate)
         public virtual async Task<GenericResult<Dip_RapportoAutovetture_Put_OutModel>> Dip_RapportoAutovetturePut(GenericRequest<Dip_RapportoAutovetture_Put_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -74,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                         throw new UserMessageException(AttendanceTrackingMessages.Get("CarInvalidMileageRate", item.Descrizione.Trim()));
                 }
 
-                var salvate = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_RapportoLavoro == model.Data.Id).ToList();
+                var salvate = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_Anagrafica == model.Data.Id).ToList();
                 var idTenute = model.Data.Dip_RapportoAutovetture.Where(x => x.Id > 0).Select(x => x.Id).ToList();
 
                 // un'autovettura usata in qualche spesa resta: le spese devono continuare a dire con che auto sono state fatte
@@ -90,7 +93,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                 {
                     var entity = item.Id > 0 ? salvate.FirstOrDefault(x => x.Id == item.Id) : null;
                     if (entity == null)
-                        entity = new Dip_RapportoAutovetture { IdDip_RapportoLavoro = model.Data.Id };
+                        entity = new Dip_RapportoAutovetture { IdDip_Anagrafica = model.Data.Id };
                     entity.Descrizione = item.Descrizione!.Trim();
                     entity.Targa = string.IsNullOrWhiteSpace(item.Targa) ? null : item.Targa.Trim().ToUpperInvariant();
                     entity.RimborsoKM = Math.Round(item.RimborsoKM, 4);
@@ -114,9 +117,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                 var retVal = new Dip_RapportoAutovetture_GetAll4User_OutModel();
 
                 var utente = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, false);
-                if (utente?.dip_RapportoLavoro != null)
+                if (utente?.dip_Anagrafica != null)
                 {
-                    var entity = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_RapportoLavoro == utente.dip_RapportoLavoro.Id).OrderBy(x => x.Descrizione).ToList();
+                    var entity = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_Anagrafica == utente.dip_Anagrafica.Id).OrderBy(x => x.Descrizione).ToList();
                     retVal.Dip_RapportoAutovetture = _mapper.Map<List<Dip_RapportoAutovettureModel>>(entity);
                 }
 
