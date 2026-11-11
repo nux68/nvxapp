@@ -181,7 +181,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (canale `doc.fes`) |
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
-| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ⏳ |
+| `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | 🔄 fatta nel worktree l'11/11/2026, da mergiare (server provato su DB usa e getta, client compilato) |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | ⏳ |
@@ -308,7 +308,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CRM-ASS.2` Storico nella scheda del cliente
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
-- ⏳ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`)
+- ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
 
 #### `CMP-BASE` – Avvio del modulo Compliance
 - ⏳ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale

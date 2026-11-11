@@ -301,6 +301,7 @@ Implementata il 04/11/2026 (commit 846a9400 e seguenti su CRM_Dev; in Infrastruc
 - [ ] presenze: da opportunità vinta a commessa (`ICommessaCreator`, `IdCommessaPresenze`)
 - [ ] documentale: fascicolo del cliente in lettura nella scheda cliente
 - [ ] AI avanzata (riepilogo cliente, prossima azione, bozza email)
+- [x] calendario personale: attività assegnate all'utente nel feed iCalendar di Infrastructure (`CRM-CAL.1`, `CrmCalendarEventProvider`, 11/11/2026)
 
 ---
 
