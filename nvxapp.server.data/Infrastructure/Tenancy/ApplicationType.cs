@@ -21,6 +21,11 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         AttendanceTracking = 2,
         Crm = 3,
         DocumentManagement = 4,
+        HumanResources = 5,
+        Compliance = 6,
+        Assets = 7,
+        // Administration = 8 : riservato (Amministrazione, solo fatturazione), da attivare piu' avanti.
+        // Vedi nvxapp.server/docs/ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md §4 (decisioni D1, D2, D4).
     }
 
     public static class ApplicationTypeExtensions

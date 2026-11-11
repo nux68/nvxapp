@@ -150,6 +150,8 @@ namespace nvxapp.server.Utility
             builder.Services.AddHostedService<LicenseMaintenanceService>();
             // pagamenti ai centri: bozze mensili dei rendiconti e riepiloghi annuali (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §5)
             builder.Services.AddHostedService<PaymentMaintenanceService>();
+            // scadenzario: promemoria giornalieri (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC.5)
+            builder.Services.AddHostedService<DeadlineMaintenanceService>();
 
 
             return builder.Services;

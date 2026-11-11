@@ -6,14 +6,15 @@ import { ModelResult } from '../../../ModelsBase/model-result';
 */
 
 export enum TipoSoggettoLicenza { Company = 1, FinancialAdvisor = 2 }
-export enum AmbitoLicenza { AttendanceTracking = 2, Crm = 3, DocumentManagement = 4, Cumulativo = 100 }
+export enum AmbitoLicenza { AttendanceTracking = 2, Crm = 3, DocumentManagement = 4, HumanResources = 5, Compliance = 6, Assets = 7, Cumulativo = 100 }
 export enum PeriodicitaLicenza { Mensile = 1, Annuale = 2 }
 export enum MetodoPagamento { Nessuno = 0, CartaCredito = 1, PayPal = 2 }
 export enum StatoAbbonamento { InAttesa = 0, Attivo = 1, Scaduto = 2, Sospeso = 3, Annullato = 4 }
 export enum StatoPagamento { Creato = 0, InAttesa = 1, Completato = 2, Fallito = 3, Rimborsato = 4, Debug = 5 }
 export enum FonteCopertura { Nessuna = 0, Propria = 1, Studio = 2 }
 
-export const AMBITI_LICENZA: AmbitoLicenza[] = [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement, AmbitoLicenza.Cumulativo];
+export const AMBITI_LICENZA: AmbitoLicenza[] = [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+  AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets, AmbitoLicenza.Cumulativo];
 
 // ---------------------------------------------------------------------------
 // Impostazioni (SuperUser)

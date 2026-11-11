@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
+import { NotificationNotifierService, RUOLI_AZIENDA } from './notification-notifier.service';
 
 // ruoli che gestiscono (o leggono) documentazione e risposte AI: SuperUser, centro, studio, azienda (non il DEV)
 const RUOLI_DOCUMENTAZIONE_AI = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin',
@@ -15,7 +16,8 @@ const RUOLI_LISTINI_LICENZE = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin'];
 })
 export class MainMenuInfrastructureService implements iMainMenuService{
 
-  constructor() { }
+  // badge delle voci "Notifiche" (non lette) e "Prese visione" (da confermare)
+  constructor(private notificationNotifierService: NotificationNotifierService) { }
 
   public GetMenuHeaderMenu(MainMenuItem: MainMenuItem[], group: number = 0): MainMenuItem | undefined {
 
@@ -105,6 +107,13 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.preferences', component: "UserPageComponent", url: '/user', icon: 'options', nonConfigurabile: true },
+      // servizi comuni (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC): notifiche per tutti gli utenti collegati;
+      // scadenzario e prese visione per chi lavora in un'azienda (visibilita' e permessi li ricontrolla il server)
+      { menuType: MenuType.MenuItem,   zorder: 520, group: 0, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
+        badge: this.notificationNotifierService.nonLette },
+      { menuType: MenuType.MenuItem,   zorder: 530, group: 0, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem,   zorder: 540, group: 0, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
+        badge: this.notificationNotifierService.daConfermare },
       // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
       // gestione delle licenze per studio e azienda
       { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },

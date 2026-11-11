@@ -7,7 +7,12 @@ La solution si porta avanti su branch differenti che rappresentano i gruppi "log
 2) "Gestione Presenze"                            viene sviluppata in AttendanceTracking_Dev , riceve i merge da Infrastructure e viene mergiata in AttendanceTracking 
 3) "CRM"                                          viene sviluppata in CRM_Dev                , riceve i merge da Infrastructure e viene mergiata in CRM  
 4) "Documentale"                                  viene sviluppata in DocumentManagement_Dev , riceve i merge da Infrastructure e viene mergiata in DocumentManagement  
-5) "All Function"                                 viene sviluppata in AllFunction_Dev        , riceve i merge da,Infrastructure(per primo) a seguire AttendanceTracking,CRM,DocumentManagement  e mergiata in AllFunction
+5) "Risorse Umane"                                viene sviluppata in HumanResources_Dev     , riceve i merge da Infrastructure e viene mergiata in HumanResources
+6) "Compliance"                                   viene sviluppata in Compliance_Dev         , riceve i merge da Infrastructure e viene mergiata in Compliance
+7) "Risorse aziendali"                            viene sviluppata in Assets_Dev             , riceve i merge da Infrastructure e viene mergiata in Assets
+8) "All Function"                                 viene sviluppata in AllFunction_Dev        , riceve i merge da,Infrastructure(per primo) a seguire AttendanceTracking,CRM,DocumentManagement,HumanResources,Compliance,Assets  e mergiata in AllFunction
+
+"Amministrazione" (Administration_Dev / Administration) e' prevista piu' avanti: vedi nvxapp.server/docs/ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md
 
 
 ## ATTENZIONE !!! 
@@ -21,7 +26,7 @@ non effettuare mai commit verso origin, tutte le mod. fatte devono rimenere loca
    
    
 ## ATTENZIONE !!! 
-Con "Applicativo completo" si intende il merge  di Infrastructure,AttendanceTracking,CRM,DocumentManagement nel branch AllFunction_Dev e AllFunction
+Con "Applicativo completo" si intende il merge  di Infrastructure,AttendanceTracking,CRM,DocumentManagement,HumanResources,Compliance,Assets nel branch AllFunction_Dev e AllFunction
 quando richiesto, produci quasta sequenza di merge
    
 
