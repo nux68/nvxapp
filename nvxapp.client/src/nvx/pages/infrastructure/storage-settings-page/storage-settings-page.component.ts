@@ -7,9 +7,9 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { StorageService } from '../../../ClientServer-Service/Infrastructure/Storage/storage.service';
-import { StorageSettingsGetInModel, StorageSettingsModel, StorageSettingsPutInModel } from '../../../ClientServer-Service/Infrastructure/Storage/Models/storage-model';
+import { StorageSettingsGetInModel, StorageSettingsModel, StorageSettingsPutInModel, bytesToMB } from '../../../ClientServer-Service/Infrastructure/Storage/Models/storage-model';
 
-// Valori predefiniti dello spazio (SuperUser): dimensione massima del file e soglia di avviso
+// Valori predefiniti dello spazio (SuperUser): soglia di avviso. La quota delle aziende e' quella della licenza Documentale.
 @Component({
   selector: 'app-storage-settings-page',
   templateUrl: './storage-settings-page.component.html',
@@ -27,18 +27,23 @@ export class StorageSettingsPageComponent extends BasePageConfirmCancelComponent
     super(navCtrl, userInterfaceService, fb);
   }
 
+  // spazio occupato da tutte le aziende (MB), mostrato sotto il titolo
+  public totalUsed: string | null = null;
+
   get Title(): string { return this.transloco.translate('pages.storageSettings.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({
-      maxFileMB: [50, [Validators.required, Validators.min(1)]],
       warningPercent: [80, [Validators.required, Validators.min(1), Validators.max(99)]],
     });
   }
 
   LoadData = (): Observable<StorageSettingsModel | null> =>
     this.storageService.StorageSettingsGet(new GenericRequest<StorageSettingsGetInModel>(StorageSettingsGetInModel)).pipe(
-      map(res => res.data?.settings ?? null),
+      map(res => {
+        this.totalUsed = res.data ? bytesToMB(res.data.totalUsedBytes) : null;
+        return res.data?.settings ?? null;
+      }),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return of(null);
@@ -47,7 +52,7 @@ export class StorageSettingsPageComponent extends BasePageConfirmCancelComponent
 
   SaveData = (editModel: StorageSettingsModel): Observable<boolean> => {
     const request = new GenericRequest<StorageSettingsPutInModel>(StorageSettingsPutInModel);
-    request.data.settings = { maxFileMB: Number(editModel.maxFileMB) || 0, warningPercent: Number(editModel.warningPercent) || 0 };
+    request.data.settings = { warningPercent: Number(editModel.warningPercent) || 0 };
     return this.storageService.StorageSettingsPut(request).pipe(
       map(res => res.success),
       catchError((error) => {

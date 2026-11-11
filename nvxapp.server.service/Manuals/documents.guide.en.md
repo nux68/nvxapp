@@ -13,7 +13,7 @@ This chapter shows where to begin depending on your role. The document managemen
 ### If you are an administrator {CompanyAdmin, CompanyPowerAdmin}
 1. Open **Archive** and try the filters: folder, type, year and **Search in text**.
 2. Use **Upload document** to file your first company document (for example a DURC or a registry extract).
-3. Check in **Storage** how much space the company uses and the maximum size of a single file.
+3. Check in **Storage** how much space the company uses and how much the licence gives.
 4. If you also handle payslips and personnel documents, check in **Employees** that you are enabled: without the permission the page tells you so.
 
 ### Initial setup {CompanyPowerAdmin}
@@ -60,7 +60,7 @@ Personnel documents are confidential. The CompanyPowerAdmin always sees and uplo
 Each type can have **Retention years**. A document is past retention when those years have passed since the document date (or since the upload, if the date is missing): in the archive the title shows the ⏳ symbol and the document page shows a warning. The document is never deleted automatically.
 
 ### Storage
-The company has a storage plan. Each upload checks the maximum size of a single file and the remaining space; every version takes up space. Space is freed only by permanent deletion (from the trash or by the automatic version cleanup), not by moving a document to the trash.
+The company's space is the one of its Document management licence (unlimited without a licence). Each upload checks the remaining space (there is no limit on the size of a single file); every version takes up space. Space is freed only by permanent deletion (from the trash or by the automatic version cleanup), not by moving a document to the trash.
 
 @@ /doclist
 ### Fields
@@ -297,17 +297,16 @@ An employee claims they never received their contract. The log shows their user 
 ### Fields
 | Field | Description |
 |---|---|
-| Plan | Name of the company's storage plan. |
-| Used | MB used, MB of the plan and percentage. |
-| Files | Number of files, maximum size of a single file and warning threshold. |
+| Licence | Plan of the Document management licence the space comes from, or "Unlimited storage". |
+| Used | MB used, MB of the licence and percentage (only MB used when the space is unlimited). |
+| Files | Number of files and warning threshold. |
 | Almost full / Out of space | Badge shown above the warning threshold or above 100%. |
 
 ### Example
-The company has a 1 GB plan with a warning at 80%. Above 80% the page shows **Almost full** and the warning email arrives; the administrator empties the trash and reduces the versions to keep before asking for a larger plan.
+The company has the Free Document management licence (1 GB) with a warning at 80%. Above 80% the page shows **Almost full** and the warning email arrives; the administrator empties the trash and reduces the versions to keep before moving to the Standard plan.
 
 ### Watch out
-- A file larger than the maximum size is rejected with a message showing the file MB and the allowed maximum.
-- When space runs out the message shows how many MB are left: delete documents from the trash or ask for a larger plan.
+- When space runs out the message shows how many MB are left: delete documents from the trash or move to a licence plan with more space.
 - With a multiple send the space is counted for every copy: 20 employees for a 2 MB file take 40 MB.
 - The warning email goes to the company's CompanyPowerAdmin and to the centre that follows it.
 
@@ -356,7 +355,7 @@ The type may be inactive, or it is a personnel type and you do not have the **Up
 Multiple choice is available only for a new document with a personnel type that has **Staff multiple send** turned on. For a document already saved only one employee can be set.
 
 ### The file is rejected {CompanyAdmin, CompanyPowerAdmin}
-Read the message: file type not allowed (for example an executable), empty file, file larger than the maximum size, or out of space. The **Storage** page shows the maximum size and the remaining space.
+Read the message: file type not allowed (for example an executable), empty file, or out of space. The **Storage** page shows the space used and the licence space.
 
 ### Text search does not find a document {CompanyAdmin, CompanyPowerAdmin}
 Text is read only from PDFs containing text, Word (docx), Excel (xlsx), OpenDocument and text files. For scans and images search by title or use the type, folder and year filters.

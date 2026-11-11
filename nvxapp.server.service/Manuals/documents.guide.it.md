@@ -13,7 +13,7 @@ Questo capitolo indica da dove cominciare in base al tuo ruolo. Le voci del docu
 ### Se sei un amministratore {CompanyAdmin, CompanyPowerAdmin}
 1. Apri **Archivio** e prova i filtri: cartella, tipologia, anno e **Cerca nel testo**.
 2. Usa **Carica documento** per archiviare il primo documento aziendale (per esempio un DURC o una visura).
-3. Controlla in **Spazio** quanto spazio usa l'azienda e la dimensione massima di un file.
+3. Controlla in **Spazio** quanto spazio usa l'azienda e quanto ne dà la licenza.
 4. Se devi gestire anche cedolini e documenti del personale, verifica in **Dipendenti** di essere abilitato: senza abilitazione la pagina lo segnala.
 
 ### Configurazione iniziale {CompanyPowerAdmin}
@@ -60,7 +60,7 @@ I documenti del personale sono riservati. Il CompanyPowerAdmin vede e carica sem
 Ogni tipologia può avere gli **Anni di conservazione**. Un documento è oltre la conservazione quando sono passati quegli anni dalla data del documento (o dal caricamento, se la data manca): nell'archivio il titolo mostra il simbolo ⏳ e nella pagina del documento compare un avviso. Il documento non viene mai eliminato in automatico.
 
 ### Spazio
-L'azienda ha un pacchetto di spazio. Ogni caricamento controlla la dimensione massima del singolo file e lo spazio residuo; ogni versione occupa spazio. Lo spazio si libera solo con l'eliminazione definitiva (dal cestino o dalla pulizia automatica delle versioni), non spostando un documento nel cestino.
+Lo spazio dell'azienda è quello della sua licenza Documentale (senza licenza è illimitato). Ogni caricamento controlla lo spazio residuo (non c'è un limite sulla dimensione del singolo file); ogni versione occupa spazio. Lo spazio si libera solo con l'eliminazione definitiva (dal cestino o dalla pulizia automatica delle versioni), non spostando un documento nel cestino.
 
 @@ /doclist
 ### Campi
@@ -297,17 +297,16 @@ Un dipendente sostiene di non aver mai ricevuto il contratto. Il registro mostra
 ### Campi
 | Campo | Descrizione |
 |---|---|
-| Pacchetto | Nome del pacchetto di spazio dell'azienda. |
-| Usati | MB usati, MB del pacchetto e percentuale. |
-| File | Numero di file, dimensione massima di un singolo file e soglia di avviso. |
+| Licenza | Piano della licenza Documentale da cui viene lo spazio, oppure "Spazio illimitato". |
+| Usati | MB usati, MB della licenza e percentuale (solo MB usati se lo spazio è illimitato). |
+| File | Numero di file e soglia di avviso. |
 | Quasi pieno / Spazio esaurito | Segnale che compare oltre la soglia di avviso o oltre il 100%. |
 
 ### Esempio
-L'azienda ha un pacchetto da 1 GB con avviso all'80%. Superato l'80% la pagina mostra **Quasi pieno** e arriva l'email di avviso; l'amministratore svuota il cestino e riduce le versioni da conservare prima di chiedere un pacchetto più grande.
+L'azienda ha la licenza Documentale Free (1 GB) con avviso all'80%. Superato l'80% la pagina mostra **Quasi pieno** e arriva l'email di avviso; l'amministratore svuota il cestino e riduce le versioni da conservare prima di passare al piano Standard.
 
 ### Attenzione
-- Un file più grande della dimensione massima viene rifiutato con un messaggio che indica i MB del file e il massimo consentito.
-- Con lo spazio esaurito il messaggio indica quanti MB restano: elimina documenti dal cestino o chiedi un pacchetto più grande.
+- Con lo spazio esaurito il messaggio indica quanti MB restano: elimina documenti dal cestino o passa a un piano della licenza con più spazio.
 - Con l'invio a più dipendenti lo spazio si conta per ogni copia: 20 dipendenti per un file da 2 MB occupano 40 MB.
 - L'email di avviso arriva al CompanyPowerAdmin dell'azienda e al centro che la segue.
 
@@ -356,7 +355,7 @@ La tipologia potrebbe essere disattivata, oppure è del personale e non hai l'ab
 La scelta multipla è disponibile solo per un nuovo documento con una tipologia del personale che ha **Personale invio multiplo** attivo. Per un documento già salvato si può indicare un solo dipendente.
 
 ### Il file viene rifiutato {CompanyAdmin, CompanyPowerAdmin}
-Controlla il messaggio: tipo di file non ammesso (per esempio un eseguibile), file vuoto, file più grande della dimensione massima o spazio esaurito. La pagina **Spazio** mostra la dimensione massima e lo spazio residuo.
+Controlla il messaggio: tipo di file non ammesso (per esempio un eseguibile), file vuoto o spazio esaurito. La pagina **Spazio** mostra lo spazio usato e quello della licenza.
 
 ### La ricerca nel testo non trova un documento {CompanyAdmin, CompanyPowerAdmin}
 Il testo si legge solo da PDF con testo, Word (docx), Excel (xlsx), OpenDocument e file di testo. Per le scansioni e le immagini cerca per titolo o usa i filtri per tipologia, cartella e anno.
