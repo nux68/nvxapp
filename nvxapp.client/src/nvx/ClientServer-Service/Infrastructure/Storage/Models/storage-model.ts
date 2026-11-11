@@ -23,11 +23,13 @@ export class CompanyStorageModel {
   public idCompany: number = 0;
   public azienda: string = '';
   public studio: string = '';
-  // piano della licenza Documentale oppure "illimitato"
+  // piano della licenza Documentale, "illimitato" (licenze spente) o "senza licenza"
   public pacchetto: string = '';
   public quotaMB: number = 0;
-  // nessuna licenza Documentale (o sistema licenze spento): nessun limite di spazio
+  // sistema licenze spento: nessun limite di spazio
   public illimitato: boolean = false;
+  // sistema licenze acceso e nessuna licenza Documentale: quota zero, caricamenti bloccati
+  public senzaLicenza: boolean = false;
   public usedBytes: number = 0;
   public fileCount: number = 0;
   public usedPercent: number = 0;

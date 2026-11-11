@@ -86,7 +86,7 @@ Il registro accessi tiene traccia di tutto ciò che succede ai documenti: chi ha
 È lo strumento per verificare la riservatezza dei documenti del personale e per ricostruire la storia di un documento in caso di dubbi.
 
 @@ /docstorage
-Questa pagina mostra lo spazio usato e la licenza Documentale da cui viene lo spazio dell'azienda (senza licenza è illimitato), il numero di file e la soglia di avviso.
+Questa pagina mostra lo spazio usato e la licenza Documentale da cui viene lo spazio dell'azienda (illimitato con il sistema licenze spento), il numero di file e la soglia di avviso.
 
 Quando l'occupazione supera la soglia gli amministratori ricevono un avviso; oltre il 100% non si possono caricare nuovi documenti. Per avere più spazio passa a un piano superiore della licenza Documentale dalla pagina Gestione licenze.
 

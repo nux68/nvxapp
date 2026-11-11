@@ -680,7 +680,8 @@
       "columnUsed": "Used",
       "columnPercent": "%",
       "columnFiles": "Files",
-      "unlimited": "unlimited"
+      "unlimited": "unlimited",
+      "noLicense": "no licence"
     },
     "companyStorageEdit": {
       "title": "Company document storage",
@@ -688,6 +689,7 @@
       "warning": "Warning threshold (%)",
       "used": "{{used}} MB used of {{quota}} MB ({{percent}}%), {{files}} files",
       "usedUnlimited": "{{used}} MB used, unlimited space, {{files}} files",
+      "usedNoLicense": "{{used}} MB used, {{files}} files. Without a Document management licence no documents can be uploaded.",
       "note": "Empty = default threshold (now {{warning}}%)."
     },
     "customerEdit": {
