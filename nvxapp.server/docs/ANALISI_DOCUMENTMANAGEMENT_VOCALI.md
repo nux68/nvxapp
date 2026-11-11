@@ -1,7 +1,7 @@
 # Analisi: comandi vocali (chat AI) per il Documentale
 
 > Analisi dell'11/11/2026, branch `DocumentManagement_Dev` (lavoro su `DocumentManagement_Dev_vocali`, worktree
-> `wt_dm_vocali`). Documento gemello: `ANALISI_VOCALI_CRM.md` (branch CRM). Motore e voce: `ANALISI_INFRASTRUCTURE_CHAT_AI.md`.
+> `wt_dm_vocali`). Documento gemello: `ANALISI_CRM_VOCALI.md` (branch CRM). Motore e voce: `ANALISI_INFRASTRUCTURE_CHAT_AI.md`.
 >
 > **Obiettivo**: comandi in linguaggio naturale (chat e voce) per il Documentale, come previsto da
 > `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §7.6 e §11 ("trova il contratto di Rossi", "documenti in scadenza",
@@ -23,7 +23,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare.
 - `Doc_SetupGet` allinea l'anagrafica dipendenti (scrive): la chat non lo usa.
 - Prerequisiti nel motore (Infrastructure_Dev, comuni al CRM): **I1** comandi filtrati per applicativo attivo
   (`IntentDefinition.Application`), **I2** pagine dei moduli nel prompt di Navigate (`IRouteProvider.PromptPages`).
-  Dettagli in `ANALISI_VOCALI_CRM.md` §2.
+  Dettagli in `ANALISI_CRM_VOCALI.md` §2.
 
 ## 2. Comandi
 
