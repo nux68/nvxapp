@@ -54,8 +54,9 @@ export class Dip_GG_Result_Helper {
     GG_ResultStato.Err_19 | GG_ResultStato.Err_20;
 
   private static readonly ALL_WARNING_DETAILS =
-    GG_ResultStato.Warning_1 | GG_ResultStato.Warning_2;
-  // Warning_3 → Warning_20 vanno aggiunti se usi BigInt
+    GG_ResultStato.Warning_1 | GG_ResultStato.Warning_2 | GG_ResultStato.Warning_3 |
+    GG_ResultStato.Warning_4 | GG_ResultStato.Warning_5;
+  // Warning_6 → Warning_20 vanno aggiunti se usi BigInt (Warning_7 e oltre superano i 31 bit)
 
 
   // ────────────────────────────────────────────────────────────────

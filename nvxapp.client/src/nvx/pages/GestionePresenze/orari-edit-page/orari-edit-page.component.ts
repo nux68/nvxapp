@@ -6,7 +6,7 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel, OrarioTimbratureTipo } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
+import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel, OrarioTimbratureTipo, Par_OrarioPausaModel, PausaTipo, PausaModalita } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { Par_OrarioIntervalloHH_Arrange_Coppie_InModel, Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -35,6 +35,13 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   public par_CausaliModelList: Par_CausaliModel[] = [];
   public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
   public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
+
+  // pause (ANALISI_ATTENDANCETRACKING_PAUSE.md): pranzo con modalita' (null = nessuna pausa pranzo) e pause brevi
+  public pausaModalitaEnum = PausaModalita;
+  public pausaPranzoModalita: PausaModalita | null = null;
+  public pausaPranzo: Par_OrarioPausaModel = OrariEditPageComponent.NuovaPausa(PausaTipo.Pranzo);
+  public pausaBreveAttiva: boolean = false;
+  public pausaBreve: Par_OrarioPausaModel = OrariEditPageComponent.NuovaPausa(PausaTipo.Breve);
 
   constructor(
     protected override navCtrl: NavController,
@@ -86,6 +93,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
         return this.parOrarioService.Par_OrarioGet(request).pipe(
           map((res) => {
             this.par_OrarioIntervalloHH = res.data.par_OrarioIntervalloHH;
+            this.CaricaPause(res.data.par_OrarioPausa ?? []);
             return res.data.par_Orario;
           }
           ),
@@ -109,6 +117,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       new GenericRequest<Par_Orario_PutInModel>(Par_Orario_PutInModel);
     request.data.par_Orario = editModel;
     request.data.par_OrarioIntervalloHH = this.par_OrarioIntervalloHH;
+    request.data.par_OrarioPausa = editModel.timbratureTipo === OrarioTimbratureTipo.IntervalloOrario ? this.PauseDaSalvare() : [];
 
     return this.parOrarioService.Par_OrarioPut(request).pipe(
       map(() => {
@@ -129,6 +138,75 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
 
   get isSez2Visible(): boolean {
     return this._editForm?.get('timbratureTipo')?.value === OrarioTimbratureTipo.IntervalloOrario;
+  }
+
+  // ── pause ───────────────────────────────────────────────────────────────
+  private static NuovaPausa(tipo: PausaTipo): Par_OrarioPausaModel {
+    const p = new Par_OrarioPausaModel();
+    p.tipo = tipo;
+    p.numPausa = tipo === PausaTipo.Pranzo ? 1 : 2;
+    p.durataMin = tipo === PausaTipo.Pranzo ? 60 : 0;
+    return p;
+  }
+
+  private CaricaPause(pause: Par_OrarioPausaModel[]): void {
+    const pranzo = pause.find(p => p.tipo === PausaTipo.Pranzo);
+    const breve = pause.find(p => p.tipo === PausaTipo.Breve);
+    this.pausaPranzo = pranzo ? { ...pranzo, finestraDalle: this.HHmm(pranzo.finestraDalle), finestraAlle: this.HHmm(pranzo.finestraAlle) } : OrariEditPageComponent.NuovaPausa(PausaTipo.Pranzo);
+    this.pausaPranzoModalita = pranzo ? pranzo.modalita : null;
+    this.pausaBreve = breve ? { ...breve } : OrariEditPageComponent.NuovaPausa(PausaTipo.Breve);
+    this.pausaBreveAttiva = !!breve;
+  }
+
+  private PauseDaSalvare(): Par_OrarioPausaModel[] {
+    const retVal: Par_OrarioPausaModel[] = [];
+    if (this.pausaPranzoModalita !== null) {
+      retVal.push({
+        ...this.pausaPranzo,
+        descrizione: this.pausaPranzo.descrizione || this.transloco.translate('attendance.pages.orariEdit.breakLunchName'),
+        modalita: this.pausaPranzoModalita,
+        durataMin: Number(this.pausaPranzo.durataMin) || 0,
+        durataMaxMin: this.Numero(this.pausaPranzo.durataMaxMin),
+        sogliaMin: Number(this.pausaPranzo.sogliaMin) || 0,
+        retribuitaMin: Number(this.pausaPranzo.retribuitaMin) || 0,
+        finestraDalle: this.HHmmss(this.pausaPranzo.finestraDalle),
+        finestraAlle: this.HHmmss(this.pausaPranzo.finestraAlle),
+      });
+    }
+    if (this.pausaBreveAttiva) {
+      retVal.push({
+        ...this.pausaBreve,
+        descrizione: this.pausaBreve.descrizione || this.transloco.translate('attendance.pages.orariEdit.breakShortName'),
+        modalita: PausaModalita.Rilevata,
+        durataMin: 0,
+        durataMaxMin: this.Numero(this.pausaBreve.durataMaxMin),
+        retribuitaMin: Number(this.pausaBreve.retribuitaMin) || 0,
+        finestraDalle: null,
+        finestraAlle: null,
+      });
+    }
+    return retVal;
+  }
+
+  private Numero(v: number | string | null | undefined): number | null {
+    return v === null || v === undefined || v === '' ? null : Number(v);
+  }
+
+  // "HH:mm:ss" (server) <-> "HH:mm" (input type=time); vuoto = finestra dagli intervalli di riconoscimento
+  private HHmm(v: string | null): string | null {
+    return v ? v.substring(0, 5) : null;
+  }
+
+  private HHmmss(v: string | null): string | null {
+    return v ? (v.length === 5 ? v + ':00' : v) : null;
+  }
+
+  get isPausaPranzoAttiva(): boolean {
+    return this.pausaPranzoModalita !== null;
+  }
+
+  get isCoppiaUnica(): boolean {
+    return (this._editForm?.get('numeroCoppie')?.value ?? 0) <= 1;
   }
 
   get isSez3Visible(): boolean {

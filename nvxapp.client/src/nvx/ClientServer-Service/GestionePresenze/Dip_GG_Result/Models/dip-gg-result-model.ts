@@ -31,6 +31,9 @@ export class Dip_GG_ResultModel {
   public bancaOre: boolean;
   public min_NonAutorizzate: number;   // ore in piu' oltre l'autorizzazione approvata (profili "solo se autorizzate")
   public min_DaAutorizzare: number;    // di cui con una richiesta di autorizzazione in attesa
+  public min_PausaRilevata: number = 0;   // pausa timbrata (pranzo e pause brevi)
+  public min_PausaDetratta: number = 0;   // pausa tolta dal lavorato (pausa automatica)
+  public min_PausaRetribuita: number = 0; // pausa rimasta pagata
 }
 export enum GG_ResultStato {
   Init = 1 << 0,   // 1

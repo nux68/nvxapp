@@ -40,6 +40,11 @@ namespace nvxapp.server.data.Entities.Tenant
         // (non qualificate, senza causale); di queste, quelle coperte da una richiesta di autorizzazione in attesa
         public int Min_NonAutorizzate { get; set; }
         public int Min_DaAutorizzare { get; set; }
+
+        // pause (ANALISI_ATTENDANCETRACKING_PAUSE.md): timbrata, tolta dal lavorato, rimasta pagata
+        public int Min_PausaRilevata { get; set; }
+        public int Min_PausaDetratta { get; set; }
+        public int Min_PausaRetribuita { get; set; }
     }
 
 

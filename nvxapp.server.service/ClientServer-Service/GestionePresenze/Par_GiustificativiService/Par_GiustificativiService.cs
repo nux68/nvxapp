@@ -220,6 +220,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 giust.TipoContatore = TipoContatore.NoContatore;
                 giust.BancaOre = false;
                 giust.AutorizzaStraordinario = false;
+                giust.AnnullaPausa = false;
                 giust.VisualizzaInPianoFerie = false;
             }
 
