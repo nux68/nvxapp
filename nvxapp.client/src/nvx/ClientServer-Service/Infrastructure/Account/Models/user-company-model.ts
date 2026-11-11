@@ -43,6 +43,8 @@ export class UserCompanyListOutModel extends ModelResult {
 export class UserCompanyEditModel {
   /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
   public disabled: boolean = false;
+  /** solo in creazione: dipendente esistente (Dip_Anagrafica senza utente) da collegare al nuovo account (INF-SVC.8) */
+  public idDip_Anagrafica?: number | null;
 
   constructor(
     public descrizione: string | null = "",

@@ -56,6 +56,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public string? Pw { get; set; } = string.Empty;
         public string? RoleId { get; set; }
         public List<string> Roles { get; set; } = new List<string>();
+        /// <summary>solo in creazione: dipendente esistente (Dip_Anagrafica dell'azienda, senza utente) da collegare al nuovo account (INF-SVC.8)</summary>
+        public int? IdDip_Anagrafica { get; set; }
     }
     
     
