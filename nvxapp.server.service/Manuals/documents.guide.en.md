@@ -60,7 +60,7 @@ Personnel documents are confidential. The CompanyPowerAdmin always sees and uplo
 Each type can have **Retention years**. A document is past retention when those years have passed since the document date (or since the upload, if the date is missing): in the archive the title shows the ⏳ symbol and the document page shows a warning. The document is never deleted automatically.
 
 ### Storage
-The company's space is the one of its Document management licence (unlimited without a licence). Each upload checks the remaining space (there is no limit on the size of a single file); every version takes up space. Space is freed only by permanent deletion (from the trash or by the automatic version cleanup), not by moving a document to the trash.
+The company's space is the one of its Document management licence (unlimited with the licence system off; without a licence no documents can be uploaded). Each upload checks the remaining space (there is no limit on the size of a single file); every version takes up space. Space is freed only by permanent deletion (from the trash or by the automatic version cleanup), not by moving a document to the trash.
 
 @@ /doclist
 ### Fields

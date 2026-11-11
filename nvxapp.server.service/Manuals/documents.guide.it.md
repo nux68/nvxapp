@@ -60,7 +60,7 @@ I documenti del personale sono riservati. Il CompanyPowerAdmin vede e carica sem
 Ogni tipologia può avere gli **Anni di conservazione**. Un documento è oltre la conservazione quando sono passati quegli anni dalla data del documento (o dal caricamento, se la data manca): nell'archivio il titolo mostra il simbolo ⏳ e nella pagina del documento compare un avviso. Il documento non viene mai eliminato in automatico.
 
 ### Spazio
-Lo spazio dell'azienda è quello della sua licenza Documentale (senza licenza è illimitato). Ogni caricamento controlla lo spazio residuo (non c'è un limite sulla dimensione del singolo file); ogni versione occupa spazio. Lo spazio si libera solo con l'eliminazione definitiva (dal cestino o dalla pulizia automatica delle versioni), non spostando un documento nel cestino.
+Lo spazio dell'azienda è quello della sua licenza Documentale (illimitato con il sistema licenze spento; senza licenza non si caricano documenti). Ogni caricamento controlla lo spazio residuo (non c'è un limite sulla dimensione del singolo file); ogni versione occupa spazio. Lo spazio si libera solo con l'eliminazione definitiva (dal cestino o dalla pulizia automatica delle versioni), non spostando un documento nel cestino.
 
 @@ /doclist
 ### Campi
