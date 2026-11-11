@@ -116,6 +116,10 @@ export class RouteInfrastructureService {
       { path: 'acknowledgements', loadChildren: () => import('../../pages/infrastructure/acknowledgement-list-page/acknowledgement-list-page.module').then(m => m.AcknowledgementListPageModule), canActivate: [RoleGuard4CompanyUser] },
       // calendario personale (INF-CAL.3): feed iCalendar dell'utente nell'azienda corrente
       { path: 'calendarfeed', loadChildren: () => import('../../pages/infrastructure/calendar-feed-page/calendar-feed-page.module').then(m => m.CalendarFeedPageModule), canActivate: [RoleGuard4CompanyUser] },
+      // riepiloghi periodici (INF-AI.3): amministratori dell'azienda e utenti dello studio (la visibilita' la decide il server);
+      // l'url /digestdetail lo usa il server nella notifica del riepilogo
+      { path: 'digests', loadChildren: () => import('../../pages/infrastructure/digest-list-page/digest-list-page.module').then(m => m.DigestListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'digestdetail', loadChildren: () => import('../../pages/infrastructure/digest-detail-page/digest-detail-page.module').then(m => m.DigestDetailPageModule), canActivate: [authenticatedGuard] },
 
 
     ];
