@@ -15,7 +15,7 @@ import { UserNotifierService } from '../nvx/Utility/infrastructure/user-notifier
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
-import { ApplicationType } from '../nvx/ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { ApplicationType, LivelloLicenza } from '../nvx/ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 
 @Component({
@@ -286,6 +286,16 @@ export class AppComponent implements OnInit {
   public appBadge(app: SezioneApplicativo): number {
     return app.sezioni.reduce((totale, s) => totale + s.gruppi.reduce((t, g) =>
       t + g.menuItem.filter(p => p.menuType === MenuType.MenuItem && s.mostra(p.component)).reduce((n, p) => n + this.menuBadge(p), 0), 0), 0);
+  }
+
+  // voce soggetta a un livello di licenza (MainMenuItem.minLicense) che l'azienda non ha: resta nel menu ma disattivata
+  public voceDisattivata(p: MainMenuItem): boolean {
+    return p.minLicense != null && p.application != null && !this.authService.hasLicenseAtLeast(p.application, p.minLicense);
+  }
+
+  // nome del livello di licenza richiesto dalla voce (es. "PRO"), mostrato accanto alla voce disattivata
+  public licenzaRichiesta(p: MainMenuItem): string {
+    return p.minLicense != null ? LivelloLicenza[p.minLicense].toUpperCase() : '';
   }
 
   // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente o badge della voce), 0 = nessuno

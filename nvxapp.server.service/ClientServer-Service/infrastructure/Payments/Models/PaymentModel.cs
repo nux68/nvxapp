@@ -14,11 +14,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Payments.Mod
     {
         public int? IdDealer { get; set; }
         public string? Dealer { get; set; }
-        /// <summary>pagamenti incassati nel periodo (Completato, non debug)</summary>
+        /// <summary>pagamenti incassati nel periodo (Completato e Debug)</summary>
         public int NumeroPagamenti { get; set; }
         public decimal Incassato { get; set; }
         /// <summary>pagamenti del periodo poi rimborsati (informativo)</summary>
         public decimal Rimborsato { get; set; }
+        /// <summary>di cui in modalita' debug (gia' compresi in NumeroPagamenti e Incassato)</summary>
         public int NumeroDebug { get; set; }
         public decimal ImportoDebug { get; set; }
         /// <summary>trattenuta attuale del centro</summary>
