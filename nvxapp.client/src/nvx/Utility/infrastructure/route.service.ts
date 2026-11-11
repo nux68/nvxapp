@@ -4,6 +4,9 @@ import { RouteInfrastructureService } from './route-infrastructure.service';
 import { RouteAttendanceTrackingService } from './route-attendance-tracking.service';
 import { RouteDocumentManagementService } from './route-document-management.service';
 import { RouteCrmService } from './route-crm.service';
+import { RouteHumanResourcesService } from './route-human-resources.service';
+import { RouteComplianceService } from './route-compliance.service';
+import { RouteAssetsService } from './route-assets.service';
 import { applicationGuard } from '../../pages/RoleGuard/infrastructure/application-guard';
 import { financialAdvisorApplicationGuard } from '../../pages/RoleGuard/infrastructure/financial-advisor-application-guard';
 import { menuRestrictionGuard } from '../../pages/RoleGuard/infrastructure/menu-restriction-guard';
@@ -24,7 +27,10 @@ export class RouteService {
   constructor(private routeInfrastructureService: RouteInfrastructureService,
               private routeAttendanceTrackingService: RouteAttendanceTrackingService,
               private routeDocumentManagementService: RouteDocumentManagementService,
-              private routeCrmService: RouteCrmService) { }
+              private routeCrmService: RouteCrmService,
+              private routeHumanResourcesService: RouteHumanResourcesService,
+              private routeComplianceService: RouteComplianceService,
+              private routeAssetsService: RouteAssetsService) { }
 
   public getRoutes(): Routes {
     const routesFromService1 = this.routeInfrastructureService.getRoutes();
@@ -35,11 +41,20 @@ export class RouteService {
     // CRM: come il documentale
     const routesCrm = this.forApplication(this.routeCrmService.getRoutes(), ApplicationType.Crm)
       .concat(this.forFinancialAdvisorApplication(this.routeCrmService.getStudioRoutes(), ApplicationType.Crm));
+    // Risorse Umane, Compliance, Risorse aziendali: come il CRM
+    const routesNuoviModuli = [
+      ...this.forApplication(this.routeHumanResourcesService.getRoutes(), ApplicationType.HumanResources)
+        .concat(this.forFinancialAdvisorApplication(this.routeHumanResourcesService.getStudioRoutes(), ApplicationType.HumanResources)),
+      ...this.forApplication(this.routeComplianceService.getRoutes(), ApplicationType.Compliance)
+        .concat(this.forFinancialAdvisorApplication(this.routeComplianceService.getStudioRoutes(), ApplicationType.Compliance)),
+      ...this.forApplication(this.routeAssetsService.getRoutes(), ApplicationType.Assets)
+        .concat(this.forFinancialAdvisorApplication(this.routeAssetsService.getStudioRoutes(), ApplicationType.Assets)),
+    ];
     // showcase (pagine pubbliche prima del login): non dipende dagli applicativi attivi
     const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService(),
       new ShowcaseCrmService(), new ShowcaseDocumentManagementService(), new ShowcaseAllFunctionService()).getRoutes();
 
-    return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2, routesDocumentManagement, routesCrm));
+    return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2, routesDocumentManagement, routesCrm, routesNuoviModuli));
   }
 
   // A tutte le rotte (di ogni applicativo) si aggiunge menuRestrictionGuard: blocca le voci di menu

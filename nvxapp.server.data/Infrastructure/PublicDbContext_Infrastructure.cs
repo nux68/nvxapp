@@ -22,6 +22,11 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
         // widget della dashboard scelti da ogni utente (ANALISI_INFRASTRUCTURE_WIDGET.md)
         public DbSet<UserDashboard> UserDashboard { get; set; }
+        // servizi comuni: scadenzario, notifiche, prese visione (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC)
+        public DbSet<Scadenza> Scadenza { get; set; }
+        public DbSet<Notifica> Notifica { get; set; }
+        public DbSet<NotificaPreferenza> NotificaPreferenza { get; set; }
+        public DbSet<PresaVisione> PresaVisione { get; set; }
         public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
@@ -69,6 +74,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_Storage(modelBuilder);
             Gen_CompanyMenuRestriction(modelBuilder);
             Gen_UserDashboard(modelBuilder);
+            Gen_ServiziComuni(modelBuilder);
             Gen_CompanyRegistrationRequest(modelBuilder);
             Gen_Ticket(modelBuilder);
             Gen_Document(modelBuilder);
@@ -572,6 +578,51 @@ namespace nvxapp.server.data.Infrastructure
                 // chiavi esterne senza navigation (vedi CompanyMenuRestriction)
                 entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
+        // servizi comuni (INF-SVC): chiavi esterne senza navigation (vedi CompanyMenuRestriction)
+        private void Gen_ServiziComuni(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Scadenza>(entity =>
+            {
+                entity.ToTable("Scadenza", Schema);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.DataScadenza).HasColumnType("date");
+                // una sola scadenza per oggetto del modulo (le scadenze inserite a mano non hanno riferimento)
+                entity.HasIndex(e => new { e.IdCompany, e.Application, e.Fonte, e.IdRiferimento }).IsUnique().HasFilter("\"IdRiferimento\" IS NOT NULL");
+                // promemoria notturno: scadenze aperte per data
+                entity.HasIndex(e => new { e.Stato, e.DataScadenza });
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsersResponsabile).OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<Notifica>(entity =>
+            {
+                entity.ToTable("Notifica", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdAspNetUsers, e.Letta });
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<NotificaPreferenza>(entity =>
+            {
+                entity.ToTable("NotificaPreferenza", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdAspNetUsers, e.Categoria }).IsUnique();
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<PresaVisione>(entity =>
+            {
+                entity.ToTable("PresaVisione", Schema);
+                entity.HasKey(e => e.Id);
+                // una richiesta per oggetto e destinatario
+                entity.HasIndex(e => new { e.IdCompany, e.Application, e.Fonte, e.IdRiferimento, e.IdAspNetUsers }).IsUnique().HasFilter("\"IdRiferimento\" IS NOT NULL");
+                entity.HasIndex(e => new { e.IdAspNetUsers, e.DataConferma });
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
             });
         }
 

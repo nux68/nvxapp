@@ -1,0 +1,59 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-segment [value]="stato" (ionChange)="statoChanged($event.detail.value)" [scrollable]="true">
+        @for (s of stati; track s) {
+          <ion-segment-button [value]="s">
+            <ion-label>{{ ('pages.deadlineList.filter.' + s) | transloco }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+
+      <div class="nvx-deadline-filters">
+        <ion-item lines="none">
+          <ion-select [value]="entroGiorni" (ionChange)="entroGiorniChanged($event.detail.value)"
+                      [label]="'pages.deadlineList.withinDays' | transloco" labelPlacement="start" interface="popover">
+            <ion-select-option [value]="null">{{ 'pages.deadlineList.anyDate' | transloco }}</ion-select-option>
+            @for (g of giorni; track g) {
+              <ion-select-option [value]="g">{{ 'pages.deadlineList.days' | transloco: { days: g } }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        @if (amministratore) {
+          <ion-item lines="none">
+            <ion-checkbox labelPlacement="end" justify="start" [checked]="soloMie" (ionChange)="soloMieChanged($event.detail.checked)">
+              {{ 'pages.deadlineList.onlyMine' | transloco }}
+            </ion-checkbox>
+          </ion-item>
+        }
+      </div>
+
+      <nvx-list
+        [items]="deadlineList"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        [icon]="iconOf"
+        [highlight]="highlight"
+        [rowDisabled]="isClosed"
+        [searchText]="searchText"
+        [sort]="sortByData"
+        [emptyText]="'pages.deadlineList.empty' | transloco">
+        <ng-template nvxCell="stato" let-item>
+          <ion-badge [color]="coloreStato(item)">{{ descrizioneStato(item) }}</ion-badge>
+        </ng-template>
+      </nvx-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

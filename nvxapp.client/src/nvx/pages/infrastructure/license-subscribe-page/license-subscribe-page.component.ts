@@ -161,7 +161,8 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   get funzioniIncluse(): string {
     const ambito = this.offerta?.ambito;
     if (ambito === AmbitoLicenza.Cumulativo)
-      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement]
+      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+        AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets]
         .map(a => this.transloco.translate('pages.license.function' + a)).join(', ');
     return this.transloco.translate('pages.license.function' + ambito);
   }

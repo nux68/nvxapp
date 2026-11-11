@@ -12,6 +12,7 @@ import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-n
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 import { TicketNotifierService } from '../nvx/Utility/infrastructure/ticket-notifier.service';
 import { UserNotifierService } from '../nvx/Utility/infrastructure/user-notifier.service';
+import { NotificationNotifierService } from '../nvx/Utility/infrastructure/notification-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
@@ -85,6 +86,7 @@ export class AppComponent implements OnInit {
               private jobNotifierService: JobNotifierService,
               public ticketNotifierService: TicketNotifierService,
               private userNotifierService: UserNotifierService,
+              private notificationNotifierService: NotificationNotifierService,
               private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
               public showcaseService: ShowcaseService,
               titleService: Title
@@ -154,6 +156,11 @@ export class AppComponent implements OnInit {
             this.userNotifierService.userNotifier(data);
           });
 
+          // notifiche dell'utente (INF-SVC.4): contatori del menu (non lette, prese visione) e pagine aperte
+          this.signalrService.on('NotificationNew').subscribe((data) => {
+            this.notificationNotifierService.notificationNew(data);
+          });
+
         }
 
       });
@@ -173,6 +180,9 @@ export class AppComponent implements OnInit {
 
       // ticket in carico dell'utente (anche dopo un'impersonificazione)
       this.ticketNotifierService.refreshCount();
+
+      // notifiche non lette e prese visione da confermare (anche dopo un'impersonificazione)
+      this.notificationNotifierService.refreshCount();
 
       // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso".
       // Si imposta dopo che le sezioni nuove sono state disegnate: ion-accordion-group apre solo gli accordion
@@ -397,6 +407,12 @@ export class AppComponent implements OnInit {
       // licenze (listini; gestione per studio e azienda): a login fatto (i ruoli li filtra la voce di menu)
       case 'LicenseCatalogListPageComponent':
       case 'LicenseManagementPageComponent':
+        return this.authService.Token != null;
+
+      // notifiche (tutti), scadenzario e prese visione (utenti dell'azienda, i ruoli li filtra la voce di menu): a login fatto
+      case 'NotificationListPageComponent':
+      case 'DeadlineListPageComponent':
+      case 'AcknowledgementListPageComponent':
         return this.authService.Token != null;
 
 

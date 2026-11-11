@@ -3,7 +3,7 @@ using static nvxapp.server.service.ClientServer_Service.Infrastructure.License.S
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Seed
 {
-    // Listini iniziali di Infrastructure: il Cumulativo (tutte le funzioni; limiti predefiniti di tutte e tre), uno per gli studi (valido anche per le loro aziende)
+    // Listini iniziali di Infrastructure: il Cumulativo (tutte le funzioni; limiti predefiniti di Presenze, CRM e Documentale; Risorse Umane, Compliance e Risorse aziendali per ora senza limiti), uno per gli studi (valido anche per le loro aziende)
     // e uno per le aziende che si abbonano da sole.
     // I listini delle singole funzioni li dichiarano i rami applicativi.
     public class InfrastructureLicenseCatalogSeed : ILicenseCatalogSeed
