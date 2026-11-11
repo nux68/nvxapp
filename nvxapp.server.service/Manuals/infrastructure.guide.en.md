@@ -36,7 +36,7 @@ In the menu you find the functions of the applications you use every day. For a 
 ### If you are the SuperUser {SuperUser}
 1. Create the dealers from **Dealers**; from there, impersonating, you move down to financial advisors and companies.
 2. Prepare the ticket **Request types** and, if you use automatic answers, the **AI documentation** and the values of **Configure AI answers**.
-3. If document management is active, define the **Storage plans** and the default values.
+3. If document management is active, check the **Storage settings** (warning threshold); the companies' space comes from the Document management licence.
 4. With **Move company** you move a company under another financial advisor.
 
 ## Key concepts
@@ -222,7 +222,7 @@ The SuperUser manages the installation:
 - creates and manages dealers and, impersonating them, financial advisors and companies;
 - manages the PowerAdmin and Admin users of the DEV level;
 - moves a company under another financial advisor;
-- defines the document management storage plans and the default values;
+- sets the warning threshold of the document management storage;
 - prepares the ticket request types, the AI documentation and the default values of the automatic answers;
 - opens tickets to the DEV level, assigning them directly to a PowerAdmin or Admin.
 
@@ -292,57 +292,42 @@ The operation is reserved to the SuperUser, even while impersonating another use
 
 => /companylist /financialadvisorlist /ticketlist
 
-@@ /storageplanlist
+@@ /storagesettings
 ### Fields
-**Storage plan** record:
+**Document storage settings** record, with the space used by all companies at the top:
 | Field | Description |
 |---|---|
-| Description | Name of the plan, required, up to 50 characters, different from the others. |
-| Space (MB) | Required, greater than zero; 1024 is proposed. |
-| Maximum file size (MB) | Optional; empty means the installation default. |
-| Order | Position in the list. |
-| Active | An inactive plan stays with the companies that have it but can no longer be assigned. |
-| Default | Assigned to companies when they activate document management; there is always exactly one. |
-
-**Default values** window (from the page's round button):
-| Field | Description |
-|---|---|
-| Maximum file size (MB) | Required, greater than zero; 50 is proposed. |
-| Warning threshold (%) | Required, from 1 to 99; 80 is proposed. |
+| Warning threshold (%) | Required, from 1 to 99; 80 is proposed. It applies to companies without their own threshold. |
 
 ### Watch out
-- The default plan always stays active and cannot be deleted: first make another plan the default.
-- A plan used by some company is not deleted: it is only deactivated.
-- If there is no active plan, companies cannot upload documents.
+- Each company's space is the one of its Document management licence (Free, Standard, Pro); without a licence, or with the licence system off, the space is unlimited.
+- There is no limit on the size of a single file: only the total space counts.
 
-=> /companystoragelist
+=> /companystoragelist /licensecataloglist
 
 @@ /companystoragelist
 ### Fields
-**Company document storage** record, with the used space and number of files at the top:
+**Company document storage** record, with the used space, the number of files and the licence the space comes from at the top:
 | Field | Description |
 |---|---|
-| Plan | Required, among the active plans. |
-| Maximum file size (MB) | Optional, greater than zero; empty means the plan or default value. |
 | Warning threshold (%) | Optional, from 1 to 99; empty means the default value. |
 
 ### Who can do what
 | Role | What they see | What they change |
 |---|---|---|
-| SuperUser | All companies | Plan and limits |
-| DealerPowerAdmin | The dealer's companies | Plan and limits |
+| SuperUser | All companies | Warning threshold |
+| DealerPowerAdmin | The dealer's companies | Warning threshold |
 | DealerAdmin | The dealer's companies | Nothing |
 | Financial Advisor | The financial advisor's companies | Nothing |
 
 ### Example
-Rossi Spa is at 85% of its 1 GB plan and received the warning. The DealerPowerAdmin opens its row, chooses the 5 GB plan and confirms: the company can keep uploading documents.
+Rossi Spa has the Free Document management licence (1 GB), is at 85% and received the warning. By moving to the Standard licence (5 GB) from the Licence management page, the company can keep uploading documents.
 
 ### Watch out
-- Beyond 100% the company can no longer upload documents until it frees space or gets a larger plan.
-- If you assign a plan smaller than the space already used a warning appears: the operation succeeds, but uploads stay blocked until usage drops below the new limit.
-- An inactive plan can no longer be assigned.
+- Beyond 100% the company can no longer upload documents until it frees space or moves to a licence with more space.
+- The space is not changed from this page: it depends on the company's Document management licence (or on the financial advisor covering it).
 
-=> /storageplanlist /companylist
+=> /storagesettings /companylist
 
 @@ /poweradmin
 ### What you can do
@@ -361,7 +346,7 @@ The Admin belongs to the DEV level: works on the tickets assigned to them, adds 
 As DealerPowerAdmin you are the dealer's main administrator:
 - you create financial advisors and enable their applications;
 - you activate and deactivate the companies' applications from their record (entering the financial advisor with **Impersonate**);
-- you assign document storage plans to the dealer's companies;
+- you check the document storage of the dealer's companies and change their warning threshold;
 - you manage the dealer's colleagues, AI documentation and automatic answers;
 - you receive the tickets that move up from the financial advisors.
 
@@ -369,7 +354,7 @@ As DealerPowerAdmin you are the dealer's main administrator:
 
 @@ /dealeradmin
 ### What you can do
-As DealerAdmin you work with the DealerPowerAdmin: you see the financial advisors and the document storage of the dealer's companies, handle the tickets assigned to you and read (without changing) the dealer's AI documentation. Applications and storage plans are changed by the DealerPowerAdmin.
+As DealerAdmin you work with the DealerPowerAdmin: you see the financial advisors and the document storage of the dealer's companies, handle the tickets assigned to you and read (without changing) the dealer's AI documentation. Applications and storage warning thresholds are changed by the DealerPowerAdmin.
 
 => /financialadvisorlist /ticketlist
 
@@ -606,7 +591,7 @@ The SuperUser sets as default, for the Company level, the AI answer on with 2 at
 - **Enabled level**: a level involved by a request type.
 - **Assignee**: the user handling a ticket.
 - **AI documentation**: the texts the assistant uses to answer tickets by itself.
-- **Storage plan**: the maximum document management space assigned to a company.
+- **Document storage**: the maximum document management space of a company, given by its Document management licence (unlimited without a licence).
 - **Warning threshold**: the percentage of used space beyond which a warning is sent.
 - **Jobs bar**: the bar at the top with the progress of long operations and the files to download.
 - **Contact person**: a contact of the customer; there is only one main contact.
@@ -644,7 +629,7 @@ The customer is used by an application: the message tells you where. Turn off **
 - You cannot delete your own user or the SuperUser.
 
 ### Documents cannot be uploaded for lack of space
-The company's plan space is used up or the file exceeds the maximum size. Delete documents you no longer need or ask the dealer for a larger plan; if the message says there is no active plan, the SuperUser must create one.
+The space of the company's Document management licence is used up. Delete documents you no longer need or move to a licence with more space from the Licence management page.
 
 ### "An unexpected error occurred" appears with a code
 Write down the code given in the message and send it to support by opening a ticket: it helps find the error.

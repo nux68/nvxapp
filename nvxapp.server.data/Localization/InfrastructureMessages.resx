@@ -454,16 +454,8 @@
     <value>Studio non trovato.</value>
     <comment>applicativi dello studio</comment>
   </data>
-  <data name="StorageNoPlan" xml:space="preserve">
-    <value>Nessun pacchetto di spazio attivo: il SuperUser deve crearne uno.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StorageFileTooLarge" xml:space="preserve">
-    <value>Il file è troppo grande ({0} MB): la dimensione massima è {1} MB.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
   <data name="StorageQuotaExceeded" xml:space="preserve">
-    <value>Spazio esaurito: il file occupa {0} MB ma restano {1} MB dei {2} MB del pacchetto. Elimina dei documenti o chiedi al centro un pacchetto più grande.</value>
+    <value>Spazio esaurito: il file occupa {0} MB ma restano {1} MB dei {2} MB della licenza. Elimina dei documenti o passa a un piano superiore.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageWarningSubject" xml:space="preserve">
@@ -471,7 +463,7 @@
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageWarningText" xml:space="preserve">
-    <value>Lo spazio dei documenti dell'azienda {0} è al {1}%: {2} MB usati su {3} MB (pacchetto {4}). Oltre il 100% non si possono caricare altri documenti.</value>
+    <value>Lo spazio dei documenti dell'azienda {0} è al {1}%: {2} MB usati su {3} MB ({4}). Oltre il 100% non si possono caricare altri documenti.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageNotAllowed" xml:space="preserve">
@@ -479,31 +471,7 @@
     <comment>spazio a disposizione</comment>
   </data>
   <data name="StorageSettingsInvalid" xml:space="preserve">
-    <value>Valori non validi: la dimensione massima del file deve essere maggiore di zero e la soglia di avviso tra 1 e 99.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanInvalid" xml:space="preserve">
-    <value>Pacchetto non valido: servono descrizione e spazio maggiore di zero.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanDuplicate" xml:space="preserve">
-    <value>Esiste già un pacchetto "{0}".</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanNotFound" xml:space="preserve">
-    <value>Pacchetto non trovato.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanDefaultRequired" xml:space="preserve">
-    <value>Il pacchetto predefinito resta attivo e non si elimina: prima rendi predefinito un altro pacchetto.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanInactive" xml:space="preserve">
-    <value>Il pacchetto "{0}" non è più assegnabile.</value>
-    <comment>spazio a disposizione</comment>
-  </data>
-  <data name="StoragePlanBelowUsed" xml:space="preserve">
-    <value>Il nuovo pacchetto è più piccolo dello spazio già usato: l'azienda non potrà caricare documenti finché non scende sotto.</value>
+    <value>Valori non validi: la soglia di avviso deve essere tra 1 e 99.</value>
     <comment>spazio a disposizione</comment>
   </data>
   <data name="CustomerEditNotAllowed" xml:space="preserve">
@@ -691,6 +659,10 @@
   <data name="StorageLicensePlan" xml:space="preserve">
     <value>Licenza {0}</value>
     <comment>licenze</comment>
+  </data>
+  <data name="StorageUnlimited" xml:space="preserve">
+    <value>Spazio illimitato</value>
+    <comment>spazio a disposizione</comment>
   </data>
   <data name="DashboardNotConfigurable" xml:space="preserve">
     <value>La dashboard si configura solo lavorando in un'azienda con ruolo User, CompanyAdmin o CompanyPowerAdmin.</value>

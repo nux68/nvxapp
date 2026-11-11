@@ -11,15 +11,11 @@
       <ion-item class="nvx-item-4-title">
         <ion-label>{{ 'pages.storageSettings.info' | transloco }}</ion-label>
       </ion-item>
+      @if (totalUsed !== null) {
+        <p class="nvx-nota-disabled">{{ 'pages.storageSettings.totalUsed' | transloco: { used: totalUsed } }}</p>
+      }
 
       <form [formGroup]="_editForm">
-        <ion-item>
-          <ion-input type="number" formControlName="maxFileMB" [label]="'pages.storageSettings.maxFile' | transloco" labelPlacement="floating"></ion-input>
-        </ion-item>
-        @if (_editForm.get('maxFileMB')?.invalid && _editForm.get('maxFileMB')?.touched) {
-          <ion-note color="danger">{{ 'pages.storageSettings.maxFileInvalid' | transloco }}</ion-note>
-        }
-
         <ion-item>
           <ion-input type="number" formControlName="warningPercent" [label]="'pages.storageSettings.warning' | transloco" labelPlacement="floating"></ion-input>
         </ion-item>
