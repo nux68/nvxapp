@@ -587,7 +587,7 @@ Le aziende e gli studi pagano le licenze alla piattaforma; ogni mese la piattafo
 4. Dopo il bonifico, sul rendiconto scegli **Liquida** e indica data e riferimento: il centro riceve la conferma.
 
 ### Attenzione
-- Contano solo i pagamenti andati a buon fine; quelli di prova (debug) si vedono ma non entrano nei rendiconti.
+- Contano i pagamenti andati a buon fine, compresi quelli di prova (debug), che sono segnati come tali negli elenchi e nei PDF.
 - Quote e trattenute dell'elenco sono stime con la percentuale attuale; gli importi definitivi sono quelli dei rendiconti.
 - I pagamenti dei clienti senza centro restano tutti alla piattaforma.
 
