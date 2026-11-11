@@ -300,7 +300,7 @@ The operation is reserved to the SuperUser, even while impersonating another use
 | Warning threshold (%) | Required, from 1 to 99; 80 is proposed. It applies to companies without their own threshold. |
 
 ### Watch out
-- Each company's space is the one of its Document management licence (Free, Standard, Pro); without a licence, or with the licence system off, the space is unlimited.
+- Each company's space is the one of its Document management licence (Free, Standard, Pro). With the licence system off the space is unlimited; with the system on a company without a Document management licence cannot upload documents.
 - There is no limit on the size of a single file: only the total space counts.
 
 => /companystoragelist /licensecataloglist
@@ -326,6 +326,8 @@ Rossi Spa has the Free Document management licence (1 GB), is at 85% and receive
 ### Watch out
 - Beyond 100% the company can no longer upload documents until it frees space or moves to a licence with more space.
 - The space is not changed from this page: it depends on the company's Document management licence (or on the financial advisor covering it).
+- The list shows only the companies with document management active.
+- "No licence": the licence system is on and the company has no valid Document management licence; it cannot upload documents until it subscribes or renews.
 
 => /storagesettings /companylist
 
@@ -660,7 +662,7 @@ A company of the centre pays 100 euros on 10 September, the fee is 20%. On 5 Oct
 - **Enabled level**: a level involved by a request type.
 - **Assignee**: the user handling a ticket.
 - **AI documentation**: the texts the assistant uses to answer tickets by itself.
-- **Document storage**: the maximum document management space of a company, given by its Document management licence (unlimited without a licence).
+- **Document storage**: the maximum document management space of a company, given by its Document management licence (unlimited with the licence system off, no uploads without a licence).
 - **Warning threshold**: the percentage of used space beyond which a warning is sent.
 - **Jobs bar**: the bar at the top with the progress of long operations and the files to download.
 - **Contact person**: a contact of the customer; there is only one main contact.
