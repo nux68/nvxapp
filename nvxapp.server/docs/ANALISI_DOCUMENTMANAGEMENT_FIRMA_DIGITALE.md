@@ -351,6 +351,7 @@ Legenda: [ ] da fare. Stime indicative in giornate/uomo.
 - [x] `Doc_Par_Tipo.FirmaRichiesta` (valore proposto) e `Doc_Documento.FirmaRichiesta` (scelta all'invio, modificabile dopo) – 11/11/2026
 - [x] flusso "Scarica e firma" FES con un clic: `Doc_DocumentoFirma`, prove su `Doc_Destinatario`, registro, nuova versione che azzera la firma, potatura esclusa, pagine Tipologia / Documento / I miei documenti, manuale – 11/11/2026
 - [ ] Infrastructure: `IOtpService` (email), `Doc_FirmaOtp`, OTP nel flusso di firma, attestato PDF
+- [x] presa visione e verbali per gli altri moduli (`DM-FIRMA`, `ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md`): canale `doc.fes` di `IAcknowledgementService`, tipologia `PRESAVIS`, verbale PDF per modello, la firma FES (o la presa visione) conferma la richiesta del modulo – 11/11/2026
 - [ ] `LivelloFirmaPredefinito`, regole R1-R4 complete (blocco del documento durante la richiesta), deleter (R12)
 - [ ] prove API e browser (dipendente, CompanyPowerAdmin)
 
