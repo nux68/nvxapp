@@ -408,7 +408,11 @@
       "password": "Password",
       "confirmPassword": "Confirm Password",
       "disabled": "Disabled",
-      "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected."
+      "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected.",
+      "platformFee": "Platform fee",
+      "platformFeePercent": "Centre fee in %",
+      "platformFeeNote": "Empty = the general fee applies ({{generale}}%). If set, it prevails for the centre statements generated from now on.",
+      "platformFeeInvalid": "The fee must be between 0 and 100."
     },
     "financialAdvisorEdit": {
       "applicationsReadOnly": "Firm applications can only be enabled by the SuperUser and the centre's DealerPowerAdmin.",
@@ -947,7 +951,8 @@
       "settlementState3": "Cancelled",
       "emailType1": "Statement/summary",
       "emailType2": "Annual summary",
-      "emailType3": "Payment"
+      "emailType3": "Payment",
+      "exportStarted": "Report being prepared: when it is ready, download it from the jobs bar at the top."
     },
     "paymentReport": {
       "title": "Centre payments",
@@ -991,7 +996,7 @@
       "dealerData": "Settlement data",
       "generated": "Draft statement ready: check it and confirm it.",
       "confirmSend": "Send the centre the payment summary for {{periodo}}?",
-      "sent": "Summary sent to {{destinatari}}.",
+      "sent": "Sending of the summary to {{destinatari}} started: the outcome appears in the jobs bar at the top.",
       "confirmConfirm": "Confirm the statement? The payments are locked on the statement and the centre receives the email with the details.",
       "confirmedSent": "Statement confirmed and sent to the centre.",
       "confirmedNotSent": "Statement confirmed, but the email was not sent: check the sending history.",
