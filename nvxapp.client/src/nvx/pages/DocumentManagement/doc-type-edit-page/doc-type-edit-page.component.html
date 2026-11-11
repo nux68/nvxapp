@@ -45,6 +45,13 @@
         <ion-item>
           <ion-toggle formControlName="presaVisioneRichiesta" justify="start">{{ 'documents.fields.requiresAcknowledgement' | transloco }}</ion-toggle>
         </ion-item>
+        @if (_editForm.get('categoria')?.value === 0) {
+          <!-- firma: solo valore proposto, all'invio del documento si puo' togliere o aggiungere -->
+          <ion-item>
+            <ion-toggle formControlName="firmaRichiesta" justify="start">{{ 'documents.fields.requiresSignature' | transloco }}</ion-toggle>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'documents.pages.typeEdit.signatureNote' | transloco }}</ion-note>
+        }
         <ion-item>
           <ion-input type="number" formControlName="ordine" [label]="'documents.fields.order' | transloco" labelPlacement="floating"></ion-input>
         </ion-item>

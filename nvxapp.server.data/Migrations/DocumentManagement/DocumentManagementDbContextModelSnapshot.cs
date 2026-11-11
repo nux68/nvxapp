@@ -411,13 +411,38 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
                     b.Property<DateTime?>("DataDownload")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<DateTime?>("DataFirma")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<DateTime?>("DataPresaVisione")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("DataPrimaApertura")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("FirmaHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("FirmaIp")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<bool>("FirmaRichiesta")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("FirmaUserAgent")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<int?>("FirmaVersione")
+                        .HasColumnType("integer");
+
                     b.Property<string>("IdAspNetUsers")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersFirma")
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
@@ -474,6 +499,9 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
                     b.Property<string>("Descrizione")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<bool>("FirmaRichiesta")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
@@ -631,6 +659,9 @@ namespace nvxapp.server.data.Migrations.DocumentManagement
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("FirmaRichiesta")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HaCompetenza")
                         .HasColumnType("boolean");

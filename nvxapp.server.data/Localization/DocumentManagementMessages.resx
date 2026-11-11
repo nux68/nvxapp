@@ -203,4 +203,22 @@
   <data name="MultiDone" xml:space="preserve">
     <value>Documento inviato a {0} dipendenti su {1}.</value>
   </data>
+  <data name="NotSignatory" xml:space="preserve">
+    <value>Non ti è richiesta la firma di questo documento o l'hai già firmato.</value>
+  </data>
+  <data name="SignVersionChanged" xml:space="preserve">
+    <value>Nel frattempo è stata caricata una nuova versione del documento: riaprilo e firma la versione aggiornata.</value>
+  </data>
+  <data name="SignRequestAdded" xml:space="preserve">
+    <value>Richiesta di firma aggiunta</value>
+  </data>
+  <data name="SignRequestRemoved" xml:space="preserve">
+    <value>Richiesta di firma tolta</value>
+  </data>
+  <data name="NotifyTextSign" xml:space="preserve">
+    <value>Ciao {0}, è disponibile un nuovo documento da firmare: "{1}". Aprilo in "I miei documenti" e firmalo.</value>
+  </data>
+  <data name="SignDownloadFirst" xml:space="preserve">
+    <value>Prima di firmare apri il documento con "Scarica" e leggilo.</value>
+  </data>
 </root>

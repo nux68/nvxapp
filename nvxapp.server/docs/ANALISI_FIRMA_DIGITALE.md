@@ -3,7 +3,7 @@
 Branch: **DocumentManagement_Dev** (riceve i merge da Infrastructure, si mergia in DocumentManagement).
 Riferimenti: `ANALISI_DOCUMENTALE.md` (modello `Doc_*`, storage, ruoli, §11 Fase 3 "firma elettronica tramite provider"), `piano-security.md` (autorizzazione lato server).
 
-Stato: **analisi, decisioni da prendere** (§12). Nessuna riga di codice scritta.
+Stato: **analisi, decisioni da prendere** (§12). Realizzata (11/11/2026) la **richiesta di firma FES con un clic** (§7.1, §8.2): parametro sulla tipologia, scelta a ogni invio, firma del destinatario con registrazione delle prove. Il resto è ancora da fare.
 
 > Nota: i riferimenti normativi sono un inquadramento tecnico, non un parere legale. Prima di attivare la FEA (§2.3) serve una verifica con un consulente.
 
@@ -195,10 +195,12 @@ L'endpoint webhook è l'unico `[AllowAnonymous]` del modulo: va limitato a POST,
 | Tabella | Modifica |
 |---|---|
 | `Doc_Versione` | `Firmata` (bool), `FormatoFirma`, `IdDoc_VersioneOrigine` (la versione non firmata da cui deriva), `StorageKeyContenuto` (contenuto estratto da un `.p7m`, per anteprima e ricerca) |
-| `Doc_Documento` | `StatoFirma` sintetico (Nessuna, InAttesa, Firmato, Parziale, Rifiutato) per filtri ed elenco |
-| `Doc_Par_Tipo` | `FirmaRichiesta`, `LivelloFirmaPredefinito`, `SigilloAutomatico` (es. Contratto → FEA; Cedolino → sigillo) |
+| `Doc_Documento` | `StatoFirma` sintetico (Nessuna, InAttesa, Firmato, Parziale, Rifiutato) per filtri ed elenco (con il provider) |
+| `Doc_Par_Tipo` | **`FirmaRichiesta`** (fatto: valore *proposto* all'invio, solo categoria Personale, §7.1); in seguito `LivelloFirmaPredefinito`, `SigilloAutomatico` (es. Contratto → FEA; Cedolino → sigillo) |
+| `Doc_Documento` | **`FirmaRichiesta`** (fatto): richiesta decisa all'invio del singolo documento, modificabile anche dopo (§7.1) |
+| `Doc_Destinatario` | **fatto**: `FirmaRichiesta`, `DataFirma`, `FirmaVersione`, `FirmaHash` (SHA-256 della versione), `FirmaIp`, `FirmaUserAgent`, `IdAspNetUsersFirma` |
 | `Doc_Cfg` | provider abilitato per l'azienda, livelli consentiti, scadenza predefinita delle richieste, promemoria (giorni) |
-| `Doc_LogAzione` (enum) | nuovi valori: RichiestaFirma, Firma, RifiutoFirma, AnnullamentoFirma, VerificaFirma |
+| `Doc_LogAzione` (enum) | fatti: `Firma` (9, dettaglio "FES sha256:<hash>"), `RichiestaFirma` (10, richiesta aggiunta/tolta dopo l'invio); in seguito RifiutoFirma, AnnullamentoFirma, VerificaFirma |
 | `Doc_UtenteAbilitazione` | `RichiedeFirma` (il CompanyAdmin può inviare richieste di firma solo se abilitato; il CompanyPowerAdmin sempre, come per i documenti del personale) |
 
 ### 6.3 Tabelle in `public` (Infrastructure)
@@ -213,6 +215,15 @@ L'endpoint webhook è l'unico `[AllowAnonymous]` del modulo: va limitato a POST,
 ---
 
 ## 7. Regole
+
+### 7.1 Richiesta di firma: tipologia e singolo invio (decisione dell'11/11/2026)
+- La **tipologia** ha il parametro `FirmaRichiesta`: è solo il **valore proposto** (nessun obbligo). Ha senso solo per la categoria Personale, l'unica con destinatari; per le altre categorie il server lo salva spento. Nelle tipologie predefinite è acceso solo per "Contratto di lavoro".
+- **All'invio** (caricamento singolo o multiplo) la richiesta è un interruttore già impostato dalla tipologia: chi invia la può **togliere o aggiungere**. Nell'API `FirmaRichiesta = null` significa "quella della tipologia".
+- **Dopo l'invio** la richiesta si può ancora togliere o aggiungere modificando il documento (registro: azione `RichiestaFirma`). Togliendola, le firme già fatte restano come prova.
+- Cambiare il parametro della tipologia non tocca i documenti già caricati.
+- Il livello oggi è solo FES; quando ci sarà il provider la stessa scelta all'invio porterà anche il livello (`LivelloFirmaPredefinito` sulla tipologia, modificabile all'invio).
+
+### 7.2 Regole generali
 
 **Integrità**
 - R1. Si firma **una versione precisa**: `Doc_Firma.IdDoc_Versione` + `HashOriginale`. Mentre una richiesta è aperta il documento è **bloccato**: niente nuova versione né spostamento nel cestino; per cambiarlo si annulla la richiesta (annullamento anche presso il provider).
@@ -250,8 +261,15 @@ L'endpoint webhook è l'unico `[AllowAnonymous]` del modulo: va limitato a POST,
 7. Rifiuto / scadenza / annullamento → stato corrispondente, sblocco, notifica con il motivo.
 8. Promemoria automatici ai firmatari in ritardo (se il provider non li gestisce).
 
-### 8.2 FES con OTP (Opzione B)
-Documento con `FirmaRichiesta` livello FES → nel dettaglio del destinatario "Leggi e firma" → visualizzazione obbligatoria del documento → invio OTP → inserimento → registrazione (`Doc_FirmaOtp`, `Doc_Destinatario.DataPresaVisione`, `Doc_Log`) → attestato PDF (eventualmente sigillato) archiviato.
+### 8.2 FES (Opzione B)
+**Realizzato (11/11/2026), senza OTP:**
+1. Documento con `FirmaRichiesta` → email al dipendente con il testo "da firmare" (`NotifyTextSign`), colonna **Firma** = "Da firmare" in "I miei documenti".
+2. Il dipendente **scarica** la versione corrente (obbligatorio: il server controlla nel registro il download di quella versione da parte di chi firma, altrimenti `SignDownloadFirst`).
+3. **Firma** → conferma ("dichiari di averlo letto e di accettarlo…") → `Doc_DocumentoFirma { Id, Versione }`: se nel frattempo è arrivata una nuova versione la firma si rifiuta (`SignVersionChanged`).
+4. Registrazione su `Doc_Destinatario` (data, versione, hash, IP, user agent, utente), presa visione impostata se mancava, registro `Firma` con l'hash.
+5. L'amministratore vede firma, versione, hash e IP tra i Destinatari. Una nuova versione azzera la firma; i documenti con firma richiesta o firmati almeno una volta non vengono mai potati (`VersioniDaConservare`).
+
+**Da fare:** OTP via email (`IOtpService` in Infrastructure, `Doc_FirmaOtp`) per legare la firma al possesso della casella, e attestato PDF (eventualmente sigillato) archiviato con il documento.
 
 ### 8.3 File firmato caricato (Opzione A)
 Caricamento → riconoscimento del formato → (`.p7m`) estrazione del contenuto per anteprima e testo → verifica DSS in background → badge "**Firmato – valido / non valido / da verificare**" e pannello con firmatari, date, emittenti, marca temporale, rapporto scaricabile. Pulsante "Verifica di nuovo" (la validità di un certificato si valuta alla data della firma, ma la revoca può essere scoperta dopo).
@@ -306,7 +324,7 @@ Multilingua: chiavi in `DocumentManagementMessages.resx/.en.resx` e i18n `docume
 ## 12. Decisioni da prendere
 
 1. **Casi d'uso prioritari** (§3): quali tra U1-U7 servono nella prima versione?
-2. **Livelli**: basta FES + verifica (F1) all'inizio, o serve subito FEA/FEQ (F2)?
+2. **Livelli**: basta FES + verifica (F1) all'inizio, o serve subito FEA/FEQ (F2)? *(11/11/2026: avviata la FES con un clic; richiesta proposta dalla tipologia e decisa a ogni invio, §7.1)*
 3. **Provider**: quale QTSP (InfoCert, Aruba, Namirial, Intesi Group, altri)? Criteri: API REST documentata e sandbox, FEA e FEQ one-shot con riconoscimento SPID/CIE, firma incorporabile, sigillo, webhook, CSC API, prezzo per firma, dati in Italia/UE.
 4. **Contratto**: uno per installazione (chi gestisce l'applicazione rivende le firme alle aziende) o uno per azienda/studio (ognuno le proprie credenziali)?
 5. **Fatturazione**: solo conteggio dei consumi (`CompanySignatureUsage`) o anche **pacchetti** con blocco al raggiungimento (`SignaturePlan`)? Chi li assegna (SuperUser/DealerPowerAdmin come per lo spazio)?
@@ -330,8 +348,10 @@ Legenda: [ ] da fare. Stime indicative in giornate/uomo.
 - [ ] riconoscimento dei file firmati al caricamento, estrazione del contenuto per anteprima e **ricerca nel testo** (`FileText` sul contenuto estratto)
 - [ ] `Doc_VerificaFirma`, verifica in background (RabbitMQ), pannello verifica e badge nell'archivio, "Verifica di nuovo"
 - [ ] firma esterna: "Scarica per firmare" / "Carica versione firmata" con confronto del contenuto
-- [ ] Infrastructure: `IOtpService` (email), `Doc_FirmaOtp`, flusso "Leggi e firma", attestato PDF
-- [ ] `Doc_Par_Tipo.FirmaRichiesta` / `LivelloFirmaPredefinito`, regole R1-R4, deleter (R12)
+- [x] `Doc_Par_Tipo.FirmaRichiesta` (valore proposto) e `Doc_Documento.FirmaRichiesta` (scelta all'invio, modificabile dopo) – 11/11/2026
+- [x] flusso "Scarica e firma" FES con un clic: `Doc_DocumentoFirma`, prove su `Doc_Destinatario`, registro, nuova versione che azzera la firma, potatura esclusa, pagine Tipologia / Documento / I miei documenti, manuale – 11/11/2026
+- [ ] Infrastructure: `IOtpService` (email), `Doc_FirmaOtp`, OTP nel flusso di firma, attestato PDF
+- [ ] `LivelloFirmaPredefinito`, regole R1-R4 complete (blocco del documento durante la richiesta), deleter (R12)
 - [ ] prove API e browser (dipendente, CompanyPowerAdmin)
 
 ### Fase F2 – Provider QTSP – ~15-20 gg (dipende dal provider)
