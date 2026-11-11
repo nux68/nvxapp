@@ -413,6 +413,7 @@ export class AppComponent implements OnInit {
       case 'NotificationListPageComponent':
       case 'DeadlineListPageComponent':
       case 'AcknowledgementListPageComponent':
+      case 'CalendarFeedPageComponent':
         return this.authService.Token != null;
 
 
