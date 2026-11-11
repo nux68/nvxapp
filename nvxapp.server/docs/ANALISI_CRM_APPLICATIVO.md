@@ -1,12 +1,12 @@
 # Analisi – Applicativo CRM
 
 Branch: **CRM_Dev** (riceve i merge da Infrastructure, si mergia in CRM).
-La parte sulle **tabelle condivise** (§2) è lavoro di **Infrastructure_Dev** e va fatta *prima* di iniziare il CRM: vale anche per il Documentale (`ANALISI_DOCUMENTALE.md`, che rimanda qui).
+La parte sulle **tabelle condivise** (§2) è lavoro di **Infrastructure_Dev** e va fatta *prima* di iniziare il CRM: vale anche per il Documentale (`ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md`, che rimanda qui).
 
 Stato: analisi completa, **tutte le decisioni prese** (§9, 03-04/11/2026). **Fase 0 e Fase 1 implementate il 04/11/2026** (CRM_Dev); restano i punti aperti della checklist §10 (import, AI, GDPR completo, Fase 2). Lavori fatti e da fare: §10.
 
 **Predisposizione fatta il 03/11/2026** (dettaglio nella checklist §10) (decisioni dell'utente): schema Common con valore **`Common = 0`**, sempre creato per ogni azienda;
-in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` restava nelle presenze**; il 04/11/2026 è stato deciso di spostare anche lei in Common (vedi `ANALISI_DOCUMENTALE.md` §2.1, da implementare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
+in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` restava nelle presenze**; il 04/11/2026 è stato deciso di spostare anche lei in Common (vedi `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §2.1, da implementare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
 AttendanceTracking) e database ricreato. Le pagine client dei clienti restano per ora nelle presenze (stesse API `api/Az_Cliente/*`, ora in
 Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I valori di CRM e documentale nell'enum sono decisi (`Crm = 3`, `DocumentManagement = 4`) ma non ancora aggiunti.
 
@@ -60,7 +60,7 @@ Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I va
 | `Az_Anagrafica` | presenze | **Common** (ancora dell'azienda; serve in modalità singola come discriminante `IdCompany`) | tutti |
 | `Az_Cliente` | presenze | **Common** | presenze (commesse, statistiche), CRM, documentale (fascicolo cliente) |
 | `Az_ClienteContatto` | – (oggi un solo campo `Referente`) | **Common, nuova**: persone di riferimento del cliente | CRM, documentale (destinatari esterni) |
-| `Dip_Anagrafica` | presenze | **Common** (deciso il 04/11/2026, vedi `ANALISI_DOCUMENTALE.md` §2.1; da fare) | presenze, documentale |
+| `Dip_Anagrafica` | presenze | **Common** (deciso il 04/11/2026, vedi `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §2.1; da fare) | presenze, documentale |
 | `Az_Sedi`, `Az_SediReparto` | presenze | **restano nelle presenze** (deciso) | presenze |
 | `Az_Commessa` e figli | presenze | **restano nelle presenze** (sottocommesse, attività, reparti, utenti sono logica presenze) | presenze; il CRM le collega in modo "debole" (§5.3) |
 | `Az_Cfg`, `Par_*` | presenze | restano | presenze |
@@ -225,8 +225,8 @@ Le fasi sono quelle della checklist al §10: **Fase 0** in Infrastructure_Dev (p
 6. **Allegati CRM** – sempre in `Crm_Allegato`, anche con il documentale attivo – deciso il 04/11/2026.
 7. **Clienti disattivati** – nuovo campo `Attivo` in `Az_Cliente` – deciso il 04/11/2026.
 8. **Fornitori** – nuovo campo `Tipo` (Cliente/Fornitore/Entrambi) in `Az_Cliente` – deciso il 04/11/2026.
-9. **Attivazione** – solo SuperUser e DealerPowerAdmin del centro, per tutti gli applicativi – deciso il 03/11/2026 (`ANALISI_DOCUMENTALE.md` §4.1, S2).
-10. **`Dip_Anagrafica` in Common** – deciso il 04/11/2026 (`ANALISI_DOCUMENTALE.md` §2.1).
+9. **Attivazione** – solo SuperUser e DealerPowerAdmin del centro, per tutti gli applicativi – deciso il 03/11/2026 (`ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §4.1, S2).
+10. **`Dip_Anagrafica` in Common** – deciso il 04/11/2026 (`ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §2.1).
 
 ---
 
@@ -236,7 +236,7 @@ Legenda: [x] fatto · [ ] da fare.
 
 ### Fase 0 – Dati comuni e prerequisiti (Infrastructure_Dev, poi merge fino ad AttendanceTracking)
 
-Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALISI_DOCUMENTALE.md` §11) rimanda qui.
+Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §11) rimanda qui.
 
 **Schema Common** (fatto il 03/11/2026, commit f4b99d2c su Infrastructure_Dev e 2b5e63b3 su AttendanceTracking_Dev)
 - [x] `ApplicationType.Common = 0`, escluso dall'attivazione degli applicativi (server e client)
@@ -254,7 +254,7 @@ Questa fase è comune a CRM e documentale: la checklist del documentale (`ANALIS
 
 **Decisioni del 03-04/11/2026 da realizzare** (spostamento e adattamento dei dati fatti il 04/11/2026, commit 71978b5c e seguenti su Infrastructure_Dev; migration azzerate e database ricreato)
 - [x] `ApplicationType`: `Crm = 3`, `DocumentManagement = 4` (C# e TypeScript); si attivano solo gli applicativi con contesto registrato nel ramo
-- [x] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev; dettaglio in `ANALISI_DOCUMENTALE.md` §11)
+- [x] `Dip_Anagrafica` in Common, con `IdAspNetUsers` facoltativo e conservazione dopo la rimozione dell'utente (Infrastructure_Dev + AttendanceTracking_Dev; dettaglio in `ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md` §11)
 - [x] `Az_Cliente.Default` → `Az_Cfg.IdAz_ClienteDefault` (Infrastructure_Dev + AttendanceTracking_Dev)
 - [x] `Az_Cliente.Attivo` (campo)
 - [x] clienti disattivati esclusi dalle scelte e "Mostra disabilitati" negli elenchi (client; 04/11)

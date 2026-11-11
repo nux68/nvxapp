@@ -3,7 +3,7 @@ import { iWidgetProvider, WidgetDefinition } from './widget.model';
 
 /*
  Widget della dashboard delle Presenze (ANALISI_INFRASTRUCTURE_WIDGET.md). In Infrastructure e' vuoto: lo valorizza il ramo
- AttendanceTracking (ANALISI_WIDGET_PRESENZE.md).
+ AttendanceTracking (ANALISI_ATTENDANCETRACKING_WIDGET.md).
 */
 @Injectable({
   providedIn: 'root'

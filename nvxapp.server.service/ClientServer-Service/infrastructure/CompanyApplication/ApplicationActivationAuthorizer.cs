@@ -15,7 +15,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication
 {
     /*
-     Chi puo' attivare e disattivare gli applicativi (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §4.1, regola S2, estesa a tutti gli applicativi):
+     Chi puo' attivare e disattivare gli applicativi (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §4.1, regola S2, estesa a tutti gli applicativi):
         - il SuperUser (utente del login, anche mentre impersona)
         - il DealerPowerAdmin del centro (Dealer) a cui appartengono lo studio o l'azienda
      Nessun altro ruolo: ne' lo studio ne' l'azienda attivano da soli i propri applicativi.

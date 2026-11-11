@@ -3,7 +3,7 @@ import { iWidgetProvider, WidgetDefinition } from './widget.model';
 
 /*
  Widget della dashboard del Documentale (ANALISI_INFRASTRUCTURE_WIDGET.md). In Infrastructure e' vuoto: lo valorizza il ramo
- DocumentManagement (ANALISI_WIDGET_DOCUMENTALE.md).
+ DocumentManagement (ANALISI_DOCUMENTMANAGEMENT_WIDGET.md).
 */
 @Injectable({
   providedIn: 'root'
