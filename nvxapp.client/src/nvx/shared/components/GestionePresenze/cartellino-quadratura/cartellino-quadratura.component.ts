@@ -166,6 +166,10 @@ export class CartellinoQuadraturaComponent implements OnChanges {
     if (p.min_NonRiconosciute > 0)
       voci.push({ etichetta: this.t('voci.nonRiconosciute'), minuti: p.min_NonRiconosciute, livello: 1, nota: this.t('voci.notaNonRiconosciute'), dettaglio: g => g.min_NonRiconosciute, evidenza: 'negativo' });
 
+    // pausa automatica: minuti gia' tolti dalle ore lavorate (informativo)
+    if (p.min_PausaDetratta > 0)
+      voci.push({ etichetta: this.t('voci.pausaDetratta'), minuti: p.min_PausaDetratta, nota: this.t('voci.notaPausaDetratta'), dettaglio: g => g.min_PausaDetratta });
+
     voci.push({ etichetta: this.t('voci.saldo'), saldo: true, minuti: this.dati.min_Saldo, nota: this.t('voci.notaSaldo'), evidenza: this.dati.min_Saldo < 0 ? 'negativo' : 'positivo' });
 
     this.voci = voci;

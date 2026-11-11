@@ -31,6 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
+        private readonly IPar_OrarioPausaRepository _par_OrarioPausaRepository;
         private readonly IPar_ExportCau_CausaliRepository _par_ExportCau_CausaliRepository;
 
         public Par_CausaliService(IMapper mapper,
@@ -47,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                   IPar_OrarioRepository par_OrarioRepository,
                                   IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
+                                  IPar_OrarioPausaRepository par_OrarioPausaRepository,
                                   IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_CausaliRepository = par_CausaliRepository;
@@ -56,6 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _par_OrarioRepository = par_OrarioRepository;
             _par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
+            _par_OrarioPausaRepository = par_OrarioPausaRepository;
             _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
         }
 
@@ -154,6 +157,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
                                                          || x.IdCausale_Lavoro_EccOrd == id || x.IdCausale_BancaOre == id).Any()
             || _par_OrarioRepository.FindAll(x => x.IdCausale_HH_Lav_MonteOre == id).Any()
             || _par_OrarioIntervalloHHRepository.FindAll(x => x.IdCausale_HH_Lav == id).Any()
+            || _par_OrarioPausaRepository.FindAll(x => x.IdCausale_Pausa == id).Any()
             || _par_ExportCau_CausaliRepository.FindAll(x => x.IdCausale == id).Any();
 
         public virtual async Task<GenericResult<Par_Causali_DeleteOutModel>> Par_CausaliDelete(GenericRequest<Par_Causali_DeleteInModel> model, bool isSubProcess)

@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.Diagnostics;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
@@ -35,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         public List<Dip_GG_GiustificativiModel> Giustificativi { get; set; } = new();
         public Par_OrarioModel? Orario { get; set; }
         public List<Par_OrarioIntervalloHHModel> Fasce { get; set; } = new();
+        public List<Par_OrarioPausaModel> Pause { get; set; } = new();
         public Par_ProfiloOrarioModel? Profilo { get; set; }
         public bool Festivo { get; set; }
     }
@@ -390,6 +392,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
 
         [FormulaApi("Codice del profilo orario del giorno (\"\" se nessuno)")]
         public string ProfiloCodice => _d.Profilo?.Codice ?? string.Empty;
+
+        [FormulaApi("Durata minima della pausa pranzo dell'orario in minuti (0 se nessuna)")]
+        public int PausaMin => _d.Pause.Where(p => p.Tipo == PausaTipo.Pranzo).Select(p => p.DurataMin).FirstOrDefault();
+
+        [FormulaApi("Modalita' della pausa pranzo: \"Rilevata\", \"Automatica\" o \"\" se nessuna")]
+        public string PausaModalita => _d.Pause.Where(p => p.Tipo == PausaTipo.Pranzo).Select(p => p.Modalita.ToString()).FirstOrDefault() ?? string.Empty;
     }
 
     // ── x.Result ─────────────────────────────────────────────────────────────────────
@@ -417,6 +425,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEng
         [FormulaApi("Minuti di eccedenza pagati come ordinario (fase Finale)")] public int Min_EccOrd => M(r => r.Min_EccOrd);
         [FormulaApi("Minuti di eccedenza non riconosciuti (fase Finale)")] public int Min_NonRiconosciute => M(r => r.Min_NonRiconosciute);
         [FormulaApi("Eccedenza destinata alla banca ore (fase Finale)")] public bool BancaOre => _d.Result?.BancaOre ?? false;
+        [FormulaApi("Minuti di pausa timbrati (pranzo e pause brevi)")] public int Min_PausaRilevata => M(r => r.Min_PausaRilevata);
+        [FormulaApi("Minuti di pausa tolti dal lavorato (pausa automatica)")] public int Min_PausaDetratta => M(r => r.Min_PausaDetratta);
+        [FormulaApi("Minuti di pausa rimasti pagati")] public int Min_PausaRetribuita => M(r => r.Min_PausaRetribuita);
     }
 
     // ── x.Stato ──────────────────────────────────────────────────────────────────────

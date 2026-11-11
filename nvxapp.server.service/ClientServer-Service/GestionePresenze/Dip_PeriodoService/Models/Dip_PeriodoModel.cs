@@ -30,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
         public int Min_BancaOre { get; set; }
         public int Min_NonAutorizzate { get; set; }
         public int Min_DaAutorizzare { get; set; }
+        public int Min_PausaDetratta { get; set; }
         public int? Min_Riconosciute { get; set; }
 
         public string? Note { get; set; }
@@ -58,6 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
         public int Min_NonRiconosciute { get; set; }
         public int Min_NonAutorizzate { get; set; }
         public int Min_DaAutorizzare { get; set; }
+        public int Min_PausaDetratta { get; set; }
     }
 
     public class Dip_Periodo_Settimana

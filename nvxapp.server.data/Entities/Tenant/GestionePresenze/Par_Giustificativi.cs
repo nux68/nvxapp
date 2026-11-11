@@ -52,6 +52,10 @@ namespace nvxapp.server.data.Entities.Tenant
         // riconosciute nel giorno (profili con "solo se autorizzate"); non cambia il dovuto e non ha causale
         public Boolean AutorizzaStraordinario { get; set; }
 
+        // "pausa non fruita": nel giorno non si detrae la pausa automatica e non si segnala la pausa insufficiente;
+        // non cambia il dovuto e non ha causale
+        public Boolean AnnullaPausa { get; set; }
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
 

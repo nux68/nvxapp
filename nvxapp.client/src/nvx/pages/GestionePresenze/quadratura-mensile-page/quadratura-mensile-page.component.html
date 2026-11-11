@@ -93,6 +93,9 @@
                   @if (p.min_BancaOre > 0) {
                     <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.bancaOre' | transloco }} {{ hhmm(p.min_BancaOre) }}</div>
                   }
+                  @if (p.min_PausaDetratta > 0) {
+                    <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.pausaDetratta' | transloco }} {{ hhmm(p.min_PausaDetratta) }}</div>
+                  }
                 </ion-col>
               } @else {
                 <ion-col size="12" size-sm="6" class="qm-nota">{{ 'attendance.pages.quadraturaMensile.ricalcolare' | transloco }}</ion-col>

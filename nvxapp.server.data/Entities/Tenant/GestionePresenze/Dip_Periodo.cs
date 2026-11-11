@@ -44,6 +44,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public int Min_BancaOre { get; set; }       // parte delle ore qualificate accreditata in banca ore
         public int Min_NonAutorizzate { get; set; } // ore in piu' oltre le autorizzazioni approvate
         public int Min_DaAutorizzare { get; set; }  // di cui con una richiesta di autorizzazione in attesa
+        public int Min_PausaDetratta { get; set; }  // minuti di pausa tolti dal lavorato (pausa automatica)
 
         // tetto delle ore in piu' riconosciute nel mese deciso dall'HR (null = tutte, 0 = rifiutate)
         public int? Min_Riconosciute { get; set; }

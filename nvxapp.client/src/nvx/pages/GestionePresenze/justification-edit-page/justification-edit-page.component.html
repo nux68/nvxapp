@@ -131,6 +131,14 @@
             {{ 'attendance.pages.justificationEdit.autorizzaStraordinarioNote' | transloco }}
           </ion-note>
         }
+        <ion-item [hidden]="aImporto">
+          <ion-toggle formControlName="annullaPausa" justify="space-between">{{ 'attendance.pages.justificationEdit.annullaPausa' | transloco }}</ion-toggle>
+        </ion-item>
+        @if (_editForm.get('annullaPausa')?.value) {
+          <ion-note>
+            {{ 'attendance.pages.justificationEdit.annullaPausaNote' | transloco }}
+          </ion-note>
+        }
         @if (_editForm.get('bancaOre')?.value) {
           <ion-note>
             {{ 'attendance.pages.justificationEdit.bancaOreNote' | transloco }}

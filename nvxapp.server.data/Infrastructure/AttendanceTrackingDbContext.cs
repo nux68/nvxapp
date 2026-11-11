@@ -66,6 +66,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrario { get; set; }
         public virtual DbSet<Par_ProfiloOrarioGG> Par_ProfiloOrarioGG { get; set; }
         public virtual DbSet<Par_OrarioIntervalloHH> Par_OrarioIntervalloHH { get; set; }
+        public virtual DbSet<Par_OrarioPausa> Par_OrarioPausa { get; set; }
 
         public virtual DbSet<My_Template1> My_template1 { get; set; }
         public virtual DbSet<Az_SubCommessaSediReparto> Az_SubCommessaSediReparto { get; set; }
@@ -639,6 +640,13 @@ namespace nvxapp.server.data.Infrastructure
 
 
 
+
+            /* Par_OrarioPausa (ANALISI_ATTENDANCETRACKING_PAUSE.md) */
+            modelBuilder.Entity<Par_OrarioPausa>()
+                .HasOne(t_padre => t_padre.Par_OrarioNavigation)
+                .WithMany(t_figlio => t_figlio.Par_OrarioPausa)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Orario)
+                .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_ProfiloOrarioIntervalloHH */
             modelBuilder.Entity<Par_OrarioIntervalloHH>()

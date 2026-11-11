@@ -1,6 +1,8 @@
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_FestivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
@@ -8,6 +10,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     // Stessa regola del motore di calcolo (TimeSheet_EngineService.CalcolaOreTeoriche):
     // vale l'orario con ZOrder piu' basso del giorno; a coppie somma gli intervalli, a monte ore prende Hh_Teo_MonteOre.
     // Un orario senza coppie (es. RIPOSO) vale 0 ore: giorno non lavorativo.
+    // La pausa pranzo varia il teorico come nel motore (GestionePresenzePause.VariazioneTeorico).
     // Nelle festivita' del calendario aziendale vale l'orario festivo del profilo.
     public class GestionePresenzeOreTeoriche : IGestionePresenzeOreTeoriche
     {
@@ -17,13 +20,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
+        private readonly IPar_OrarioPausaRepository _par_OrarioPausaRepository;
 
         public GestionePresenzeOreTeoriche(IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                            IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                            IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
                                            IPar_OrarioRepository par_OrarioRepository,
                                            IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
-                                           IPar_FestivitaRepository par_FestivitaRepository)
+                                           IPar_FestivitaRepository par_FestivitaRepository,
+                                           IPar_OrarioPausaRepository par_OrarioPausaRepository)
         {
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
@@ -31,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_OrarioRepository = par_OrarioRepository;
             _par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
             _par_FestivitaRepository = par_FestivitaRepository;
+            _par_OrarioPausaRepository = par_OrarioPausaRepository;
         }
 
         // Una voce per ogni giorno da Dal ad Al: null se quel giorno non e' coperto da un profilo orario
@@ -60,6 +66,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                     .ToList();
             var orari = _par_OrarioRepository.FindAll(o => idOrari.Contains(o.Id)).ToList();
             var coppie = _par_OrarioIntervalloHHRepository.FindAll(c => idOrari.Contains(c.IdPar_Orario)).ToList();
+            var pause = _par_OrarioPausaRepository.FindAll(p => idOrari.Contains(p.IdPar_Orario)).ToList();
 
             for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
             {
@@ -92,6 +99,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         if (durata > TimeSpan.Zero)
                             ore += durata;
                     }
+
+                    var pauseOrario = pause.Where(p => p.IdPar_Orario == orario.Id).Select(ModelloPausa).ToList();
+                    if (pauseOrario.Count > 0)
+                    {
+                        var coppieOrario = coppie.Where(c => c.IdPar_Orario == orario.Id).Select(ModelloCoppia).ToList();
+                        ore += GestionePresenzePause.VariazioneTeorico(giorno, ore, coppieOrario, pauseOrario);
+                        if (ore < TimeSpan.Zero)
+                            ore = TimeSpan.Zero;
+                    }
                 }
                 else if (orario != null)
                 {
@@ -103,6 +119,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
             return retVal;
         }
+
+        private static Par_OrarioIntervalloHHModel ModelloCoppia(Par_OrarioIntervalloHH c) => new()
+        {
+            NumCoppia = c.NumCoppia,
+            Dalle = c.Dalle,
+            Dalle_Limite_SX = c.Dalle_Limite_SX,
+            Dalle_Limite_DX = c.Dalle_Limite_DX,
+            Dalle_Use_4_Match = c.Dalle_Use_4_Match,
+            Alle = c.Alle,
+            Alle_Limite_SX = c.Alle_Limite_SX,
+            Alle_Limite_DX = c.Alle_Limite_DX,
+            Alle_Use_4_Match = c.Alle_Use_4_Match
+        };
+
+        private static Par_OrarioPausaModel ModelloPausa(Par_OrarioPausa p) => new()
+        {
+            Id = p.Id,
+            IdPar_Orario = p.IdPar_Orario,
+            NumPausa = p.NumPausa,
+            Tipo = p.Tipo,
+            Modalita = p.Modalita,
+            DurataMin = p.DurataMin,
+            DurataMaxMin = p.DurataMaxMin,
+            SogliaMin = p.SogliaMin,
+            FinestraDalle = p.FinestraDalle,
+            FinestraAlle = p.FinestraAlle,
+            RetribuitaMin = p.RetribuitaMin,
+            IdCausale_Pausa = p.IdCausale_Pausa
+        };
     }
 
     public interface IGestionePresenzeOreTeoriche

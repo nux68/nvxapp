@@ -34,6 +34,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
         [HashField] public bool BancaOre { get; set; }
         [HashField] public int Min_NonAutorizzate { get; set; }
         [HashField] public int Min_DaAutorizzare { get; set; }
+        [HashField] public int Min_PausaRilevata { get; set; }
+        [HashField] public int Min_PausaDetratta { get; set; }
+        [HashField] public int Min_PausaRetribuita { get; set; }
     }
 
 
