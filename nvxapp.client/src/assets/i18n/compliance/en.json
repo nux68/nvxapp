@@ -1,0 +1,20 @@
+{
+  "cmp": {
+    "menu": {
+      "section": "Compliance",
+      "settings": "Settings",
+      "manual": "Compliance manual"
+    },
+    "pages": {
+      "settings": {
+        "title": "Compliance settings",
+        "general": "General",
+        "noticeDays": "Deadline notice days",
+        "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
+        "notifications": "Notifications on",
+        "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
+        "note": "Notes"
+      }
+    }
+  }
+}

@@ -182,7 +182,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
 | `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ⏳ |
-| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 |
+| `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `Compliance_Dev_cmp-base`, provata su DB usa e getta), da mergiare |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `CMP-WB` | Whistleblowing | Compliance_Dev | `wt_cmp-wb` | `CMP-BASE`, `ANA.5`, `ANA.6` | 3 | ⏳ |
 | `CMP-GDPR` | Registro GDPR | Compliance_Dev | `wt_cmp-gdpr` | `CMP-BASE` | 3 | ⏳ |
@@ -207,7 +207,7 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `ANA.4` Divisione in aree con etichetta e punti numerati per il lavoro su più worktree (§8, §10)
 - ⏳ `ANA.5` Verifica legale del whistleblowing (D.Lgs 24/2023)
 - ⏳ `ANA.6` Analisi della sicurezza dei dati riservati (segnalazioni, dati sanitari delle visite), collegata a `piano-security.md`
-- ⏳ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev)
+- ✅ `ANA.7` `ANALISI_COMPLIANCE_APPLICATIVO.md` (branch Compliance_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - ✅ `ANA.8` `ANALISI_HUMANRESOURCES_APPLICATIVO.md` (branch HumanResources_Dev) — scritta l'11/11/2026 con modello dati, uso dei servizi comuni, decisioni aperte e checklist
 - ⏳ `ANA.9` `ANALISI_ASSETS_APPLICATIVO.md` (branch Assets_Dev)
 - 🔍 `ANA.10` Livelli di licenza dei nuovi moduli, con i listini (D8)
@@ -311,9 +311,9 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`)
 
 #### `CMP-BASE` – Avvio del modulo Compliance
-- ⏳ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale
-- ⏳ `CMP-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli
-- ⏳ `CMP-BASE.3` Menu, widget e comandi vocali di base
+- ✅ `CMP-BASE.1` `ComplianceDbContext` registrato in `DataLayerInstaller` e migration iniziale — `ComplianceDbContext` registrato in `Installers4<App>` (design-time factory in un file proprio), migration `InitCompliance` con la tabella di configurazione, repository, inizializzatore e `IApplicationDataDeleter`
+- ✅ `CMP-BASE.2` Cartelle del modulo (controller, servizi, pagine) e ruoli — servizio/controller della configurazione (Get amministratori, Put CompanyPowerAdmin), pagina `/cmpsettings`, manuale it/en, listini con prezzi segnaposto (livelli: `ANA.10`); dettagli in `ANALISI_COMPLIANCE_APPLICATIVO.md`
+- ✅ `CMP-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `CMP-81` – Sicurezza sul lavoro (D.Lgs 81/08)
 - ⏳ `CMP-81.1` Corsi obbligatori per mansione e scadenze
