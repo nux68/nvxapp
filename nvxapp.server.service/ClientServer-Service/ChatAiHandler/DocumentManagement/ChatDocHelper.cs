@@ -61,8 +61,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManag
             Required = false,
             PromptDescription = "tipo di documento come detto dall'utente (es. 'cedolino', 'busta paga', 'CU', 'contratto', 'certificato medico', 'F24', 'DURC', 'visura'), al singolare",
             Question = DocumentManagementMessages.Get("ChatTypeQuestion"),
-            Label = DocumentManagementMessages.Get("ChatTypeLabel")
+            Label = DocumentManagementMessages.Get("ChatTypeLabel"),
+            // "cedolini" nel testo e "cedolino" dal LLM: stesso valore, il motore lo riconosce come detto dall'utente
+            Normalizer = NormalizzaTipo
         };
+
+        // plurali e sinonimi dei tipi predefiniti -> nome base ("cedolini", "busta paga" -> "cedolino"); altrimenti null
+        public static string? NormalizzaTipo(string valore)
+        {
+            var n = ChatAIKeywords.Normalize(valore);
+            return _sinonimiTipo.FirstOrDefault(g => g.Any(s => ChatAIKeywords.Normalize(s) == n))?[0];
+        }
 
         public static SlotDefinition SlotPersona() => new()
         {
