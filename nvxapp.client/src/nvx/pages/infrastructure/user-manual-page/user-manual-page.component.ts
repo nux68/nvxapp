@@ -34,6 +34,9 @@ export class UserManualPageComponent {
     attendance: ApplicationType.AttendanceTracking,
     crm: ApplicationType.Crm,
     documents: ApplicationType.DocumentManagement,
+    humanresources: ApplicationType.HumanResources,
+    compliance: ApplicationType.Compliance,
+    assets: ApplicationType.Assets,
     // comandi vocali: il server li prende dal catalogo dei comandi, il menu serve solo per le voci di Infrastructure
     voicecommands: null,
   };

@@ -577,6 +577,18 @@
     <value>Documents</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicenseAmbito_5" xml:space="preserve">
+    <value>Human resources</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_6" xml:space="preserve">
+    <value>Compliance</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseAmbito_7" xml:space="preserve">
+    <value>Company assets</value>
+    <comment>licenze</comment>
+  </data>
   <data name="LicenseAmbito_100" xml:space="preserve">
     <value>Bundle (all functions)</value>
     <comment>licenze</comment>
@@ -639,6 +651,18 @@
   </data>
   <data name="VoiceManualApp_4" xml:space="preserve">
     <value>Document management</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_5" xml:space="preserve">
+    <value>Human resources</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_6" xml:space="preserve">
+    <value>Compliance</value>
+    <comment>manuale comandi vocali</comment>
+  </data>
+  <data name="VoiceManualApp_7" xml:space="preserve">
+    <value>Company assets</value>
     <comment>manuale comandi vocali</comment>
   </data>
   <data name="VoiceManualAppIntro" xml:space="preserve">
@@ -986,5 +1010,81 @@ The statement is attached.</value>
   <data name="PaymentSendDone" xml:space="preserve">
     <value>Payment summary sent to {0}.</value>
     <comment>pagamenti</comment>
+  </data>
+  <data name="NotificationCategory_generale" xml:space="preserve">
+    <value>General notices</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationCategory_scadenze" xml:space="preserve">
+    <value>Deadlines</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationCategory_presevisione" xml:space="preserve">
+    <value>Acknowledgements</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="NotificationEmailOpen" xml:space="preserve">
+    <value>Open {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineReminderTitle" xml:space="preserve">
+    <value>Due soon: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineReminderText" xml:space="preserve">
+    <value>{0} is due on {1}.</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineExpiredTitle" xml:space="preserve">
+    <value>Overdue: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineExpiredText" xml:space="preserve">
+    <value>{0} was due on {1}.</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNoCompany" xml:space="preserve">
+    <value>The deadline register is only available when working in a company</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNotAllowed" xml:space="preserve">
+    <value>Only company administrators can do this</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineNotFound" xml:space="preserve">
+    <value>Deadline not found</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineManualOnly" xml:space="preserve">
+    <value>This deadline is managed by the module that created it: it can only be closed or reopened</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineDescriptionRequired" xml:space="preserve">
+    <value>The description is required</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineDateRequired" xml:space="preserve">
+    <value>The due date is required</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="DeadlineUserInvalid" xml:space="preserve">
+    <value>The person in charge must be an active user of the company</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementRequestTitle" xml:space="preserve">
+    <value>Acknowledgement requested: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementRequestText" xml:space="preserve">
+    <value>You have been asked to confirm that you have read: {0}</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementNotFound" xml:space="preserve">
+    <value>Acknowledgement request not found</value>
+    <comment>servizi comuni</comment>
+  </data>
+  <data name="AcknowledgementOtherChannel" xml:space="preserve">
+    <value>This request is confirmed by opening the linked document</value>
+    <comment>servizi comuni</comment>
   </data>
 </root>

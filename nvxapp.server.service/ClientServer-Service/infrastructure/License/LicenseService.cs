@@ -30,7 +30,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     public class LicenseService : ServiceBase, ILicenseService
     {
         private static readonly AmbitoLicenza[] AmbitiOfferta =
-            { AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement, AmbitoLicenza.Cumulativo };
+            {
+                AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+                AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets, AmbitoLicenza.Cumulativo
+            };
 
         private readonly ILic_ListinoRepository _listinoRepository;
         private readonly ILic_PianoRepository _pianoRepository;

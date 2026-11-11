@@ -1,0 +1,37 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-segment [value]="filtro" (ionChange)="filtroChanged($event.detail.value)" [scrollable]="true">
+        @for (f of filtri; track f) {
+          <ion-segment-button [value]="f">
+            <ion-label>{{ ('pages.acknowledgementList.filter.' + f) | transloco }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+
+      <ion-note class="nvx-acknowledgement-note">{{ 'pages.acknowledgementList.note' | transloco }}</ion-note>
+
+      <nvx-list
+        [items]="acknowledgementList"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        [icon]="iconOf"
+        [highlight]="highlight"
+        [searchText]="searchText"
+        [sort]="sortByData"
+        [emptyText]="'pages.acknowledgementList.empty' | transloco">
+      </nvx-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
