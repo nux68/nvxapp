@@ -263,14 +263,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         var resMat = await _maturazioneService.GetAll(reqMat, true);
                                         if (resMat.Success && resMat.Data != null)
                                             retVal.Dip_Anagrafica.Dip_Maturazione.AddRange(resMat.Data.Maturazioni);
-
-                                        // ── Autovetture (sezione Spesa) ──────────────────────────────
-                                        var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Get_InModel>();
-                                        reqAuto.Data.Id = rappLav.Id;
-                                        var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovettureGet(reqAuto, true);
-                                        if (resAuto.Success && resAuto.Data != null)
-                                            (retVal.Dip_Anagrafica.Dip_RapportoAutovetture ??= new List<Dip_RapportoAutovettureModel>()).AddRange(resAuto.Data.Dip_RapportoAutovetture);
                                     }
+
+                                    // ── Autovetture del dipendente (sezione Spesa; tabella comune legata al dipendente, AT-COM) ──
+                                    var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Get_InModel>();
+                                    reqAuto.Data.Id = retVal.Dip_Anagrafica.Id;
+                                    var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovettureGet(reqAuto, true);
+                                    if (resAuto.Success && resAuto.Data != null)
+                                        retVal.Dip_Anagrafica.Dip_RapportoAutovetture = resAuto.Data.Dip_RapportoAutovetture;
                                 
 
                             }
@@ -349,6 +349,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                     entity.IdAz_Anagrafica = esistente.IdAz_Anagrafica;
                                     entity.IdAspNetUsers = esistente.IdAspNetUsers;
                                     entity.Email = esistente.Email;
+                                    // date di assunzione e cessazione: le allinea il salvataggio dei rapporti di lavoro (AT-COM.3)
+                                    entity.DataAssunzione = esistente.DataAssunzione;
                                     entity.DataCessazione = esistente.DataCessazione;
                                     entity.Attivo = esistente.Attivo;
                                     entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
@@ -441,21 +443,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                             reqMat.Data.Maturazione = mat;
                                             await _maturazioneService.Upsert(reqMat, true);
                                         }
-
-                                        // ── Salvataggio autovetture (solo se la sezione Spesa e' gestita dal client) ──
-                                        if (model.Data.Dip_Anagrafica.Dip_RapportoAutovetture != null)
-                                        {
-                                            var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Put_InModel>();
-                                            reqAuto.Data.Id = itemRapp.Id;
-                                            reqAuto.Data.Dip_RapportoAutovetture = model.Data.Dip_Anagrafica.Dip_RapportoAutovetture
-                                                .Where(a => a.IdDip_RapportoLavoro == itemRapp.Id || (a.IdDip_RapportoLavoro < 0 && model.Data.Dip_Anagrafica.Dip_RapportoLavoro.Any(r => r.Id < 0)))
-                                                .ToList();
-                                            var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovetturePut(reqAuto, true);
-                                            if (resAuto.Success && resAuto.Data != null)
-                                                (retVal.Dip_Anagrafica.Dip_RapportoAutovetture ??= new List<Dip_RapportoAutovettureModel>()).AddRange(resAuto.Data.Dip_RapportoAutovetture);
-                                        }
                                     }
                                 } // end foreach itemRapp / end if res_1.Success
+
+                                // ── Salvataggio autovetture del dipendente (solo se la sezione Spesa e' gestita dal client) ──
+                                // tabella comune legata al dipendente (AT-COM): non dipende piu' dal rapporto di lavoro
+                                if (model.Data.Dip_Anagrafica.Dip_RapportoAutovetture != null)
+                                {
+                                    var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Put_InModel>();
+                                    reqAuto.Data.Id = entity.Id;
+                                    reqAuto.Data.Dip_RapportoAutovetture = model.Data.Dip_Anagrafica.Dip_RapportoAutovetture;
+                                    var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovetturePut(reqAuto, true);
+                                    if (resAuto.Success && resAuto.Data != null)
+                                        retVal.Dip_Anagrafica.Dip_RapportoAutovetture = resAuto.Data.Dip_RapportoAutovetture;
+                                }
 
                             }
                         }

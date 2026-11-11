@@ -66,9 +66,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
                 };
                 riga.Titolo = Taglia(r.Titolo.Trim(), 200)!;
                 riga.Testo = Taglia(r.Testo, 4000);
-                riga.Url = Taglia(r.Url, 200);
-                riga.UrlState = urlState;
                 bool riaperta = riga.Annullata || (r.RichiediDiNuovo && riga.DataConferma != null);
+                // url e stato del modulo: su una richiesta gia' avviata in un altro canale (es. documentale) resta quello
+                // impostato dal canale (la pagina in cui si conferma), altrimenti il pulsante "Apri" sparirebbe
+                if (nuova || riaperta || riga.Canale == ConfirmationChannel.CodeConferma)
+                {
+                    riga.Url = Taglia(r.Url, 200);
+                    riga.UrlState = urlState;
+                }
                 if (riaperta)
                 {
                     riga.Annullata = false;

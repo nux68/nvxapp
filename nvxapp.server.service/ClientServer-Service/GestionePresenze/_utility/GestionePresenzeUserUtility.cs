@@ -35,11 +35,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             var claim = _httpContextAccessor.HttpContext?.User?.FindFirst(TenantSchemaAccessor.CompanyClaim)?.Value;
             return int.TryParse(claim, out var idCompany) && idCompany > 0 ? idCompany : null;
         }
-        private readonly IAz_SediRepository _az_SediRepository;
-        private readonly IAz_SediRepartoRepository _az_RepartoRepository;
+        private readonly IAz_SediCommonRepository _az_SediRepository;
+        private readonly IAz_SediRepartoCommonRepository _az_RepartoRepository;
         private readonly IAz_CfgRepository _az_CfgRepository;
 
-        private readonly IPar_CompetenzaRepository _par_CompetenzaRepository;
+        private readonly IPar_CompetenzaCommonRepository _par_CompetenzaRepository;
         private readonly IPar_AttivitaRepository _par_AttivitaRepository;
         private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
 
@@ -59,9 +59,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
-        private readonly IDip_CompetenzaRepository _dip_CompetenzaRepository;
+        private readonly IDip_CompetenzaCommonRepository _dip_CompetenzaRepository;
         private readonly IAz_SubCommessaUserRepository _az_SubCommessaUserRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
+        private readonly IDip_AnagraficaCommonRepository _dip_AnagraficaCommonRepository;
 
 
 
@@ -69,10 +70,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IDip_AnagraficaRepository dip_AnagraficaRepository,
                                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                            IAz_AnagraficaRepository az_AnagraficaRepository,
-                                           IAz_SediRepository az_SediRepository,
-                                           IAz_SediRepartoRepository az_RepartoRepository,
+                                           IAz_SediCommonRepository az_SediRepository,
+                                           IAz_SediRepartoCommonRepository az_RepartoRepository,
                                            IAz_CfgRepository az_CfgRepository,
-                                           IPar_CompetenzaRepository par_CompetenzaRepository,
+                                           IPar_CompetenzaCommonRepository par_CompetenzaRepository,
                                            IPar_AttivitaCompetenzaRepository par_AttivitaCompetenzaRepository,
                                            IPar_AttivitaRepository par_AttivitaRepository,
                                            IAz_ClienteRepository az_ClienteRepository,
@@ -89,11 +90,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAspNetUserRolesRepository aspNetUserRolesRepository,
                                            IAspNetRolesRepository aspNetRolesRepository,
                                            IDip_PeriodoRepository dip_PeriodoRepository,
-                                           IDip_CompetenzaRepository dip_CompetenzaRepository,
+                                           IDip_CompetenzaCommonRepository dip_CompetenzaRepository,
                                            IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
                                            IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                            ICommonCompanyUtility commonCompanyUtility,
                                            ICommonDipendenteUtility commonDipendenteUtility,
+                                           IDip_AnagraficaCommonRepository dip_AnagraficaCommonRepository,
                                            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor
                                            )
         {
@@ -129,6 +131,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _dip_CompetenzaRepository = dip_CompetenzaRepository;
             _az_SubCommessaUserRepository = az_SubCommessaUserRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
+            _dip_AnagraficaCommonRepository = dip_AnagraficaCommonRepository;
 
         }
 
@@ -191,6 +194,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                             IdAz_SubCommessaAttivita = res_1.Az_SubCommessaAttivita.Id
                         };
                         await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
+                        await AllineaDateDipendente(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.Id);
 
                         // Profilo orario di default dell'azienda (DAY7H8) dalla data di assunzione
                         var par_ProfiloOrario = _gestionePresenzeParametriDefault.GetProfiloOrarioDefault(company_DATA.az_Anagrafica!.Id);
@@ -221,6 +225,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
 
             return user_DATA_COMB_DipAna_DipRapp;
+        }
+
+        /*
+         AT-COM.3: date del dipendente comune (Dip_Anagrafica, schema Common) allineate con i rapporti di lavoro delle presenze
+           DataAssunzione = assunzione del PRIMO rapporto (DataAss minima)
+           DataCessazione = licenziamento dell'ULTIMO rapporto (DataAss piu' recente), null se un rapporto e' aperto (DataLic null)
+         Si chiama a ogni salvataggio o cancellazione dei rapporti (Dip_RapportoLavoroPut, che serve anche l'import dei
+         dipendenti, e creazione del rapporto iniziale). Senza rapporti le date restano come sono. Stesso calcolo della
+         migration AttendanceTracking_CommonTables per i dati esistenti. Scrittura con il repository comune.
+        */
+        public async Task AllineaDateDipendente(int IdDip_Anagrafica)
+        {
+            var rapporti = _dip_RapportoLavoroRepository.FindAll(x => x.IdDip_Anagrafica == IdDip_Anagrafica)
+                                                        .Select(x => new { x.Id, x.DataAss, x.DataLic })
+                                                        .ToList();
+            if (rapporti.Count == 0)
+                return;
+
+            DateTime? assunzione = rapporti.Min(x => x.DataAss);
+            DateTime? cessazione = rapporti.Any(x => x.DataLic == null)
+                                   ? null
+                                   : rapporti.OrderByDescending(x => x.DataAss ?? DateTime.MinValue).ThenByDescending(x => x.Id).First().DataLic;
+
+            var dip_Anagrafica = await _dip_AnagraficaCommonRepository.FindByIdAsync(IdDip_Anagrafica);
+            if (dip_Anagrafica == null || (dip_Anagrafica.DataAssunzione == assunzione && dip_Anagrafica.DataCessazione == cessazione))
+                return;
+
+            dip_Anagrafica.DataAssunzione = assunzione;
+            dip_Anagrafica.DataCessazione = cessazione;
+            await _dip_AnagraficaCommonRepository.UpdateAsync(dip_Anagrafica);
         }
 
         // Competenza di default dell'azienda (creata con l'azienda e collegata all'attivita' di default)
@@ -859,6 +893,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
         Par_Competenza? GetCompetenzaDefault(int IdAz_Anagrafica);
+        Task AllineaDateDipendente(int IdDip_Anagrafica);
         Task CompletaCompetenzaDefault(List<string> IdAspNetUsers, int IdAz_Anagrafica);
         Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany);
         List<int> GetIdAz_SubCommessaAttivita_Consentite(string IdAspNetUsers);

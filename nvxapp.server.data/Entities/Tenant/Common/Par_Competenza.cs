@@ -1,10 +1,14 @@
-using nvxapp.server.data.Entities.Public;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class Par_Competenza : BaseEntity
+    /*
+     Competenza definita dall'azienda (schema Common, INF-COM.2): condivisa tra presenze, HR e compliance.
+     Stessi nomi di classe, tabella e campi della versione delle presenze (AT-COM sposta i dati).
+     Classe partial: le navigazioni verso le tabelle delle presenze (es. Par_AttivitaCompetenza) restano nel ramo Presenze.
+    */
+    public partial class Par_Competenza : BaseEntity
     {
         [Required]
         public required int IdAz_Anagrafica { get; set; }
@@ -16,6 +20,5 @@ namespace nvxapp.server.data.Entities.Tenant
         public string Descrizione { get; set; } = string.Empty;
 
         public Boolean Default { get; set; }
-     
     }
 }

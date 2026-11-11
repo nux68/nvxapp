@@ -446,6 +446,41 @@ export class UserInterfaceService {
     );
   }
 
+  // feed del calendario personale (INF-CAL): copia dell'indirizzo, nuovo indirizzo, pagina del calendario
+  get Btn_Copia(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.copy'),
+      'copy-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Copia cliccato'); }
+    );
+  }
+
+  get Btn_Rigenera(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.regenerate'),
+      'refresh-outline',
+      'warning',
+      false,
+      () => { console.log('Btn_Rigenera cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria a bordo (il colore resta)
+    return button;
+  }
+
+  get Btn_Calendario(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.calendar'),
+      'calendar-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Calendario cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Preferenze
+    return button;
+  }
+
   //trash-outline
 
 }
