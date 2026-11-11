@@ -20,7 +20,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
 {
     /*
-     Gestione dello spazio a disposizione (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3).
+     Gestione dello spazio a disposizione (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3).
         - valore predefinito della soglia di avviso: solo SuperUser
         - spazio delle aziende: SuperUser (tutte), centro (sue aziende; cambia la soglia solo il DealerPowerAdmin),
           studio (sue aziende, sola lettura), azienda (solo la propria, sola lettura)

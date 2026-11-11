@@ -300,7 +300,7 @@ namespace nvxapp.server.data.Infrastructure
             });
         }
         /*
-         Spazio dei file delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3).
+         Spazio dei file delle aziende (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3).
          La quota e' quella della licenza Documentale (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): i pacchetti di spazio e la dimensione
          massima del file sono stati eliminati. Dato iniziale: soglia di avviso all'80%.
         */

@@ -1,7 +1,7 @@
 # Analisi: comandi vocali (chat AI) per il CRM
 
 > Analisi dell'11/11/2026, branch `CRM_Dev` (lavoro su `CRM_Dev_vocali`, worktree `wt_crm_vocali`).
-> Documento gemello: `ANALISI_VOCALI_DOCUMENTALE.md` (branch DocumentManagement). Il motore della chat e la voce
+> Documento gemello: `ANALISI_DOCUMENTMANAGEMENT_VOCALI.md` (branch DocumentManagement). Il motore della chat e la voce
 > sono descritti in `ANALISI_INFRASTRUCTURE_CHAT_AI.md`.
 >
 > **Obiettivo**: portare al CRM i comandi in linguaggio naturale (chat e voce) che oggi esistono solo per le
