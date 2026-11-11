@@ -1,0 +1,51 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-note class="nvx-preference-note">{{ 'pages.notificationPreference.note' | transloco }}</ion-note>
+
+      @if (_editModel && !_editModel.emailConfigured) {
+        <ion-note class="nvx-preference-note" color="warning">{{ 'pages.notificationPreference.emailNotConfigured' | transloco }}</ion-note>
+      }
+
+      <form [formGroup]="_editForm">
+        <ion-grid class="nvx-preference-grid" formArrayName="preference">
+          <ion-row class="nvx-preference-header">
+            <ion-col size="6" size-md="8">{{ 'pages.notificationPreference.category' | transloco }}</ion-col>
+            <ion-col size="3" size-md="2" class="ion-text-center">{{ 'pages.notificationPreference.app' | transloco }}</ion-col>
+            <ion-col size="3" size-md="2" class="ion-text-center">{{ 'pages.notificationPreference.email' | transloco }}</ion-col>
+          </ion-row>
+          @for (riga of preferenceArray.controls; track $index; let i = $index) {
+            <ion-row class="nvx-ion-row-4table nvx-row-hover ion-align-items-center" [formGroupName]="i">
+              <ion-col size="6" size-md="8">{{ titolo(i) }}</ion-col>
+              <ion-col size="3" size-md="2" class="ion-text-center">
+                <ion-toggle formControlName="app" [attr.aria-label]="titolo(i) + ' - ' + ('pages.notificationPreference.app' | transloco)"></ion-toggle>
+              </ion-col>
+              <ion-col size="3" size-md="2" class="ion-text-center">
+                @if (emailAllowed(i)) {
+                  <ion-toggle formControlName="email" [attr.aria-label]="titolo(i) + ' - ' + ('pages.notificationPreference.email' | transloco)"></ion-toggle>
+                } @else {
+                  <span class="nvx-preference-nd" [title]="'pages.notificationPreference.emailNotAllowed' | transloco">—</span>
+                }
+              </ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+      </form>
+
+      @if (_editModel && categorie.length === 0) {
+        <ion-note>{{ 'pages.notificationPreference.empty' | transloco }}</ion-note>
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
