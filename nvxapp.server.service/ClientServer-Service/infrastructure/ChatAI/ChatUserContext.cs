@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using System.Text.RegularExpressions;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
@@ -16,7 +17,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Pagina del client in cui si trova l'utente (route), vuota se non nota
         string CurrentRoute { get; set; }
 
+        // Applicativi attivi per l'azienda dell'utente; null = non noti (nessun limite, es. prova delle frasi)
+        IReadOnlyCollection<ApplicationType>? Applications { get; set; }
+
         bool IsInRole(params string[] roles);
+
+        // vero se l'applicativo è attivo per l'azienda (null = elemento comune, sempre disponibile)
+        bool HasApplication(ApplicationType? application);
     }
 
     public class ChatUserContext : IChatUserContext
@@ -24,9 +31,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         public string UserId { get; set; } = string.Empty;
         public IReadOnlyList<string> Roles { get; set; } = new List<string>();
         public string CurrentRoute { get; set; } = string.Empty;
+        public IReadOnlyCollection<ApplicationType>? Applications { get; set; }
 
         public bool IsInRole(params string[] roles) =>
             roles.Any(r => Roles.Contains(r, StringComparer.OrdinalIgnoreCase));
+
+        public bool HasApplication(ApplicationType? application) =>
+            application == null || Applications == null || Applications.Contains(application.Value);
     }
 
     // L'utente che parla di sé ("timbrami alle 9", "le mie ferie", "my hours").
