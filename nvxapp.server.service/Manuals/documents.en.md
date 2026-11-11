@@ -86,7 +86,7 @@ The access log keeps track of everything that happens to the documents: who uplo
 It is the tool to verify the confidentiality of personnel documents and to reconstruct the history of a document when in doubt.
 
 @@ /docstorage
-This page shows the space used and the Document management licence the company's space comes from (unlimited without a licence), the number of files and the warning threshold.
+This page shows the space used and the Document management licence the company's space comes from (unlimited with the licence system off), the number of files and the warning threshold.
 
 When usage passes the threshold the administrators receive a warning; above 100% no new documents can be uploaded. For more space move to a higher plan of the Document management licence from the Licence management page.
 

@@ -129,7 +129,7 @@ Nel database restano solo i **metadati**: chiave, nome, tipo, dimensione, **hash
 
 ### 5.3 Spazio a disposizione: configurazione e gestione
 
-> **11/11/2026:** i pacchetti di spazio (`StoragePlan`) e la dimensione massima del file (`Storage_MaxFileMB`, `MaxFileMB`) sono stati **eliminati** (branch Infrastructure, ANALISI_LICENZE.md §15.7): lo spazio di un'azienda è quello della sua licenza Documentale, illimitato senza licenza; resta la soglia di avviso. Il testo sotto descrive la configurazione originaria.
+> **11/11/2026:** i pacchetti di spazio (`StoragePlan`) e la dimensione massima del file (`Storage_MaxFileMB`, `MaxFileMB`) sono stati **eliminati** (branch Infrastructure, ANALISI_LICENZE.md §15.7): lo spazio di un'azienda è quello della sua licenza Documentale, illimitato con il sistema licenze spento e zero (caricamenti bloccati) con le licenze accese e senza licenza; resta la soglia di avviso. Il testo sotto descrive la configurazione originaria.
 
 **Cosa si misura.** Lo spazio occupato da un'azienda è la somma delle dimensioni di **tutte le versioni** dei suoi file nello storage (`Doc_Versione.Dimensione`), compresi i documenti nel **cestino** finché non viene svuotato. Non contano i metadati e il testo estratto (stanno nel database). Lo spazio è **solo per azienda** (nessuno spazio condiviso a livello di studio) e conta **solo i file del documentale**: i file degli altri applicativi, anche quando useranno `IFileStorage`, non entrano nel conteggio *(deciso il 03/11/2026)*.
 
