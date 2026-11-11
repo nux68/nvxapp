@@ -47,6 +47,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
 
         public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
+        public ICollection<Par_OrarioPausa>? Par_OrarioPausa { get; set; }
 
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
 

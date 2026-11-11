@@ -271,6 +271,57 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
+                name: "Par_Formule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Codice = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Titolo = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: false),
+                    Descrizione = table.Column<string>(type: "text", nullable: true),
+                    Testo = table.Column<string>(type: "text", nullable: true),
+                    Hash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Par_Formule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Par_Formule_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Par_ProfiloFormule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Codice = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Par_ProfiloFormule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Par_ProfiloFormule_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Par_TipoSpesa",
                 columns: table => new
                 {
@@ -400,6 +451,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     TipoContatore = table.Column<int>(type: "integer", nullable: false),
                     BancaOre = table.Column<bool>(type: "boolean", nullable: false),
                     AutorizzaStraordinario = table.Column<bool>(type: "boolean", nullable: false),
+                    AnnullaPausa = table.Column<bool>(type: "boolean", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -537,6 +589,40 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         name: "FK_Par_ExportCau_Docs_Par_ExportCau_IdPar_ExportCau",
                         column: x => x.IdPar_ExportCau,
                         principalTable: "Par_ExportCau",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Par_ProfiloFormuleDett",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdPar_ProfiloFormule = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_Formule = table.Column<int>(type: "integer", nullable: false),
+                    Ordine = table.Column<int>(type: "integer", nullable: false),
+                    Dal = table.Column<DateTime>(type: "date", nullable: false),
+                    Al = table.Column<DateTime>(type: "date", nullable: false),
+                    Sospesa = table.Column<bool>(type: "boolean", nullable: false),
+                    Fase = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Par_ProfiloFormuleDett", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Par_ProfiloFormuleDett_Par_Formule_IdPar_Formule",
+                        column: x => x.IdPar_Formule,
+                        principalTable: "Par_Formule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Par_ProfiloFormuleDett_Par_ProfiloFormule_IdPar_ProfiloForm~",
+                        column: x => x.IdPar_ProfiloFormule,
+                        principalTable: "Par_ProfiloFormule",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -833,6 +919,39 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
+                name: "Dip_GG_FormuleLog",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    Giorno = table.Column<DateTime>(type: "date", nullable: false),
+                    IdPar_Formule = table.Column<int>(type: "integer", nullable: true),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    Messaggio = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_FormuleLog", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_FormuleLog_Dip_RapportoLavoro_IdDip_RapportoLavoro",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_FormuleLog_Par_Formule_IdPar_Formule",
+                        column: x => x.IdPar_Formule,
+                        principalTable: "Par_Formule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dip_GG_Result",
                 columns: table => new
                 {
@@ -861,6 +980,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     BancaOre = table.Column<bool>(type: "boolean", nullable: false),
                     Min_NonAutorizzate = table.Column<int>(type: "integer", nullable: false),
                     Min_DaAutorizzare = table.Column<int>(type: "integer", nullable: false),
+                    Min_PausaRilevata = table.Column<int>(type: "integer", nullable: false),
+                    Min_PausaDetratta = table.Column<int>(type: "integer", nullable: false),
+                    Min_PausaRetribuita = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -934,6 +1056,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     Min_BancaOre = table.Column<int>(type: "integer", nullable: false),
                     Min_NonAutorizzate = table.Column<int>(type: "integer", nullable: false),
                     Min_DaAutorizzare = table.Column<int>(type: "integer", nullable: false),
+                    Min_PausaDetratta = table.Column<int>(type: "integer", nullable: false),
                     Min_Riconosciute = table.Column<int>(type: "integer", nullable: true),
                     Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     DataApprovazione = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -951,6 +1074,37 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         principalTable: "Dip_RapportoLavoro",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dip_ProfiloFormule",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_ProfiloFormule = table.Column<int>(type: "integer", nullable: false),
+                    Dal = table.Column<DateTime>(type: "date", nullable: false),
+                    Al = table.Column<DateTime>(type: "date", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_ProfiloFormule", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_ProfiloFormule_Dip_RapportoLavoro_IdDip_RapportoLavoro",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_ProfiloFormule_Par_ProfiloFormule_IdPar_ProfiloFormule",
+                        column: x => x.IdPar_ProfiloFormule,
+                        principalTable: "Par_ProfiloFormule",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1050,6 +1204,44 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Par_OrarioIntervalloHH_Par_Orario_IdPar_Orario",
+                        column: x => x.IdPar_Orario,
+                        principalTable: "Par_Orario",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Par_OrarioPausa",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdPar_Orario = table.Column<int>(type: "integer", nullable: false),
+                    NumPausa = table.Column<int>(type: "integer", nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Modalita = table.Column<int>(type: "integer", nullable: false),
+                    DurataMin = table.Column<int>(type: "integer", nullable: false),
+                    DurataMaxMin = table.Column<int>(type: "integer", nullable: true),
+                    SogliaMin = table.Column<int>(type: "integer", nullable: false),
+                    FinestraDalle = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    FinestraAlle = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
+                    RetribuitaMin = table.Column<int>(type: "integer", nullable: false),
+                    IdCausale_Pausa = table.Column<int>(type: "integer", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Par_OrarioPausa", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Par_OrarioPausa_Par_Causali_IdCausale_Pausa",
+                        column: x => x.IdCausale_Pausa,
+                        principalTable: "Par_Causali",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Par_OrarioPausa_Par_Orario_IdPar_Orario",
                         column: x => x.IdPar_Orario,
                         principalTable: "Par_Orario",
                         principalColumn: "Id",
@@ -1547,6 +1739,16 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 column: "IdPar_Causali");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_FormuleLog_IdDip_RapportoLavoro_Giorno",
+                table: "Dip_GG_FormuleLog",
+                columns: new[] { "IdDip_RapportoLavoro", "Giorno" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_FormuleLog_IdPar_Formule",
+                table: "Dip_GG_FormuleLog",
+                column: "IdPar_Formule");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dip_GG_Giustificativi_IdDip_GG_Richiesta",
                 table: "Dip_GG_Giustificativi",
                 column: "IdDip_GG_Richiesta");
@@ -1616,6 +1818,16 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 table: "Dip_Periodo",
                 columns: new[] { "IdDip_RapportoLavoro", "Anno", "Mese" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_ProfiloFormule_IdDip_RapportoLavoro",
+                table: "Dip_ProfiloFormule",
+                column: "IdDip_RapportoLavoro");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_ProfiloFormule_IdPar_ProfiloFormule",
+                table: "Dip_ProfiloFormule",
+                column: "IdPar_ProfiloFormule");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dip_ProfiloOrario_IdDip_RapportoLavoro",
@@ -1709,6 +1921,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 column: "IdAz_Anagrafica");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Par_Formule_IdAz_Anagrafica_Codice",
+                table: "Par_Formule",
+                columns: new[] { "IdAz_Anagrafica", "Codice" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Par_Giustificativi_IdAz_Anagrafica",
                 table: "Par_Giustificativi",
                 column: "IdAz_Anagrafica");
@@ -1752,6 +1970,32 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "IX_Par_OrarioPar_ProfiloOrarioGG_Par_ProfiloOrarioGGId",
                 table: "Par_OrarioPar_ProfiloOrarioGG",
                 column: "Par_ProfiloOrarioGGId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_OrarioPausa_IdCausale_Pausa",
+                table: "Par_OrarioPausa",
+                column: "IdCausale_Pausa");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_OrarioPausa_IdPar_Orario",
+                table: "Par_OrarioPausa",
+                column: "IdPar_Orario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_ProfiloFormule_IdAz_Anagrafica_Codice",
+                table: "Par_ProfiloFormule",
+                columns: new[] { "IdAz_Anagrafica", "Codice" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_ProfiloFormuleDett_IdPar_Formule",
+                table: "Par_ProfiloFormuleDett",
+                column: "IdPar_Formule");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_ProfiloFormuleDett_IdPar_ProfiloFormule",
+                table: "Par_ProfiloFormuleDett",
+                column: "IdPar_ProfiloFormule");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Par_ProfiloOrario_IdAz_Anagrafica",
@@ -1855,6 +2099,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Dip_GG_Causali");
 
             migrationBuilder.DropTable(
+                name: "Dip_GG_FormuleLog");
+
+            migrationBuilder.DropTable(
                 name: "Dip_GG_Giustificativi");
 
             migrationBuilder.DropTable(
@@ -1868,6 +2115,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             migrationBuilder.DropTable(
                 name: "Dip_Periodo");
+
+            migrationBuilder.DropTable(
+                name: "Dip_ProfiloFormule");
 
             migrationBuilder.DropTable(
                 name: "Dip_ProfiloOrario");
@@ -1900,6 +2150,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Par_OrarioPar_ProfiloOrarioGG");
 
             migrationBuilder.DropTable(
+                name: "Par_OrarioPausa");
+
+            migrationBuilder.DropTable(
+                name: "Par_ProfiloFormuleDett");
+
+            migrationBuilder.DropTable(
                 name: "Az_SediReparto");
 
             migrationBuilder.DropTable(
@@ -1913,6 +2169,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             migrationBuilder.DropTable(
                 name: "Par_ProfiloOrarioGG");
+
+            migrationBuilder.DropTable(
+                name: "Par_Formule");
+
+            migrationBuilder.DropTable(
+                name: "Par_ProfiloFormule");
 
             migrationBuilder.DropTable(
                 name: "Az_Sedi");

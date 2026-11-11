@@ -93,6 +93,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
         public List<Par_OrarioModel> ParOrario { get; set; } = new List<Par_OrarioModel>();
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        public List<Par_OrarioPausaModel> Par_OrarioPausa { get; set; } = new List<Par_OrarioPausaModel>();
         public List<Par_GiustificativiModel> Par_Giustificativi { get; set; } = new List<Par_GiustificativiModel>();
         public List<Par_FestivitaModel> Par_Festivita { get; set; } = new List<Par_FestivitaModel>();
     }

@@ -61,6 +61,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       tipoContatore: [TipoContatore.NoContatore, [Validators.required]],
       bancaOre: [false],
       autorizzaStraordinario: [false],
+      annullaPausa: [false],
 
 
       //roleId: [null, [Validators.required]],
@@ -87,6 +88,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
         tipoContatore: TipoContatore.NoContatore,
         bancaOre: false,
         autorizzaStraordinario: false,
+        annullaPausa: false,
         visualizzaInPianoFerie: false
       });
     }

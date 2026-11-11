@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.AttendanceTracking
 {
     [DbContext(typeof(AttendanceTrackingDbContext))]
-    [Migration("20261110131947_AttendanceTracking_Init")]
+    [Migration("20261111154913_AttendanceTracking_Init")]
     partial class AttendanceTracking_Init
     {
         /// <inheritdoc />
@@ -797,6 +797,52 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Dip_GG_Causali");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_FormuleLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Giorno")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdPar_Formule")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Messaggio")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdPar_Formule");
+
+                    b.HasIndex("IdDip_RapportoLavoro", "Giorno");
+
+                    b.ToTable("Dip_GG_FormuleLog");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Giustificativi", b =>
                 {
                     b.Property<int>("Id")
@@ -1023,6 +1069,15 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("Min_Ord")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Min_PausaDetratta")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_PausaRetribuita")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_PausaRilevata")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Min_Strao")
                         .HasColumnType("integer");
 
@@ -1226,6 +1281,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("Min_Ord")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Min_PausaDetratta")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Min_Provvisorie")
                         .HasColumnType("integer");
 
@@ -1269,6 +1327,45 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsUnique();
 
                     b.ToTable("Dip_Periodo");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloFormule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Al")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Dal")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_ProfiloFormule")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_RapportoLavoro");
+
+                    b.HasIndex("IdPar_ProfiloFormule");
+
+                    b.ToTable("Dip_ProfiloFormule");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloOrario", b =>
@@ -1889,6 +1986,70 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Par_OrarioIntervalloHH");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_OrarioPausa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int?>("DurataMaxMin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DurataMin")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly?>("FinestraAlle")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly?>("FinestraDalle")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int?>("IdCausale_Pausa")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Orario")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Modalita")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("NumPausa")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RetribuitaMin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SogliaMin")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCausale_Pausa");
+
+                    b.HasIndex("IdPar_Orario");
+
+                    b.ToTable("Par_OrarioPausa");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ProfiloOrario", b =>
                 {
                     b.Property<int>("Id")
@@ -2243,6 +2404,55 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Par_Competenza");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Formule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Codice")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Hash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Testo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Titolo")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica", "Codice")
+                        .IsUnique();
+
+                    b.ToTable("Par_Formule");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Giustificativi", b =>
                 {
                     b.Property<int>("Id")
@@ -2250,6 +2460,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AnnullaPausa")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("AutorizzaStraordinario")
                         .HasColumnType("boolean");
@@ -2313,6 +2526,93 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasIndex("IdCausale");
 
                     b.ToTable("Par_Giustificativi");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Codice")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica", "Codice")
+                        .IsUnique();
+
+                    b.ToTable("Par_ProfiloFormule");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormuleDett", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Al")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Dal")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Fase")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Formule")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_ProfiloFormule")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Sospesa")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdPar_Formule");
+
+                    b.HasIndex("IdPar_ProfiloFormule");
+
+                    b.ToTable("Par_ProfiloFormuleDett");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_TipoSpesa", b =>
@@ -2620,6 +2920,24 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_CausaliNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_FormuleLog", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Formule", "Par_FormuleNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Formule")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
+
+                    b.Navigation("Par_FormuleNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Giustificativi", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_GG_Richiesta", "Dip_RichiestaNavigation")
@@ -2747,6 +3065,25 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsRequired();
 
                     b.Navigation("Dip_RapportoLavoroNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloFormule", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormule", "Par_ProfiloFormuleNavigation")
+                        .WithMany("Dip_ProfiloFormule")
+                        .HasForeignKey("IdPar_ProfiloFormule")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
+
+                    b.Navigation("Par_ProfiloFormuleNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloOrario", b =>
@@ -2961,6 +3298,23 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_OrarioNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_OrarioPausa", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_PausaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Pausa");
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", "Par_OrarioNavigation")
+                        .WithMany("Par_OrarioPausa")
+                        .HasForeignKey("IdPar_Orario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Causale_PausaNavigation");
+
+                    b.Navigation("Par_OrarioNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ProfiloOrario", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
@@ -3117,6 +3471,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Az_AnagraficaNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Formule", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Giustificativi", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
@@ -3133,6 +3498,36 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Az_AnagraficaNavigation");
 
                     b.Navigation("Causale_Navigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormule", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormuleDett", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Formule", "Par_FormuleNavigation")
+                        .WithMany("Par_ProfiloFormuleDett")
+                        .HasForeignKey("IdPar_Formule")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormule", "Par_ProfiloFormuleNavigation")
+                        .WithMany("Par_ProfiloFormuleDett")
+                        .HasForeignKey("IdPar_ProfiloFormule")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Par_FormuleNavigation");
+
+                    b.Navigation("Par_ProfiloFormuleNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_TipoSpesa", b =>
@@ -3255,6 +3650,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", b =>
                 {
                     b.Navigation("Par_OrarioIntervalloHH");
+
+                    b.Navigation("Par_OrarioPausa");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ProfiloOrario", b =>
@@ -3276,11 +3673,23 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_ExportCau_Causali");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Formule", b =>
+                {
+                    b.Navigation("Par_ProfiloFormuleDett");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Giustificativi", b =>
                 {
                     b.Navigation("Dip_GG_Giustificativi");
 
                     b.Navigation("Dip_Rapporto_Giustificativi_Maturazione");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_ProfiloFormule", b =>
+                {
+                    b.Navigation("Dip_ProfiloFormule");
+
+                    b.Navigation("Par_ProfiloFormuleDett");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_TipoSpesa", b =>
