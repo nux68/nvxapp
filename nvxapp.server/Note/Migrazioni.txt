@@ -92,6 +92,7 @@ storico migrazioni create
   03/11/2026 e 04/11/2026: tutte le migration precedenti eliminate e sostituite da una iniziale per contesto (database ricreato).
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
+  Public: ServiziComuni (11/11/2026: Scadenza, Notifica, NotificaPreferenza, PresaVisione)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica)
   Moke:   InitMoke
   AttendanceTracking: AttendanceTracking_Init (Az_Anagrafica, Az_Cliente e Dip_Anagrafica in Common, mappate escluse;

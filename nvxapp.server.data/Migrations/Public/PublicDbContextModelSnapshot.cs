@@ -1276,6 +1276,114 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("Lic_Piano", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Notifica", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Categoria")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataEmail")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataLettura")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Letta")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Messaggio")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Titolo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UrlState")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("IdAspNetUsers", "Letta");
+
+                    b.ToTable("Notifica", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.NotificaPreferenza", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("App")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Categoria")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Email")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers", "Categoria")
+                        .IsUnique();
+
+                    b.ToTable("NotificaPreferenza", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_DealerConfig", b =>
                 {
                     b.Property<int>("Id")
@@ -1475,6 +1583,178 @@ namespace nvxapp.server.data.Migrations.Public
 
                             t.HasCheckConstraint("CK_Pag_Rendiconto_Percentuale", "\"PercentualePiattaforma\" BETWEEN 0 AND 100");
                         });
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.PresaVisione", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Annullata")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Application")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Canale")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataConferma")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Fonte")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdCanale")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdRiferimento")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Ip")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Testo")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("Titolo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UrlState")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers", "DataConferma");
+
+                    b.HasIndex("IdCompany", "Application", "Fonte", "IdRiferimento", "IdAspNetUsers")
+                        .IsUnique()
+                        .HasFilter("\"IdRiferimento\" IS NOT NULL");
+
+                    b.ToTable("PresaVisione", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Scadenza", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Application")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataAvvisoPreavviso")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataAvvisoScaduta")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataChiusura")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataScadenza")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Fonte")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("GiorniPreavviso")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IdAspNetUsersResponsabile")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdRiferimento")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UrlState")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsersResponsabile");
+
+                    b.HasIndex("Stato", "DataScadenza");
+
+                    b.HasIndex("IdCompany", "Application", "Fonte", "IdRiferimento")
+                        .IsUnique()
+                        .HasFilter("\"IdRiferimento\" IS NOT NULL");
+
+                    b.ToTable("Scadenza", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
@@ -2272,6 +2552,29 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("ListinoNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Notifica", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.NotificaPreferenza", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Pag_DealerConfig", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
@@ -2281,6 +2584,35 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired();
 
                     b.Navigation("DealerNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.PresaVisione", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Scadenza", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsersResponsabile")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>

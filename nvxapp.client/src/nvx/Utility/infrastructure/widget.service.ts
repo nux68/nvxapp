@@ -10,6 +10,9 @@ import { WidgetInfrastructureService } from './widget-infrastructure.service';
 import { WidgetAttendanceTrackingService } from './widget-attendance-tracking.service';
 import { WidgetCrmService } from './widget-crm.service';
 import { WidgetDocumentManagementService } from './widget-document-management.service';
+import { WidgetHumanResourcesService } from './widget-human-resources.service';
+import { WidgetComplianceService } from './widget-compliance.service';
+import { WidgetAssetsService } from './widget-assets.service';
 
 /** stato della dashboard dell'utente corrente */
 export interface DashboardStato {
@@ -39,6 +42,9 @@ export class WidgetService {
               private widgetAttendanceTrackingService: WidgetAttendanceTrackingService,
               private widgetCrmService: WidgetCrmService,
               private widgetDocumentManagementService: WidgetDocumentManagementService,
+              private widgetHumanResourcesService: WidgetHumanResourcesService,
+              private widgetComplianceService: WidgetComplianceService,
+              private widgetAssetsService: WidgetAssetsService,
               private userDashboardService: UserDashboardService,
               private authService: AuthService) { }
 
@@ -51,6 +57,9 @@ export class WidgetService {
       ...conApplicativo(this.widgetAttendanceTrackingService.Widgets, ApplicationType.AttendanceTracking),
       ...conApplicativo(this.widgetCrmService.Widgets, ApplicationType.Crm),
       ...conApplicativo(this.widgetDocumentManagementService.Widgets, ApplicationType.DocumentManagement),
+      ...conApplicativo(this.widgetHumanResourcesService.Widgets, ApplicationType.HumanResources),
+      ...conApplicativo(this.widgetComplianceService.Widgets, ApplicationType.Compliance),
+      ...conApplicativo(this.widgetAssetsService.Widgets, ApplicationType.Assets),
     ].sort((a, b) => a.zorder - b.zorder);
   }
 

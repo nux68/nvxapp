@@ -5,12 +5,19 @@ import { RouteInfrastructureService } from '../nvx/Utility/infrastructure/route-
 import { RouteAttendanceTrackingService } from '../nvx/Utility/infrastructure/route-attendance-tracking.service';
 import { RouteDocumentManagementService } from '../nvx/Utility/infrastructure/route-document-management.service';
 import { RouteCrmService } from '../nvx/Utility/infrastructure/route-crm.service';
+import { RouteHumanResourcesService } from '../nvx/Utility/infrastructure/route-human-resources.service';
+import { RouteComplianceService } from '../nvx/Utility/infrastructure/route-compliance.service';
+import { RouteAssetsService } from '../nvx/Utility/infrastructure/route-assets.service';
 
 const routeInfrastructureService = new RouteInfrastructureService();
 const routeAttendanceTrackingService = new RouteAttendanceTrackingService();
 const routeDocumentManagementService = new RouteDocumentManagementService();
 const routeCrmService = new RouteCrmService();
-const routeService = new RouteService(routeInfrastructureService, routeAttendanceTrackingService, routeDocumentManagementService, routeCrmService); // Creazione istanza del servizio
+const routeHumanResourcesService = new RouteHumanResourcesService();
+const routeComplianceService = new RouteComplianceService();
+const routeAssetsService = new RouteAssetsService();
+const routeService = new RouteService(routeInfrastructureService, routeAttendanceTrackingService, routeDocumentManagementService, routeCrmService,
+  routeHumanResourcesService, routeComplianceService, routeAssetsService); // Creazione istanza del servizio
 const routes: Routes = routeService.getRoutes(); // Ottieni dinamicamente le rotte
 
 @NgModule({

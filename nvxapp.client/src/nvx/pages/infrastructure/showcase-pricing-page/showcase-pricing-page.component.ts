@@ -130,7 +130,8 @@ export class ShowcasePricingPageComponent implements OnInit {
   /** funzioni comprese: quella del listino, oppure tutte con il Cumulativo */
   public get funzioniIncluse(): string {
     if (this.ambito === AmbitoLicenza.Cumulativo)
-      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement].map(a => this.nomeFunzione(a)).join(', ');
+      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+        AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets].map(a => this.nomeFunzione(a)).join(', ');
     return this.nomeFunzione(this.ambito);
   }
 
