@@ -93,6 +93,18 @@
   <data name="RegistrationSummaryEmailIntro" xml:space="preserve">
     <value>The company {0} is active. These are the users created:</value>
   </data>
+  <data name="RegistrationStudioAlreadyExists" xml:space="preserve">
+    <value>A firm registered as '{0}' already exists.</value>
+  </data>
+  <data name="RegistrationConfirmEmailIntroStudio" xml:space="preserve">
+    <value>You asked to register the firm {0}.</value>
+  </data>
+  <data name="RegistrationSummaryEmailSubjectStudio" xml:space="preserve">
+    <value>{0}: the firm {1} is active</value>
+  </data>
+  <data name="RegistrationSummaryEmailIntroStudio" xml:space="preserve">
+    <value>The firm {0} is active. These are the users created:</value>
+  </data>
   <data name="RegistrationSummaryEmailPassword" xml:space="preserve">
     <value>All of them use the password you chose when signing up.</value>
   </data>

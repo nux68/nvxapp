@@ -152,6 +152,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
                                     .ExecuteUpdateAsync(s => s.SetProperty(x => x.CurrentIdAspNetUsers, (string?)null));
 
                     await _tab.CompanyRegistrationRequest.Where(x => x.IdCompany != null && piano.Aziende.Contains(x.IdCompany.Value)).ExecuteDeleteAsync();
+                    await _tab.CompanyRegistrationRequest.Where(x => x.IdFinancialAdvisor != null && piano.Studi.Contains(x.IdFinancialAdvisor.Value)).ExecuteDeleteAsync();
 
                     await _tab.UserCompany.Where(x => piano.CollegamentiAzienda.Contains(x.Id)).ExecuteDeleteAsync();
                     await _tab.UserFinancialAdvisor.Where(x => piano.CollegamentiStudio.Contains(x.Id)).ExecuteDeleteAsync();
