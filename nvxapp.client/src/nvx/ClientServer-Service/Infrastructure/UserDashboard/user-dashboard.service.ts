@@ -7,7 +7,7 @@ import { GenericResult } from '../../ModelsBase/generic-result';
 import { UserDashboardGetInModel, UserDashboardGetOutModel, UserDashboardPutInModel, UserDashboardPutOutModel } from './Models/user-dashboard-model';
 
 
-// Widget della dashboard dell'utente corrente (ANALISI_WIDGET.md)
+// Widget della dashboard dell'utente corrente (ANALISI_INFRASTRUCTURE_WIDGET.md)
 @Injectable({
   providedIn: 'root'
 })

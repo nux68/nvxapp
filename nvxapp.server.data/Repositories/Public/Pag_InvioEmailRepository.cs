@@ -5,7 +5,7 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Public
 {
-    // ripartizione degli incassi ai centri (ANALISI_PAGAMENTI_CENTRI.md)
+    // ripartizione degli incassi ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md)
     public class Pag_InvioEmailRepository : Repository<PublicDbContext, Pag_InvioEmail>, IPag_InvioEmailRepository
     {
         public Pag_InvioEmailRepository(PublicDbContext dbContext, IServiceProvider provider, IHttpContextAccessor httpContextAccessor)

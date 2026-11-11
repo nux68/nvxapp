@@ -32,7 +32,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         /// <summary>L'utente corrente (token) ha il ruolo.</summary>
         Task<bool> CurrentUserHasRoleAsync(string role);
 
-        /// <summary>L'utente corrente e' FinancialAdvisorPowerAdmin dello studio dell'azienda (attivazione con licenza, ANALISI_LICENZE.md §15.6).</summary>
+        /// <summary>L'utente corrente e' FinancialAdvisorPowerAdmin dello studio dell'azienda (attivazione con licenza, ANALISI_INFRASTRUCTURE_LICENZE.md §15.6).</summary>
         Task<bool> IsStudioPowerAdminOfCompanyAsync(int idCompany);
 
         /// <summary>L'utente corrente e' FinancialAdvisorPowerAdmin dello studio (azienda nuova, non ancora salvata).</summary>

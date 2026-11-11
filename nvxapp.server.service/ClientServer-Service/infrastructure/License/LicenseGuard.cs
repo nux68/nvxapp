@@ -10,7 +10,7 @@ using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 {
-    /// <summary>Stato della licenza di una funzione (ANALISI_LICENZE.md §8.1).</summary>
+    /// <summary>Stato della licenza di una funzione (ANALISI_INFRASTRUCTURE_LICENZE.md §8.1).</summary>
     public enum LicenseState
     {
         NotSubscribed = 0,
@@ -47,7 +47,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         public bool Neutra { get; set; }
     }
 
-    /// <summary>Quota dello spazio data dalla licenza del Documentale (ANALISI_LICENZE.md §5.1).</summary>
+    /// <summary>Quota dello spazio data dalla licenza del Documentale (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1).</summary>
     public class LicenseStorageQuota
     {
         public long QuotaBytes { get; set; }
@@ -55,7 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     }
 
     /*
-     Punto di verita' delle licenze (ANALISI_LICENZE.md §8.1, §8.1.1, §8.1.2, §5.1).
+     Punto di verita' delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §8.1, §8.1.1, §8.1.2, §5.1).
      Copertura di una funzione per un'azienda (§4.3):
         1. abbonamento proprio dell'azienda valido (anche Cumulativo)
         2. abbonamento dello studio valido, con DisponibileSuCompany (anche Cumulativo)

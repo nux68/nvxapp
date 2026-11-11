@@ -89,13 +89,13 @@ export class RouteInfrastructureService {
       { path: 'storagesettings', loadChildren: () => import('../../pages/infrastructure/storage-settings-page/storage-settings-page.module').then(m => m.StorageSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'companystoragelist', loadChildren: () => import('../../pages/infrastructure/company-storage-list-page/company-storage-list-page.module').then(m => m.CompanyStorageListPageModule), canActivate: [authenticatedGuard] },
       { path: 'companystorageedit', loadChildren: () => import('../../pages/infrastructure/company-storage-edit-page/company-storage-edit-page.module').then(m => m.CompanyStorageEditPageModule), canActivate: [authenticatedGuard] },
-      // licenze (ANALISI_LICENZE.md): impostazioni (SuperUser); listini (SuperUser, centro) e licenze dell'azienda o dello studio
+      // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md): impostazioni (SuperUser); listini (SuperUser, centro) e licenze dell'azienda o dello studio
       // (i ruoli li controlla il server)
       { path: 'licensesettings', loadChildren: () => import('../../pages/infrastructure/license-settings-page/license-settings-page.module').then(m => m.LicenseSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'licensecataloglist', loadChildren: () => import('../../pages/infrastructure/license-catalog-list-page/license-catalog-list-page.module').then(m => m.LicenseCatalogListPageModule), canActivate: [authenticatedGuard] },
       { path: 'licensecatalogedit', loadChildren: () => import('../../pages/infrastructure/license-catalog-edit-page/license-catalog-edit-page.module').then(m => m.LicenseCatalogEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'licensemanagement', loadChildren: () => import('../../pages/infrastructure/license-management-page/license-management-page.module').then(m => m.LicenseManagementPageModule), canActivate: [authenticatedGuard] },
-      // pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): il dettaglio del centro e i dati
+      // pagamenti delle licenze e ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): il dettaglio del centro e i dati
       // di liquidazione li vedono anche gli utenti del centro (i permessi li ricontrolla il server)
       { path: 'paymentreport', loadChildren: () => import('../../pages/infrastructure/payment-report-page/payment-report-page.module').then(m => m.PaymentReportPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'paymentdealer', loadChildren: () => import('../../pages/infrastructure/payment-dealer-page/payment-dealer-page.module').then(m => m.PaymentDealerPageModule), canActivate: [authenticatedGuard] },

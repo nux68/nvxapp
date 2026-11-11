@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Dashboard di un utente in un'azienda (ANALISI_WIDGET.md): i widget scelti, nell'ordine in cui compaiono.
+     Dashboard di un utente in un'azienda (ANALISI_INFRASTRUCTURE_WIDGET.md): i widget scelti, nell'ordine in cui compaiono.
         - IdAspNetUsers: utente
         - IdCompany    : azienda in cui l'utente lavora (la stessa persona puo' avere dashboard diverse per azienda)
         - Widgets      : chiavi dei widget in formato JSON (es. ["infrastructure.askAssistant","documents.storage"])

@@ -40,7 +40,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         // voci di menu nascoste ai ruoli dell'azienda dell'utente
         public List<CompanyMenuRestrictionModel> MenuRestrictions { get; set; }
 
-        // licenze dell'azienda (o dello studio) dell'utente, per menu e pulsanti (ANALISI_LICENZE.md §8.1.1, §8.1.2)
+        // licenze dell'azienda (o dello studio) dell'utente, per menu e pulsanti (ANALISI_INFRASTRUCTURE_LICENZE.md §8.1.1, §8.1.2)
         public UserLicenseModel License { get; set; } = new UserLicenseModel();
 
         public UserDataModel()

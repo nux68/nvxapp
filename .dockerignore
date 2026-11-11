@@ -1,4 +1,4 @@
-# File esclusi dal contesto di build del Dockerfile (punto 8 di nvxapp.server/docs/ANALISI_DOCKER.md).
+# File esclusi dal contesto di build del Dockerfile (punto 8 di nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md).
 # Oltre a velocizzare la build, evitano che nell'immagine finiscano segreti o file compilati su Windows.
 
 # git, Visual Studio, Claude

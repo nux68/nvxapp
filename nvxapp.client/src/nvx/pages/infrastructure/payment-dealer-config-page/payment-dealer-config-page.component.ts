@@ -12,7 +12,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/Payment/Models/payment-model';
 
 /*
- Dati di liquidazione di un centro (ANALISI_PAGAMENTI_CENTRI.md §3): trattenuta della piattaforma (solo SuperUser;
+ Dati di liquidazione di un centro (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3): trattenuta della piattaforma (solo SuperUser;
  vuota = quella generale), IBAN e intestatario per il bonifico, email dell'amministrazione che riceve rendiconti e riepiloghi
  (vuota = i DealerPowerAdmin del centro). Li modificano il SuperUser e il DealerPowerAdmin del centro.
 */
