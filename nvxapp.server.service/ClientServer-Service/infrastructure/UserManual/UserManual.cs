@@ -56,6 +56,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
 
         /// <summary>Manuale nella lingua corrente, composto dal menu dell'utente e filtrato sui suoi ruoli.</summary>
         UserManualDocument Build(IReadOnlyCollection<string> ruoli, IReadOnlyList<UserManualMenuSection> menu);
+
+        /// <summary>
+        /// Come Build, conoscendo anche gli applicativi attivi per l'azienda dell'utente (li usa UserManualService).
+        /// Di norma non serve (il menu del client e' gia' filtrato): lo ridefinisce chi compone il manuale da altro,
+        /// es. il manuale dei comandi vocali (VoiceCommandsUserManualProvider).
+        /// </summary>
+        UserManualDocument Build(IReadOnlyCollection<string> ruoli, IReadOnlyList<UserManualMenuSection> menu, IReadOnlyCollection<ApplicationType> applicativiAttivi)
+            => Build(ruoli, menu);
     }
 
     // sezione del menu dell'utente (titolo gia' tradotto) con le sue voci
@@ -139,9 +147,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserManual
             return ms.ToArray();
         }
 
-        private string? Leggi(string suffisso)
+        private string? Leggi(string suffisso) => LeggiRisorsa(GetType().Assembly, suffisso);
+
+        // testo incorporato nell'assembly il cui nome finisce con il suffisso (es. ".Manuals.crm.it.md"); null se manca
+        internal static string? LeggiRisorsa(System.Reflection.Assembly assembly, string suffisso)
         {
-            var assembly = GetType().Assembly;
             var nome = assembly.GetManifestResourceNames().FirstOrDefault(n => n.EndsWith(suffisso, StringComparison.OrdinalIgnoreCase));
             if (nome == null)
                 return null;
