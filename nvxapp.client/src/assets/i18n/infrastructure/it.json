@@ -315,6 +315,12 @@
       "sentToSuffix": ". Il link vale {{hours}} ore; se non la trovi guarda anche nella posta indesiderata.",
       "companyName": "Ragione sociale",
       "companyNameError": "Almeno 3 lettere o cifre, al massimo {{max}} caratteri.",
+      "typeLabel": "Cosa vuoi registrare?",
+      "typeCompany": "Azienda",
+      "typeStudio": "Studio",
+      "studioName": "Nome dello studio",
+      "studioTitle": "Registra il tuo studio",
+      "studioSubtitle": "Crea l'account del tuo studio: poi potrai aggiungere e gestire le aziende dei tuoi clienti.",
       "adminUsersHint": "Questi sono gli utenti amministratori che verranno creati: puoi cambiarne il nome.",
       "powerAdminUserName": "Utente power admin",
       "adminUserName": "Utente amministratore",
@@ -366,7 +372,8 @@
       "inProgress": "Attivazione in corso…",
       "signIn": "Accedi",
       "signUp": "Registrati",
-      "invalidLink": "Link di conferma non valido: registrati di nuovo."
+      "invalidLink": "Link di conferma non valido: registrati di nuovo.",
+      "studioReady": "Il tuo studio è pronto. Questi sono gli utenti creati: accedi con la password che hai scelto."
     },
     "dashboard": {
       "title": "Dashboard",

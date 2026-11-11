@@ -315,6 +315,12 @@
       "sentToSuffix": ". The link is valid for {{hours}} hours; if you can't find it, check your spam folder too.",
       "companyName": "Company name",
       "companyNameError": "At least 3 letters or digits, at most {{max}} characters.",
+      "typeLabel": "What do you want to register?",
+      "typeCompany": "Company",
+      "typeStudio": "Firm",
+      "studioName": "Firm name",
+      "studioTitle": "Register your firm",
+      "studioSubtitle": "Create your firm's account: then you can add and manage your clients' companies.",
       "adminUsersHint": "These are the administrator users that will be created: you can change their names.",
       "powerAdminUserName": "Power admin user",
       "adminUserName": "Administrator user",
@@ -366,7 +372,8 @@
       "inProgress": "Activating…",
       "signIn": "Sign in",
       "signUp": "Sign up",
-      "invalidLink": "Invalid confirmation link: please sign up again."
+      "invalidLink": "Invalid confirmation link: please sign up again.",
+      "studioReady": "Your firm is ready. These are the users created: sign in with the password you chose."
     },
     "dashboard": {
       "title": "Dashboard",

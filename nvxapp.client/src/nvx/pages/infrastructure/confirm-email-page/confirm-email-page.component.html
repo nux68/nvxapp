@@ -18,10 +18,10 @@
             <p class="nvx-sc-muted">{{ 'pages.confirmEmail.inProgress' | transloco }}</p>
           </div>
         } @else if (utentiCreati) {
-          <!-- azienda creata: utenti per il primo accesso -->
+          <!-- azienda o studio creato: utenti per il primo accesso -->
           <div class="ion-padding">
             <h2>{{ descrizione }}</h2>
-            <p class="nvx-sc-muted">{{ c.esito }}</p>
+            <p class="nvx-sc-muted">{{ studio ? ('pages.confirmEmail.studioReady' | transloco) : c.esito }}</p>
           </div>
           <ion-list lines="full">
             @for (u of utentiCreati; track u.userName) {
