@@ -18,6 +18,11 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
         {
             _routeRegistry = routeRegistry;
             _chatUserContext = chatUserContext;
+
+            // pagine dei moduli (CRM, documentale...) dichiarate dai loro IRouteProvider
+            var pagineModuli = _routeRegistry?.PromptPages ?? [];
+            if (pagineModuli.Count > 0)
+                _intentDefinition.Slots[0].PromptDescription += ". Altre pagine: " + string.Join(", ", pagineModuli);
         }
 
         // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
