@@ -7,8 +7,8 @@
   <div class="nvx-sc">
 
     <section class="nvx-sc-hero">
-      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
-      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+      <h1 class="nvx-sc-title">{{ titolo }}</h1>
+      <p class="nvx-sc-sub">{{ sottotitolo }}</p>
     </section>
 
     <section class="nvx-sc-form-wrap">
@@ -33,8 +33,22 @@
         </div>
       } @else {
         <form class="nvx-sc-form" [formGroup]="_editForm">
+          <!-- cosa si registra: preimpostato da ?tipo=azienda|studio -->
           <ion-item lines="full">
-            <ion-input [label]="'pages.register.companyName' | transloco" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
+            <ion-label class="ion-text-wrap">{{ 'pages.register.typeLabel' | transloco }}</ion-label>
+          </ion-item>
+          <ion-segment formControlName="tipo">
+            <ion-segment-button [value]="Tipo.Azienda">
+              <ion-icon name="business-outline"></ion-icon>
+              <ion-label>{{ 'pages.register.typeCompany' | transloco }}</ion-label>
+            </ion-segment-button>
+            <ion-segment-button [value]="Tipo.Studio">
+              <ion-icon name="briefcase-outline"></ion-icon>
+              <ion-label>{{ 'pages.register.typeStudio' | transloco }}</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <ion-item lines="full">
+            <ion-input [label]="(studio ? 'pages.register.studioName' : 'pages.register.companyName') | transloco" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
           </ion-item>
           @if (erroreCampo('ragioneSociale')) {
             <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.companyNameError' | transloco: { max: ragioneSocialeMaxLength } }}</ion-note>
