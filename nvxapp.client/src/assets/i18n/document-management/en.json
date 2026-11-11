@@ -106,7 +106,11 @@
         "all": "All",
         "showDisabled": "Also show inactive",
         "trashNote": "Trash: documents are permanently deleted after the days set in the settings, or immediately with \"Delete\".",
-        "truncated": "Showing the first 500 documents: refine the filters."
+        "truncated": "Showing the first 500 documents: refine the filters.",
+        "signNotActive": "Signature request not active",
+        "signPending": "To be signed",
+        "signedPartial": "Signed {{firmati}} of {{firmatari}}",
+        "signedOn": "Signed on {{date}}"
       },
       "edit": {
         "title": "Document",

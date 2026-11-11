@@ -57,6 +57,10 @@
         icon="documents-outline"
         [searchText]="searchText"
         [sort]="sort">
+        <ng-template nvxCell="firma" let-item>
+          @let f = firma(item);
+          <ion-badge [color]="f.colore">{{ f.testo }}</ion-badge>
+        </ng-template>
       </nvx-list>
     </ion-card-content>
   </ion-card>

@@ -13,6 +13,7 @@ import { DocCartellaModel, DocDipendenteModel, DocDocumentoListInModel, DocDocum
  Archivio dei documenti dell'azienda (ANALISI_DOCUMENTALE.md §7.1): filtri per cartella, tipologia, dipendente, anno,
  ricerca nel testo dei file; cestino. Ogni utente vede solo cio' che il server gli consente (documenti del personale
  solo con abilitazione). I documenti oltre la conservazione della tipologia sono segnalati, mai eliminati da soli.
+ Colonna Firma: stato della firma se richiesta all'invio (firmato / firmati x su y / da firmare), altrimenti "non attiva".
 */
 @Component({
   selector: 'app-doc-list-page',
@@ -57,6 +58,7 @@ export class DocListPageComponent {
         value: d => d.anno ? (d.mese ? String(d.mese).padStart(2, '0') + '/' : '') + d.anno : (d.dataDocumento ?? '').substring(0, 10),
         sortValue: d => (d.anno ?? 0) * 100 + (d.mese ?? 0) },
       { key: 'dataScadenza', title: this.transloco.translate('documents.fields.expiry'), value: d => (d.dataScadenza ?? '').substring(0, 10) },
+      { key: 'firma', title: this.transloco.translate('documents.fields.signature'), value: d => this.firma(d).testo, sortValue: d => this.firma(d).ordine },
       { key: 'dimensione', title: this.transloco.translate('documents.fields.size'), align: 'end', mobile: 'hidden', value: d => docSize(d.dimensione), sortValue: d => d.dimensione },
     ];
     this.btnApri = userInterfaceService.Btn_Apri;
@@ -69,6 +71,22 @@ export class DocListPageComponent {
     this.btnRipristina.event = (d: DocDocumentoListModel) => this.azione(d, 'ripristina');
     this.btnElimina = userInterfaceService.Btn_Cancella;
     this.btnElimina.event = (d: DocDocumentoListModel) => this.azione(d, 'elimina');
+  }
+
+  // stato della firma per la colonna: testo (anche per ricerca), colore del badge e ordine (prima quelli da firmare)
+  firma(d: DocDocumentoListModel): { testo: string; colore: string; ordine: number } {
+    const t = (k: string, p?: object) => this.transloco.translate('documents.pages.list.' + k, p);
+    if (!d.firmaDocumento)
+      return { testo: t('signNotActive'), colore: 'medium', ordine: 4 };
+    if (d.firmatari > 0 && d.firmati >= d.firmatari)
+      return { testo: t('signedOn', { date: this.data(d.ultimaFirma) }), colore: 'success', ordine: 3 };
+    if (d.firmati > 0)
+      return { testo: t('signedPartial', { firmati: d.firmati, firmatari: d.firmatari }), colore: 'warning', ordine: 2 };
+    return { testo: t('signPending'), colore: 'danger', ordine: 1 };
+  }
+
+  private data(iso: string | null): string {
+    return iso ? iso.substring(8, 10) + '/' + iso.substring(5, 7) + '/' + iso.substring(0, 4) : '';
   }
 
   ionViewWillEnter() {

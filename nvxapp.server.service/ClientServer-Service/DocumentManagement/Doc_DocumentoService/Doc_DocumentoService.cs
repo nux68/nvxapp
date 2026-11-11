@@ -560,6 +560,10 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 DataPresaVisione = x.Doc_Destinatario!.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)).Select(r => r.DataPresaVisione).FirstOrDefault(),
                 FirmaRichiesta = x.Doc_Destinatario!.Any(r => (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.FirmaRichiesta),
                 DataFirma = x.Doc_Destinatario!.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)).Select(r => r.DataFirma).FirstOrDefault(),
+                FirmaDocumento = x.FirmaRichiesta,
+                Firmatari = x.Doc_Destinatario!.Count(r => r.FirmaRichiesta),
+                Firmati = x.Doc_Destinatario!.Count(r => r.FirmaRichiesta && r.DataFirma != null),
+                UltimaFirma = x.Doc_Destinatario!.Where(r => r.FirmaRichiesta).Max(r => r.DataFirma),
                 Nuovo = x.Doc_Destinatario!.Any(r => (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)) && r.DataPrimaApertura == null),
             });
         }
