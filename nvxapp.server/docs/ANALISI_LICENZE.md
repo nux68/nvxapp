@@ -42,6 +42,7 @@ Entità in `nvxapp.server.data/Entities/Public/`: `Company.IdFinancialAdvisor`, 
 ### 1.3 Precedente utile: i piani dello storage
 
 Esiste già un concetto di "piano a quota" per lo spazio documentale: `StoragePlan` + `CompanyStorage`/`CompanyStorageHistory`, pagine `/storageplanlist` (SuperUser) e `/companystoragelist`, servizio `StorageQuotaService` (riga `CompanyStorage` creata con il "pacchetto predefinito" se manca, `IdStoragePlan`, `QuotaBytes`, soglie di avviso). È il modello concettuale più vicino ai listini: **conviene ispezionarlo e riusarne lo stile** (definizione del piano a livello SuperUser, assegnazione per azienda, stato calcolato).
+> **11/11/2026:** i pacchetti di spazio (`StoragePlan`, pagine `/storageplanlist` e `/storageplanedit`) sono stati **eliminati**: lo spazio è solo quello della licenza Documentale (§15.7).
 
 ### 1.4 Registrazione attuale
 
@@ -224,7 +225,7 @@ I valori in tabella sono i **predefiniti**; un listino di una sola funzione usa 
 **Cosa si conta:**
 - **Utenti (Presenze)**: gli utenti dell'azienda non disabilitati (`UserCompany.Disabled = false`); per lo studio quelli non disabilitati dello studio. Il limite utenti dell'azienda è quello della licenza Presenze: un'azienda senza licenza Presenze non ha limite utenti.
 - **Clienti (CRM)**: i clienti dell'anagrafica comune (`Az_Cliente`, schema Common dell'azienda) **attivi** e di tipo **Cliente o Entrambi**; i soli fornitori non contano. Conta come "cliente in più" un cliente nuovo, uno riattivato o uno che da solo fornitore diventa cliente.
-- **Spazio (Documentale)**: lo spazio occupato dai file (`CompanyStorage`, già esistente). Con la licenza Documentale la quota è quella della licenza e **sostituisce il pacchetto di spazio** assegnato all'azienda; senza licenza resta il pacchetto, come prima.
+- **Spazio (Documentale)**: lo spazio occupato dai file (`CompanyStorage`, già esistente). La quota è quella della licenza Documentale; senza licenza (o con il sistema licenze spento) lo spazio è illimitato. I pacchetti di spazio sono stati eliminati e non c'è più un limite sulla dimensione del singolo file (§15.7).
 - **Copertura dello studio sulle aziende**: i limiti del piano dello studio valgono **per ogni azienda** coperta, non come totale.
 
 **Superamento del limite** (downgrade, scadenza della copertura dello studio, limite abbassato al rinnovo): non si elimina né si disattiva mai niente; si bloccano solo i nuovi utenti, i nuovi clienti e i nuovi caricamenti, con un messaggio dedicato. In "Gestione licenze" ogni funzione mostra uso e limite (es. "Clienti attivi: 120 su 100") e l'avviso di superamento.
@@ -350,7 +351,7 @@ Task       EnsureCanAddClientAsync(int idCompany); // messaggio per l'utente se 
 bool       ContaComeCliente(Az_Cliente? cliente);  // attivo e non solo fornitore
 
 // spazio (Documentale)
-Task<LicenseStorageQuota?> StorageQuotaAsync(int idCompany);   // quota della licenza; null = vale il pacchetto
+Task<LicenseStorageQuota?> StorageQuotaAsync(int idCompany);   // quota della licenza; null = spazio illimitato
 ```
 
 - Per gli utenti dello studio: `StudioUserLimitAsync`, `StudioActiveUsersAsync`, `StudioCanAddUserAsync`, `StudioMaxUsersAsync` (limite della licenza Presenze dello studio).
@@ -547,13 +548,25 @@ Con il sistema licenze acceso un applicativo si usa solo se è **attivo** (`Comp
 - **Sottoscrizione dell'azienda in autonomia**: a sottoscrizione riuscita si attivano gli applicativi coperti (Cumulativo = tutti) con schema e dati iniziali, come in companyedit (`ActivateForLicenseAsync`). Un errore nell'attivazione non annulla la sottoscrizione: l'utente riceve un avviso. Con i pagamenti reali (Fase 3) l'attivazione andrà fatta alla conferma del pagamento.
 - La **scadenza** della licenza non disattiva l'applicativo: lo nasconde dal menu (non più coperto); rinnovando torna visibile.
 
+### 15.7 Eliminazione dei pacchetti di spazio (11/11/2026)
+
+Con la quota della licenza Documentale i pacchetti di spazio non servivano più (valevano solo senza licenza, cioè con il Documentale nascosto, o con il sistema licenze spento). Eliminati:
+
+- entità `StoragePlan`, `IStoragePlanRepository`, colonne `CompanyStorage.IdStoragePlan` e `CompanyStorage.MaxFileMB`, impostazione `Storage_MaxFileMB` (migration `RemoveStoragePlan` di `PublicDbContext`);
+- API `StoragePlanPut` / `StoragePlanDelete`, pagine `/storageplanlist` e `/storageplanedit`, messaggi `StoragePlan*`, `StorageNoPlan`, `StorageFileTooLarge`;
+- il **limite sulla dimensione del singolo file**: conta solo lo spazio totale.
+
+Regole ora:
+- quota = `ILicenseGuard.StorageQuotaAsync`; senza licenza Documentale o con il sistema licenze spento lo spazio è **illimitato** (`LicenseGuard.SpazioIllimitatoBytes`, `CompanyStorageModel.Illimitato`);
+- restano la soglia di avviso (predefinita in `/storagesettings`, voce di menu del SuperUser "Impostazioni spazio", e propria dell'azienda in `/companystorageedit`), gli avvisi email, il riallineamento notturno e lo storico mensile `CompanyStorageHistory` (che ora registra la descrizione della licenza o "Spazio illimitato").
+
 ---
 
 ### Riferimenti nel codice
 
 - Attivazione: `nvxapp.server.service/.../CompanyApplication/CompanyApplicationService.cs`, `ApplicationActivationAuthorizer.cs`; `Entities/Public/CompanyApplication.cs`, `FinancialAdvisorApplication.cs`.
 - Applicativi/tenant: `nvxapp.server.data/Infrastructure/Tenancy/ApplicationType.cs`, `TenantSchemaName.cs`, `TenantSchemaAccessor.cs`.
-- Precedente piani: `StorageQuotaService.cs`, pagine `/storageplanlist`, `/companystoragelist`.
+- Spazio del documentale: `StorageQuotaService.cs`, pagine `/storagesettings`, `/companystoragelist` (i pacchetti `/storageplanlist` sono stati eliminati, §15.7).
 - Registrazione: `register-page.component.ts`, `RegistrationService.cs`, `Entities/Public/CompanyRegistrationRequest.cs`.
 - Menu/auth: `main-menu-infrastructure.service.ts` (`Pages4Support`), `auth.service.ts` (`hasApplication`).
 - Soggetti: `Entities/Public/{Company,FinancialAdvisor,Dealer}.cs`, `ApplicationRole.cs` (`RoleCode`).
