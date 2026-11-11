@@ -21,7 +21,7 @@
 
       <form [formGroup]="_editForm">
         <ion-item>
-          <ion-select formControlName="idDoc_Par_Tipo" [label]="'documents.fields.type' | transloco" labelPlacement="floating">
+          <ion-select formControlName="idDoc_Par_Tipo" [label]="'documents.fields.type' | transloco" labelPlacement="floating" (ionChange)="onTipo()">
             @for (t of tipi; track t.id) {
               @if (t.active || t.id === _editModel?.idDoc_Par_Tipo) {
                 @if (t.categoria !== Categoria.Personale || permessi.caricaPersonale || SolaLettura) {
@@ -94,6 +94,13 @@
           </ion-select>
         </ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'documents.pages.edit.statusNote' | transloco }}</ion-note>
+        @if (Tipo?.categoria === Categoria.Personale) {
+          <!-- richiesta di firma: proposta dalla tipologia, si puo' togliere o aggiungere a ogni invio -->
+          <ion-item>
+            <ion-toggle formControlName="firmaRichiesta" justify="start">{{ 'documents.fields.requiresSignature' | transloco }}</ion-toggle>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'documents.pages.edit.signatureNote' | transloco }}</ion-note>
+        }
         @if (Nuovo) {
           <ion-item>
             <ion-input type="text" formControlName="noteVersione" [label]="'documents.fields.versionNote' | transloco" labelPlacement="floating" maxlength="500"></ion-input>
@@ -106,6 +113,14 @@
         <ion-button size="small" shape="round" color="primary" (click)="download()">
           <ion-icon slot="start" name="download-outline"></ion-icon>{{ 'documents.buttons.download' | transloco }}
         </ion-button>
+        @if (FirmaDaFare) {
+          <ion-button size="small" shape="round" color="success" (click)="firma()">
+            <ion-icon slot="start" name="create-outline"></ion-icon>{{ 'documents.buttons.sign' | transloco }}
+          </ion-button>
+        }
+        @if (dettaglio.riepilogo.firmaRichiesta && dettaglio.riepilogo.dataFirma) {
+          <ion-note color="success">{{ 'documents.pages.edit.signedOn' | transloco: { date: (dettaglio.riepilogo.dataFirma | date: 'dd/MM/yyyy HH:mm') } }}</ion-note>
+        }
         @if (PresaVisioneDaFare) {
           <ion-button size="small" shape="round" color="success" (click)="presaVisione()">
             <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>{{ 'documents.buttons.acknowledge' | transloco }}
@@ -148,7 +163,11 @@
                     {{ 'documents.pages.edit.opened' | transloco }}: {{ r.dataPrimaApertura ? (r.dataPrimaApertura | date: 'dd/MM/yyyy HH:mm') : '–' }}
                     · {{ 'documents.pages.edit.downloaded' | transloco }}: {{ r.dataDownload ? (r.dataDownload | date: 'dd/MM/yyyy HH:mm') : '–' }}
                     @if (r.presaVisioneRichiesta) { · {{ 'documents.pages.edit.acknowledged' | transloco }}: {{ r.dataPresaVisione ? (r.dataPresaVisione | date: 'dd/MM/yyyy HH:mm') : '–' }} }
+                    @if (r.firmaRichiesta || r.dataFirma) { · {{ 'documents.pages.edit.signed' | transloco }}: {{ r.dataFirma ? (r.dataFirma | date: 'dd/MM/yyyy HH:mm') + ' (v' + r.firmaVersione + ')' : '–' }} }
                   </p>
+                  @if (r.dataFirma) {
+                    <p class="nvx-nota-disabled">SHA-256 {{ r.firmaHash }} · IP {{ r.firmaIp || '–' }}</p>
+                  }
                 </ion-label>
               </ion-item>
             }

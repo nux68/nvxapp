@@ -17,6 +17,7 @@
     "buttons": {
       "download": "Download",
       "acknowledge": "Acknowledge",
+      "sign": "Sign",
       "newVersion": "New version",
       "trash": "Trash",
       "restore": "Restore"
@@ -40,7 +41,9 @@
       "5": "Acknowledgement",
       "6": "Trash",
       "7": "Restore",
-      "8": "Deletion"
+      "8": "Deletion",
+      "9": "Signature",
+      "10": "Signature request"
     },
     "fields": {
       "title": "Title",
@@ -61,6 +64,7 @@
       "status": "Status",
       "versionNote": "Version notes",
       "acknowledgement": "Acknowledgement",
+      "signature": "Signature",
       "code": "Code",
       "category": "Category",
       "retention": "Retention years",
@@ -68,6 +72,7 @@
       "hasPeriod": "Has a period (month/year)",
       "hasExpiry": "Has an expiry date",
       "requiresAcknowledgement": "Requires acknowledgement",
+      "requiresSignature": "Requires signature",
       "order": "Order",
       "active": "Active",
       "visibleToUsers": "Visible to employees",
@@ -122,12 +127,17 @@
         "opened": "Opened",
         "downloaded": "Downloaded",
         "acknowledged": "Acknowledged",
+        "signed": "Signed",
+        "signedOn": "Signed on {{date}}",
+        "signatureNote": "Suggested by the type: you can remove or add it for this document. The employee signs with one click (simple electronic signature) after downloading it; a new version must be signed again.",
+        "confirmSign": "By signing \"{{title}}\" (version {{versione}}) you declare you have read and accept it. Date and time, IP address and file fingerprint will be recorded. Confirm?",
         "confirmTrash": "Move the document to the trash?",
         "retentionExpired": "The document is past the retention years of its type: consider deleting it."
       },
       "mine": {
         "title": "My documents",
         "toAcknowledge": "To acknowledge",
+        "toSign": "To sign",
         "confirmAcknowledge": "Do you confirm you have read \"{{title}}\"?"
       },
       "typeList": {
@@ -140,7 +150,8 @@
         "info": "Type",
         "categoryNote": "Personnel: visible to the employee and to those enabled for personnel documents. Company and Customer: to administrators.",
         "multiSendNote": "If on, when uploading a document you can choose several employees at once: one document is created for each, with the same file. If off, you choose a single employee.",
-        "retentionNote": "After this period documents are only flagged, never deleted automatically. Empty = no limit."
+        "retentionNote": "After this period documents are only flagged, never deleted automatically. Empty = no limit.",
+        "signatureNote": "Value suggested when uploading a document of this type: whoever sends it can always remove or add the signature request."
       },
       "folderList": {
         "title": "Folders",

@@ -31,6 +31,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
         public int? AnniConservazione { get; set; }
         public bool HaScadenza { get; set; }
         public bool PresaVisioneRichiesta { get; set; }
+        // firma proposta all'invio (modificabile documento per documento)
+        public bool FirmaRichiesta { get; set; }
         public bool HaCompetenza { get; set; }
         public int Ordine { get; set; }
         public bool Active { get; set; } = true;
