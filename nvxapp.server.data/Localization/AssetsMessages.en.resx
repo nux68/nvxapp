@@ -174,4 +174,46 @@
   <data name="DeletionCountGoods" xml:space="preserve">
     <value>Items (with deliveries and returns)</value>
   </data>
+  <data name="ResourceDuplicate" xml:space="preserve">
+    <value>A resource {0} of the same type already exists.</value>
+  </data>
+  <data name="ResourcePoolVehicleRequired" xml:space="preserve">
+    <value>For a pool car select a fleet vehicle with "pool" use.</value>
+  </data>
+  <data name="ResourceHasBookings" xml:space="preserve">
+    <value>The resource has future bookings: deactivate it instead of deleting it.</value>
+  </data>
+  <data name="ResourceRequired" xml:space="preserve">
+    <value>Select an active bookable resource.</value>
+  </data>
+  <data name="BookingNotEditable" xml:space="preserve">
+    <value>The booking is cancelled or already over.</value>
+  </data>
+  <data name="BookingInThePast" xml:space="preserve">
+    <value>Bookings cannot be in the past.</value>
+  </data>
+  <data name="BookingTooLong" xml:space="preserve">
+    <value>A booking can last at most {0} hours.</value>
+  </data>
+  <data name="BookingTooFar" xml:space="preserve">
+    <value>Bookings can be made at most {0} days in advance.</value>
+  </data>
+  <data name="BookingConflict" xml:space="preserve">
+    <value>{0} is already booked at that time.</value>
+  </data>
+  <data name="BookingCancelledTitle" xml:space="preserve">
+    <value>Booking cancelled: {0}</value>
+  </data>
+  <data name="BookingCancelledText" xml:space="preserve">
+    <value>An administrator cancelled your booking of {0} on {1}-{2}.</value>
+  </data>
+  <data name="CalendarBookingTitle" xml:space="preserve">
+    <value>Booking: {0}</value>
+  </data>
+  <data name="CalendarBookingSite" xml:space="preserve">
+    <value>Site: {0}</value>
+  </data>
+  <data name="DeletionCountBookings" xml:space="preserve">
+    <value>Bookings</value>
+  </data>
 </root>

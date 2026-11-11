@@ -25,6 +25,11 @@ export class RouteAssetsService {
       { path: 'astgoods', loadChildren: () => import('../../pages/Assets/ast-goods-list-page/ast-goods-list-page.module').then(m => m.AstGoodsListPageModule), canActivate: [authenticatedGuard] },
       { path: 'astgoodedit', loadChildren: () => import('../../pages/Assets/ast-good-edit-page/ast-good-edit-page.module').then(m => m.AstGoodEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'astgooditemedit', loadChildren: () => import('../../pages/Assets/ast-good-item-edit-page/ast-good-item-edit-page.module').then(m => m.AstGoodItemEditPageModule), canActivate: [authenticatedGuard] },
+      // prenotazioni (AST-PREN)
+      { path: 'astbookings', loadChildren: () => import('../../pages/Assets/ast-booking-page/ast-booking-page.module').then(m => m.AstBookingPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astbookingedit', loadChildren: () => import('../../pages/Assets/ast-booking-edit-page/ast-booking-edit-page.module').then(m => m.AstBookingEditPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astresources', loadChildren: () => import('../../pages/Assets/ast-resource-list-page/ast-resource-list-page.module').then(m => m.AstResourceListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'astresourceedit', loadChildren: () => import('../../pages/Assets/ast-resource-edit-page/ast-resource-edit-page.module').then(m => m.AstResourceEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'astvehicleitemedit', loadChildren: () => import('../../pages/Assets/ast-vehicle-item-edit-page/ast-vehicle-item-edit-page.module').then(m => m.AstVehicleItemEditPageModule), canActivate: [authenticatedGuard] },
     ];
   }

@@ -6,7 +6,9 @@
       "manual": "Manuale Risorse aziendali",
       "vehicles": "Veicoli",
       "mine": "Le mie risorse",
-      "goods": "Beni"
+      "goods": "Beni",
+      "bookings": "Prenotazioni",
+      "resources": "Risorse prenotabili"
     },
     "pages": {
       "settings": {
@@ -16,7 +18,11 @@
         "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
         "notifications": "Notifiche attive",
         "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
-        "note": "Note"
+        "note": "Note",
+        "bookings": "Prenotazioni",
+        "maxHours": "Durata massima di una prenotazione (ore)",
+        "maxDaysAhead": "Anticipo massimo (giorni)",
+        "bookingsNote": "Le prenotazioni non richiedono approvazione; 0 = nessun limite."
       },
       "vehicleList": {
         "title": "Veicoli aziendali",
@@ -116,6 +122,35 @@
         "restituzione": "Restituzione",
         "deliveryNote": "Il dipendente riceve il verbale di consegna da confermare nelle prese visione (con il documentale attivo, da firmare). Senza utente si registra solo la consegna.",
         "returnNote": "Il dipendente riceve il verbale di restituzione; l'eventuale scadenza della restituzione alla cessazione si chiude."
+      },
+      "resourceList": {
+        "title": "Risorse prenotabili",
+        "new": "Nuova risorsa",
+        "empty": "Nessuna risorsa prenotabile",
+        "showInactive": "Mostra le risorse disattivate",
+        "seats": "{{n}} posti",
+        "confirmDelete": "Eliminare la risorsa {{nome}} con lo storico delle prenotazioni?"
+      },
+      "resourceEdit": {
+        "title": "Risorsa prenotabile",
+        "titleNew": "Nuova risorsa prenotabile",
+        "poolNote": "Si possono scegliere i veicoli della flotta con uso \"pool\"."
+      },
+      "booking": {
+        "title": "Prenotazioni",
+        "new": "Nuova prenotazione",
+        "thisWeek": "Questa settimana",
+        "allResources": "Tutte",
+        "onlyMine": "Solo le mie",
+        "busy": "Occupato",
+        "empty": "Nessuna prenotazione nella settimana",
+        "confirmCancel": "Annullare la prenotazione di {{nome}}?",
+        "note": "Le tue prenotazioni compaiono anche nel tuo calendario personale (pulsante Calendario)."
+      },
+      "bookingEdit": {
+        "title": "Prenotazione",
+        "titleNew": "Nuova prenotazione",
+        "limits": "Durata massima {{ore}} ore, al massimo {{giorni}} giorni in anticipo. Una risorsa già prenotata nell'orario non si può prenotare."
       }
     },
     "common": {
@@ -185,7 +220,16 @@
       "condizioni": "Condizioni",
       "statoRientro": "Stato del bene al rientro",
       "bene": "Bene",
-      "verbale": "Verbale"
+      "verbale": "Verbale",
+      "dettaglio": "Dettaglio",
+      "capienza": "Posti",
+      "attiva": "Attiva",
+      "quando": "Quando",
+      "risorsa": "Risorsa",
+      "prenotatoDa": "Prenotato da",
+      "titolo": "Titolo",
+      "inizio": "Inizio",
+      "fine": "Fine"
     },
     "enums": {
       "uso": {
@@ -241,6 +285,11 @@
       "tipoRestituzione": {
         "bene": "Bene",
         "veicolo": "Veicolo"
+      },
+      "tipoRisorsa": {
+        "0": "Postazione",
+        "1": "Sala",
+        "2": "Auto in pool"
       }
     }
   }

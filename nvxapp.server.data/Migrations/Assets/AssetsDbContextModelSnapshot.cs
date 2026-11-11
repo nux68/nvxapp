@@ -324,6 +324,12 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<bool>("NotificheAttive")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("PrenotazioneAnticipoMaxGiorni")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PrenotazioneDurataMaxOre")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Anagrafica")
@@ -394,6 +400,118 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.HasIndex("IdAst_Veicolo", "DataInfrazione");
 
                     b.ToTable("Ast_Multa");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Prenotazione", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataAnnullamento")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Fine")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdAst_Risorsa")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Inizio")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Titolo")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers", "Inizio");
+
+                    b.HasIndex("IdAst_Risorsa", "Inizio", "Fine");
+
+                    b.ToTable("Ast_Prenotazione");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Risorsa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Attiva")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("Capienza")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("IdAst_Veicolo")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdAz_Sedi")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAst_Veicolo");
+
+                    b.HasIndex("IdAz_Sedi");
+
+                    b.HasIndex("IdAz_Anagrafica", "Tipo", "Descrizione")
+                        .IsUnique();
+
+                    b.ToTable("Ast_Risorsa");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Veicolo", b =>
@@ -904,6 +1022,50 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Navigation("Ast_VeicoloNavigation");
 
                     b.Navigation("Dip_AnagraficaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Prenotazione", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Assets.Ast_Risorsa", "Ast_RisorsaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAst_Risorsa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("Ast_RisorsaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Risorsa", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Assets.Ast_Veicolo", "Ast_VeicoloNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAst_Veicolo")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Sedi", "Az_SediNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Sedi")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Ast_VeicoloNavigation");
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Az_SediNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Assets.Ast_Veicolo", b =>

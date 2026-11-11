@@ -39,6 +39,10 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Ast_Bene> Ast_Bene { get; set; }
         public virtual DbSet<Ast_BeneAssegnazione> Ast_BeneAssegnazione { get; set; }
 
+        // prenotazioni (AST-PREN)
+        public virtual DbSet<Ast_Risorsa> Ast_Risorsa { get; set; }
+        public virtual DbSet<Ast_Prenotazione> Ast_Prenotazione { get; set; }
+
         // tabelle comuni in sola lettura
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
@@ -54,6 +58,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_Ast(modelBuilder);
             Gen_AstFlotta(modelBuilder);
             Gen_AstBeni(modelBuilder);
+            Gen_AstPrenotazioni(modelBuilder);
         }
 
         // come nel CRM: si escludono le entita' degli altri applicativi raggiungibili dalle navigazioni delle comuni
@@ -64,6 +69,7 @@ namespace nvxapp.server.data.Infrastructure
                 typeof(Ast_Cfg),
                 typeof(Ast_Veicolo), typeof(Ast_VeicoloAssegnazione), typeof(Ast_VeicoloScadenza), typeof(Ast_VeicoloCosto), typeof(Ast_Multa),
                 typeof(Ast_Categoria), typeof(Ast_Bene), typeof(Ast_BeneAssegnazione),
+                typeof(Ast_Risorsa), typeof(Ast_Prenotazione),
                 typeof(Az_Anagrafica), typeof(Dip_Anagrafica), typeof(Az_Sedi), typeof(Dip_RapportoAutovetture),
                 typeof(Company), typeof(ApplicationUser),
             };
@@ -201,6 +207,30 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasIndex(t => t.IdDip_Anagrafica);
                 // un bene e' in mano a un solo dipendente per volta: una sola assegnazione aperta per bene
                 entity.HasIndex(t => t.IdAst_Bene).IsUnique().HasFilter("\"DataRestituzione\" IS NULL").HasDatabaseName("IX_Ast_BeneAssegnazione_Aperta");
+            });
+        }
+
+        /*
+         Prenotazioni (AST-PREN). Cancellazione: in cascata dall'azienda e dalla risorsa; l'utente cancellato porta via le sue
+         prenotazioni; il veicolo della flotta cancellato lascia la risorsa senza veicolo.
+        */
+        private static void Gen_AstPrenotazioni(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Ast_Risorsa>(entity =>
+            {
+                entity.HasOne(t => t.Az_AnagraficaNavigation).WithMany().HasForeignKey(t => t.IdAz_Anagrafica).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Az_SediNavigation).WithMany().HasForeignKey(t => t.IdAz_Sedi).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(t => t.Ast_VeicoloNavigation).WithMany().HasForeignKey(t => t.IdAst_Veicolo).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Tipo, t.Descrizione }).IsUnique();
+            });
+
+            modelBuilder.Entity<Ast_Prenotazione>(entity =>
+            {
+                entity.HasOne(t => t.Ast_RisorsaNavigation).WithMany().HasForeignKey(t => t.IdAst_Risorsa).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.AspNetUsersNavigation).WithMany().HasForeignKey(t => t.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+                // ricerca dei conflitti (sovrapposizione sulla stessa risorsa) e del calendario
+                entity.HasIndex(t => new { t.IdAst_Risorsa, t.Inizio, t.Fine });
+                entity.HasIndex(t => new { t.IdAspNetUsers, t.Inizio });
             });
         }
     }

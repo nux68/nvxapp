@@ -174,4 +174,46 @@
   <data name="DeletionCountGoods" xml:space="preserve">
     <value>Beni (con consegne e restituzioni)</value>
   </data>
+  <data name="ResourceDuplicate" xml:space="preserve">
+    <value>Esiste già una risorsa {0} dello stesso tipo.</value>
+  </data>
+  <data name="ResourcePoolVehicleRequired" xml:space="preserve">
+    <value>Per un'auto in pool indicare un veicolo della flotta con uso "pool".</value>
+  </data>
+  <data name="ResourceHasBookings" xml:space="preserve">
+    <value>La risorsa ha prenotazioni future: disattivala invece di eliminarla.</value>
+  </data>
+  <data name="ResourceRequired" xml:space="preserve">
+    <value>Indicare una risorsa prenotabile attiva.</value>
+  </data>
+  <data name="BookingNotEditable" xml:space="preserve">
+    <value>La prenotazione è annullata o già conclusa.</value>
+  </data>
+  <data name="BookingInThePast" xml:space="preserve">
+    <value>Non si può prenotare nel passato.</value>
+  </data>
+  <data name="BookingTooLong" xml:space="preserve">
+    <value>Una prenotazione può durare al massimo {0} ore.</value>
+  </data>
+  <data name="BookingTooFar" xml:space="preserve">
+    <value>Si può prenotare al massimo {0} giorni in anticipo.</value>
+  </data>
+  <data name="BookingConflict" xml:space="preserve">
+    <value>{0} è già prenotata in quell'orario.</value>
+  </data>
+  <data name="BookingCancelledTitle" xml:space="preserve">
+    <value>Prenotazione annullata: {0}</value>
+  </data>
+  <data name="BookingCancelledText" xml:space="preserve">
+    <value>Un amministratore ha annullato la tua prenotazione di {0} del {1}-{2}.</value>
+  </data>
+  <data name="CalendarBookingTitle" xml:space="preserve">
+    <value>Prenotazione: {0}</value>
+  </data>
+  <data name="CalendarBookingSite" xml:space="preserve">
+    <value>Sede: {0}</value>
+  </data>
+  <data name="DeletionCountBookings" xml:space="preserve">
+    <value>Prenotazioni</value>
+  </data>
 </root>

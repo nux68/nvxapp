@@ -7,14 +7,15 @@ Il modulo Risorse aziendali raccoglie cio' che l'azienda possiede e a chi lo ass
 Questo manuale è costruito sul **tuo menu**: trovi un capitolo per ogni voce della sezione **Risorse aziendali** che vedi. Le voci che vedi dipendono dal tuo ruolo.
 
 ### Chi fa cosa
-- **CompanyPowerAdmin**: configura il modulo e fa tutto quello che fa il CompanyAdmin.
-- **CompanyAdmin** (acquisti, logistica, IT): gestisce veicoli, assegnazioni, scadenze, costi e multe, beni con consegne e restituzioni.
-- **Dipendente**: nella pagina **Le mie risorse** vede i beni che ha in consegna (con i verbali da confermare), il veicolo assegnato e le multe che lo riguardano.
+- **CompanyPowerAdmin**: configura il modulo e le risorse prenotabili e fa tutto quello che fa il CompanyAdmin.
+- **CompanyAdmin** (acquisti, logistica, IT): gestisce veicoli, assegnazioni, scadenze, costi e multe, beni con consegne e restituzioni; vede e annulla tutte le prenotazioni.
+- **Dipendente**: prenota postazioni, sale e auto in pool; nella pagina **Le mie risorse** vede i beni che ha in consegna (con i verbali da confermare), il veicolo assegnato e le multe che lo riguardano.
 
 @@ /astsettings
 Nella pagina **Impostazioni** il CompanyPowerAdmin imposta i parametri generali del modulo:
 - **Giorni di preavviso delle scadenze**: con quanti giorni di anticipo il modulo segnala le scadenze che registra nello scadenzario comune (predefinito 30).
 - **Notifiche attive**: se togli la spunta il modulo non invia notifiche né promemoria. Ogni utente sceglie comunque come riceverle (nell'app o per email) dalle preferenze delle notifiche.
+- **Prenotazioni**: durata massima di una prenotazione (ore) e anticipo massimo (giorni); 0 = nessun limite. Le prenotazioni non richiedono approvazione.
 - **Note**: appunti interni sulla configurazione.
 
 Premi **Conferma** per salvare.
@@ -55,3 +56,17 @@ I beni e i veicoli ancora in mano a dipendenti che hanno una **data di cessazion
 
 ### Categorie
 Le categorie dei beni: all'attivazione trovi quelle predefinite. Una categoria usata dai beni non si elimina: la disattivi.
+
+@@ /astbookings
+La pagina **Prenotazioni** mostra una settimana alla volta (con le frecce cambi settimana) le prenotazioni di postazioni, sale e auto in pool. Puoi filtrare per risorsa o vedere solo le tue. Delle prenotazioni degli altri vedi solo che la risorsa è *Occupata*; gli amministratori vedono anche chi ha prenotato.
+
+### Prenotare
+Con il **+** in basso scegli la risorsa, l'inizio e la fine (e se vuoi un titolo e delle note). Se la risorsa è già prenotata in quell'orario la prenotazione viene rifiutata, anche quando due persone prenotano nello stesso momento. Valgono i limiti delle impostazioni (durata massima e anticipo massimo).
+
+Dalla riga modifichi o annulli le tue prenotazioni future; gli amministratori possono annullare quelle di tutti (l'interessato riceve una notifica).
+
+### Calendario personale
+Le tue prenotazioni compaiono nel tuo calendario personale (Google, Outlook, Apple): il pulsante **Calendario** apre la pagina con l'indirizzo da aggiungere.
+
+@@ /astresources
+La pagina **Risorse prenotabili** (CompanyPowerAdmin) elenca postazioni, sale e auto in pool. Con il **+** aggiungi una risorsa: tipo, descrizione, sede, i posti per le sale e, per le auto, il veicolo della flotta con uso *Pool*. Una risorsa con prenotazioni future non si elimina: disattivala.

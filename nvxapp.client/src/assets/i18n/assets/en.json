@@ -6,7 +6,9 @@
       "manual": "Company assets manual",
       "vehicles": "Vehicles",
       "mine": "My resources",
-      "goods": "Items"
+      "goods": "Items",
+      "bookings": "Bookings",
+      "resources": "Bookable resources"
     },
     "pages": {
       "settings": {
@@ -16,7 +18,11 @@
         "noticeDaysNote": "Default notice for the deadlines the module records in the shared deadline schedule.",
         "notifications": "Notifications on",
         "notificationsNote": "When off, the module sends no notifications or reminders. Each user chooses how to receive them from the notification preferences.",
-        "note": "Notes"
+        "note": "Notes",
+        "bookings": "Bookings",
+        "maxHours": "Maximum length of a booking (hours)",
+        "maxDaysAhead": "Maximum advance (days)",
+        "bookingsNote": "Bookings need no approval; 0 = no limit."
       },
       "vehicleList": {
         "title": "Company vehicles",
@@ -116,6 +122,35 @@
         "restituzione": "Return",
         "deliveryNote": "The employee receives the delivery report to confirm in the acknowledgements (with Document management active, to sign). Without a user only the delivery is recorded.",
         "returnNote": "The employee receives the return report; any deadline for the return on termination is closed."
+      },
+      "resourceList": {
+        "title": "Bookable resources",
+        "new": "New resource",
+        "empty": "No bookable resources",
+        "showInactive": "Show deactivated resources",
+        "seats": "{{n}} seats",
+        "confirmDelete": "Delete resource {{nome}} with its booking history?"
+      },
+      "resourceEdit": {
+        "title": "Bookable resource",
+        "titleNew": "New bookable resource",
+        "poolNote": "You can choose the fleet vehicles with \"pool\" use."
+      },
+      "booking": {
+        "title": "Bookings",
+        "new": "New booking",
+        "thisWeek": "This week",
+        "allResources": "All",
+        "onlyMine": "Only mine",
+        "busy": "Busy",
+        "empty": "No bookings this week",
+        "confirmCancel": "Cancel the booking of {{nome}}?",
+        "note": "Your bookings also appear in your personal calendar (Calendar button)."
+      },
+      "bookingEdit": {
+        "title": "Booking",
+        "titleNew": "New booking",
+        "limits": "Maximum length {{ore}} hours, at most {{giorni}} days in advance. A resource already booked at that time cannot be booked."
       }
     },
     "common": {
@@ -185,7 +220,16 @@
       "condizioni": "Condition",
       "statoRientro": "Item status on return",
       "bene": "Item",
-      "verbale": "Report"
+      "verbale": "Report",
+      "dettaglio": "Detail",
+      "capienza": "Seats",
+      "attiva": "Active",
+      "quando": "When",
+      "risorsa": "Resource",
+      "prenotatoDa": "Booked by",
+      "titolo": "Title",
+      "inizio": "Start",
+      "fine": "End"
     },
     "enums": {
       "uso": {
@@ -241,6 +285,11 @@
       "tipoRestituzione": {
         "bene": "Item",
         "veicolo": "Vehicle"
+      },
+      "tipoRisorsa": {
+        "0": "Desk",
+        "1": "Room",
+        "2": "Pool car"
       }
     }
   }

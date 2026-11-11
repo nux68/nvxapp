@@ -40,5 +40,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         private IAst_BeneRepository? _Ast_Bene;
         public IAst_BeneAssegnazioneRepository Ast_BeneAssegnazione => _Ast_BeneAssegnazione ??= new Ast_BeneAssegnazioneRepository(_db, _sp, _http);
         private IAst_BeneAssegnazioneRepository? _Ast_BeneAssegnazione;
+
+        public IAst_RisorsaRepository Ast_Risorsa => _Ast_Risorsa ??= new Ast_RisorsaRepository(_db, _sp, _http);
+        private IAst_RisorsaRepository? _Ast_Risorsa;
+        public IAst_PrenotazioneRepository Ast_Prenotazione => _Ast_Prenotazione ??= new Ast_PrenotazioneRepository(_db, _sp, _http);
+        private IAst_PrenotazioneRepository? _Ast_Prenotazione;
     }
 }

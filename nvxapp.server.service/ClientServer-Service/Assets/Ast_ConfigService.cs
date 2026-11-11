@@ -67,6 +67,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var cfg = await _Ast_Cfg.FindAll(_ => true).AsTracking().FirstAsync(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
                 cfg.GiorniPreavviso = Math.Clamp(d.GiorniPreavviso, 0, 365);
                 cfg.NotificheAttive = d.NotificheAttive;
+                cfg.PrenotazioneDurataMaxOre = Math.Clamp(d.PrenotazioneDurataMaxOre, 0, 24 * 31);
+                cfg.PrenotazioneAnticipoMaxGiorni = Math.Clamp(d.PrenotazioneAnticipoMaxGiorni, 0, 730);
                 cfg.Note = string.IsNullOrWhiteSpace(d.Note) ? null : d.Note.Trim()[..Math.Min(2000, d.Note.Trim().Length)];
                 cfg.ModifiedDate = DateTime.Now;
                 cfg.ChangeUser = ctx.IdUtente;
@@ -77,7 +79,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
 
         private static Ast_CfgModel CfgModel(Ast_Cfg c) => new()
         {
-            GiorniPreavviso = c.GiorniPreavviso, NotificheAttive = c.NotificheAttive, Note = c.Note
+            GiorniPreavviso = c.GiorniPreavviso, NotificheAttive = c.NotificheAttive, Note = c.Note,
+            PrenotazioneDurataMaxOre = c.PrenotazioneDurataMaxOre, PrenotazioneAnticipoMaxGiorni = c.PrenotazioneAnticipoMaxGiorni
         };
     }
 

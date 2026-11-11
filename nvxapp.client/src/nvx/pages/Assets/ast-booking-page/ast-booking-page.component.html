@@ -1,0 +1,31 @@
+<app-page-toolbar [title]="title" [showFilter]="true" [showBreadcrumbs]="true" (ev_Filter)="Filter($event)"></app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+  <ion-card>
+    <ion-card-content>
+      <div class="ast-booking-nav">
+        <ion-button fill="clear" (click)="settimana(-1)"><ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon></ion-button>
+        <ion-label>{{ periodo }}</ion-label>
+        <ion-button fill="clear" (click)="settimana(1)"><ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon></ion-button>
+        <ion-button fill="outline" size="small" (click)="oggi()">{{ 'ast.pages.booking.thisWeek' | transloco }}</ion-button>
+      </div>
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="6">
+            <ion-item lines="none"><ion-select [value]="idRisorsa" (ionChange)="filtroRisorsa($event.detail.value)" [label]="'ast.fields.risorsa' | transloco" labelPlacement="start" interface="popover">
+              <ion-select-option [value]="null">{{ 'ast.pages.booking.allResources' | transloco }}</ion-select-option>
+              @for (r of dati?.risorsa ?? []; track r.id) { <ion-select-option [value]="r.id">{{ r.descrizione }} ({{ 'ast.enums.tipoRisorsa.' + r.tipo | transloco }})</ion-select-option> }
+            </ion-select></ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="6">
+            <ion-item lines="none"><ion-checkbox labelPlacement="end" justify="start" [checked]="soloMie" (ionChange)="filtroMie($event.detail.checked)">{{ 'ast.pages.booking.onlyMine' | transloco }}</ion-checkbox></ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <nvx-list [items]="dati?.prenotazione" [columns]="columns" [actions]="actions" [icon]="iconOf" [searchText]="searchText" [sort]="sort"
+        [highlight]="mia" [rowDisabled]="passata" [emptyText]="'ast.pages.booking.empty' | transloco"></nvx-list>
+      <ion-note class="nvx-nota-disabled">{{ 'ast.pages.booking.note' | transloco }}</ion-note>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

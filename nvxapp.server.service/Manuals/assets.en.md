@@ -7,14 +7,15 @@ The Company assets module covers what the company owns and who it is assigned to
 This manual follows **your menu**: there is a chapter for each item of the **Company assets** section you can see. The items you see depend on your role.
 
 ### Who does what
-- **CompanyPowerAdmin**: configures the module and does everything the CompanyAdmin does.
-- **CompanyAdmin** (purchasing, logistics, IT): manages vehicles, assignments, deadlines, costs and fines, items with deliveries and returns.
-- **Employee**: in the **My resources** page sees the items they hold (with the reports to confirm), the assigned vehicle and the fines concerning them.
+- **CompanyPowerAdmin**: configures the module and the bookable resources and does everything the CompanyAdmin does.
+- **CompanyAdmin** (purchasing, logistics, IT): manages vehicles, assignments, deadlines, costs and fines, items with deliveries and returns; sees and cancels all bookings.
+- **Employee**: books desks, rooms and pool cars; in the **My resources** page sees the items they hold (with the reports to confirm), the assigned vehicle and the fines concerning them.
 
 @@ /astsettings
 In the **Settings** page the CompanyPowerAdmin sets the general parameters of the module:
 - **Deadline notice days**: how many days in advance the module reports the deadlines it records in the shared deadline schedule (default 30).
 - **Notifications on**: clear it and the module sends no notifications or reminders. Each user still chooses how to receive them (in the app or by email) from the notification preferences.
+- **Bookings**: maximum length of a booking (hours) and maximum advance (days); 0 = no limit. Bookings need no approval.
 - **Notes**: internal notes about the configuration.
 
 Press **Confirm** to save.
@@ -55,3 +56,17 @@ Items and vehicles still held by employees with a **termination date** (recorded
 
 ### Categories
 The item categories: on activation you find the default ones. A category used by items cannot be deleted: deactivate it.
+
+@@ /astbookings
+The **Bookings** page shows one week at a time (the arrows change week) the bookings of desks, rooms and pool cars. You can filter by resource or see only yours. Of other people's bookings you only see that the resource is *Busy*; administrators also see who booked.
+
+### Booking
+With the **+** at the bottom choose the resource, start and end (and optionally a title and notes). If the resource is already booked at that time the booking is rejected, even when two people book at the same moment. The limits of the settings apply (maximum length and maximum advance).
+
+From the row you edit or cancel your future bookings; administrators can cancel anyone's (the person receives a notification).
+
+### Personal calendar
+Your bookings appear in your personal calendar (Google, Outlook, Apple): the **Calendar** button opens the page with the address to add.
+
+@@ /astresources
+The **Bookable resources** page (CompanyPowerAdmin) lists desks, rooms and pool cars. With the **+** you add a resource: type, description, site, the seats for rooms and, for cars, the fleet vehicle with *Pool* use. A resource with future bookings cannot be deleted: deactivate it.

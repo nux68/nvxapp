@@ -7,6 +7,7 @@ import { GenericResult } from '../ModelsBase/generic-result';
 import { AstCfgGetOutModel, AstCfgPutInModel, AstCfgPutOutModel, AstEmptyInModel } from './Models/ast-model';
 import * as F from './Models/ast-flotta-model';
 import * as B from './Models/ast-beni-model';
+import * as P from './Models/ast-prenotazioni-model';
 
 /*
  Risorse aziendali (ANALISI_ASSETS_APPLICATIVO.md): configurazione, flotta (AST-FLO), beni (AST-BENI), prenotazioni (AST-PREN).
@@ -57,4 +58,12 @@ export class AstService {
   DaRestituireList(m: GenericRequest<AstEmptyInModel>) { return this.post<AstEmptyInModel, B.AstDaRestituireListOutModel>('Ast_Beni', 'Ast_DaRestituireList', m); }
   DaRestituireVerifica(m: GenericRequest<AstEmptyInModel>) { return this.post<AstEmptyInModel, B.AstDaRestituireVerificaOutModel>('Ast_Beni', 'Ast_DaRestituireVerifica', m); }
   MieiBeniGet(m: GenericRequest<AstEmptyInModel>) { return this.post<AstEmptyInModel, B.AstMieiBeniOutModel>('Ast_Beni', 'Ast_MieiBeniGet', m); }
+
+  // prenotazioni
+  RisorsaList(m: GenericRequest<P.AstRisorsaListInModel>) { return this.post<P.AstRisorsaListInModel, P.AstRisorsaListOutModel>('Ast_Prenotazioni', 'Ast_RisorsaList', m); }
+  RisorsaPut(m: GenericRequest<P.AstRisorsaPutInModel>) { return this.post<P.AstRisorsaPutInModel, P.AstRisorsaPutOutModel>('Ast_Prenotazioni', 'Ast_RisorsaPut', m); }
+  RisorsaDelete(m: GenericRequest<F.AstIdInModel>) { return this.post<F.AstIdInModel, F.AstDeleteOutModel>('Ast_Prenotazioni', 'Ast_RisorsaDelete', m); }
+  PrenotazioneList(m: GenericRequest<P.AstPrenotazioneListInModel>) { return this.post<P.AstPrenotazioneListInModel, P.AstPrenotazioneListOutModel>('Ast_Prenotazioni', 'Ast_PrenotazioneList', m); }
+  PrenotazionePut(m: GenericRequest<P.AstPrenotazionePutInModel>) { return this.post<P.AstPrenotazionePutInModel, P.AstPrenotazionePutOutModel>('Ast_Prenotazioni', 'Ast_PrenotazionePut', m); }
+  PrenotazioneAnnulla(m: GenericRequest<F.AstIdInModel>) { return this.post<F.AstIdInModel, P.AstPrenotazionePutOutModel>('Ast_Prenotazioni', 'Ast_PrenotazioneAnnulla', m); }
 }
