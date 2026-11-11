@@ -210,6 +210,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement._utility
                     FirmaRichiesta = t.Codice == "CONTRATTO",
                     Ordine = (ordine += 10), Active = true, CreationDate = now
                 }, false);
+            // verbali e prese visione chieste dagli altri moduli (DM-FIRMA): nelle aziende gia' inizializzate la crea il canale alla prima richiesta
+            await _tipoRepository.CreateAsync(DocumentManagementAcknowledgementChannel.NuovaTipologia(idAz_Anagrafica, ordine += 10), false);
 
             ordine = 0;
             foreach (var (chiave, visibile) in new[] { ("DefaultFolderPersonnel", false), ("DefaultFolderAdministration", false),

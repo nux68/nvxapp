@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -13,6 +14,7 @@ using nvxapp.server.data.Repositories.Tenant.DocumentManagement;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement._utility;
 using nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_DocumentoService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgement;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Email;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -32,6 +34,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         - testo estratto dal file per la ricerca; nessun contenuto viene inviato all'AI (decisione del 04/11/2026)
         - firma elettronica semplice (ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md §4.2): la tipologia propone la richiesta, l'invio la decide
           (si puo' togliere o aggiungere, anche dopo); la firma vale per la versione corrente e una nuova versione la azzera
+        - prese visione degli altri moduli (DM-FIRMA, DocumentManagementAcknowledgementChannel): la firma, o la presa visione
+          se la firma non e' richiesta, conferma la richiesta del modulo (IAcknowledgementService.ConfirmFromChannelAsync)
     */
     public class Doc_DocumentoService : ServiceBase, IDoc_DocumentoService
     {
@@ -59,6 +63,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         private readonly IFileStorage _fileStorage;
         private readonly IStorageQuotaService _quota;
         private readonly IEmailService _emailService;
+        private readonly IServiceProvider _serviceProvider;
 
         public Doc_DocumentoService(IMapper mapper,
                                     UserManager<ApplicationUser> userManager,
@@ -78,7 +83,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                                     IDocumentManagementUtility utility,
                                     IFileStorage fileStorage,
                                     IStorageQuotaService quota,
-                                    IEmailService emailService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                    IEmailService emailService,
+                                    IServiceProvider serviceProvider) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _documentoRepository = documentoRepository;
             _versioneRepository = versioneRepository;
@@ -94,6 +100,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             _fileStorage = fileStorage;
             _quota = quota;
             _emailService = emailService;
+            _serviceProvider = serviceProvider;
         }
 
         // ---------------------------------------------------------------------------
@@ -444,6 +451,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 if (aggiornati == 0)
                     throw new UserMessageException(DocumentManagementMessages.Get("NotRecipient"));
                 await _utility.LogAsync(ctx, Doc_LogAzione.PresaVisione, doc.Id, doc.VersioneCorrente);
+                var http = _httpContextAccessor.HttpContext;
+                await ConfermaPreseVisioneAsync(ctx, doc.Id, DateTime.Now, http?.Connection?.RemoteIpAddress?.ToString(), http?.Request.Headers.UserAgent.ToString());
                 return new Doc_DocumentoIdOutModel { Id = doc.Id };
             }, isSubProcess);
         }
@@ -490,6 +499,7 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 if (aggiornati == 0)
                     throw new UserMessageException(DocumentManagementMessages.Get("NotSignatory"));
                 await _utility.LogAsync(ctx, Doc_LogAzione.Firma, doc.Id, numero, "FES sha256:" + hash);
+                await ConfermaPreseVisioneAsync(ctx, doc.Id, now, ip, userAgent);
                 return new Doc_DocumentoIdOutModel { Id = doc.Id };
             }, isSubProcess);
         }
@@ -754,6 +764,35 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
                 await q.Where(r => r.DataPrimaApertura == null).ExecuteUpdateAsync(s => s.SetProperty(r => r.DataPrimaApertura, now));
             if (download)
                 await q.ExecuteUpdateAsync(s => s.SetProperty(r => r.DataDownload, now));
+        }
+
+        /*
+         Prese visione chieste da altri moduli tramite il documentale (DM-FIRMA): il destinatario che ha completato quanto
+         richiesto (firma se richiesta, altrimenti presa visione) conferma la richiesta del modulo. Un errore qui non annulla
+         la firma: si registra e la conferma si puo' recuperare con una nuova firma o presa visione.
+        */
+        private async Task ConfermaPreseVisioneAsync(DocContesto ctx, int idDocumento, DateTime data, string? ip, string? userAgent)
+        {
+            try
+            {
+                var idDip = ctx.IdDip_Anagrafica;
+                var idUtente = ctx.IdUtente;
+                var completati = await _destinatarioRepository
+                    .FindAll(r => r.IdDoc_Documento == idDocumento && (r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip))
+                                  && r.DataPresaVisione != null && (!r.FirmaRichiesta || r.DataFirma != null))
+                    .Select(r => r.Id).ToListAsync();
+                if (completati.Count == 0)
+                    return;
+                // risolta qui e non nel costruttore: IAcknowledgementService dipende dai canali, tra cui quello del documentale
+                var acknowledgement = _serviceProvider.GetRequiredService<IAcknowledgementService>();
+                foreach (var id in completati)
+                    await acknowledgement.ConfirmFromChannelAsync(DocumentManagementAcknowledgementChannel.CodeFes,
+                                                                  DocumentManagementAcknowledgementChannel.IdCanale(ctx.IdCompany, id), data, ip, userAgent);
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "[Documentale] Presa visione del documento {Id} non confermata al modulo", idDocumento);
+            }
         }
 
         // conserva solo le ultime N versioni (impostazione dell'azienda), tranne nei documenti con presa visione o firma
