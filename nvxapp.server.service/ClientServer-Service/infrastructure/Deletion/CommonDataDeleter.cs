@@ -9,7 +9,8 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion.Models;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 {
     /*
-     Dati comuni dell'azienda (schema Common: Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica).
+     Dati comuni dell'azienda (schema Common: Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica,
+     Az_Sedi, Az_SediReparto, Par_Competenza, Dip_Competenza, Dip_RapportoAutovetture).
      DeletionService lo usa per ogni azienda (non dipende da CompanyApplication) e sempre DOPO i deleter
      degli applicativi, che hanno chiavi esterne verso queste tabelle.
      In multi-tenant lo schema tenant_<IdAzienda>_0 si elimina con gli altri: qui solo i conteggi.
@@ -65,7 +66,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             if (context == null)
                 return;
 
-            // clienti, contatti e dipendenti in cascata
+            /*
+             Tutto in cascata da Az_Anagrafica (INF-COM.6):
+               Az_Anagrafica -> Az_Cliente -> Az_ClienteContatto
+               Az_Anagrafica -> Dip_Anagrafica -> Dip_Competenza, Dip_RapportoAutovetture
+               Az_Anagrafica -> Az_Sedi -> Az_SediReparto
+               Az_Anagrafica -> Par_Competenza -> Dip_Competenza
+             Unica eccezione: il reparto padre (Az_SediReparto.IdAz_SediReparto) e' Restrict, e un padre in un'altra sede
+             verrebbe cancellato in un'istruzione diversa da quella dei figli: prima si scollegano i reparti dal padre.
+             Nei conteggi bastano clienti e dipendenti: sedi e competenze sono configurazione dell'azienda.
+            */
+            await new Az_SediRepartoCommonRepository(context, _serviceProvider, _httpContextAccessor)
+                      .FindAll(x => x.Az_SediNavigation!.Az_AnagraficaNavigation!.IdCompany == idCompany && x.IdAz_SediReparto != null)
+                      .ExecuteUpdateAsync(s => s.SetProperty(x => x.IdAz_SediReparto, (int?)null), cancellationToken);
+
             await new Az_AnagraficaRepository(context, _serviceProvider, _httpContextAccessor)
                       .FindAll(x => x.IdCompany == idCompany).ExecuteDeleteAsync(cancellationToken);
         }

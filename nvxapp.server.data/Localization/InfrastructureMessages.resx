@@ -1162,4 +1162,20 @@ In allegato il rendiconto.</value>
     <value>Questa richiesta si conferma aprendo il documento collegato</value>
     <comment>servizi comuni</comment>
   </data>
+  <data name="CalendarFeedNoCompany" xml:space="preserve">
+    <value>Il calendario personale e' disponibile solo lavorando in un'azienda</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarFeedNotAllowed" xml:space="preserve">
+    <value>Non lavori in questa azienda: calendario personale non disponibile</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarFeedName" xml:space="preserve">
+    <value>Scadenze e impegni - {0}</value>
+    <comment>calendario</comment>
+  </data>
+  <data name="CalendarDeadlineTitle" xml:space="preserve">
+    <value>Scadenza: {0}</value>
+    <comment>calendario</comment>
+  </data>
 </root>

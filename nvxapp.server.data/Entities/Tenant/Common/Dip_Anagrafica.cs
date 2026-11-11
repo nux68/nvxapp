@@ -11,10 +11,13 @@ namespace nvxapp.server.data.Entities.Tenant
                             account; se l'utente viene eliminato il dipendente resta (documenti da conservare)
         - Matricola, CodiceFiscale: facoltativi, unici tra i dipendenti dell'azienda (controllo nei servizi)
         - Email           : email personale, per avvisi a chi non ha account
-        - DataCessazione, Attivo: il dipendente uscito resta per la conservazione dei suoi documenti
+        - DataAssunzione  : data di assunzione (D6, INF-COM.4): le presenze la tengono allineata col PRIMO rapporto di lavoro (AT-COM.3)
+        - DataCessazione, Attivo: il dipendente uscito resta per la conservazione dei suoi documenti;
+                            le presenze tengono DataCessazione allineata con l'ULTIMO rapporto di lavoro (AT-COM.3)
+        - Dip_Competenza  : competenze del dipendente (tabella comune, INF-COM.2)
 
      Classe partial: ogni applicativo aggiunge nel proprio ramo le navigazioni verso le sue tabelle
-     (es. presenze: Dip_RapportoLavoro, Dip_Competenza). CommonDbContext ignora le navigazioni che
+     (es. presenze: Dip_RapportoLavoro). CommonDbContext ignora le navigazioni che
      non portano a tabelle comuni o di public.
     */
     public partial class Dip_Anagrafica : BaseEntity
@@ -38,8 +41,12 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(100)]
         public string? Email { get; set; }
 
+        public DateTime? DataAssunzione { get; set; }
         public DateTime? DataCessazione { get; set; }
 
         public Boolean Attivo { get; set; } = true;
+
+        // tabella comune: la collection sta qui (non nel partial delle presenze) perche' CommonDbContext la mappa
+        public ICollection<Dip_Competenza>? Dip_Competenza { get; set; }
     }
 }

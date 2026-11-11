@@ -35,7 +35,10 @@
       "deleteRead": "Delete read",
       "preferences": "Preferences",
       "loadMore": "Load more",
-      "confirmRead": "I confirm I have read it"
+      "confirmRead": "I confirm I have read it",
+      "copy": "Copy",
+      "regenerate": "New address",
+      "calendar": "Calendar"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",
@@ -115,6 +118,7 @@
     "dealerPayments": "Centre payments",
     "notifications": "Notifications",
     "deadlines": "Deadlines",
+    "calendarFeed": "Calendar",
     "acknowledgements": "Acknowledgements"
   },
   "showcase": {
@@ -1131,6 +1135,27 @@
       "email": "Email",
       "emailNotAllowed": "Not available by email",
       "empty": "No notification types available."
+    },
+    "calendarFeed": {
+      "title": "Personal calendar",
+      "note": "See your deadlines in the calendar you already use (Google Calendar, Outlook, Apple Calendar): subscribe to the address below. The calendar is read-only and updates by itself.",
+      "empty": "You don't have a calendar address yet.",
+      "create": "Create address",
+      "url": "Calendar address",
+      "openWebcal": "Open in calendar",
+      "created": "Created on",
+      "lastAccess": "Last read by a calendar",
+      "never": "never",
+      "privacy": "Anyone who knows this address can see your appointments without a password: do not share it. If you think others know it, create a new address.",
+      "howTo": "How to add it",
+      "google": "On a computer: Other calendars (+) > From URL, paste the address and choose Add calendar.",
+      "outlook": "Calendar > Add calendar > Subscribe from web (or From Internet), paste the address and import.",
+      "apple": "File > New Calendar Subscription (on iPhone: Settings > Calendar > Accounts > Add Account > Other > Add Subscribed Calendar), paste the address. Or use \"Open in calendar\".",
+      "refresh": "Calendars re-read the address periodically (Google even after several hours): changes do not appear immediately.",
+      "copied": "Address copied to the clipboard.",
+      "copyFailed": "Could not copy: select the address and copy it by hand.",
+      "confirmRegenerate": "Create a new address? The current one will stop working and must be replaced in the calendars where you added it.",
+      "confirmDelete": "Delete the calendar address? The calendars where you added it will no longer receive the deadlines."
     },
     "acknowledgementList": {
       "title": "Acknowledgements",
