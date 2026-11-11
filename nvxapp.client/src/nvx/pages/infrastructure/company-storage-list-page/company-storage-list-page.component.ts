@@ -9,7 +9,7 @@ import { StorageService } from '../../../ClientServer-Service/Infrastructure/Sto
 import { CompanyStorageListInModel, CompanyStorageModel, bytesToMB } from '../../../ClientServer-Service/Infrastructure/Storage/Models/storage-model';
 
 /*
- Spazio dei documenti delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): SuperUser (tutte), centro (le sue), studio (le sue,
+ Spazio dei documenti delle aziende (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3): SuperUser (tutte), centro (le sue), studio (le sue,
  in sola lettura), solo quelle con il Documentale attivo. La quota e' quella della licenza Documentale (illimitata con le
  licenze spente, zero e caricamenti bloccati senza licenza); la soglia di avviso propria
  dell'azienda la cambiano solo il SuperUser e il DealerPowerAdmin del centro (canManage dal server).

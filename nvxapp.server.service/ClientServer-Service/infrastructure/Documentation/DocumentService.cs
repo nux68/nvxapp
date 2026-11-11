@@ -18,7 +18,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
 {
     /*
      Documenti dei livelli SuperUser, Dealer, FinancialAdvisor e Company
-     (specifica: nvxapp.server/docs/ANALISI_DOCUMENTAZIONE_AI.md [branch DocumentManagement]).
+     (specifica: nvxapp.server/docs/ANALISI_DOCUMENTMANAGEMENT_DOCUMENTAZIONE_AI.md [branch DocumentManagement]).
      Il livello e il nodo del documento li decide il server dal ruolo e dal token (LevelScope); il client
      sceglie solo tra i livelli che l'utente gestisce. Modificano SuperUser e PowerAdmin, gli Admin leggono.
      Sezione TicketAi: documentazione per le risposte automatiche AI ai ticket, con i tipi di richiesta

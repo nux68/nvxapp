@@ -8,7 +8,7 @@ using Serilog;
 namespace nvxapp.server.Utility
 {
     /*
-     Manutenzione dello spazio a disposizione (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3), una volta al giorno dopo le 2 di notte
+     Manutenzione dello spazio a disposizione (ANALISI_DOCUMENTMANAGEMENT_APPLICATIVO.md [branch DocumentManagement] §5.3), una volta al giorno dopo le 2 di notte
      (e al primo giro dopo l'avvio):
         - riallinea lo spazio occupato di ogni azienda con quello reale degli applicativi (IStorageUsageProvider)
           e azzera le prenotazioni rimaste appese (caricamenti interrotti)
