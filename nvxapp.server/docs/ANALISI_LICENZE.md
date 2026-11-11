@@ -225,7 +225,7 @@ I valori in tabella sono i **predefiniti**; un listino di una sola funzione usa 
 **Cosa si conta:**
 - **Utenti (Presenze)**: gli utenti dell'azienda non disabilitati (`UserCompany.Disabled = false`); per lo studio quelli non disabilitati dello studio. Il limite utenti dell'azienda è quello della licenza Presenze: un'azienda senza licenza Presenze non ha limite utenti.
 - **Clienti (CRM)**: i clienti dell'anagrafica comune (`Az_Cliente`, schema Common dell'azienda) **attivi** e di tipo **Cliente o Entrambi**; i soli fornitori non contano. Conta come "cliente in più" un cliente nuovo, uno riattivato o uno che da solo fornitore diventa cliente.
-- **Spazio (Documentale)**: lo spazio occupato dai file (`CompanyStorage`, già esistente). La quota è quella della licenza Documentale; senza licenza (o con il sistema licenze spento) lo spazio è illimitato. I pacchetti di spazio sono stati eliminati e non c'è più un limite sulla dimensione del singolo file (§15.7).
+- **Spazio (Documentale)**: lo spazio occupato dai file (`CompanyStorage`, già esistente). La quota è quella della licenza Documentale; con il sistema licenze spento lo spazio è illimitato, con il sistema acceso e senza licenza la quota è zero (caricamenti bloccati). I pacchetti di spazio sono stati eliminati e non c'è più un limite sulla dimensione del singolo file (§15.7).
 - **Copertura dello studio sulle aziende**: i limiti del piano dello studio valgono **per ogni azienda** coperta, non come totale.
 
 **Superamento del limite** (downgrade, scadenza della copertura dello studio, limite abbassato al rinnovo): non si elimina né si disattiva mai niente; si bloccano solo i nuovi utenti, i nuovi clienti e i nuovi caricamenti, con un messaggio dedicato. In "Gestione licenze" ogni funzione mostra uso e limite (es. "Clienti attivi: 120 su 100") e l'avviso di superamento.
@@ -351,7 +351,7 @@ Task       EnsureCanAddClientAsync(int idCompany); // messaggio per l'utente se 
 bool       ContaComeCliente(Az_Cliente? cliente);  // attivo e non solo fornitore
 
 // spazio (Documentale)
-Task<LicenseStorageQuota?> StorageQuotaAsync(int idCompany);   // quota della licenza; null = spazio illimitato
+Task<LicenseStorageQuota?> StorageQuotaAsync(int idCompany);   // quota della licenza; null = nessuna copertura (licenze spente: illimitato; accese: quota zero)
 ```
 
 - Per gli utenti dello studio: `StudioUserLimitAsync`, `StudioActiveUsersAsync`, `StudioCanAddUserAsync`, `StudioMaxUsersAsync` (limite della licenza Presenze dello studio).
@@ -557,8 +557,11 @@ Con la quota della licenza Documentale i pacchetti di spazio non servivano più 
 - il **limite sulla dimensione del singolo file**: conta solo lo spazio totale.
 
 Regole ora:
-- quota = `ILicenseGuard.StorageQuotaAsync`; senza licenza Documentale o con il sistema licenze spento lo spazio è **illimitato** (`LicenseGuard.SpazioIllimitatoBytes`, `CompanyStorageModel.Illimitato`);
-- restano la soglia di avviso (predefinita in `/storagesettings`, voce di menu del SuperUser "Impostazioni spazio", e propria dell'azienda in `/companystorageedit`), gli avvisi email, il riallineamento notturno e lo storico mensile `CompanyStorageHistory` (che ora registra la descrizione della licenza o "Spazio illimitato").
+- quota = `ILicenseGuard.StorageQuotaAsync`;
+- sistema licenze **spento**: spazio **illimitato** (`LicenseGuard.SpazioIllimitatoBytes`, `CompanyStorageModel.Illimitato`);
+- sistema licenze **acceso** e azienda **senza** licenza Documentale valida: **quota zero**, `ReserveAsync` rifiuta ogni caricamento con `StorageNoLicense` e non partono avvisi di soglia (`StorageStatus.SenzaLicenza`, `CompanyStorageModel.SenzaLicenza`). Serve perché il Documentale senza licenza è solo nascosto dal menu e le sue API non controllano la licenza (Fase 4 non fatta): con "illimitato" si sarebbe potuto caricare senza limite (correzione dell'11/11/2026);
+- `/companystoragelist` mostra solo le aziende con il Documentale attivo (`CompanyApplication`), con "senza licenza" al posto della quota per quelle non coperte;
+- restano la soglia di avviso (predefinita in `/storagesettings`, voce di menu del SuperUser "Impostazioni spazio", e propria dell'azienda in `/companystorageedit`), gli avvisi email, il riallineamento notturno e lo storico mensile `CompanyStorageHistory` (che ora registra la descrizione della licenza, "Spazio illimitato" o "Senza licenza Documentale").
 
 ---
 
