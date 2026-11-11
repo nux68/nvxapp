@@ -15,3 +15,7 @@ Le pagine che espongono la funzione aggingi devono ragionare nel seguante modo
 1) aggingere un bottone + al fab
 2) nel caso ci siano "aggingi" multipli , aprire dal basso un menu action con la possibilita di selezionere il dipo di agginta
 3) prendere spundo da situazioni gia implementate
+
+
+## ATTENZIONE !!! 
+Tutti le produzioni di documenti di export come pdf o excel ecc devono passare dal meccanismo dei job, prendere spunto nei vari punti dovo sono gia attivi
