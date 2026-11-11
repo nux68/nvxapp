@@ -312,4 +312,8 @@
   <data name="BreachRisk_2" xml:space="preserve">
     <value>High risk</value>
   </data>
+  <data name="NotificationCategory_Gdpr" xml:space="preserve">
+    <value>Compliance: GDPR register and data breaches</value>
+    <comment>categoria di notifica</comment>
+  </data>
 </root>
