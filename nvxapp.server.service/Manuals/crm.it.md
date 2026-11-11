@@ -49,8 +49,9 @@ La casella **Consenso alle comunicazioni commerciali** registra il consenso del 
 - **Dati**: anagrafica e dati commerciali (si salvano con **Conferma**).
 - **Contatti**: le persone di riferimento; un nuovo contatto si aggiunge con **+** › **Contatto**: si apre la finestra con cognome, nome, ruolo, telefono, cellulare, email, note e la casella "Contatto principale" (uno solo per cliente).
 - **Opportunità**, **Attività**, **Offerte**: le voci del cliente.
+- **Assistenza**: lo storico delle richieste di assistenza del cliente (aperte in evidenza), con stato, assegnatario e tempi.
 
-Per aggiungere qualcosa a un cliente già salvato premi **+** e scegli dal menu che si apre dal basso: **Contatto**, **Opportunità**, **Attività** o **Offerta**; la voce nasce già collegata al cliente.
+Per aggiungere qualcosa a un cliente già salvato premi **+** e scegli dal menu che si apre dal basso: **Contatto**, **Opportunità**, **Attività**, **Offerta** o **Richiesta di assistenza**; la voce nasce già collegata al cliente.
 - **Note** e **Allegati**: come descritto nell'introduzione.
 
 > I clienti non si cancellano dal CRM: si disattivano (campo **Attivo**). La cancellazione definitiva si fa da Amministrazione ed è bloccata, con un messaggio, se il cliente è usato da opportunità, offerte, attività o allegati.
@@ -120,7 +121,7 @@ Gli amministratori trovano l'interruttore **Solo le mie** per vedere anche le at
 Prima dell'inizio di un'attività da fare, l'assegnatario riceve un avviso a comparsa con il pulsante **Apri**. Il preavviso (predefinito 30 minuti) si imposta nelle Impostazioni CRM. L'avviso arriva solo se sei collegato all'applicazione; l'attività resta comunque nell'agenda.
 
 @@ /crmofferlist
-L'elenco mostra le offerte visibili con numero, cliente, oggetto, data, stato e totale; da ogni riga scarichi il **PDF**.
+L'elenco mostra le offerte (i preventivi) visibili con numero, cliente, oggetto, data, stato e totale; da ogni riga prepari il **PDF**.
 
 ### Preparare un'offerta
 1. Premi **+** e scegli **Nuova offerta**.
@@ -132,13 +133,27 @@ L'elenco mostra le offerte visibili con numero, cliente, oggetto, data, stato e 
 I totali si aggiornano mentre scrivi. Puoi anche aggiungere l'offerta dalla scheda del cliente o dell'opportunità.
 
 ### PDF e invio
-- **PDF** scarica l'offerta con i dati dell'azienda e del cliente, le righe, i totali, le note e le condizioni impostate.
-- **Invia** apre la finestra di invio: l'email è proposta da quella della persona di riferimento o del cliente; il messaggio è facoltativo (vuoto = testo predefinito). Il PDF parte in allegato e l'offerta diventa **Inviata**, con la data di invio.
+- **PDF** prepara l'offerta con i dati dell'azienda e del cliente, le righe, i totali, le note e le condizioni impostate. Il file si prepara in background: quando è pronto lo scarichi dalla **barra dei job**.
+- **Invia** apre la finestra di invio: l'email è proposta da quella della persona di riferimento o del cliente; il messaggio è facoltativo (vuoto = testo predefinito). Il PDF parte in allegato e l'offerta diventa **Inviata**, con la data di invio. L'invio viene registrato tra le **attività** del cliente (attività fatta, con il destinatario). Se l'email non parte compare un messaggio e l'offerta resta com'era.
 
 ### Gli stati dell'offerta
-Bozza, Inviata, Accettata, Rifiutata: lo stato si cambia nella testata dell'offerta. Si cancellano solo le offerte in **bozza** senza allegati.
+Bozza, Inviata, Accettata, Rifiutata, Scaduta: lo stato si cambia nella testata dell'offerta. Si cancellano solo le offerte in **bozza** senza allegati.
+- Un'offerta **inviata** entra nello **scadenzario** con la data di validità (avviso 7 giorni prima al responsabile dell'opportunità o del cliente).
+- Passata la validità senza esito l'offerta diventa **Scaduta** da sola.
+- **Accettata**: se l'offerta è collegata a un'opportunità ancora aperta, l'opportunità passa alla fase **vinta** con il valore (imponibile) dell'offerta; il passaggio finisce nello storico. Rifiutata o scaduta non cambiano l'opportunità.
+- All'esito (accettata, rifiutata, scaduta) la scadenza si chiude; tornando in bozza viene tolta.
 
 > Se l'invio delle email non è configurato compare un messaggio: in quel caso scarica il PDF e invialo con la tua posta.
+
+@@ /crmrequestlist
+Le **richieste di assistenza** sono le segnalazioni dei clienti dell'azienda (un guasto, un intervento, una domanda): non sono i ticket verso l'assistenza della piattaforma.
+- L'elenco ha tre viste: **Aperte**, **Assegnate a me**, **Tutte**; le aperte con priorità alta o urgente sono in evidenza. Per ogni richiesta vedi priorità, stato, assegnatario e i tempi di **presa in carico** e di **risoluzione** (in ore dall'apertura).
+- **+** › **Nuova richiesta**: cliente, persona di riferimento, data di apertura, oggetto, descrizione, canale, priorità, assegnatario. Puoi aprirla anche dalla scheda del cliente.
+- Stati: **Nuova**, **In carico**, **In attesa del cliente**, **Risolta**, **Chiusa**, **Annullata**. La presa in carico si registra al primo passaggio in lavorazione, la risoluzione al passaggio a Risolta (o Chiusa); riaprendo, la risoluzione si azzera.
+- Chi riceve la richiesta in assegnazione riceve una **notifica**.
+- Nella sezione **Messaggi** trovi le note interne e lo storico (apertura, assegnazioni, cambi di stato); con **Aggiungi** scrivi una nota.
+
+> Gli amministratori vedono tutte le richieste e le assegnano a chiunque. Un commerciale vede le richieste dei clienti che vede e quelle assegnate a lui, può prendere in carico quelle libere (assegnandole a sé), lavora quelle sue e non può assegnarle ad altri né cancellarle.
 
 @@ /crmreport
 I report mostrano, per il periodo scelto (predefinito dall'inizio dell'anno), l'andamento commerciale:
@@ -155,7 +170,7 @@ Qui raccogli le tabelle del CRM, create all'attivazione con valori predefiniti e
 - **Fasi**: descrizione, tipo (aperta, vinta, persa), probabilità proposta e ordine nella pipeline;
 - **Tipi di attività**: icona, colore e durata proposta;
 - **Motivi di perdita** e **Fonti**;
-- **Prodotti**: codice, descrizione, prezzo, unità di misura e IVA, proposti nelle righe delle offerte;
+- **Prodotti** (il listino): tipo (articolo o servizio), codice, descrizione, prezzo, unità di misura e IVA, proposti nelle righe delle offerte;
 - **Etichette**: per raggruppare i clienti, con un colore.
 
 > Un valore già usato non si può cancellare: disattivalo, resta nello storico ma non viene più proposto. Deve restare almeno una fase attiva per ogni tipo e almeno un tipo di attività.
@@ -184,7 +199,7 @@ Dipende dalla **visibilità** impostata dall'azienda. Con "Solo i propri clienti
 Un commerciale può prendere un cliente senza responsabile o lasciarne uno suo. Assegnare un cliente a un altro utente, o spostare in blocco i dati di un commerciale, è compito degli amministratori (Riassegnazione).
 
 ### Non riesco a cancellare un cliente: perché?
-I clienti non si cancellano dal CRM, si disattivano. La cancellazione definitiva è bloccata se il cliente è usato da opportunità, offerte, attività o allegati.
+I clienti non si cancellano dal CRM, si disattivano. La cancellazione definitiva è bloccata se il cliente è usato da opportunità, offerte, attività, allegati o richieste di assistenza.
 
 ### Non parte l'invio dell'offerta via email.
 Se l'invio delle email non è configurato compare un messaggio: scarica il PDF dell'offerta e invialo con la tua posta.

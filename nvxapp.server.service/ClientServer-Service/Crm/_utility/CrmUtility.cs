@@ -54,6 +54,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         IQueryable<Crm_Attivita> AttivitaVisibili(CrmContesto ctx);
         IQueryable<Crm_Lead> LeadVisibili(CrmContesto ctx);
         IQueryable<Crm_Offerta> OfferteVisibili(CrmContesto ctx);
+        /// <summary>Richieste di assistenza: dei clienti visibili o assegnate all'utente (ANALISI_CRM_ASSISTENZA.md §5).</summary>
+        IQueryable<Crm_Richiesta> RichiesteVisibili(CrmContesto ctx);
 
         /// <summary>Cliente visibile o UserMessageException.</summary>
         Task<Az_Cliente> ClienteAsync(CrmContesto ctx, int idAz_Cliente);
@@ -82,6 +84,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         private readonly ICrm_LeadRepository _Crm_Lead;
         private readonly ICrm_OffertaRepository _Crm_Offerta;
         private readonly ICrm_OpportunitaRepository _Crm_Opportunita;
+        private readonly ICrm_RichiestaRepository _Crm_Richiesta;
         private readonly IAspNetRolesRepository _AspNetRoles;
         private readonly IAspNetUsersRepository _AspNetUsers;
         private readonly IUserCompanyRepository _UserCompany;
@@ -92,7 +95,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
 
         private CrmContesto? _contesto;
 
-        public CrmUtility(ICrm_CfgRepository crm_CfgRepository, ICrm_Par_FaseRepository crm_Par_FaseRepository, ICrm_Par_TipoAttivitaRepository crm_Par_TipoAttivitaRepository, ICrm_Par_MotivoPerditaRepository crm_Par_MotivoPerditaRepository, ICrm_Par_FonteRepository crm_Par_FonteRepository, ICrm_Az_ClienteReadRepository az_ClienteRepository, ICrm_AttivitaRepository crm_AttivitaRepository, ICrm_ClienteDatiRepository crm_ClienteDatiRepository, ICrm_LeadRepository crm_LeadRepository, ICrm_OffertaRepository crm_OffertaRepository, ICrm_OpportunitaRepository crm_OpportunitaRepository, IAspNetRolesRepository aspNetRolesRepository, IAspNetUsersRepository aspNetUsersRepository, IUserCompanyRepository userCompanyRepository, IAspNetUserRolesRepository aspNetUserRolesRepository,
+        public CrmUtility(ICrm_CfgRepository crm_CfgRepository, ICrm_Par_FaseRepository crm_Par_FaseRepository, ICrm_Par_TipoAttivitaRepository crm_Par_TipoAttivitaRepository, ICrm_Par_MotivoPerditaRepository crm_Par_MotivoPerditaRepository, ICrm_Par_FonteRepository crm_Par_FonteRepository, ICrm_Az_ClienteReadRepository az_ClienteRepository, ICrm_AttivitaRepository crm_AttivitaRepository, ICrm_ClienteDatiRepository crm_ClienteDatiRepository, ICrm_LeadRepository crm_LeadRepository, ICrm_OffertaRepository crm_OffertaRepository, ICrm_OpportunitaRepository crm_OpportunitaRepository, ICrm_RichiestaRepository crm_RichiestaRepository, IAspNetRolesRepository aspNetRolesRepository, IAspNetUsersRepository aspNetUsersRepository, IUserCompanyRepository userCompanyRepository, IAspNetUserRolesRepository aspNetUserRolesRepository,
                           ICommonCompanyUtility commonCompanyUtility,
                           IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
         {
@@ -107,6 +110,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
             _Crm_Lead = crm_LeadRepository;
             _Crm_Offerta = crm_OffertaRepository;
             _Crm_Opportunita = crm_OpportunitaRepository;
+            _Crm_Richiesta = crm_RichiestaRepository;
             _AspNetRoles = aspNetRolesRepository;
             _AspNetUsers = aspNetUsersRepository;
             _UserCompany = userCompanyRepository;
@@ -209,6 +213,16 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
                 return q;
             var clienti = ClientiVisibili(ctx).Select(c => c.Id);
             return q.Where(o => clienti.Contains(o.IdAz_Cliente));
+        }
+
+        public IQueryable<Crm_Richiesta> RichiesteVisibili(CrmContesto ctx)
+        {
+            var q = _Crm_Richiesta.FindAll(r => r.IdAz_Anagrafica == ctx.IdAz_Anagrafica);
+            if (ctx.VedeTutto)
+                return q;
+            var me = ctx.IdUtente;
+            var clienti = ClientiVisibili(ctx).Select(c => c.Id);
+            return q.Where(r => r.IdAspNetUsersAssegnatario == me || clienti.Contains(r.IdAz_Cliente));
         }
 
         public async Task<Az_Cliente> ClienteAsync(CrmContesto ctx, int idAz_Cliente)

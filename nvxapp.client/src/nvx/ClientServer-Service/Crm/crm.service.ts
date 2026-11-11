@@ -13,12 +13,13 @@ import {
   CrmLeadPutOutModel, CrmNotaPutInModel, CrmNotaPutOutModel, CrmOffertaGetOutModel, CrmOffertaInviaInModel, CrmOffertaListInModel, CrmOffertaListOutModel,
   CrmOffertaPutInModel, CrmOffertaPutOutModel, CrmOpportunitaGetOutModel, CrmOpportunitaListInModel, CrmOpportunitaListOutModel, CrmOpportunitaPutInModel,
   CrmOpportunitaPutOutModel, CrmParDeleteInModel, CrmParPutInModel, CrmParPutOutModel, CrmReportInModel, CrmReportOutModel, CrmRiassegnaInModel,
-  CrmRiassegnaOutModel, CrmSetupGetOutModel
+  CrmRiassegnaOutModel, CrmSetupGetOutModel, CrmOffertaPdfJobOutModel, CrmRichiestaListInModel, CrmRichiestaListOutModel, CrmRichiestaGetOutModel,
+  CrmRichiestaPutInModel, CrmRichiestaPutOutModel, CrmRichiestaMessaggioPutInModel, CrmRichiestaMessaggioPutOutModel
 } from './Models/crm-model';
 
 /*
  CRM (ANALISI_CRM_APPLICATIVO.md). Allegati: caricamento multipart (dati JSON + file) e download in streaming (blob), come il
- documentale; PDF delle offerte ed export Excel dei clienti scaricati allo stesso modo.
+ documentale; export Excel dei clienti scaricato allo stesso modo. Il PDF delle offerte si prepara con un job (barra dei job).
 */
 @Injectable({
   providedIn: 'root'
@@ -75,9 +76,14 @@ export class CrmService {
   OffertaPut(m: GenericRequest<CrmOffertaPutInModel>) { return this.post<CrmOffertaPutInModel, CrmOffertaPutOutModel>('Crm_Offerta', 'Crm_OffertaPut', m); }
   OffertaDelete(m: GenericRequest<CrmIdInModel>) { return this.post<CrmIdInModel, CrmIdOutModel>('Crm_Offerta', 'Crm_OffertaDelete', m); }
   OffertaInvia(m: GenericRequest<CrmOffertaInviaInModel>) { return this.post<CrmOffertaInviaInModel, CrmOffertaPutOutModel>('Crm_Offerta', 'Crm_OffertaInvia', m); }
-  OffertaPdf(id: number): Promise<void> {
-    return this.scarica(this.http.get(environment.remoteData.apiUri + 'Crm_Offerta/Crm_OffertaPdf?id=' + id, { responseType: 'blob', observe: 'response' }), 'offerta.pdf');
-  }
+  OffertaPdfJob(m: GenericRequest<CrmIdInModel>) { return this.post<CrmIdInModel, CrmOffertaPdfJobOutModel>('Crm_Offerta', 'Crm_OffertaPdfJob', m); }
+
+  // assistenza ai clienti (CRM-ASS)
+  RichiestaList(m: GenericRequest<CrmRichiestaListInModel>) { return this.post<CrmRichiestaListInModel, CrmRichiestaListOutModel>('Crm_Richiesta', 'Crm_RichiestaList', m); }
+  RichiestaGet(m: GenericRequest<CrmIdInModel>) { return this.post<CrmIdInModel, CrmRichiestaGetOutModel>('Crm_Richiesta', 'Crm_RichiestaGet', m); }
+  RichiestaPut(m: GenericRequest<CrmRichiestaPutInModel>) { return this.post<CrmRichiestaPutInModel, CrmRichiestaPutOutModel>('Crm_Richiesta', 'Crm_RichiestaPut', m); }
+  RichiestaMessaggioPut(m: GenericRequest<CrmRichiestaMessaggioPutInModel>) { return this.post<CrmRichiestaMessaggioPutInModel, CrmRichiestaMessaggioPutOutModel>('Crm_Richiesta', 'Crm_RichiestaMessaggioPut', m); }
+  RichiestaDelete(m: GenericRequest<CrmIdInModel>) { return this.post<CrmIdInModel, CrmIdOutModel>('Crm_Richiesta', 'Crm_RichiestaDelete', m); }
 
   // note e allegati
   NotaPut(m: GenericRequest<CrmNotaPutInModel>) { return this.post<CrmNotaPutInModel, CrmNotaPutOutModel>('Crm_NotaAllegato', 'Crm_NotaPut', m); }

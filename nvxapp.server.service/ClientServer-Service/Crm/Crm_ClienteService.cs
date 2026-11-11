@@ -107,6 +107,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     Offerte = await CrmLists.OfferteAsync(_utility.OfferteVisibili(ctx).Where(o => o.IdAz_Cliente == c.Id), cfg),
                     Note = await CrmLists.NoteAsync(_Crm_Nota.FindAll(n => n.IdAz_Cliente == c.Id), ctx, _utility),
                     Allegati = await CrmLists.AllegatiAsync(_Crm_Allegato.FindAll(a => a.IdAz_Cliente == c.Id), _utility),
+                    Richieste = await CrmLists.RichiesteAsync(_utility.RichiesteVisibili(ctx).Where(r => r.IdAz_Cliente == c.Id), _utility),
                     Modificabile = true,
                 };
             }, isSubProcess);

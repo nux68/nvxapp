@@ -10,6 +10,7 @@
           <ion-segment-button value="opportunita"><ion-label>{{ 'crm.sections.opportunita' | transloco }} ({{ scheda.opportunita.length }})</ion-label></ion-segment-button>
           <ion-segment-button value="attivita"><ion-label>{{ 'crm.sections.attivita' | transloco }} ({{ scheda.attivita.length }})</ion-label></ion-segment-button>
           <ion-segment-button value="offerte"><ion-label>{{ 'crm.sections.offerte' | transloco }} ({{ scheda.offerte.length }})</ion-label></ion-segment-button>
+          <ion-segment-button value="assistenza"><ion-label>{{ 'crm.sections.assistenza' | transloco }} ({{ scheda.richieste.length }})</ion-label></ion-segment-button>
           <ion-segment-button value="note"><ion-label>{{ 'crm.sections.note' | transloco }} ({{ scheda.note.length }})</ion-label></ion-segment-button>
           <ion-segment-button value="allegati"><ion-label>{{ 'crm.sections.allegati' | transloco }} ({{ scheda.allegati.length }})</ion-label></ion-segment-button>
         </ion-segment>
@@ -94,6 +95,9 @@
           }
           @case ('offerte') {
             <nvx-list [items]="scheda.offerte" [columns]="colOfferte" [actions]="azOfferte" icon="document-text-outline"></nvx-list>
+          }
+          @case ('assistenza') {
+            <nvx-list [items]="scheda.richieste" [columns]="colRichieste" [actions]="azRichieste" icon="help-buoy-outline" [highlight]="richiestaAperta"></nvx-list>
           }
           @case ('note') { <crm-notes [note]="scheda.note" [idAz_Cliente]="scheda.cliente.id" (changed)="ricarica()"></crm-notes> }
           @case ('allegati') { <crm-attachments [allegati]="scheda.allegati" [idAz_Cliente]="scheda.cliente.id" (changed)="ricarica()"></crm-attachments> }

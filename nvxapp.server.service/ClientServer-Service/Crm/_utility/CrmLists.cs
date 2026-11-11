@@ -12,6 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         public static string NumeroOfferta(Crm_Cfg cfg, int anno, int numero)
             => $"{cfg.OffertaPrefisso}{numero}/{anno}";
 
+        public static string NumeroRichiesta(int anno, int numero) => $"{numero}/{anno}";
+
         public static Crm_ContattoModel Contatto(Az_ClienteContatto x) => new()
         {
             Id = x.Id, IdAz_Cliente = x.IdAz_Cliente, Cognome = x.Cognome, Nome = x.Nome, Ruolo = x.Ruolo, Telefono = x.Telefono,
@@ -63,14 +65,38 @@ namespace nvxapp.server.service.ClientServer_Service.Crm._utility
         public static async Task<List<Crm_OffertaListModel>> OfferteAsync(IQueryable<Crm_Offerta> q, Crm_Cfg cfg)
         {
             var righe = await q.AsNoTracking()
-                .Select(o => new { o.Id, o.Anno, o.Numero, o.Data, o.ValidaFinoAl, o.Stato, o.IdAz_Cliente, Cliente = o.Az_ClienteNavigation!.Descrizione, o.Oggetto, o.Totale, o.IdCrm_Opportunita })
+                .Select(o => new { o.Id, o.Anno, o.Numero, o.Data, o.ValidaFinoAl, o.Stato, o.IdAz_Cliente, Cliente = o.Az_ClienteNavigation!.Descrizione, o.Oggetto, o.Totale, o.IdCrm_Opportunita, o.DataEsito })
                 .OrderByDescending(o => o.Anno).ThenByDescending(o => o.Numero)
                 .ToListAsync();
             return righe.Select(o => new Crm_OffertaListModel
             {
                 Id = o.Id, NumeroCompleto = NumeroOfferta(cfg, o.Anno, o.Numero), Data = o.Data, ValidaFinoAl = o.ValidaFinoAl, Stato = o.Stato,
-                IdAz_Cliente = o.IdAz_Cliente, Cliente = o.Cliente, Oggetto = o.Oggetto, Totale = o.Totale, IdCrm_Opportunita = o.IdCrm_Opportunita
+                IdAz_Cliente = o.IdAz_Cliente, Cliente = o.Cliente, Oggetto = o.Oggetto, Totale = o.Totale, IdCrm_Opportunita = o.IdCrm_Opportunita, DataEsito = o.DataEsito
             }).ToList();
+        }
+
+        // richieste di assistenza (CRM-ASS): le aperte prima, poi le piu' recenti
+        public static async Task<List<Crm_RichiestaListModel>> RichiesteAsync(IQueryable<Crm_Richiesta> q, ICrmUtility utility)
+        {
+            var righe = await q.AsNoTracking()
+                .Select(r => new
+                {
+                    r.Id, r.Anno, r.Numero, r.IdAz_Cliente, Cliente = r.Az_ClienteNavigation!.Descrizione, r.Oggetto, r.Priorita, r.Stato,
+                    r.IdAspNetUsersAssegnatario, r.DataApertura, r.DataPresaInCarico, r.DataRisoluzione
+                })
+                .OrderByDescending(r => r.DataApertura)
+                .ToListAsync();
+            var nomi = await utility.NomiAsync(righe.Select(r => r.IdAspNetUsersAssegnatario));
+            return righe.Select(r => new Crm_RichiestaListModel
+            {
+                Id = r.Id, NumeroCompleto = NumeroRichiesta(r.Anno, r.Numero), IdAz_Cliente = r.IdAz_Cliente, Cliente = r.Cliente, Oggetto = r.Oggetto,
+                Priorita = r.Priorita, Stato = r.Stato, IdAssegnatario = r.IdAspNetUsersAssegnatario,
+                Assegnatario = r.IdAspNetUsersAssegnatario != null && nomi.TryGetValue(r.IdAspNetUsersAssegnatario, out var n) ? n : null,
+                DataApertura = r.DataApertura, DataPresaInCarico = r.DataPresaInCarico, DataRisoluzione = r.DataRisoluzione,
+                OrePresaInCarico = Crm_RichiestaService.Ore(r.DataApertura, r.DataPresaInCarico), OreRisoluzione = Crm_RichiestaService.Ore(r.DataApertura, r.DataRisoluzione),
+            })
+            .OrderBy(r => Crm_RichiestaService.Aperta(r.Stato) ? 0 : 1)
+            .ToList();
         }
 
         public static async Task<List<Crm_NotaModel>> NoteAsync(IQueryable<Crm_Nota> q, CrmContesto ctx, ICrmUtility utility)

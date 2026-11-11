@@ -42,6 +42,8 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Crm_OffertaRiga> Crm_OffertaRiga { get; set; }
         public virtual DbSet<Crm_Nota> Crm_Nota { get; set; }
         public virtual DbSet<Crm_Allegato> Crm_Allegato { get; set; }
+        public virtual DbSet<Crm_Richiesta> Crm_Richiesta { get; set; }
+        public virtual DbSet<Crm_RichiestaMessaggio> Crm_RichiestaMessaggio { get; set; }
 
         // tabelle comuni in sola lettura
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
@@ -65,7 +67,7 @@ namespace nvxapp.server.data.Infrastructure
                 typeof(Crm_Cfg), typeof(Crm_Par_Fase), typeof(Crm_Par_TipoAttivita), typeof(Crm_Par_MotivoPerdita), typeof(Crm_Par_Fonte),
                 typeof(Crm_Par_Prodotto), typeof(Crm_Par_Tag), typeof(Crm_ClienteDati), typeof(Crm_ClienteTag), typeof(Crm_Lead),
                 typeof(Crm_Opportunita), typeof(Crm_OpportunitaStorico), typeof(Crm_Attivita), typeof(Crm_Offerta), typeof(Crm_OffertaRiga),
-                typeof(Crm_Nota), typeof(Crm_Allegato),
+                typeof(Crm_Nota), typeof(Crm_Allegato), typeof(Crm_Richiesta), typeof(Crm_RichiestaMessaggio),
                 typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Company), typeof(ApplicationUser),
             };
             foreach (var type in typeof(nvxapp.server.data.Entities.BaseEntity).Assembly.GetTypes()
@@ -217,6 +219,26 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasOne(t => t.Az_ClienteNavigation).WithMany().HasForeignKey(t => t.IdAz_Cliente).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(t => t.Crm_OpportunitaNavigation).WithMany().HasForeignKey(t => t.IdCrm_Opportunita).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(t => t.Crm_OffertaNavigation).WithMany().HasForeignKey(t => t.IdCrm_Offerta).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // assistenza ai clienti (CRM-ASS)
+            modelBuilder.Entity<Crm_Richiesta>(entity =>
+            {
+                Anagrafica<Crm_Richiesta>(modelBuilder);
+                entity.HasOne(t => t.Az_ClienteNavigation).WithMany().HasForeignKey(t => t.IdAz_Cliente).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(t => t.Az_ClienteContattoNavigation).WithMany().HasForeignKey(t => t.IdAz_ClienteContatto).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(t => t.Crm_OpportunitaNavigation).WithMany().HasForeignKey(t => t.IdCrm_Opportunita).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(t => t.IdAspNetUsersAssegnatario).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Anno, t.Numero }).IsUnique();
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.Stato });
+                entity.HasIndex(t => t.IdAz_Cliente);
+                entity.HasIndex(t => t.IdAspNetUsersAssegnatario);
+            });
+
+            modelBuilder.Entity<Crm_RichiestaMessaggio>(entity =>
+            {
+                entity.HasOne(t => t.Crm_RichiestaNavigation).WithMany().HasForeignKey(t => t.IdCrm_Richiesta).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(t => t.IdCrm_Richiesta);
             });
         }
     }

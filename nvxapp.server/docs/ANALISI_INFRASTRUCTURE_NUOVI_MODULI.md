@@ -301,13 +301,13 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove — verificato: il documento resta nel documentale (tipologia `PRESAVIS`, categoria Personale, conservazione 10 anni, versioni non potate perché con presa visione/firma); le prove sono su `Doc_Destinatario` (`DataFirma`, `FirmaVersione`, `FirmaHash` SHA-256 della versione, `FirmaIp`, `FirmaUserAgent`, `IdAspNetUsersFirma`, `DataPresaVisione`) e nel registro `Doc_Log` (caricamento con la fonte della richiesta, download, presa visione, `Firma` con `FES sha256:<hash>`); in `public.PresaVisione` restano data di conferma, IP e browser. Nessun attestato PDF separato (resta nel piano della firma, `ANALISI_DOCUMENTMANAGEMENT_FIRMA_DIGITALE.md` §13 F1)
 
 #### `CRM-PREV` – Preventivi e offerte
-- ⏳ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati)
-- ⏳ `CRM-PREV.2` PDF e invio al cliente
-- ⏳ `CRM-PREV.3` Collegamento con le opportunità della pipeline
+- ✅ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati) — fatta, da mergiare: sulle offerte esistenti stato `Scaduta` (automatico), `DataEsito`, `IdOrdineAmministrazione` (predisposizione dell'ordine), listino con tipo articolo/servizio; scadenza `crm.preventivo` nello scadenzario (inviata → aperta, esito → chiusa, bozza → tolta); migration `Crm_PreventiviAssistenza`
+- ✅ `CRM-PREV.2` PDF e invio al cliente — fatta, da mergiare: PDF solo con job (`Crm_OffertaPdfJob`), invio al contatto con il PDF allegato, errore SMTP gestito, invio registrato come attività
+- ✅ `CRM-PREV.3` Collegamento con le opportunità della pipeline — fatta, da mergiare: accettata → opportunità aperta nella prima fase vinta con il valore dell'offerta e lo storico
 
 #### `CRM-ASS` – Assistenza ai clienti dell'azienda
-- ⏳ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi)
-- ⏳ `CRM-ASS.2` Storico nella scheda del cliente
+- ✅ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi) — fatta, da mergiare: `Crm_Richiesta` + `Crm_RichiestaMessaggio` (note interne ed eventi), priorità, canale, tempi di presa in carico e risoluzione, notifica all'assegnatario (`INotificationSender`, categoria `generale` in attesa di `INF-SVC.7`), permessi per ruolo; pagine `/crmrequestlist`, `/crmrequestedit`
+- ✅ `CRM-ASS.2` Storico nella scheda del cliente — fatta, da mergiare: sezione Assistenza (e Offerte) nella scheda cliente del CRM, "+" con la nuova richiesta
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
 - ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)
