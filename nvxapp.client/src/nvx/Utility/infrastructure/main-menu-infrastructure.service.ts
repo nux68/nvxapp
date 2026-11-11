@@ -11,6 +11,9 @@ const RUOLI_DOCUMENTAZIONE_AI = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin',
 const RUOLI_LICENZE_SOGGETTO = ['FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin', 'CompanyPowerAdmin', 'CompanyAdmin'];
 const RUOLI_LISTINI_LICENZE = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin'];
 
+// riepiloghi periodici (INF-AI.3): amministratori dell'azienda e utenti dello studio
+const RUOLI_RIEPILOGHI = ['CompanyPowerAdmin', 'CompanyAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin'];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -116,6 +119,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 535, group: 0, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar' },
       { menuType: MenuType.MenuItem,   zorder: 540, group: 0, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
         badge: this.notificationNotifierService.daConfermare },
+      // riepilogo AI periodico (INF-AI.3)
+      { menuType: MenuType.MenuItem,   zorder: 545, group: 0, title: 'menu.digests', roles: RUOLI_RIEPILOGHI, component: "DigestListPageComponent", url: '/digests', icon: 'sparkles' },
       // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
       // gestione delle licenze per studio e azienda
       { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },

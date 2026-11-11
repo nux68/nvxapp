@@ -1,0 +1,23 @@
+.nvx-digest-text {
+  white-space: pre-line;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.nvx-digest-source {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nvx-digest-company {
+  margin-top: 12px;
+}
+
+.nvx-digest-section {
+  margin-bottom: 8px;
+}
+
+.nvx-digest-fact {
+  color: var(--ion-text-color);
+}
