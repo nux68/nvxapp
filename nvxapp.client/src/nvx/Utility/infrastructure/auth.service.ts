@@ -52,7 +52,7 @@ export class AuthService {
     return this.financialAdvisorApplicationsSubject.getValue().includes(application);
   }
 
-  // licenze dell'azienda (o dello studio) dell'utente corrente (da UserLoad), ANALISI_LICENZE.md §8.1.1, §8.1.2.
+  // licenze dell'azienda (o dello studio) dell'utente corrente (da UserLoad), ANALISI_INFRASTRUCTURE_LICENZE.md §8.1.1, §8.1.2.
   // Servono solo a mostrare/nascondere: il server ricontrolla sempre (ILicenseGuard).
   // Con il sistema licenze non attivo tutto risponde come Pro, utenti illimitati.
   private licenseSubject = new BehaviorSubject<UserLicenseModel | null>(null);

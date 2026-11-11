@@ -7,7 +7,7 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 namespace nvxapp.server.data.Infrastructure
 {
     /*
-     Applicativo 3 - CRM, ANALISI_CRM.md.
+     Applicativo 3 - CRM, ANALISI_CRM_APPLICATIVO.md.
      multi-tenant: tenant_<IdAzienda>_3     modalita' singola: public
      Migration in Migrations/Crm.
 

@@ -1,7 +1,7 @@
 import { ModelResult } from '../../../ModelsBase/model-result';
 
 /*
- Pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): modelli speculari a quelli del server
+ Pagamenti delle licenze e ripartizione ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md): modelli speculari a quelli del server
  (Payments/Models/PaymentModel.cs). Gli enum viaggiano come interi; mese null = tutto l'anno.
 */
 

@@ -17,7 +17,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
     }
 
     /*
-     Quale listino vede un soggetto (ANALISI_LICENZE.md §4.1), per ogni ambito:
+     Quale listino vede un soggetto (ANALISI_INFRASTRUCTURE_LICENZE.md §4.1), per ogni ambito:
         1. il centro del soggetto (azienda -> studio -> centro)
         2. se il centro ha PuoGestireListini ed esiste un suo listino attivo per (tipo soggetto, ambito): quello
         3. altrimenti il listino globale del SuperUser (IdDealer null)

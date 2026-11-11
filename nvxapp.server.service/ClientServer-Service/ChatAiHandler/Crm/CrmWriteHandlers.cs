@@ -11,7 +11,7 @@ using static nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm.ChatCr
 namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm
 {
     // Scritture del CRM dalla chat: riepilogo e conferma (anche a voce) prima di eseguire.
-    // ANALISI_VOCALI_CRM.md §3.2
+    // ANALISI_CRM_VOCALI.md §3.2
 
     // W1 — nuova attività per un cliente, assegnata all'utente
     public class CrmNewActivityHandler : BaseCommandHandler

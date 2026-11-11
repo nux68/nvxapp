@@ -12,7 +12,7 @@ import {
 import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 /*
- Gestione licenze dell'azienda o dello studio (ANALISI_LICENZE.md §4.3, §6, §10):
+ Gestione licenze dell'azienda o dello studio (ANALISI_INFRASTRUCTURE_LICENZE.md §4.3, §6, §10):
     - stato per funzione (Presenze, CRM, Documentale): livello, da dove viene (propria o dello studio), scadenza, limite utenti
     - licenze sottoscritte: rinnovo e rinnovo automatico (solo PowerAdmin)
     - sottoscrizione o cambio piano dal listino risolto (l'azienda coperta dallo studio vede solo i piani superiori)
@@ -150,7 +150,7 @@ export class LicenseManagementPageComponent {
       : this.transloco.translate('pages.licenseManagement.usersOfLimit', { attivi: this.status.utentiAttivi, limite: this.status.limiteUtenti });
   }
 
-  // limite della funzione con l'uso attuale (ANALISI_LICENZE.md §5.1): Presenze utenti, CRM clienti attivi, Documentale spazio
+  // limite della funzione con l'uso attuale (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): Presenze utenti, CRM clienti attivi, Documentale spazio
   limite(f: LicenseFunctionStatusModel): string {
     const t = (k: string, p?: any) => this.transloco.translate(k, p);
     switch (f.ambito) {

@@ -22,7 +22,7 @@ using Serilog;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Note e allegati di clienti, opportunita' (e lead per le note; offerte per gli allegati), ANALISI_CRM.md §5.2.
+     Note e allegati di clienti, opportunita' (e lead per le note; offerte per gli allegati), ANALISI_CRM_APPLICATIVO.md §5.2.
      Gli allegati stanno sempre qui (anche con il documentale attivo), su disco con IFileStorage; non contano nello
      spazio del documentale. Note: le modifica e le cancella l'autore o un amministratore.
     */

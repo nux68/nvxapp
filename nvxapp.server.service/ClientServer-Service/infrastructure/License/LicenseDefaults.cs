@@ -3,7 +3,7 @@ using nvxapp.server.data.Entities.Public;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 {
     /*
-     Valori predefiniti dei limiti dei piani (ANALISI_LICENZE.md §5.1), null = illimitati:
+     Valori predefiniti dei limiti dei piani (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1), null = illimitati:
         - Presenze    -> utenti   10 / 50 / illimitati
         - CRM         -> clienti  100 / 1000 / illimitati
         - Documentale -> spazio   1024 / 5120 / 20480 MB (1 / 5 / 20 GB)

@@ -1,4 +1,4 @@
-// Frasi di prova dei comandi del CRM (formato: vedi README.md; analisi: ANALISI_VOCALI_CRM.md)
+// Frasi di prova dei comandi del CRM (formato: vedi README.md; analisi: ANALISI_CRM_VOCALI.md)
 [
   { "frase": "cosa ho in agenda oggi?", "intent": "CrmAgenda", "ruolo": "User" },
   { "frase": "che appuntamenti ho domani?", "intent": "CrmAgenda", "slots": { "from": "=domani" } },

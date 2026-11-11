@@ -21,7 +21,7 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.Crm
 {
     /*
-     Configurazione del CRM (ANALISI_CRM.md §5.1): impostazioni e tabelle (fasi, tipi di attivita', motivi di perdita,
+     Configurazione del CRM (ANALISI_CRM_APPLICATIVO.md §5.1): impostazioni e tabelle (fasi, tipi di attivita', motivi di perdita,
      fonti, prodotti, tag). Le legge chiunque lavori nel CRM (servono alle scelte); le modifica il CompanyPowerAdmin.
      Riassegnazione in blocco dei dati di un commerciale: CompanyPowerAdmin e CompanyAdmin.
     */

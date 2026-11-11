@@ -17,7 +17,7 @@ import {
 } from './Models/crm-model';
 
 /*
- CRM (ANALISI_CRM.md). Allegati: caricamento multipart (dati JSON + file) e download in streaming (blob), come il
+ CRM (ANALISI_CRM_APPLICATIVO.md). Allegati: caricamento multipart (dati JSON + file) e download in streaming (blob), come il
  documentale; PDF delle offerte ed export Excel dei clienti scaricati allo stesso modo.
 */
 @Injectable({

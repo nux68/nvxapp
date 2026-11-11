@@ -11,7 +11,7 @@ using static nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm.ChatCr
 
 namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm
 {
-    // Interrogazioni del CRM dalla chat (sola lettura, senza conferma). ANALISI_VOCALI_CRM.md §3.1
+    // Interrogazioni del CRM dalla chat (sola lettura, senza conferma). ANALISI_CRM_VOCALI.md §3.1
 
     // R1 — le mie attività da fare in un periodo (default oggi); se il periodo parte da oggi anche le scadute
     public class CrmAgendaHandler : BaseCommandHandler

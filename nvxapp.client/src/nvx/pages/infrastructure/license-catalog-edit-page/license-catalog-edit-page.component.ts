@@ -21,7 +21,7 @@ export class LicenseCatalogEditModel extends LicenseCatalogModel {
 }
 
 /*
- Listino delle licenze (ANALISI_LICENZE.md §3.1, §5, §5.1): tipo di soggetto, funzione, descrizione e i tre piani
+ Listino delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §3.1, §5, §5.1): tipo di soggetto, funzione, descrizione e i tre piani
  Free (prezzo 0), Standard e Pro con prezzi mensile/annuale e utenti massimi (vuoto = illimitati).
  Il SuperUser sceglie il proprietario di un nuovo listino (globale o di un centro); il centro crea solo i propri.
  Listino non modificabile dall'utente (es. globale visto da un centro): sola lettura.
