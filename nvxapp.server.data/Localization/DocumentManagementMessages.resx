@@ -203,4 +203,139 @@
   <data name="MultiDone" xml:space="preserve">
     <value>Documento inviato a {0} dipendenti su {1}.</value>
   </data>
+  <data name="ChatCategoryDocuments" xml:space="preserve">
+    <value>Documenti</value>
+  </data>
+  <data name="ChatSearchDisplayName" xml:space="preserve">
+    <value>Cerca documenti</value>
+  </data>
+  <data name="ChatSearchDescription" xml:space="preserve">
+    <value>cerca documenti per tipo, dipendente o cliente, testo, anno o mese (es. il contratto di Rossi, i miei cedolini)</value>
+  </data>
+  <data name="ChatSearchNone" xml:space="preserve">
+    <value>Nessun documento trovato{0}.</value>
+  </data>
+  <data name="ChatSearchTitle" xml:space="preserve">
+    <value>{0} documenti trovati{1}:</value>
+  </data>
+  <data name="ChatSearchTruncated" xml:space="preserve">
+    <value>(elenco limitato ai documenti più recenti: restringi la ricerca o usa l'archivio)</value>
+  </data>
+  <data name="ChatOpenDisplayName" xml:space="preserve">
+    <value>Apri documento</value>
+  </data>
+  <data name="ChatOpenDescription" xml:space="preserve">
+    <value>apre il documento più recente che corrisponde a tipo, persona, testo, anno o mese (es. l'ultimo cedolino)</value>
+  </data>
+  <data name="ChatOpenWhich" xml:space="preserve">
+    <value>Quale documento apro? Dimmi il tipo, la persona o il titolo (es. 'l'ultimo cedolino').</value>
+  </data>
+  <data name="ChatOpenOpening" xml:space="preserve">
+    <value>Apro {0}.</value>
+  </data>
+  <data name="ChatOpenOpeningLatest" xml:space="preserve">
+    <value>Ho trovato {0} documenti, apro il più recente: {1}.</value>
+  </data>
+  <data name="ChatExpiringDisplayName" xml:space="preserve">
+    <value>Documenti in scadenza</value>
+  </data>
+  <data name="ChatExpiringDescription" xml:space="preserve">
+    <value>documenti scaduti e in scadenza entro un numero di giorni (default 30)</value>
+  </data>
+  <data name="ChatExpiringNone" xml:space="preserve">
+    <value>Nessun documento scaduto o in scadenza nei prossimi {0} giorni{1}.</value>
+  </data>
+  <data name="ChatExpiredTitle" xml:space="preserve">
+    <value>{0} documenti già scaduti:</value>
+  </data>
+  <data name="ChatExpiringTitle" xml:space="preserve">
+    <value>{0} documenti in scadenza nei prossimi {1} giorni:</value>
+  </data>
+  <data name="ChatExpiredOn" xml:space="preserve">
+    <value>scaduto il {0}</value>
+  </data>
+  <data name="ChatExpiresOn" xml:space="preserve">
+    <value>scade il {0}</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Entro quanti giorni?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Giorni</value>
+  </data>
+  <data name="ChatToReadDisplayName" xml:space="preserve">
+    <value>Documenti da leggere</value>
+  </data>
+  <data name="ChatToReadDescription" xml:space="preserve">
+    <value>i miei documenti nuovi, mai aperti, e quelli di cui manca la presa visione</value>
+  </data>
+  <data name="ChatToReadNone" xml:space="preserve">
+    <value>Non hai documenti nuovi né prese visione da confermare.</value>
+  </data>
+  <data name="ChatToReadNewTitle" xml:space="preserve">
+    <value>{0} documenti nuovi da aprire:</value>
+  </data>
+  <data name="ChatToReadConfirmTitle" xml:space="preserve">
+    <value>{0} documenti di cui confermare la presa visione:</value>
+  </data>
+  <data name="ChatConfirmReadDisplayName" xml:space="preserve">
+    <value>Presa visione</value>
+  </data>
+  <data name="ChatConfirmReadDescription" xml:space="preserve">
+    <value>conferma la presa visione di un mio documento già aperto</value>
+  </data>
+  <data name="ChatConfirmReadSummary" xml:space="preserve">
+    <value>presa visione del documento {documentType} {month}</value>
+  </data>
+  <data name="ChatConfirmReadNone" xml:space="preserve">
+    <value>Non hai documenti in attesa di presa visione{0}.</value>
+  </data>
+  <data name="ChatConfirmReadAmbiguous" xml:space="preserve">
+    <value>Ci sono {0} documenti in attesa di presa visione: {1}. Quale?</value>
+  </data>
+  <data name="ChatConfirmReadOpenFirst" xml:space="preserve">
+    <value>Non hai ancora aperto {0}: aprilo prima (es. 'apri il cedolino di ottobre') e poi conferma la presa visione.</value>
+  </data>
+  <data name="ChatConfirmReadDone" xml:space="preserve">
+    <value>Presa visione confermata per {0}.</value>
+  </data>
+  <data name="ChatTypeQuestion" xml:space="preserve">
+    <value>Che tipo di documento?</value>
+  </data>
+  <data name="ChatTypeLabel" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="ChatPersonQuestion" xml:space="preserve">
+    <value>Di quale dipendente o cliente?</value>
+  </data>
+  <data name="ChatPersonLabel" xml:space="preserve">
+    <value>Persona</value>
+  </data>
+  <data name="ChatQueryQuestion" xml:space="preserve">
+    <value>Che testo cerco?</value>
+  </data>
+  <data name="ChatQueryLabel" xml:space="preserve">
+    <value>Testo</value>
+  </data>
+  <data name="ChatYearQuestion" xml:space="preserve">
+    <value>Di che anno?</value>
+  </data>
+  <data name="ChatYearLabel" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="ChatMonthQuestion" xml:space="preserve">
+    <value>Di che mese?</value>
+  </data>
+  <data name="ChatMonthLabel" xml:space="preserve">
+    <value>Mese</value>
+  </data>
+  <data name="ChatMine" xml:space="preserve">
+    <value>miei</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>e altri {0}</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Operazione non riuscita: {0}</value>
+  </data>
 </root>

@@ -1,0 +1,16 @@
+// Frasi di prova dei comandi del Documentale (formato: vedi README.md; analisi: ANALISI_VOCALI_DOCUMENTALE.md)
+[
+  { "frase": "trova il contratto di Rossi", "intent": "DocSearch", "slots": { "documentType": "contratto", "person": "Rossi" } },
+  { "frase": "cedolini del 2025 di Bianchi", "intent": "DocSearch", "slots": { "documentType": "cedolino", "person": "Bianchi", "year": "2025" } },
+  { "frase": "documenti con scritto Enel", "intent": "DocSearch", "slots": { "query": "Enel" } },
+  { "frase": "quali sono i miei cedolini?", "intent": "DocSearch", "slots": { "person": "@me" }, "ruolo": "User" },
+  { "frase": "find Rossi's contract", "intent": "DocSearch", "slots": { "person": "Rossi" } },
+  { "frase": "apri l'ultimo cedolino", "intent": "DocOpen", "slots": { "documentType": "cedolino" }, "ruolo": "User" },
+  { "frase": "fammi vedere la CU del 2025", "intent": "DocOpen", "slots": { "year": "2025" } },
+  { "frase": "documenti in scadenza", "intent": "DocExpiring" },
+  { "frase": "cosa scade nei prossimi 60 giorni?", "intent": "DocExpiring", "slots": { "days": "60" } },
+  { "frase": "ho documenti da leggere?", "intent": "DocToRead", "ruolo": "User" },
+  { "frase": "conferma la presa visione del cedolino di ottobre", "intent": "DocConfirmRead", "slots": { "documentType": "cedolino" }, "ruolo": "User" },
+  { "frase": "portami ai miei documenti", "intent": "Navigate", "ruolo": "User" },
+  { "frase": "apri il registro accessi", "intent": "Navigate", "slots": { "page": "registro accessi" } }
+]

@@ -345,7 +345,7 @@ Legenda: [x] fatto · [ ] da fare.
 - [x] `DocumentManagementDataDeleter` (i documenti del personale restano all'uscita del dipendente), `ICommonEntityUsage` (clienti usati da documenti), spazio reale per il riallineamento notturno
 - [x] menu, rotte, multilingua (`DocumentManagementMessages`, i18n `document-management`)
 - [ ] site-name e showcase del documentale
-- [ ] handler chat che cerca per titolo, tipologia e metadati, **senza leggere i contenuti** (§7.6)
+- [x] (11/11/2026, vedi ANALISI_VOCALI_DOCUMENTALE.md) handler chat che cerca per titolo, tipologia e metadati, **senza leggere i contenuti** (§7.6)
 - [x] prove: API (permessi, caricamento, ricerca, versioni, presa visione, cestino, spazio) e pagine nel browser (CompanyPowerAdmin e dipendente) su database temporaneo
 
 ### Fase 2 – Studio e flussi
