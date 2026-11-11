@@ -560,7 +560,7 @@ Regole ora:
 - quota = `ILicenseGuard.StorageQuotaAsync`;
 - sistema licenze **spento**: spazio **illimitato** (`LicenseGuard.SpazioIllimitatoBytes`, `CompanyStorageModel.Illimitato`);
 - sistema licenze **acceso** e azienda **senza** licenza Documentale valida: **quota zero**, `ReserveAsync` rifiuta ogni caricamento con `StorageNoLicense` e non partono avvisi di soglia (`StorageStatus.SenzaLicenza`, `CompanyStorageModel.SenzaLicenza`). Serve perché il Documentale senza licenza è solo nascosto dal menu e le sue API non controllano la licenza (Fase 4 non fatta): con "illimitato" si sarebbe potuto caricare senza limite (correzione dell'11/11/2026);
-- `/companystoragelist` mostra solo le aziende con il Documentale attivo (`CompanyApplication`), con "senza licenza" al posto della quota per quelle non coperte;
+- `/companystoragelist` mostra solo le aziende con il Documentale attivo (`CompanyApplication`) e, con il sistema licenze acceso, coperte da una licenza Documentale valida (11/11/2026: prima le non coperte comparivano con "senza licenza"); la scheda della singola azienda mostra ancora "senza licenza";
 - restano la soglia di avviso (predefinita in `/storagesettings`, voce di menu del SuperUser "Impostazioni spazio", e propria dell'azienda in `/companystorageedit`), gli avvisi email, il riallineamento notturno e lo storico mensile `CompanyStorageHistory` (che ora registra la descrizione della licenza, "Spazio illimitato" o "Senza licenza Documentale").
 
 ---
