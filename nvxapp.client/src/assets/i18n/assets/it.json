@@ -1,0 +1,20 @@
+{
+  "ast": {
+    "menu": {
+      "section": "Risorse aziendali",
+      "settings": "Impostazioni",
+      "manual": "Manuale Risorse aziendali"
+    },
+    "pages": {
+      "settings": {
+        "title": "Impostazioni Risorse aziendali",
+        "general": "Generale",
+        "noticeDays": "Giorni di preavviso delle scadenze",
+        "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
+        "notifications": "Notifiche attive",
+        "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
+        "note": "Note"
+      }
+    }
+  }
+}
