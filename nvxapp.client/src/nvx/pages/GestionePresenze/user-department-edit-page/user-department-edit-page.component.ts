@@ -561,12 +561,11 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
 
 
-  // ── Spesa: autovetture del rapporto (rimborsi km) ─────────────────────────
+  // ── Spesa: autovetture del dipendente (rimborsi km) ───────────────────────
+  // tabella comune legata al dipendente (AT-COM): la sezione Spesa di ogni rapporto mostra le stesse autovetture
 
   getAll_Dip_RapportoAutovetture(): Dip_RapportoAutovettureModel[] {
-    if (!this._editModel?.dip_RapportoAutovetture) return [];
-    const curr_RappLav = this.getCurr_RappLav_Id();
-    return this._editModel.dip_RapportoAutovetture.filter(x => x.idDip_RapportoLavoro == curr_RappLav);
+    return this._editModel?.dip_RapportoAutovetture ?? [];
   }
 
   handleButton_Dip_RapportoAutovetture_EditClick = (item: Dip_RapportoAutovettureModel) => {
@@ -590,7 +589,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     if (id === 0) {
       autovettura = new Dip_RapportoAutovettureModel();
       autovettura.id = this.dbUtilService.GenerateCounterKey();
-      autovettura.idDip_RapportoLavoro = this.getCurr_RappLav_Id();
+      autovettura.idDip_Anagrafica = this._editModel.id ?? 0;
     } else {
       autovettura = Object.assign(new Dip_RapportoAutovettureModel(), this._editModel.dip_RapportoAutovetture.find(p => p.id === id));
     }

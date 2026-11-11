@@ -86,7 +86,7 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   /** Competenze del dipendente: determinano le attività che può svolgere. */
   public dip_Competenza: Dip_CompetenzaModel[];
   /**
-   * Autovetture dei rapporti di lavoro (sezione "Spesa", rimborsi km).
+   * Autovetture del dipendente (sezione "Spesa", rimborsi km; tabella comune legata al dipendente, AT-COM).
    * null = sezione non gestita: al salvataggio il server lascia le autovetture come sono.
    */
   public dip_RapportoAutovetture: Dip_RapportoAutovettureModel[] | null;

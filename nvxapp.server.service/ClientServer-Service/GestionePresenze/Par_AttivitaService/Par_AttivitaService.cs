@@ -16,6 +16,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaSe
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService
 {
@@ -23,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
     {
         private readonly IPar_AttivitaRepository _par_AttivitaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        private readonly IPar_CompetenzaRepository _par_CompetenzaRepository;
+        private readonly IPar_CompetenzaCommonRepository _par_CompetenzaRepository;
         private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
         private readonly IPar_AttivitaCompetenzaService _par_AttivitaCompetenzaService;
 
@@ -36,7 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                                   IPar_AttivitaCompetenzaService par_AttivitaCompetenzaService,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IPar_CompetenzaRepository par_CompetenzaRepository,
+                                  IPar_CompetenzaCommonRepository par_CompetenzaRepository,
                                   IPar_AttivitaCompetenzaRepository par_AttivitaCompetenzaRepository,
                                   IPar_AttivitaRepository par_AttivitaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {

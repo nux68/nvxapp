@@ -28,6 +28,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using nvxapp.server.data.Repositories.Tenant.Common;
 
 /*  chi chiama cosa
 
@@ -70,7 +71,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
         private readonly IDip_GG_NotaSpesa_AllegatoRepository _dip_GG_NotaSpesa_AllegatoRepository;
         private readonly IPar_TipoSpesaRepository _par_TipoSpesaRepository;
-        private readonly IDip_RapportoAutovettureRepository _dip_RapportoAutovettureRepository;
+        private readonly IDip_RapportoAutovettureCommonRepository _dip_RapportoAutovettureRepository;
 
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private readonly IContatoriService _contatoriService;
@@ -101,7 +102,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   IDip_GG_NotaSpesa_AllegatoRepository dip_GG_NotaSpesa_AllegatoRepository,
                                   IPar_TipoSpesaRepository par_TipoSpesaRepository,
-                                  IDip_RapportoAutovettureRepository dip_RapportoAutovettureRepository,
+                                  IDip_RapportoAutovettureCommonRepository dip_RapportoAutovettureRepository,
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
@@ -1102,12 +1103,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             return dip_GG_Timbratura;
 
         }
-        // rimborsi km della nota: importo calcolato con le autovetture del rapporto di lavoro della richiesta
+        // rimborsi km della nota: importo calcolato con le autovetture del dipendente del rapporto di lavoro della richiesta
+        // (autovetture nella tabella comune, legate al dipendente: AT-COM)
         private string? CalcolaRimborsiKm(Dip_GG_Richiesta_Body_NotaSpesa? notaSpesa, int idAz_Anagrafica, int idDip_RapportoLavoro)
         {
             var tipiSpesaKm = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == idAz_Anagrafica && x.Tipo == TipoSpesaTipo.RimborsoKm)
                                                       .Select(x => x.Id).ToList();
-            var autovetture = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_RapportoLavoro == idDip_RapportoLavoro).ToList();
+            var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(x => x.Id == idDip_RapportoLavoro).Select(x => x.IdDip_Anagrafica).FirstOrDefault();
+            var autovetture = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_Anagrafica == idDip_Anagrafica).ToList();
             return Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.CalcolaRimborsiKm(notaSpesa, tipiSpesaKm, autovetture);
         }
 

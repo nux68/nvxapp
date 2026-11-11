@@ -1,0 +1,20 @@
+{
+  "cmp": {
+    "menu": {
+      "section": "Compliance",
+      "settings": "Impostazioni",
+      "manual": "Manuale Compliance"
+    },
+    "pages": {
+      "settings": {
+        "title": "Impostazioni Compliance",
+        "general": "Generale",
+        "noticeDays": "Giorni di preavviso delle scadenze",
+        "noticeDaysNote": "Preavviso predefinito delle scadenze che il modulo registra nello scadenzario comune.",
+        "notifications": "Notifiche attive",
+        "notificationsNote": "Se disattivate, il modulo non invia notifiche né promemoria. Ogni utente sceglie come riceverle dalle preferenze delle notifiche.",
+        "note": "Note"
+      }
+    }
+  }
+}
