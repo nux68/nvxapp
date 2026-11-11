@@ -179,8 +179,8 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `DM-PEC` | Acquisizione delle PEC | DocumentManagement_Dev | `wt_dm-pec` | – | 1 | ⏳ |
 | `DM-CONS` | Conservazione a norma | DocumentManagement_Dev | `wt_dm-cons` | – | 1 | ⏳ |
 | `DM-FIRMA` | Presa visione e verbali per gli altri moduli | DocumentManagement_Dev | `wt_dm-firma` | `INF-SVC` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
-| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-prev` | – | 1 | ⏳ |
-| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-ass` | – | 1 | ⏳ |
+| `CRM-PREV` | Preventivi e offerte | CRM_Dev | `wt_crm-f4` | – | 1 | ✅ fatta, da mergiare (ramo `CRM_Dev_f4`, `ANALISI_CRM_PREVENTIVI.md`) |
+| `CRM-ASS` | Assistenza ai clienti dell'azienda | CRM_Dev | `wt_crm-f4` | – | 1 | ✅ fatta, da mergiare (ramo `CRM_Dev_f4`, `ANALISI_CRM_ASSISTENZA.md`) |
 | `CRM-CAL` | Sincronizzazione degli appuntamenti | CRM_Dev | `wt_crm-cal` | `INF-CAL` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
 | `CMP-BASE` | Avvio del modulo Compliance | Compliance_Dev (nuovo) | `wt_cmp-base` | `INF-APP` | 2 | ✅ mergiata l'11/11/2026 (fase 2) |
 | `CMP-81` | Sicurezza sul lavoro 81/08 | Compliance_Dev | `wt_cmp-81` | `CMP-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ mergiata l'11/11/2026 (fase 3) |
@@ -301,13 +301,13 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ⏳ `DM-FIRMA.3` Archiviazione del documento firmato e delle prove
 
 #### `CRM-PREV` – Preventivi e offerte
-- ⏳ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati)
-- ⏳ `CRM-PREV.2` PDF e invio al cliente
-- ⏳ `CRM-PREV.3` Collegamento con le opportunità della pipeline
+- ✅ `CRM-PREV.1` Modello del preventivo (righe, listini, sconti, stati) — fatta, da mergiare: sulle offerte esistenti stato `Scaduta` (automatico), `DataEsito`, `IdOrdineAmministrazione` (predisposizione dell'ordine), listino con tipo articolo/servizio; scadenza `crm.preventivo` nello scadenzario (inviata → aperta, esito → chiusa, bozza → tolta); migration `Crm_PreventiviAssistenza`
+- ✅ `CRM-PREV.2` PDF e invio al cliente — fatta, da mergiare: PDF solo con job (`Crm_OffertaPdfJob`), invio al contatto con il PDF allegato, errore SMTP gestito, invio registrato come attività
+- ✅ `CRM-PREV.3` Collegamento con le opportunità della pipeline — fatta, da mergiare: accettata → opportunità aperta nella prima fase vinta con il valore dell'offerta e lo storico
 
 #### `CRM-ASS` – Assistenza ai clienti dell'azienda
-- ⏳ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi)
-- ⏳ `CRM-ASS.2` Storico nella scheda del cliente
+- ✅ `CRM-ASS.1` Richieste dei clienti (stati, assegnazione, tempi) — fatta, da mergiare: `Crm_Richiesta` + `Crm_RichiestaMessaggio` (note interne ed eventi), priorità, canale, tempi di presa in carico e risoluzione, notifica all'assegnatario (`INotificationSender`, categoria `generale` in attesa di `INF-SVC.7`), permessi per ruolo; pagine `/crmrequestlist`, `/crmrequestedit`
+- ✅ `CRM-ASS.2` Storico nella scheda del cliente — fatta, da mergiare: sezione Assistenza (e Offerte) nella scheda cliente del CRM, "+" con la nuova richiesta
 
 #### `CRM-CAL` – Sincronizzazione degli appuntamenti
 - ✅ `CRM-CAL.1` Pubblicazione delle attività del CRM sul calendario (`INF-CAL`): `CrmCalendarEventProvider` (`Crm/_utility`), letto dal feed senza utente collegato con lo schema aperto da `CrmSchema.ContextAsync` e i repository di `CrmRepositorySet`. Solo con il CRM attivo e un ruolo dell'azienda; solo le attività **assegnate all'utente** (sempre visibili a lui nel CRM), da fare o fatte (titolo "(fatta)"), non le annullate. Titolo "Tipo: oggetto", descrizione con cliente, contatto, opportunità, lead e descrizione dell'attività; senza orario (inizio a mezzanotte, fine assente o a mezzanotte) = tutto il giorno; UID `crm-attivita-<IdAzienda>-<Id>@nvxapp`; link `/crmactivityedit?id=<Id>` (assoluto con `App:PublicUrl`; la pagina dell'attività ora legge anche l'`id` dall'indirizzo). Provato su DB usa e getta (20 controlli)

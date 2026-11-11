@@ -122,12 +122,16 @@ Controlli tutti lato server (`CrmUtility.RichiesteVisibili`), le pagine li rispe
 
 ## 9. Checklist
 
-- [ ] `CRM-ASS.1` Entità `Crm_Richiesta`, `Crm_RichiestaMessaggio`, enum, migration `Crm_PreventiviAssistenza`, repository
-- [ ] `CRM-ASS.1` Servizio e API (`Crm_Richiesta`: elenco, scheda, salvataggio, nota, cancellazione) con stati, tempi, visibilità per ruolo
-- [ ] `CRM-ASS.1` Notifica all'assegnatario (`INotificationSender`) ed eventi nello storico
-- [ ] `CRM-ASS.1` Uso del cliente comune e cancellazione fisica (`CrmCommonEntityUsage`, `CrmDataDeleter`)
-- [ ] `CRM-ASS.1` Client: elenco e pagina della richiesta, menu, rotte, i18n it/en
-- [ ] `CRM-ASS.2` Sezione Assistenza nella scheda cliente e "+" con la nuova richiesta
-- [ ] Manuale del CRM aggiornato (it/en)
-- [ ] Build server e client
-- [ ] Prova su DB usa e getta (assegnazione con notifica, tempi, storico nella scheda cliente, permessi per ruolo)
+Stato (11/11/2026): **fatto su `CRM_Dev_f4`, da mergiare in CRM_Dev**.
+
+- [x] `CRM-ASS.1` Entità `Crm_Richiesta`, `Crm_RichiestaMessaggio`, enum, migration `Crm_PreventiviAssistenza`, repository
+- [x] `CRM-ASS.1` Servizio e API (`api/Crm_Richiesta/*`: elenco, scheda, salvataggio, nota, cancellazione) con stati, tempi, visibilità per ruolo (`CrmUtility.RichiesteVisibili`)
+- [x] `CRM-ASS.1` Notifica all'assegnatario (`INotificationSender`, categoria `generale`) ed eventi nello storico
+- [x] `CRM-ASS.1` Uso del cliente comune e cancellazione fisica (`CrmCommonEntityUsage`, `CrmDataDeleter`)
+- [x] `CRM-ASS.1` Client: elenco (`/crmrequestlist`) e pagina della richiesta (`/crmrequestedit`, anche con `?id=`), menu "Richieste clienti" per amministratori e commerciali, rotte, i18n it/en
+- [x] `CRM-ASS.2` Sezione Assistenza nella scheda cliente e "+" con la nuova richiesta
+- [x] Manuale del CRM aggiornato (it/en)
+- [x] Build server (`dotnet build`) e client (`ng build --configuration development`)
+- [x] Prova su DB usa e getta (`nvx_test_crmf4`, stessi 76 controlli di `ANALISI_CRM_PREVENTIVI.md`): richiesta assegnata al commerciale con notifica (titolo, link e id), storico (apertura, assegnazione, cambi di stato), presa in carico a ~5 ore da un'apertura retrodatata, risoluzione, riapertura (risoluzione svuotata), chiusura; commerciale: non riassegna ad altri, non vede né modifica le richieste di clienti non suoi, crea richieste libere e se le assegna senza notifica a se stesso, non cancella; elenchi aperte/mie/tutte per ruolo; scheda cliente con richieste (aperte prima) e preventivi; cancellazione da amministratore con i messaggi; cliente usato non cancellabile ("richieste di assistenza del CRM: 2")
+- [ ] Prova nel browser (elenco, richiesta, scheda cliente)
+- [ ] 🔍 Decisioni A1–A5 da confermare (portale/email dal cliente, SLA per priorità, categoria di notifica del CRM con `INF-SVC.7`)

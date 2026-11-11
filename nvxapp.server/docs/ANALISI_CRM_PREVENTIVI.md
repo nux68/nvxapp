@@ -131,12 +131,17 @@ Tabelle del CRM (solo CompanyPowerAdmin). PDF e invio: chi vede l'offerta.
 
 ## 10. Checklist
 
-- [ ] `CRM-PREV.1` Modello: stato `Scaduta`, `DataEsito`, `IdOrdineAmministrazione`, tipo del prodotto; migration `Crm_PreventiviAssistenza`
-- [ ] `CRM-PREV.1` Scadenza automatica (servizio in background + apertura di elenco/scheda) e scadenzario `crm.preventivo` (registrata, chiusa all'esito, tolta in bozza/cancellazione)
-- [ ] `CRM-PREV.2` PDF tramite job (`Crm_OffertaPdfJob`), tolto il download diretto
-- [ ] `CRM-PREV.2` Invio email al contatto con PDF allegato, errore gestito, invio registrato come attività
-- [ ] `CRM-PREV.3` Offerta accettata → opportunità vinta (fase, valore, storico)
-- [ ] Client: stati, PDF con job, tipo del prodotto, i18n it/en
-- [ ] Manuale del CRM aggiornato (it/en)
-- [ ] Build server e client
-- [ ] Prova su DB usa e getta (totali, job PDF, email con SMTP finto, scadenza chiusa, opportunità vinta, permessi)
+Stato (11/11/2026): **fatto su `CRM_Dev_f4`, da mergiare in CRM_Dev**.
+
+- [x] `CRM-PREV.1` Modello: stato `Scaduta`, `DataEsito`, `IdOrdineAmministrazione`, tipo del prodotto; migration `Crm_PreventiviAssistenza`
+- [x] `CRM-PREV.1` Scadenza automatica (servizio in background + apertura di elenco/scheda) e scadenzario `crm.preventivo` (registrata, chiusa all'esito, tolta in bozza/cancellazione) – `CrmOfferteCiclo`
+- [x] `CRM-PREV.2` PDF tramite job (`Crm_OffertaPdfJob`), tolto il download diretto
+- [x] `CRM-PREV.2` Invio email al contatto con PDF allegato, errore gestito, invio registrato come attività
+- [x] `CRM-PREV.3` Offerta accettata → opportunità vinta (fase, valore, storico)
+- [x] Client: stati, PDF con job, tipo del prodotto, i18n it/en
+- [x] Manuale del CRM aggiornato (it/en)
+- [x] Build server (`dotnet build`) e client (`ng build --configuration development`)
+- [x] Prova su DB usa e getta (`nvx_test_crmf4`, porta 5334) l'11/11/2026: **76 controlli, tutti ok** (script `test_crmf4.py`): azienda, CRM attivato dal SuperUser, utenti PowerAdmin/Admin/User, listino con tipo, cliente e contatto, opportunità; preventivo con 4 righe e totali controllati a mano (720,00 + 99,99 + 190,00 + 20,17 = imponibile 1030,16; IVA 158,40 + 22,00 + 0 + 2,02 = 182,42; totale 1212,58), numerazione; job del PDF completato con il file registrato e scaricabile solo da chi l'ha lanciato; invio con SMTP spento (errore chiaro, resta in bozza, nessuna attività) e con SMTP finto (email al contatto con il PDF allegato, attività registrata, scadenza aperta con il responsabile dell'opportunità); accettata → scadenza chiusa e opportunità vinta (fase, probabilità, chiusura, valore, storico); inviata con validità passata → scaduta e scadenza chiusa; bozza → scadenza tolta; permessi del commerciale; cliente usato non cancellabile.
+- [ ] Prova nel browser (pagine offerta e listino)
+- [ ] Il passaggio automatico a "Scaduta" del servizio in background (una volta all'ora) non è stato provato a tempo: la stessa funzione è provata tramite l'apertura dell'elenco
+- [ ] 🔍 Decisioni P1–P7 da confermare con l'utente
