@@ -9,6 +9,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     {
         private readonly Dictionary<string, string> _routes;
         private readonly List<RoleRoute> _roleRoutes = new();
+        private readonly List<string> _promptPages = new();
 
         public RouteRegistry(IEnumerable<IRouteProvider> providers)
         {
@@ -19,8 +20,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 foreach (var kv in provider.Routes)
                     _routes.TryAdd(kv.Key, kv.Value);   // primo provider vince in caso di duplicato
                 _roleRoutes.AddRange(provider.RoleRoutes);
+                _promptPages.AddRange(provider.PromptPages.Where(p => !_promptPages.Contains(p, StringComparer.OrdinalIgnoreCase)));
             }
         }
+
+        public IReadOnlyList<string> PromptPages => _promptPages;
 
         public string Resolve(string? page, IReadOnlyCollection<string>? roles = null)
         {

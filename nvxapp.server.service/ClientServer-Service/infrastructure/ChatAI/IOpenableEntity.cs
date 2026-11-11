@@ -1,3 +1,5 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 {
     // Entità che la chat sa aprire ("apri la causale ferie", "modifica il reparto produzione").
@@ -23,6 +25,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         // pagine in cui il comando è utile (help contestuale): elenco e modifica
         IReadOnlyList<string> Pages { get; }
+
+        // applicativo dell'entità: si apre solo se è attivo per l'azienda (null = sempre)
+        ApplicationType? Application => null;
 
         // elementi tra cui cercare quello da aprire
         Task<List<OpenableItem>> LoadAsync();

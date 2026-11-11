@@ -15,6 +15,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Valgono prima di Routes, nell'ordine dichiarato; per gli utenti con piu' ruoli vince la prima
         // regola di un loro ruolo (si dichiarano prima le pagine dell'amministrazione).
         IReadOnlyList<RoleRoute> RoleRoutes => [];
+
+        // Nomi delle pagine del modulo da elencare nel prompt del comando Navigate (es. "pipeline",
+        // "agenda crm"), cosi' il LLM conosce anche le pagine dei moduli. Vuoto = nessuna aggiunta.
+        IReadOnlyList<string> PromptPages => [];
     }
 
     // nome della pagina -> route, solo per gli utenti con uno dei ruoli indicati
