@@ -9,7 +9,7 @@ import {
   DocAbilitazioneListOutModel, DocAbilitazionePutInModel, DocAbilitazionePutOutModel, DocCartellaPutInModel, DocCartellaPutOutModel,
   DocCfgPutInModel, DocCfgPutOutModel, DocClienteListOutModel, DocDeleteOutModel, DocDipendentePutInModel, DocDipendentePutOutModel,
   DocDocumentoEditModel, DocDocumentoGetOutModel, DocDocumentoListInModel, DocDocumentoListOutModel, DocDocumentoPutInModel,
-  DocDocumentoPutOutModel, DocEmptyInModel, DocIdInModel, DocIdOutModel, DocLogListInModel, DocLogListOutModel, DocSetupGetOutModel,
+  DocDocumentoPutOutModel, DocEmptyInModel, DocIdInModel, DocFirmaInModel, DocIdOutModel, DocLogListInModel, DocLogListOutModel, DocSetupGetOutModel,
   DocSvuotaCestinoOutModel, DocTipoPutInModel, DocTipoPutOutModel, DocDocumentoUploadMultiploModel, DocDocumentoUploadMultiploOutModel
 } from './Models/doc-model';
 
@@ -51,6 +51,7 @@ export class DocumentManagementService {
   Elimina(m: GenericRequest<DocIdInModel>) { return this.post<DocIdInModel, DocIdOutModel>('Doc_Documento', 'Doc_DocumentoElimina', m); }
   SvuotaCestino() { return this.post<DocEmptyInModel, DocSvuotaCestinoOutModel>('Doc_Documento', 'Doc_SvuotaCestino', new GenericRequest<DocEmptyInModel>(DocEmptyInModel)); }
   PresaVisione(m: GenericRequest<DocIdInModel>) { return this.post<DocIdInModel, DocIdOutModel>('Doc_Documento', 'Doc_DocumentoPresaVisione', m); }
+  Firma(m: GenericRequest<DocFirmaInModel>) { return this.post<DocFirmaInModel, DocIdOutModel>('Doc_Documento', 'Doc_DocumentoFirma', m); }
   LogList(m: GenericRequest<DocLogListInModel>) { return this.post<DocLogListInModel, DocLogListOutModel>('Doc_Documento', 'Doc_LogList', m); }
 
   Upload(data: DocDocumentoEditModel, file: File): Observable<GenericResult<DocDocumentoPutOutModel>> {

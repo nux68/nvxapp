@@ -60,7 +60,7 @@ Le tipologie definiscono come si comportano i documenti dell'archivio. Ogni tipo
 - **Azienda**: archivio aziendale, per gli amministratori;
 - **Cliente**: fascicolo di un cliente dell'anagrafica comune.
 
-Per ogni tipologia scegli gli **anni di conservazione** (vuoto = senza limite), se ha una **scadenza**, se richiede la **presa visione** e se ha una **competenza** (mese/anno, per esempio i cedolini). Per le tipologie del personale, **Personale invio multiplo** permette di scegliere più dipendenti insieme quando si carica un documento (un documento per ciascuno, stesso file).
+Per ogni tipologia scegli gli **anni di conservazione** (vuoto = senza limite), se ha una **scadenza**, se richiede la **presa visione**, se propone la **firma** (modificabile a ogni invio) e se ha una **competenza** (mese/anno, per esempio i cedolini). Per le tipologie del personale, **Personale invio multiplo** permette di scegliere più dipendenti insieme quando si carica un documento (un documento per ciascuno, stesso file).
 
 Alla prima attivazione sono già pronte le tipologie più comuni (cedolino, CU, contratto, certificato medico, formazione, comunicazione, F24, DURC, visura, contratto cliente, generico). Una tipologia usata da documenti non si elimina: si disattiva.
 

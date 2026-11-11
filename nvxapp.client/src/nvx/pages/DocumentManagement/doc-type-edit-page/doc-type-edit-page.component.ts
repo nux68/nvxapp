@@ -39,6 +39,7 @@ export class DocTypeEditPageComponent extends BasePageConfirmCancelComponent<Doc
       anniConservazione: [null, [Validators.min(1)]],
       haScadenza: [false],
       presaVisioneRichiesta: [false],
+      firmaRichiesta: [false],
       haCompetenza: [false],
       ordine: [0],
       active: [true],
