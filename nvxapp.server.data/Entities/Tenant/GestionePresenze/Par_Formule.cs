@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    // Formula personalizzata del calcolo giornata (script JavaScript eseguito sul server con Jint, vedi ANALISI_FORMULE.md)
+    // Formula personalizzata del calcolo giornata (script JavaScript eseguito sul server con Jint, vedi ANALISI_ATTENDANCETRACKING_FORMULE.md)
     public class Par_Formule : BaseEntity
     {
         [Required]

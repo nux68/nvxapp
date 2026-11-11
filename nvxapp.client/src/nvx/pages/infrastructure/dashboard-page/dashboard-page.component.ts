@@ -7,7 +7,7 @@ import { WidgetDefinition } from '../../../Utility/infrastructure/widget.model';
 import { disponiWidget, WidgetRiga } from '../../../Utility/infrastructure/widget-layout';
 
 /*
- Dashboard (pagina iniziale dopo il login): saluto e widget scelti dall'utente (ANALISI_WIDGET.md).
+ Dashboard (pagina iniziale dopo il login): saluto e widget scelti dall'utente (ANALISI_INFRASTRUCTURE_WIDGET.md).
  Chi non ha ancora configurato la dashboard vede i widget predefiniti; i widget si configurano nella pagina
  del proprio ruolo (User, CompanyAdmin, CompanyPowerAdmin).
 */

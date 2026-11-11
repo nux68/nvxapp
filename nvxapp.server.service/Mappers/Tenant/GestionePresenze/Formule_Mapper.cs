@@ -6,7 +6,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloFor
 
 namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
 {
-    // Formule personalizzate del calcolo giornata (ANALISI_FORMULE.md)
+    // Formule personalizzate del calcolo giornata (ANALISI_ATTENDANCETRACKING_FORMULE.md)
     public class Formule_Mapper : Profile
     {
         public Formule_Mapper()

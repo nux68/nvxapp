@@ -1,7 +1,7 @@
 import { ModelResult } from '../../../ModelsBase/model-result';
 
 /*
- Licenze d'uso (ANALISI_LICENZE.md): modelli speculari a quelli del server (License/Models/LicenseModel.cs).
+ Licenze d'uso (ANALISI_INFRASTRUCTURE_LICENZE.md): modelli speculari a quelli del server (License/Models/LicenseModel.cs).
  Gli enum viaggiano come interi.
 */
 

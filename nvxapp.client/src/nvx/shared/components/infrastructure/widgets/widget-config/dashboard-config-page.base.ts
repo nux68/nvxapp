@@ -5,7 +5,7 @@ import { WidgetConfigComponent } from './widget-config.component';
 
 /*
  Base delle pagine dei ruoli (User, CompanyAdmin, CompanyPowerAdmin) in cui l'utente configura la propria dashboard
- (ANALISI_WIDGET.md): Conferma salva e apre la dashboard, Annulla ricarica la configurazione salvata.
+ (ANALISI_INFRASTRUCTURE_WIDGET.md): Conferma salva e apre la dashboard, Annulla ricarica la configurazione salvata.
 */
 @Directive()
 export abstract class DashboardConfigPageBase {

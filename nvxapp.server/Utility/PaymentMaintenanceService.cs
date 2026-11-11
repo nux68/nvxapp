@@ -6,7 +6,7 @@ using Serilog;
 namespace nvxapp.server.Utility
 {
     /*
-     Ripartizione degli incassi ai centri (ANALISI_PAGAMENTI_CENTRI.md §5), una volta al giorno dopo le 4 di notte, solo con
+     Ripartizione degli incassi ai centri (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §5), una volta al giorno dopo le 4 di notte, solo con
      l'impostazione Pagamenti_RiepilogoAutomatico accesa:
         - dal giorno Pagamenti_GiornoInvioMensile genera le bozze dei rendiconti del mese precedente, una volta per mese
           (Pagamenti_UltimaGenerazione = "aaaa-mm"); il SuperUser le controlla e le conferma, e la conferma invia l'email al centro

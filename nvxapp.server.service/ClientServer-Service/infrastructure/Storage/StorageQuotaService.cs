@@ -20,7 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         2. salvataggio del file e dei metadati
         3. ConfirmAsync  (riuscito) oppure ReleaseAsync (errore)
      Eliminazione definitiva: FreeAsync. Di notte RecalculateAsync riallinea con la somma reale.
-     Quota (ANALISI_LICENZE.md §5.1, §15.7): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync).
+     Quota (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1, §15.7): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync).
         - sistema licenze spento           : spazio illimitato
         - sistema acceso, azienda coperta  : quota della licenza
         - sistema acceso, nessuna copertura: quota zero, caricamenti bloccati (StorageNoLicense). Il Documentale senza

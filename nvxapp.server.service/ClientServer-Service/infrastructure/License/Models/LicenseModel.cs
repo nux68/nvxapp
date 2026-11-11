@@ -3,7 +3,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Models
 {
     /*
-     Modelli delle licenze (ANALISI_LICENZE.md). Gli enum viaggiano come interi:
+     Modelli delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md). Gli enum viaggiano come interi:
         TipoSoggetto 1 Company, 2 FinancialAdvisor
         Ambito       2 Presenze, 3 CRM, 4 Documentale, 100 Cumulativo
         Livello      1 Free, 2 Standard, 3 Pro

@@ -2,7 +2,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.UserDashboard.Models
 {
-    // dashboard dell'utente corrente nell'azienda corrente (ANALISI_WIDGET.md)
+    // dashboard dell'utente corrente nell'azienda corrente (ANALISI_INFRASTRUCTURE_WIDGET.md)
     public class UserDashboardGetInModel
     {
     }

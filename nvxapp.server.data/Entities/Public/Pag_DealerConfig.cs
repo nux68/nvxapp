@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Dati del centro per la liquidazione delle sue quote (ANALISI_PAGAMENTI_CENTRI.md §3).
+     Dati del centro per la liquidazione delle sue quote (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3).
      Una riga per centro, sparisce con il centro.
     */
     public class Pag_DealerConfig : BaseEntity

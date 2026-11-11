@@ -1,8 +1,8 @@
-# Immagine di nvxapp: client Angular + server .NET in un solo container (punto 6 di nvxapp.server/docs/ANALISI_DOCKER.md).
+# Immagine di nvxapp: client Angular + server .NET in un solo container (punto 6 di nvxapp.server/docs/ANALISI_INFRASTRUCTURE_DOCKER.md).
 # Contesto di build = cartella della solution (quella di questo file):
 #   docker build -t nvxapp:<tag> .
 # Configurazione e segreti NON sono nell'immagine: si passano all'avvio come variabili d'ambiente NVXAPP_*
-# (sezione 8 di ANALISI_DOCKER.md), es. con docker compose e un file .env.
+# (sezione 8 di ANALISI_INFRASTRUCTURE_DOCKER.md), es. con docker compose e un file .env.
 
 # --- 1. build del client Angular -> nvxapp.client/www ---
 FROM node:22-bookworm-slim AS web

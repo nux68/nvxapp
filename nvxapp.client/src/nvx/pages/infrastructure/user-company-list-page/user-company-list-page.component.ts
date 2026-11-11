@@ -129,7 +129,7 @@ export class UserCompanyListPageComponent {
    * action sheet tra inserimento di un utente e importazione; altrimenti si apre subito l'inserimento.
    */
   async scegliInserimento() {
-    // limite utenti della licenza (ANALISI_LICENZE.md §5.1): il server ricontrolla; qui si evita di compilare per niente
+    // limite utenti della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §5.1): il server ricontrolla; qui si evita di compilare per niente
     const limite = this.limiteUtenti;
     if (limite != null && this.utentiAttivi >= limite) {
       if (await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('pages.userCompanyList.userLimitReached', { limite })))
@@ -323,7 +323,7 @@ export class UserCompanyListPageComponent {
     return item.roles.some((role: string) => ruoli.map(x => x.name).includes(role));
   }
 
-  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_CANCELLAZIONE.md
+  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_INFRASTRUCTURE_CANCELLAZIONE.md
   get canDelete(): boolean {
     return this.userNavigationService.LoginIsSuperUser || this.authService.IsCompanyPowerAdmin || this.authService.IsFinancialAdvisorPowerAdmin;
   }

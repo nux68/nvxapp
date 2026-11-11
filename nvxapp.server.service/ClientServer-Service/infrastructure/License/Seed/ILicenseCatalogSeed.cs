@@ -3,7 +3,7 @@ using nvxapp.server.data.Entities.Public;
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Seed
 {
     /*
-     Listini iniziali delle licenze (ANALISI_LICENZE.md §15.5): ogni ramo dichiara i propri.
+     Listini iniziali delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §15.5): ogni ramo dichiara i propri.
         - Infrastructure: il listino Cumulativo (InfrastructureLicenseCatalogSeed)
         - ogni ramo applicativo: il listino della propria funzione (Presenze, CRM, Documentale), nella propria cartella
      Basta una classe che implementa ILicenseCatalogSeed: la registra lo scanner dei servizi e LicenseCatalogSeeder

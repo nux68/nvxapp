@@ -12,7 +12,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOra
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.FormuleEngine
 {
     /*
-     Facciata "x" delle formule (ANALISI_FORMULE.md §4.3).
+     Facciata "x" delle formule (ANALISI_ATTENDANCETRACKING_FORMULE.md §4.3).
      La formula vede SOLO questo oggetto: niente DB, niente altri dipendenti, niente CLR.
      Lavora sui dati in memoria del calcolo del giorno (causali e importi del dizionario del motore, result,
      timbrature, giustificativi, orario): quello che la formula cambia viene poi scritto dal motore

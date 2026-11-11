@@ -464,7 +464,7 @@ Il testo della formula viene avvolto in una funzione (`(function(){ ... })()`), 
 
 **Validazione**: il server passa il risultato a `CtrlSintassi`. Se ci sono errori fa **un solo** nuovo tentativo, mandando gli errori all'AI, e poi restituisce codice, spiegazione e avvisi.
 
-**Privacy**: si inviano solo la richiesta, il testo della formula e la documentazione, **mai dati dei dipendenti** (vedi `ANALISI_EXPORT_AI.md` §7).
+**Privacy**: si inviano solo la richiesta, il testo della formula e la documentazione, **mai dati dei dipendenti** (vedi `ANALISI_ATTENDANCETRACKING_EXPORT_AI.md` §7).
 
 **Front**: dialog con prompt e risultato, e i pulsanti "Sostituisci", "Accoda" e "Copia" (come il legacy).
 

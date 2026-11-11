@@ -4,7 +4,7 @@ import { PresentTodayWidgetComponent } from '../../shared/components/GestionePre
 import { RequestsWidgetComponent } from '../../shared/components/GestionePresenze/widgets/requests-widget/requests-widget.component';
 
 /*
- Widget della dashboard delle Presenze (ANALISI_WIDGET.md, dettaglio in ANALISI_WIDGET_PRESENZE.md).
+ Widget della dashboard delle Presenze (ANALISI_INFRASTRUCTURE_WIDGET.md, dettaglio in ANALISI_ATTENDANCETRACKING_WIDGET.md).
  Compaiono solo se le presenze sono attive per l'azienda (WidgetService).
 */
 @Injectable({
