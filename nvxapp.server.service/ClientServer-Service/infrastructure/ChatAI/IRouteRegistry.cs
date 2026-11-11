@@ -5,5 +5,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     public interface IRouteRegistry
     {
         string Resolve(string? page, IReadOnlyCollection<string>? roles = null);
+
+        // nomi di pagina dichiarati dai moduli per il prompt del comando Navigate (IRouteProvider.PromptPages)
+        IReadOnlyList<string> PromptPages { get; }
     }
 }
