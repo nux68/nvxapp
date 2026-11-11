@@ -12,8 +12,9 @@ namespace nvxapp.server.data.Entities.Public
           (vuoti = quelli predefiniti, Descrizione + "_PowerAdmin" / "_Admin")
         - TokenHash   : SHA-256 del token del link (il token in chiaro sta solo nell'email)
         - ExpiresAt   : scadenza del link
-        - ConfirmedAt / IdCompany: conferma avvenuta e azienda creata
-     Nessuna relazione con Company: i contesti degli applicativi mappano Company e
+        - Tipo        : cosa si registra, azienda (nello studio DEMO) o studio (nel centro DEMO)
+        - ConfirmedAt / IdCompany / IdFinancialAdvisor: conferma avvenuta e azienda o studio creato
+     Nessuna relazione con Company e FinancialAdvisor: i contesti degli applicativi mappano Company e
      scoprirebbero la tabella seguendo la relazione.
     */
     public class CompanyRegistrationRequest : BaseEntity
@@ -45,5 +46,16 @@ namespace nvxapp.server.data.Entities.Public
         public DateTime? ConfirmedAt { get; set; }
 
         public int? IdCompany { get; set; }
+
+        public TipoRegistrazione Tipo { get; set; } = TipoRegistrazione.Azienda;
+
+        public int? IdFinancialAdvisor { get; set; }
+    }
+
+    // cosa si registra dallo showcase (salvato come intero)
+    public enum TipoRegistrazione
+    {
+        Azienda = 0,
+        Studio = 1
     }
 }
