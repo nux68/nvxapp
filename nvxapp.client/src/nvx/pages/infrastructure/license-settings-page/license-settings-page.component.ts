@@ -12,7 +12,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
- Impostazioni delle licenze (SuperUser, ANALISI_LICENZE.md §3.3, §5.1, §8.1.1):
+ Impostazioni delle licenze (SuperUser, ANALISI_INFRASTRUCTURE_LICENZE.md §3.3, §5.1, §8.1.1):
     - sistema licenze attivo (spento = nessun blocco, tutto come Pro)
     - utenti predefiniti dei piani Free, Standard e Pro dei nuovi listini (vuoto = illimitati)
     - giorni di grace dopo la scadenza e giorni di preavviso

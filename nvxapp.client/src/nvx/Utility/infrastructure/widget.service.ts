@@ -22,7 +22,7 @@ export interface DashboardStato {
 }
 
 /*
- Catalogo dei widget (ANALISI_WIDGET.md): unisce i fornitori dei rami e tiene solo i widget utilizzabili
+ Catalogo dei widget (ANALISI_INFRASTRUCTURE_WIDGET.md): unisce i fornitori dei rami e tiene solo i widget utilizzabili
  dall'utente corrente:
    - dell'infrastruttura, oppure di un applicativo attivo per la sua azienda (AuthService.hasApplication,
      che tiene gia' conto delle licenze);

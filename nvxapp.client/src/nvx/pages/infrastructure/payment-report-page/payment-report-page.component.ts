@@ -13,7 +13,7 @@ import {
 } from '../../../ClientServer-Service/Infrastructure/Payment/Models/payment-model';
 
 /*
- Pagamenti per centro (SuperUser, ANALISI_PAGAMENTI_CENTRI.md §4, §6): per anno o mese, incassato, trattenuta della piattaforma,
+ Pagamenti per centro (SuperUser, ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §4, §6): per anno o mese, incassato, trattenuta della piattaforma,
  quota dei centri, liquidato e da liquidare; dal dettaglio di un centro rendiconti, pagamenti ed email.
  Dal pulsante rotondo: bozze dei rendiconti del mese per tutti i centri, Excel di tutti i centri, impostazioni.
 */

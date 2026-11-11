@@ -28,7 +28,7 @@ export class UserDataModel  {
   // voci di menu nascoste ai ruoli dell'azienda (configurate dal CompanyPowerAdmin)
   public menuRestrictions: MenuRestrictionModel[] = [];
 
-  // licenze dell'azienda (o dello studio) dell'utente (ANALISI_LICENZE.md §8.1.1, §8.1.2)
+  // licenze dell'azienda (o dello studio) dell'utente (ANALISI_INFRASTRUCTURE_LICENZE.md §8.1.1, §8.1.2)
   public license: UserLicenseModel | null = null;
 
 }

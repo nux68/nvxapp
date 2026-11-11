@@ -23,7 +23,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
 {
     /*
      Cancellazione fisica di centri (Dealer), studi (FinancialAdvisor), aziende (Company) e utenti
-     (vedi nvxapp.server/docs/ANALISI_CANCELLAZIONE.md, decisioni al §9).
+     (vedi nvxapp.server/docs/ANALISI_INFRASTRUCTURE_CANCELLAZIONE.md, decisioni al §9).
         - Eliminando un nodo si elimina tutto il ramo: studi, aziende, schemi degli applicativi, ticket nati nel
           ramo, documenti, collegamenti degli utenti e gli utenti rimasti senza altri collegamenti.
         - Un utente tolto da un nodo si elimina solo se non ha altri collegamenti; i suoi dati negli applicativi

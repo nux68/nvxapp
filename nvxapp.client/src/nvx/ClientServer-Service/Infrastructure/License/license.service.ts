@@ -12,7 +12,7 @@ import {
   LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscribeInModel, LicenseSubscribeOutModel
 } from './Models/license-model';
 
-// Licenze d'uso (ANALISI_LICENZE.md): impostazioni e listini (SuperUser, centro abilitato), licenze dell'azienda o dello studio
+// Licenze d'uso (ANALISI_INFRASTRUCTURE_LICENZE.md): impostazioni e listini (SuperUser, centro abilitato), licenze dell'azienda o dello studio
 @Injectable({
   providedIn: 'root'
 })

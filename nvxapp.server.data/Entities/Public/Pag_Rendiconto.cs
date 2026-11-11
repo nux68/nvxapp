@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 namespace nvxapp.server.data.Entities.Public
 {
     /*
-     Rendiconto mensile con cui il SuperUser liquida al centro la sua quota degli incassi (ANALISI_PAGAMENTI_CENTRI.md §3).
+     Rendiconto mensile con cui il SuperUser liquida al centro la sua quota degli incassi (ANALISI_INFRASTRUCTURE_PAGAMENTI_CENTRI.md §3).
      Le aziende e gli studi pagano la licenza alla piattaforma (Lic_Pagamento); a fine mese per ogni centro si raccolgono
      i pagamenti incassati e non ancora liquidati (Lic_Pagamento.IdRendiconto), si toglie la trattenuta della piattaforma
      e il resto e' la quota del centro.
