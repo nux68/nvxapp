@@ -2,6 +2,9 @@ import { I18N_FOLDER_ATTENDANCE_TRACKING } from './i18n-attendance-tracking';
 import { I18N_FOLDER_HUMAN_RESOURCES } from './i18n-human-resources';
 import { I18N_FOLDER_DOCUMENT_MANAGEMENT } from './i18n-document-management';
 import { I18N_FOLDER_CRM } from './i18n-crm';
+import { I18N_FOLDER_HUMAN_RESOURCES } from './i18n-human-resources';
+import { I18N_FOLDER_COMPLIANCE } from './i18n-compliance';
+import { I18N_FOLDER_ASSETS } from './i18n-assets';
 import { I18N_FOLDER_ALL_FUNCTION } from './i18n-all-function';
 
 /*
@@ -16,5 +19,8 @@ export const I18N_FOLDERS: string[] = [
   I18N_FOLDER_HUMAN_RESOURCES,
   I18N_FOLDER_DOCUMENT_MANAGEMENT,
   I18N_FOLDER_CRM,
+  I18N_FOLDER_HUMAN_RESOURCES,
+  I18N_FOLDER_COMPLIANCE,
+  I18N_FOLDER_ASSETS,
   I18N_FOLDER_ALL_FUNCTION,
 ].filter((x): x is string => !!x);
