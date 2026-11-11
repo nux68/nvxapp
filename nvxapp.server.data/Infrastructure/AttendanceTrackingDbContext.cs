@@ -78,6 +78,11 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Dip_Contatori_Riporto> Dip_Contatori_Riporto { get; set; }
         public virtual DbSet<Par_Festivita> Par_Festivita { get; set; }
         public virtual DbSet<Dip_Periodo> Dip_Periodo { get; set; }
+        public virtual DbSet<Par_Formule> Par_Formule { get; set; }
+        public virtual DbSet<Par_ProfiloFormule> Par_ProfiloFormule { get; set; }
+        public virtual DbSet<Par_ProfiloFormuleDett> Par_ProfiloFormuleDett { get; set; }
+        public virtual DbSet<Dip_ProfiloFormule> Dip_ProfiloFormule { get; set; }
+        public virtual DbSet<Dip_GG_FormuleLog> Dip_GG_FormuleLog { get; set; }
         
         
 
@@ -271,6 +276,60 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa_Allegato)
                 .HasForeignKey(key_esterna => key_esterna.IdDip_GG_NotaSpesa)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            /* Formule del calcolo giornata (ANALISI_FORMULE.md) */
+            modelBuilder.Entity<Par_Formule>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Par_Formule>()
+                .HasIndex(x => new { x.IdAz_Anagrafica, x.Codice })
+                .IsUnique();
+
+            modelBuilder.Entity<Par_ProfiloFormule>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Par_ProfiloFormule>()
+                .HasIndex(x => new { x.IdAz_Anagrafica, x.Codice })
+                .IsUnique();
+
+            modelBuilder.Entity<Par_ProfiloFormuleDett>()
+                .HasOne(t_padre => t_padre.Par_ProfiloFormuleNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloFormuleDett)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloFormule)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Par_ProfiloFormuleDett>()
+                .HasOne(t_padre => t_padre.Par_FormuleNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloFormuleDett)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Formule)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Dip_ProfiloFormule>()
+                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Dip_ProfiloFormule>()
+                .HasOne(t_padre => t_padre.Par_ProfiloFormuleNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_ProfiloFormule)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloFormule)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Dip_GG_FormuleLog>()
+                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Dip_GG_FormuleLog>()
+                .HasOne(t_padre => t_padre.Par_FormuleNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Formule)
+                .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<Dip_GG_FormuleLog>()
+                .HasIndex(x => new { x.IdDip_RapportoLavoro, x.Giorno });
 
             /* Par_TipoSpesa */
             modelBuilder.Entity<Par_TipoSpesa>()
