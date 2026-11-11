@@ -36,7 +36,7 @@ Nel menu trovi le funzioni degli applicativi che usi ogni giorno. Per un dubbio 
 ### Se sei il SuperUser {SuperUser}
 1. Crea i centri da **Centri**; da lì, impersonando, scendi a studi e aziende.
 2. Prepara i **Tipi di richiesta** dei ticket e, se usi le risposte automatiche, la **Documentazione AI** e i valori di **Configura risposte AI**.
-3. Se è attivo il documentale, definisci i **Pacchetti di spazio** e i valori predefiniti.
+3. Se è attivo il documentale, controlla le **Impostazioni spazio** (soglia di avviso); lo spazio delle aziende viene dalla licenza Documentale.
 4. Con **Sposta azienda** porti un'azienda sotto un altro studio.
 
 ## Concetti chiave
@@ -222,7 +222,7 @@ Il SuperUser gestisce l'installazione:
 - crea e gestisce i centri e, impersonandoli, studi e aziende;
 - gestisce gli utenti PowerAdmin e Admin del livello DEV;
 - sposta un'azienda sotto un altro studio;
-- definisce i pacchetti di spazio del documentale e i valori predefiniti;
+- imposta la soglia di avviso dello spazio del documentale;
 - prepara i tipi di richiesta dei ticket, la documentazione AI e i valori predefiniti delle risposte automatiche;
 - apre ticket verso il livello DEV assegnandoli direttamente a un PowerAdmin o Admin.
 
@@ -292,57 +292,42 @@ L'operazione è riservata al SuperUser, anche quando sta impersonando un altro u
 
 => /companylist /financialadvisorlist /ticketlist
 
-@@ /storageplanlist
+@@ /storagesettings
 ### Campi
-Scheda **Pacchetto di spazio**:
+Scheda **Impostazioni dello spazio documenti**, in alto lo spazio usato da tutte le aziende:
 | Campo | Descrizione |
 |---|---|
-| Descrizione | Nome del pacchetto, obbligatorio, fino a 50 caratteri, diverso dagli altri. |
-| Spazio (MB) | Obbligatorio, maggiore di zero; proposto 1024. |
-| Dimensione massima del file (MB) | Facoltativa; vuota vale il valore predefinito dell'installazione. |
-| Ordine | Posizione nell'elenco. |
-| Attivo | Un pacchetto disattivato resta alle aziende che lo hanno ma non si assegna più. |
-| Predefinito | Assegnato alle aziende quando attivano il documentale; ce n'è sempre uno solo. |
-
-Finestra **Valori predefiniti** (dal pulsante rotondo della pagina):
-| Campo | Descrizione |
-|---|---|
-| Dimensione massima del file (MB) | Obbligatoria, maggiore di zero; proposta 50. |
-| Soglia di avviso (%) | Obbligatoria, da 1 a 99; proposta 80. |
+| Soglia di avviso (%) | Obbligatoria, da 1 a 99; proposta 80. Vale per le aziende che non hanno una soglia propria. |
 
 ### Attenzione
-- Il pacchetto predefinito resta sempre attivo e non si elimina: prima rendi predefinito un altro pacchetto.
-- Un pacchetto usato da qualche azienda non si elimina: viene solo disattivato.
-- Se non c'è nessun pacchetto attivo, le aziende non possono caricare documenti.
+- Lo spazio di ogni azienda è quello della sua licenza Documentale (Free, Standard, Pro); senza licenza, o con il sistema licenze spento, lo spazio è illimitato.
+- Non c'è un limite sulla dimensione del singolo file: conta solo lo spazio totale.
 
-=> /companystoragelist
+=> /companystoragelist /licensecataloglist
 
 @@ /companystoragelist
 ### Campi
-Scheda **Spazio documenti dell'azienda**, in alto lo spazio usato e il numero di file:
+Scheda **Spazio documenti dell'azienda**, in alto lo spazio usato, il numero di file e la licenza da cui viene lo spazio:
 | Campo | Descrizione |
 |---|---|
-| Pacchetto | Obbligatorio, tra i pacchetti attivi. |
-| Dimensione massima del file (MB) | Facoltativa, maggiore di zero; vuota vale il valore del pacchetto o quello predefinito. |
 | Soglia di avviso (%) | Facoltativa, da 1 a 99; vuota vale il valore predefinito. |
 
 ### Chi può fare cosa
 | Ruolo | Cosa vede | Cosa cambia |
 |---|---|---|
-| SuperUser | Tutte le aziende | Pacchetto e limiti |
-| DealerPowerAdmin | Le aziende del centro | Pacchetto e limiti |
+| SuperUser | Tutte le aziende | Soglia di avviso |
+| DealerPowerAdmin | Le aziende del centro | Soglia di avviso |
 | DealerAdmin | Le aziende del centro | Niente |
 | Studio | Le aziende dello studio | Niente |
 
 ### Esempio
-L'azienda Rossi Spa è all'85% del pacchetto da 1 GB e ha ricevuto l'avviso. Il DealerPowerAdmin apre la sua riga, sceglie il pacchetto da 5 GB e conferma: l'azienda può continuare a caricare documenti.
+L'azienda Rossi Spa ha la licenza Documentale Free (1 GB), è all'85% e ha ricevuto l'avviso. Passando alla licenza Standard (5 GB) dalla pagina Gestione licenze, l'azienda può continuare a caricare documenti.
 
 ### Attenzione
-- Oltre il 100% l'azienda non può più caricare documenti finché non libera spazio o non riceve un pacchetto più grande.
-- Se assegni un pacchetto più piccolo dello spazio già usato compare un avviso: l'operazione riesce, ma i caricamenti restano bloccati finché l'uso non scende sotto il nuovo limite.
-- Un pacchetto disattivato non si può più assegnare.
+- Oltre il 100% l'azienda non può più caricare documenti finché non libera spazio o non passa a una licenza con più spazio.
+- Lo spazio non si cambia da questa pagina: dipende dalla licenza Documentale dell'azienda (o dello studio che la copre).
 
-=> /storageplanlist /companylist
+=> /storagesettings /companylist
 
 @@ /poweradmin
 ### Cosa puoi fare
@@ -361,7 +346,7 @@ L'Admin fa parte del livello DEV: lavora i ticket che gli vengono assegnati, agg
 Come DealerPowerAdmin sei l'amministratore principale del centro:
 - crei gli studi e abiliti i loro applicativi;
 - attivi e disattivi gli applicativi delle aziende dalla loro scheda (entrando nello studio con **Impersona**);
-- assegni i pacchetti di spazio del documentale alle aziende del centro;
+- controlli lo spazio del documentale delle aziende del centro e ne cambi la soglia di avviso;
 - gestisci i colleghi del centro, la documentazione AI e le risposte automatiche del centro;
 - ricevi i ticket che salgono dagli studi.
 
@@ -369,7 +354,7 @@ Come DealerPowerAdmin sei l'amministratore principale del centro:
 
 @@ /dealeradmin
 ### Cosa puoi fare
-Come DealerAdmin lavori con il DealerPowerAdmin: vedi gli studi e lo spazio documenti delle aziende del centro, lavori i ticket che ti vengono assegnati e consulti in sola lettura la documentazione AI del centro. Gli applicativi e i pacchetti di spazio li cambia il DealerPowerAdmin.
+Come DealerAdmin lavori con il DealerPowerAdmin: vedi gli studi e lo spazio documenti delle aziende del centro, lavori i ticket che ti vengono assegnati e consulti in sola lettura la documentazione AI del centro. Gli applicativi e le soglie di avviso dello spazio li cambia il DealerPowerAdmin.
 
 => /financialadvisorlist /ticketlist
 
@@ -606,7 +591,7 @@ Il SuperUser imposta come predefinito, per il livello Azienda, la risposta AI at
 - **Livello abilitato**: un livello che un tipo di richiesta coinvolge.
 - **Assegnatario**: l'utente che ha in carico un ticket.
 - **Documentazione AI**: i testi che l'assistente usa per rispondere da solo ai ticket.
-- **Pacchetto di spazio**: lo spazio massimo del documentale assegnato a un'azienda.
+- **Spazio documenti**: lo spazio massimo del documentale di un'azienda, dato dalla sua licenza Documentale (illimitato senza licenza).
 - **Soglia di avviso**: la percentuale di spazio usato oltre la quale arriva un avviso.
 - **Barra dei lavori**: la barra in alto con l'avanzamento delle operazioni lunghe e i file da scaricare.
 - **Persona di riferimento**: un contatto del cliente; il contatto principale è uno solo.
@@ -644,7 +629,7 @@ Il cliente è usato da un applicativo: il messaggio indica dove. Togli **Attivo*
 - Non puoi eliminare il tuo utente né il SuperUser.
 
 ### Non si caricano documenti per mancanza di spazio
-Lo spazio del pacchetto dell'azienda è esaurito o il file supera la dimensione massima. Elimina documenti che non servono o chiedi al centro un pacchetto più grande; se il messaggio dice che non c'è nessun pacchetto attivo, il SuperUser deve crearne uno.
+Lo spazio della licenza Documentale dell'azienda è esaurito. Elimina documenti che non servono o passa a una licenza con più spazio dalla pagina Gestione licenze.
 
 ### Compare "Si è verificato un errore imprevisto" con un codice
 Annota il codice indicato nel messaggio e comunicalo all'assistenza aprendo un ticket: serve a ritrovare l'errore.

@@ -15,23 +15,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
      Conta solo i file del documentale; spazio solo per azienda; oltre quota si bloccano i caricamenti.
 
      Caricamento di un file:
-        1. ReserveAsync  : controlla la dimensione massima e PRENOTA lo spazio con una sola istruzione atomica
+        1. ReserveAsync  : PRENOTA lo spazio con una sola istruzione atomica
                            (due caricamenti contemporanei non superano mai la quota)
         2. salvataggio del file e dei metadati
         3. ConfirmAsync  (riuscito) oppure ReleaseAsync (errore)
      Eliminazione definitiva: FreeAsync. Di notte RecalculateAsync riallinea con la somma reale.
-     Licenze (ANALISI_LICENZE.md §5.1): con il sistema licenze acceso e l'azienda coperta per il Documentale, la quota e'
-     quella della licenza (ILicenseGuard.StorageQuotaAsync) e sostituisce il pacchetto; altrimenti vale il pacchetto.
+     Quota (ANALISI_LICENZE.md §5.1): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync); senza licenza
+     (o con il sistema licenze spento) lo spazio e' illimitato. Non c'e' un limite sulla dimensione del singolo file:
+     conta solo lo spazio totale. I pacchetti di spazio (StoragePlan) sono stati eliminati.
     */
     public interface IStorageQuotaService
     {
-        /// <summary>Riga dello spazio dell'azienda, creata con il pacchetto predefinito se manca.</summary>
+        /// <summary>Riga dello spazio dell'azienda, creata se manca.</summary>
         Task<CompanyStorage> EnsureAsync(int idCompany, CancellationToken cancellationToken = default);
 
         /// <summary>Spazio dell'azienda con i limiti calcolati.</summary>
         Task<StorageStatus> StatusAsync(int idCompany, CancellationToken cancellationToken = default);
 
-        /// <summary>Prenota lo spazio per un file; UserMessageException se il file e' troppo grande o lo spazio non basta.</summary>
+        /// <summary>Prenota lo spazio per un file; UserMessageException se lo spazio non basta.</summary>
         Task ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default);
 
         /// <summary>Il file e' salvato: lo spazio prenotato diventa occupato; avvisi alla soglia e al 100%.</summary>
@@ -50,14 +51,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
     public sealed class StorageStatus
     {
         public int IdCompany { get; init; }
-        public int IdStoragePlan { get; init; }
+        // descrizione della quota: piano della licenza Documentale oppure "illimitato"
         public string Pacchetto { get; init; } = string.Empty;
         public long QuotaBytes { get; init; }
+        public bool Illimitato { get; init; }
         public long UsedBytes { get; init; }
         public long ReservedBytes { get; init; }
         public int FileCount { get; init; }
-        public long MaxFileBytes { get; init; }
         public int WarningPercent { get; init; }
+        public int QuotaMB => (int)Math.Min(int.MaxValue, QuotaBytes / (1024L * 1024L));
         public long AvailableBytes => Math.Max(0, QuotaBytes - UsedBytes - ReservedBytes);
         public int UsedPercent => QuotaBytes <= 0 ? 0 : (int)Math.Min(999, UsedBytes * 100 / QuotaBytes);
     }
@@ -67,7 +69,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private const long MB = 1024L * 1024L;
 
         private readonly ICompanyStorageRepository _companyStorageRepository;
-        private readonly IStoragePlanRepository _storagePlanRepository;
         private readonly IAppSettingRepository _appSettingRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
@@ -80,7 +81,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         private readonly ILicenseGuard _licenseGuard;
 
         public StorageQuotaService(ICompanyStorageRepository companyStorageRepository,
-                                   IStoragePlanRepository storagePlanRepository,
                                    IAppSettingRepository appSettingRepository,
                                    ICompanyRepository companyRepository,
                                    IUserCompanyRepository userCompanyRepository,
@@ -94,7 +94,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         {
             _licenseGuard = licenseGuard;
             _companyStorageRepository = companyStorageRepository;
-            _storagePlanRepository = storagePlanRepository;
             _appSettingRepository = appSettingRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
@@ -112,11 +111,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             if (row != null)
                 return row;
 
-            var plan = await _storagePlanRepository.FindAll(x => x.Active).OrderByDescending(x => x.Predefinito).ThenBy(x => x.Ordine).FirstOrDefaultAsync(cancellationToken)
-                       ?? throw new UserMessageException(InfrastructureMessages.Get("StorageNoPlan"));
-
             // inserimento idempotente (due richieste contemporanee per la stessa azienda)
-            await _companyStorageRepository.InsertIfMissingAsync(idCompany, plan.Id, cancellationToken);
+            await _companyStorageRepository.InsertIfMissingAsync(idCompany, cancellationToken);
 
             return await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstAsync(cancellationToken);
         }
@@ -124,19 +120,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         public async Task<StorageStatus> StatusAsync(int idCompany, CancellationToken cancellationToken = default)
         {
             var row = await EnsureAsync(idCompany, cancellationToken);
-            var plan = await _storagePlanRepository.FindAll(x => x.Id == row.IdStoragePlan).FirstAsync(cancellationToken);
-            // licenza del documentale: la sua quota sostituisce il pacchetto
+            // quota della licenza del documentale; senza licenza illimitato
             var licenza = await _licenseGuard.StorageQuotaAsync(idCompany);
+            long quota = licenza?.QuotaBytes ?? LicenseGuard.SpazioIllimitatoBytes;
             return new StorageStatus
             {
                 IdCompany = idCompany,
-                IdStoragePlan = plan.Id,
-                Pacchetto = licenza != null ? InfrastructureMessages.Get("StorageLicensePlan", licenza.Descrizione) : plan.Descrizione,
-                QuotaBytes = licenza?.QuotaBytes ?? plan.QuotaMB * MB,
+                Pacchetto = licenza != null ? InfrastructureMessages.Get("StorageLicensePlan", licenza.Descrizione) : InfrastructureMessages.Get("StorageUnlimited"),
+                QuotaBytes = quota,
+                Illimitato = quota >= LicenseGuard.SpazioIllimitatoBytes,
                 UsedBytes = row.UsedBytes,
                 ReservedBytes = row.ReservedBytes,
                 FileCount = row.FileCount,
-                MaxFileBytes = (row.MaxFileMB ?? plan.MaxFileMB ?? await SettingAsync(PublicDbContext.Key_StorageMaxFileMB, 50, cancellationToken)) * MB,
                 WarningPercent = row.WarningPercent ?? await SettingAsync(PublicDbContext.Key_StorageWarningPercent, 80, cancellationToken),
             };
         }
@@ -144,15 +139,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         public async Task ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
         {
             var status = await StatusAsync(idCompany, cancellationToken);
-            if (bytes > status.MaxFileBytes)
-                throw new UserMessageException(InfrastructureMessages.Get("StorageFileTooLarge", Mb(bytes), Mb(status.MaxFileBytes)));
-
-            // con la licenza la quota e' quella calcolata (StatusAsync), altrimenti quella del pacchetto, nella stessa istruzione atomica
-            var licenza = await _licenseGuard.StorageQuotaAsync(idCompany);
-            bool prenotato = licenza != null
-                ? await _companyStorageRepository.ReserveAsync(idCompany, bytes, licenza.QuotaBytes, cancellationToken)
-                : await _companyStorageRepository.ReserveAsync(idCompany, bytes, cancellationToken);
-            if (!prenotato)
+            // controllo e prenotazione nella stessa istruzione atomica, con la quota calcolata (licenza o illimitato)
+            if (!await _companyStorageRepository.ReserveAsync(idCompany, bytes, status.QuotaBytes, cancellationToken))
                 throw new UserMessageException(InfrastructureMessages.Get("StorageQuotaExceeded", Mb(bytes), Mb(status.AvailableBytes), Mb(status.QuotaBytes)));
         }
 
