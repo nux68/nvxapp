@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261111101246_PagamentiCentri")]
-    partial class PagamentiCentri
+    [Migration("20261111154756_InitPublic")]
+    partial class InitPublic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -509,6 +509,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<int?>("IdCompany")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Mail")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -526,6 +529,9 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()

@@ -92,6 +92,8 @@ namespace nvxapp.server.data.Migrations.Public
                     ExpiresAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     ConfirmedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     IdCompany = table.Column<int>(type: "integer", nullable: true),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    IdFinancialAdvisor = table.Column<int>(type: "integer", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -182,25 +184,64 @@ namespace nvxapp.server.data.Migrations.Public
                 });
 
             migrationBuilder.CreateTable(
-                name: "StoragePlan",
+                name: "Pag_InvioEmail",
                 schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    QuotaMB = table.Column<int>(type: "integer", nullable: false),
-                    MaxFileMB = table.Column<int>(type: "integer", nullable: true),
-                    Ordine = table.Column<int>(type: "integer", nullable: false),
-                    Active = table.Column<bool>(type: "boolean", nullable: false),
-                    Predefinito = table.Column<bool>(type: "boolean", nullable: false),
+                    IdDealer = table.Column<int>(type: "integer", nullable: false),
+                    Anno = table.Column<int>(type: "integer", nullable: false),
+                    Mese = table.Column<int>(type: "integer", nullable: true),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
+                    IdRendiconto = table.Column<int>(type: "integer", nullable: true),
+                    Automatico = table.Column<bool>(type: "boolean", nullable: false),
+                    Destinatari = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    Esito = table.Column<bool>(type: "boolean", nullable: false),
+                    Errore = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StoragePlan", x => x.Id);
+                    table.PrimaryKey("PK_Pag_InvioEmail", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pag_Rendiconto",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDealer = table.Column<int>(type: "integer", nullable: false),
+                    DealerDescrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Anno = table.Column<int>(type: "integer", nullable: false),
+                    Mese = table.Column<int>(type: "integer", nullable: false),
+                    NumeroPagamenti = table.Column<int>(type: "integer", nullable: false),
+                    TotaleIncassato = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    TotaleRettifiche = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    PercentualePiattaforma = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: false),
+                    QuotaPiattaforma = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    QuotaCentro = table.Column<decimal>(type: "numeric(12,2)", precision: 12, scale: 2, nullable: false),
+                    Valuta = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
+                    Stato = table.Column<int>(type: "integer", nullable: false),
+                    DataConferma = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataLiquidazione = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    RiferimentoBonifico = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    NumeroFatturaCentro = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    DataFatturaCentro = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pag_Rendiconto", x => x.Id);
+                    table.CheckConstraint("CK_Pag_Rendiconto_Mese", "\"Mese\" BETWEEN 1 AND 12");
+                    table.CheckConstraint("CK_Pag_Rendiconto_Percentuale", "\"PercentualePiattaforma\" BETWEEN 0 AND 100");
                 });
 
             migrationBuilder.CreateTable(
@@ -389,6 +430,35 @@ namespace nvxapp.server.data.Migrations.Public
                     table.PrimaryKey("PK_Lic_Listino", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Lic_Listino_Dealer_IdDealer",
+                        column: x => x.IdDealer,
+                        principalSchema: "public",
+                        principalTable: "Dealer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Pag_DealerConfig",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDealer = table.Column<int>(type: "integer", nullable: false),
+                    PercentualePiattaforma = table.Column<decimal>(type: "numeric(5,2)", precision: 5, scale: 2, nullable: true),
+                    Iban = table.Column<string>(type: "character varying(34)", maxLength: 34, nullable: true),
+                    Intestatario = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    EmailAmministrazione = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pag_DealerConfig", x => x.Id);
+                    table.CheckConstraint("CK_Pag_DealerConfig_Percentuale", "\"PercentualePiattaforma\" IS NULL OR \"PercentualePiattaforma\" BETWEEN 0 AND 100");
+                    table.ForeignKey(
+                        name: "FK_Pag_DealerConfig_Dealer_IdDealer",
                         column: x => x.IdDealer,
                         principalSchema: "public",
                         principalTable: "Dealer",
@@ -713,8 +783,6 @@ namespace nvxapp.server.data.Migrations.Public
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdCompany = table.Column<int>(type: "integer", nullable: false),
-                    IdStoragePlan = table.Column<int>(type: "integer", nullable: false),
-                    MaxFileMB = table.Column<int>(type: "integer", nullable: true),
                     WarningPercent = table.Column<int>(type: "integer", nullable: true),
                     UsedBytes = table.Column<long>(type: "bigint", nullable: false),
                     ReservedBytes = table.Column<long>(type: "bigint", nullable: false),
@@ -736,13 +804,6 @@ namespace nvxapp.server.data.Migrations.Public
                         principalTable: "Company",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CompanyStorage_StoragePlan_IdStoragePlan",
-                        column: x => x.IdStoragePlan,
-                        principalSchema: "public",
-                        principalTable: "StoragePlan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -879,6 +940,39 @@ namespace nvxapp.server.data.Migrations.Public
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserCompany_Company_IdCompany",
+                        column: x => x.IdCompany,
+                        principalSchema: "public",
+                        principalTable: "Company",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserDashboard",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAspNetUsers = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
+                    IdCompany = table.Column<int>(type: "integer", nullable: false),
+                    Widgets = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDashboard", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserDashboard_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserDashboard_Company_IdCompany",
                         column: x => x.IdCompany,
                         principalSchema: "public",
                         principalTable: "Company",
@@ -1070,6 +1164,11 @@ namespace nvxapp.server.data.Migrations.Public
                     Debug = table.Column<bool>(type: "boolean", nullable: false),
                     IdDealerListino = table.Column<int>(type: "integer", nullable: true),
                     Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IdDealer = table.Column<int>(type: "integer", nullable: true),
+                    DealerDescrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    DataPagamento = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IdRendiconto = table.Column<int>(type: "integer", nullable: true),
+                    IdRendicontoRettifica = table.Column<int>(type: "integer", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -1082,6 +1181,20 @@ namespace nvxapp.server.data.Migrations.Public
                         column: x => x.IdAbbonamento,
                         principalSchema: "public",
                         principalTable: "Lic_Abbonamento",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Lic_Pagamento_Pag_Rendiconto_IdRendiconto",
+                        column: x => x.IdRendiconto,
+                        principalSchema: "public",
+                        principalTable: "Pag_Rendiconto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Lic_Pagamento_Pag_Rendiconto_IdRendicontoRettifica",
+                        column: x => x.IdRendicontoRettifica,
+                        principalSchema: "public",
+                        principalTable: "Pag_Rendiconto",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
@@ -1104,7 +1217,10 @@ namespace nvxapp.server.data.Migrations.Public
                     { "Licenze_MaxUtenti_Free", null, "10" },
                     { "Licenze_MaxUtenti_Pro", null, "" },
                     { "Licenze_MaxUtenti_Standard", null, "50" },
-                    { "Storage_MaxFileMB", null, "50" },
+                    { "Pagamenti_GiornoInvioMensile", null, "5" },
+                    { "Pagamenti_MeseInvioAnnuale", null, "1" },
+                    { "Pagamenti_PercentualePiattaforma", null, "0" },
+                    { "Pagamenti_RiepilogoAutomatico", null, "false" },
                     { "Storage_WarningPercent", null, "80" }
                 });
 
@@ -1198,12 +1314,6 @@ namespace nvxapp.server.data.Migrations.Public
                 table: "CompanyStorage",
                 column: "IdCompany",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CompanyStorage_IdStoragePlan",
-                schema: "public",
-                table: "CompanyStorage",
-                column: "IdStoragePlan");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyStorageHistory_IdCompany_Anno_Mese",
@@ -1349,10 +1459,28 @@ namespace nvxapp.server.data.Migrations.Public
                 column: "IdCompany");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Lic_Pagamento_IdDealer_DataPagamento",
+                schema: "public",
+                table: "Lic_Pagamento",
+                columns: new[] { "IdDealer", "DataPagamento" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Lic_Pagamento_IdFinancialAdvisor",
                 schema: "public",
                 table: "Lic_Pagamento",
                 column: "IdFinancialAdvisor");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lic_Pagamento_IdRendiconto",
+                schema: "public",
+                table: "Lic_Pagamento",
+                column: "IdRendiconto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lic_Pagamento_IdRendicontoRettifica",
+                schema: "public",
+                table: "Lic_Pagamento",
+                column: "IdRendicontoRettifica");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Lic_Pagamento_RiferimentoGateway",
@@ -1370,19 +1498,31 @@ namespace nvxapp.server.data.Migrations.Public
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoragePlan_Descrizione",
+                name: "IX_Pag_DealerConfig_IdDealer",
                 schema: "public",
-                table: "StoragePlan",
-                column: "Descrizione",
+                table: "Pag_DealerConfig",
+                column: "IdDealer",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_StoragePlan_Predefinito",
+                name: "IX_Pag_InvioEmail_IdDealer_Anno_Mese_Tipo",
                 schema: "public",
-                table: "StoragePlan",
-                column: "Predefinito",
+                table: "Pag_InvioEmail",
+                columns: new[] { "IdDealer", "Anno", "Mese", "Tipo" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pag_Rendiconto_Anno_Mese",
+                schema: "public",
+                table: "Pag_Rendiconto",
+                columns: new[] { "Anno", "Mese" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pag_Rendiconto_IdDealer_Anno_Mese",
+                schema: "public",
+                table: "Pag_Rendiconto",
+                columns: new[] { "IdDealer", "Anno", "Mese" },
                 unique: true,
-                filter: "\"Predefinito\"");
+                filter: "\"Stato\" <> 3");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_CurrentIdAspNetUsers",
@@ -1534,6 +1674,19 @@ namespace nvxapp.server.data.Migrations.Public
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserDashboard_IdAspNetUsers_IdCompany",
+                schema: "public",
+                table: "UserDashboard",
+                columns: new[] { "IdAspNetUsers", "IdCompany" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserDashboard_IdCompany",
+                schema: "public",
+                table: "UserDashboard",
+                column: "IdCompany");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserDealer_IdAspNetUsers",
                 schema: "public",
                 table: "UserDealer",
@@ -1564,9 +1717,6 @@ namespace nvxapp.server.data.Migrations.Public
 
             // tipi di richiesta iniziali dei ticket di assistenza
             PopolateTicketType.PopolateTicketType_UP(migrationBuilder);
-
-            // pacchetti di spazio iniziali (1, 5 e 20 GB, predefinito 1 GB)
-            PopolateStorage.PopolateStorage_UP(migrationBuilder);
         }
 
         /// <inheritdoc />
@@ -1637,6 +1787,14 @@ namespace nvxapp.server.data.Migrations.Public
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "Pag_DealerConfig",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Pag_InvioEmail",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "TicketAttach",
                 schema: "public");
 
@@ -1657,6 +1815,10 @@ namespace nvxapp.server.data.Migrations.Public
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "UserDashboard",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "UserDealer",
                 schema: "public");
 
@@ -1669,11 +1831,11 @@ namespace nvxapp.server.data.Migrations.Public
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "StoragePlan",
+                name: "Lic_Abbonamento",
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Lic_Abbonamento",
+                name: "Pag_Rendiconto",
                 schema: "public");
 
             migrationBuilder.DropTable(

@@ -28,3 +28,5 @@ quando richiesto, produci quasta sequenza di merge
 Se richiedo modifiche che sono da fare su un brach differente da quello corrente, ci si sposte perchè devono essere fatte nel brach di pertinenza
 
 Quando viene richiesta un analisi, in fondo al documento va prodotta la checklist dei punti da svolgere e man mano che i lavori vengono svolti, va aggiornata la checklist
+I documenti di analisi avranno un prefisso del tipo ANALISI_XXX_YYY
+dove XXX è il nome dell applicativo e YYY il nome dell analisi
