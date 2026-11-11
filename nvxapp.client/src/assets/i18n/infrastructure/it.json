@@ -35,7 +35,10 @@
       "deleteRead": "Cancella lette",
       "preferences": "Preferenze",
       "loadMore": "Carica altre",
-      "confirmRead": "Confermo di aver letto"
+      "confirmRead": "Confermo di aver letto",
+      "copy": "Copia",
+      "regenerate": "Nuovo indirizzo",
+      "calendar": "Calendario"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
@@ -115,6 +118,7 @@
     "dealerPayments": "Pagamenti del centro",
     "notifications": "Notifiche",
     "deadlines": "Scadenzario",
+    "calendarFeed": "Calendario",
     "acknowledgements": "Prese visione"
   },
   "showcase": {
@@ -1131,6 +1135,27 @@
       "email": "Email",
       "emailNotAllowed": "Non disponibile per email",
       "empty": "Nessun tipo di notifica disponibile."
+    },
+    "calendarFeed": {
+      "title": "Calendario personale",
+      "note": "Vedi le tue scadenze nel calendario che usi già (Google Calendar, Outlook, Apple Calendar): sottoscrivi l'indirizzo qui sotto. Il calendario è in sola lettura e si aggiorna da solo.",
+      "empty": "Non hai ancora un indirizzo per il calendario.",
+      "create": "Crea indirizzo",
+      "url": "Indirizzo del calendario",
+      "openWebcal": "Apri nel calendario",
+      "created": "Creato il",
+      "lastAccess": "Ultima lettura dal calendario",
+      "never": "mai",
+      "privacy": "Chi conosce questo indirizzo vede i tuoi impegni senza password: non condividerlo. Se pensi che altri lo conoscano, crea un nuovo indirizzo.",
+      "howTo": "Come aggiungerlo",
+      "google": "Da computer: Altri calendari (+) > Da URL, incolla l'indirizzo e scegli Aggiungi calendario.",
+      "outlook": "Calendario > Aggiungi calendario > Sottoscrivi dal Web (o Da Internet), incolla l'indirizzo e importa.",
+      "apple": "File > Nuova sottoscrizione calendario (su iPhone: Impostazioni > Calendario > Account > Aggiungi account > Altro > Aggiungi calendario sottoscritto), incolla l'indirizzo. Oppure usa \"Apri nel calendario\".",
+      "refresh": "I calendari rileggono l'indirizzo periodicamente (Google anche dopo diverse ore): le modifiche non compaiono subito.",
+      "copied": "Indirizzo copiato negli appunti.",
+      "copyFailed": "Non è stato possibile copiare: seleziona l'indirizzo e copialo a mano.",
+      "confirmRegenerate": "Creare un nuovo indirizzo? Quello attuale smetterà di funzionare e andrà sostituito nei calendari in cui l'hai aggiunto.",
+      "confirmDelete": "Eliminare l'indirizzo del calendario? I calendari in cui l'hai aggiunto non riceveranno più le scadenze."
     },
     "acknowledgementList": {
       "title": "Prese visione",
