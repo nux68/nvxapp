@@ -190,3 +190,23 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 ### Più avanti
 - ⏳ Assets: flotta, beni assegnati, prenotazioni
 - ⏳ Amministrazione: commesse in Common, ordini, fatture elettroniche e SdI, controllo di gestione avanzato
+
+---
+
+## 11. Lavori fatti e da fare (riepilogo)
+
+### Fatti
+- ✅ 11/11/2026 – Ricognizione dell'applicativo: branch, controller per modulo, analisi esistenti, enum `ApplicationType`, contenuto dello schema Common
+- ✅ 11/11/2026 – Proposta delle funzioni utili alle aziende e loro raggruppamento logico
+- ✅ 11/11/2026 – Worktree `wt_infra_moduli` sul ramo `Infrastructure_Dev_moduli` (creato da `Infrastructure_Dev`)
+- ✅ 11/11/2026 – Stesura di questo documento (§1–§10) e commit locale
+- ✅ 11/11/2026 – Catena dei merge del documento: `Infrastructure_Dev_moduli` → `Infrastructure_Dev` → `Infrastructure` → `AttendanceTracking_Dev`/`CRM_Dev`/`DocumentManagement_Dev` → `AttendanceTracking`/`CRM`/`DocumentManagement` → `AllFunction_Dev` → `AllFunction` (solo locale, nessun push)
+- ✅ 11/11/2026 – Rimozione del worktree `wt_infra_moduli` e del ramo di lavoro dopo i merge
+
+### Da fare
+- 🔍 Prendere le decisioni D1–D8 (§9). È il prerequisito di tutto il resto
+- ⏳ Scrivere l'analisi di dettaglio dei gruppi scelti (prima Compliance e Risorse Umane)
+- ⏳ Infrastructure_Dev: scadenzario, notifiche, sedi e reparti in Common, nuovi valori di `ApplicationType` (§10, sezione Infrastructure_Dev)
+- ⏳ Aggiornare CLAUDE.md con i nuovi branch e la catena dei merge di AllFunction
+- ⏳ Creare i branch dei nuovi gruppi e sviluppare i moduli (§10, sezioni per gruppo)
+- ⏳ Sviluppare le funzioni nuove dei gruppi esistenti (§10, sezione Gruppi esistenti)
