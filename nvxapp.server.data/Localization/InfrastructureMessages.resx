@@ -1266,4 +1266,8 @@ In allegato il rendiconto.</value>
     <value>Riepiloghi generati: {0}</value>
     <comment>riepilogo</comment>
   </data>
+  <data name="UserCompanyEmployeeNotLinkable" xml:space="preserve">
+    <value>Il dipendente indicato non esiste in questa azienda o ha già un account.</value>
+    <comment>account dipendente esistente</comment>
+  </data>
 </root>
