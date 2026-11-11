@@ -65,13 +65,16 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
+        // entità degli applicativi attivi per l'azienda (in AllFunction ci sono quelle di tutti i moduli)
+        private IEnumerable<IOpenableEntity> Disponibili => _entities.Where(e => _chatUserContext.HasApplication(e.Application));
+
         // entità dal valore dello slot: la chiave, oppure una delle sue parole contenuta nel testo ("la causale")
         private IOpenableEntity? Trova(string? valore)
         {
             // normalizzato: "l'attività" -> "l attività"
             var testo = $" {ChatAIKeywords.Normalize(valore)} ";
-            return _entities.FirstOrDefault(e => e.Key.Equals(valore?.Trim(), StringComparison.OrdinalIgnoreCase))
-                ?? _entities
+            return Disponibili.FirstOrDefault(e => e.Key.Equals(valore?.Trim(), StringComparison.OrdinalIgnoreCase))
+                ?? Disponibili
                     .SelectMany(e => e.Words.Select(w => (Entity: e, Word: ChatAIKeywords.Normalize(w))))
                     .Where(x => testo.Contains($" {x.Word} "))
                     .OrderByDescending(x => x.Word.Length)
@@ -83,7 +86,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
         {
             var entity = Trova(slots.GetValueOrDefault("entity"));
             if (entity == null)
-                return CommandResult.Fail(ChatAIMessages.Get("OpenEntityTypeQuestion", string.Join(", ", _entities.Select(e => e.DisplayName))));
+                return CommandResult.Fail(ChatAIMessages.Get("OpenEntityTypeQuestion", string.Join(", ", Disponibili.Select(e => e.DisplayName))));
 
             // i servizi non controllano i ruoli: lo fa il comando
             if (!entity.Roles.Contains("*") && !_chatUserContext.IsInRole(entity.Roles.ToArray()))
