@@ -10,7 +10,8 @@ import { CompanyStorageListInModel, CompanyStorageModel, bytesToMB } from '../..
 
 /*
  Spazio dei documenti delle aziende (ANALISI_DOCUMENTALE.md [branch DocumentManagement] §5.3): SuperUser (tutte), centro (le sue), studio (le sue,
- in sola lettura). La quota e' quella della licenza Documentale (senza licenza illimitata); la soglia di avviso propria
+ in sola lettura), solo quelle con il Documentale attivo. La quota e' quella della licenza Documentale (illimitata con le
+ licenze spente, zero e caricamenti bloccati senza licenza); la soglia di avviso propria
  dell'azienda la cambiano solo il SuperUser e il DealerPowerAdmin del centro (canManage dal server).
  Le aziende oltre la soglia di avviso o oltre quota sono evidenziate.
 */
@@ -43,10 +44,12 @@ export class CompanyStorageListPageComponent {
       { key: 'studio', title: this.transloco.translate('pages.companyStorageList.columnStudio') },
       { key: 'pacchetto', title: this.transloco.translate('pages.companyStorageList.columnPlan') },
       { key: 'usedBytes', title: this.transloco.translate('pages.companyStorageList.columnUsed'), align: 'end',
-        value: c => bytesToMB(c.usedBytes) + ' / ' + (c.illimitato ? this.transloco.translate('pages.companyStorageList.unlimited') : c.quotaMB.toLocaleString() + ' MB'),
+        value: c => bytesToMB(c.usedBytes) + ' / ' + (c.senzaLicenza ? this.transloco.translate('pages.companyStorageList.noLicense')
+                                                    : c.illimitato ? this.transloco.translate('pages.companyStorageList.unlimited')
+                                                    : c.quotaMB.toLocaleString() + ' MB'),
         sortValue: c => c.usedBytes },
       { key: 'usedPercent', title: this.transloco.translate('pages.companyStorageList.columnPercent'), align: 'end', mobile: 'note',
-        value: c => c.usedPercent + '%' + (c.overQuota ? ' ⛔' : c.overWarning ? ' ⚠' : ''), sortValue: c => c.usedPercent },
+        value: c => c.senzaLicenza ? '⛔' : c.usedPercent + '%' + (c.overQuota ? ' ⛔' : c.overWarning ? ' ⚠' : ''), sortValue: c => c.usedPercent },
       { key: 'fileCount', title: this.transloco.translate('pages.companyStorageList.columnFiles'), align: 'end', mobile: 'hidden' },
     ];
 

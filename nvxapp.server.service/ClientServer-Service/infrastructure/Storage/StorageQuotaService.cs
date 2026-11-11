@@ -20,9 +20,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         2. salvataggio del file e dei metadati
         3. ConfirmAsync  (riuscito) oppure ReleaseAsync (errore)
      Eliminazione definitiva: FreeAsync. Di notte RecalculateAsync riallinea con la somma reale.
-     Quota (ANALISI_LICENZE.md §5.1): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync); senza licenza
-     (o con il sistema licenze spento) lo spazio e' illimitato. Non c'e' un limite sulla dimensione del singolo file:
-     conta solo lo spazio totale. I pacchetti di spazio (StoragePlan) sono stati eliminati.
+     Quota (ANALISI_LICENZE.md §5.1, §15.7): quella della licenza Documentale (ILicenseGuard.StorageQuotaAsync).
+        - sistema licenze spento           : spazio illimitato
+        - sistema acceso, azienda coperta  : quota della licenza
+        - sistema acceso, nessuna copertura: quota zero, caricamenti bloccati (StorageNoLicense). Il Documentale senza
+          licenza e' solo nascosto dal menu e le sue API non controllano la licenza: senza questo blocco si caricherebbe senza limite.
+     Non c'e' un limite sulla dimensione del singolo file: conta solo lo spazio totale. I pacchetti di spazio (StoragePlan) sono stati eliminati.
     */
     public interface IStorageQuotaService
     {
@@ -32,7 +35,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         /// <summary>Spazio dell'azienda con i limiti calcolati.</summary>
         Task<StorageStatus> StatusAsync(int idCompany, CancellationToken cancellationToken = default);
 
-        /// <summary>Prenota lo spazio per un file; UserMessageException se lo spazio non basta.</summary>
+        /// <summary>Prenota lo spazio per un file; UserMessageException se manca la licenza Documentale o lo spazio non basta.</summary>
         Task ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default);
 
         /// <summary>Il file e' salvato: lo spazio prenotato diventa occupato; avvisi alla soglia e al 100%.</summary>
@@ -51,10 +54,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
     public sealed class StorageStatus
     {
         public int IdCompany { get; init; }
-        // descrizione della quota: piano della licenza Documentale oppure "illimitato"
+        // descrizione della quota: piano della licenza Documentale, "illimitato" (licenze spente) o "senza licenza"
         public string Pacchetto { get; init; } = string.Empty;
         public long QuotaBytes { get; init; }
         public bool Illimitato { get; init; }
+        // sistema licenze acceso e azienda non coperta per il Documentale: quota zero, caricamenti bloccati
+        public bool SenzaLicenza { get; init; }
         public long UsedBytes { get; init; }
         public long ReservedBytes { get; init; }
         public int FileCount { get; init; }
@@ -120,15 +125,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         public async Task<StorageStatus> StatusAsync(int idCompany, CancellationToken cancellationToken = default)
         {
             var row = await EnsureAsync(idCompany, cancellationToken);
-            // quota della licenza del documentale; senza licenza illimitato
+            // quota della licenza del documentale; licenze spente = illimitato; licenze accese senza copertura = zero
             var licenza = await _licenseGuard.StorageQuotaAsync(idCompany);
-            long quota = licenza?.QuotaBytes ?? LicenseGuard.SpazioIllimitatoBytes;
+            bool senzaLicenza = licenza == null && await _licenseGuard.EnabledAsync();
+            long quota = licenza?.QuotaBytes ?? (senzaLicenza ? 0 : LicenseGuard.SpazioIllimitatoBytes);
             return new StorageStatus
             {
                 IdCompany = idCompany,
-                Pacchetto = licenza != null ? InfrastructureMessages.Get("StorageLicensePlan", licenza.Descrizione) : InfrastructureMessages.Get("StorageUnlimited"),
+                Pacchetto = licenza != null ? InfrastructureMessages.Get("StorageLicensePlan", licenza.Descrizione)
+                          : senzaLicenza ? InfrastructureMessages.Get("StorageNoLicensePlan")
+                          : InfrastructureMessages.Get("StorageUnlimited"),
                 QuotaBytes = quota,
                 Illimitato = quota >= LicenseGuard.SpazioIllimitatoBytes,
+                SenzaLicenza = senzaLicenza,
                 UsedBytes = row.UsedBytes,
                 ReservedBytes = row.ReservedBytes,
                 FileCount = row.FileCount,
@@ -139,6 +148,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
         public async Task ReserveAsync(int idCompany, long bytes, CancellationToken cancellationToken = default)
         {
             var status = await StatusAsync(idCompany, cancellationToken);
+            if (status.SenzaLicenza)
+                throw new UserMessageException(InfrastructureMessages.Get("StorageNoLicense"));
             // controllo e prenotazione nella stessa istruzione atomica, con la quota calcolata (licenza o illimitato)
             if (!await _companyStorageRepository.ReserveAsync(idCompany, bytes, status.QuotaBytes, cancellationToken))
                 throw new UserMessageException(InfrastructureMessages.Get("StorageQuotaExceeded", Mb(bytes), Mb(status.AvailableBytes), Mb(status.QuotaBytes)));
@@ -184,7 +195,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Storage
             var status = await StatusAsync(idCompany, cancellationToken);
             var row = await _companyStorageRepository.FindAll(x => x.IdCompany == idCompany).FirstAsync(cancellationToken);
 
-            int livello = status.UsedPercent >= 100 ? 100 : status.UsedPercent >= status.WarningPercent ? status.WarningPercent : 0;
+            // senza licenza Documentale non si carica niente: nessun avviso di soglia
+            int livello = status.SenzaLicenza ? 0 : status.UsedPercent >= 100 ? 100 : status.UsedPercent >= status.WarningPercent ? status.WarningPercent : 0;
             if (livello == row.LastWarningPercent || (livello > 0 && livello < row.LastWarningPercent))
             {
                 // stesso livello gia' avvisato, oppure in discesa ma ancora sopra una soglia: si aggiorna solo il livello

@@ -300,7 +300,7 @@ Scheda **Impostazioni dello spazio documenti**, in alto lo spazio usato da tutte
 | Soglia di avviso (%) | Obbligatoria, da 1 a 99; proposta 80. Vale per le aziende che non hanno una soglia propria. |
 
 ### Attenzione
-- Lo spazio di ogni azienda è quello della sua licenza Documentale (Free, Standard, Pro); senza licenza, o con il sistema licenze spento, lo spazio è illimitato.
+- Lo spazio di ogni azienda è quello della sua licenza Documentale (Free, Standard, Pro). Con il sistema licenze spento lo spazio è illimitato; con il sistema acceso un'azienda senza licenza Documentale non può caricare documenti.
 - Non c'è un limite sulla dimensione del singolo file: conta solo lo spazio totale.
 
 => /companystoragelist /licensecataloglist
@@ -326,6 +326,8 @@ L'azienda Rossi Spa ha la licenza Documentale Free (1 GB), è all'85% e ha ricev
 ### Attenzione
 - Oltre il 100% l'azienda non può più caricare documenti finché non libera spazio o non passa a una licenza con più spazio.
 - Lo spazio non si cambia da questa pagina: dipende dalla licenza Documentale dell'azienda (o dello studio che la copre).
+- L'elenco mostra solo le aziende con il Documentale attivo.
+- "Senza licenza": il sistema licenze è acceso e l'azienda non ha una licenza Documentale valida; non può caricare documenti finché non la sottoscrive o la rinnova.
 
 => /storagesettings /companylist
 
@@ -660,7 +662,7 @@ Un'azienda del centro paga 100 euro il 10 settembre, la trattenuta è il 20%. Il
 - **Livello abilitato**: un livello che un tipo di richiesta coinvolge.
 - **Assegnatario**: l'utente che ha in carico un ticket.
 - **Documentazione AI**: i testi che l'assistente usa per rispondere da solo ai ticket.
-- **Spazio documenti**: lo spazio massimo del documentale di un'azienda, dato dalla sua licenza Documentale (illimitato senza licenza).
+- **Spazio documenti**: lo spazio massimo del documentale di un'azienda, dato dalla sua licenza Documentale (illimitato con il sistema licenze spento, nessun caricamento senza licenza).
 - **Soglia di avviso**: la percentuale di spazio usato oltre la quale arriva un avviso.
 - **Barra dei lavori**: la barra in alto con l'avanzamento delle operazioni lunghe e i file da scaricare.
 - **Persona di riferimento**: un contatto del cliente; il contatto principale è uno solo.

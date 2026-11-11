@@ -664,6 +664,14 @@
     <value>Spazio illimitato</value>
     <comment>spazio a disposizione</comment>
   </data>
+  <data name="StorageNoLicensePlan" xml:space="preserve">
+    <value>Senza licenza Documentale</value>
+    <comment>spazio a disposizione</comment>
+  </data>
+  <data name="StorageNoLicense" xml:space="preserve">
+    <value>L'azienda non ha una licenza Documentale valida: non si possono caricare documenti. Sottoscrivi o rinnova la licenza da Gestione licenze.</value>
+    <comment>spazio a disposizione</comment>
+  </data>
   <data name="DashboardNotConfigurable" xml:space="preserve">
     <value>La dashboard si configura solo lavorando in un'azienda con ruolo User, CompanyAdmin o CompanyPowerAdmin.</value>
     <comment>dashboard</comment>
