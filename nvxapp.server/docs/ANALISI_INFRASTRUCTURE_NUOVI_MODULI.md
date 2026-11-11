@@ -191,9 +191,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 | `HR-FOR` | Formazione e competenze | HumanResources_Dev | `wt_hr-for` | `HR-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
 | `HR-ONB` | Onboarding e offboarding | HumanResources_Dev | `wt_hr-onb` | `HR-BASE`, `INF-COM` | 3 | ⏳ |
 | `AST-BASE` | Avvio del modulo Risorse aziendali | Assets_Dev (nuovo) | `wt_ast-base` | `INF-APP` | 2 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_ast-base`, provata su DB usa e getta), da mergiare |
-| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-flo` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ⏳ |
-| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-beni` | `AST-BASE`, `INF-SVC` | 3 | ⏳ |
-| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-pren` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ⏳ |
+| `AST-FLO` | Flotta | Assets_Dev | `wt_ast-f3` | `AST-BASE`, `INF-COM`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_f3`, provata su DB usa e getta), da mergiare |
+| `AST-BENI` | Beni assegnati | Assets_Dev | `wt_ast-f3` | `AST-BASE`, `INF-SVC` | 3 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_f3`, provata su DB usa e getta), da mergiare |
+| `AST-PREN` | Prenotazioni | Assets_Dev | `wt_ast-f3` | `AST-BASE` (`INF-CAL` facoltativo) | 3 | ✅ fatta l'11/11/2026 (ramo `Assets_Dev_f3`, provata su DB usa e getta), da mergiare |
 | `ADM` | Amministrazione (fatturazione) | Administration_Dev (più avanti) | `wt_adm` | `INF-APP`, scelta dell'intermediario SdI | – | ⏳ |
 
 I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`, `HumanResources`, `Assets`) nascono in `INF-APP.6`, creati da Infrastructure dopo il merge di `INF-APP`.
@@ -359,19 +359,19 @@ I branch `Compliance_Dev`, `HumanResources_Dev` e `Assets_Dev` (con `Compliance`
 - ✅ `AST-BASE.3` Menu, widget e comandi vocali di base — voce di menu, rotta, cartella i18n; widget e comandi vocali: nessuno per ora (arrivano con le aree)
 
 #### `AST-FLO` – Flotta
-- ⏳ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
-- ⏳ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario
-- ⏳ `AST-FLO.3` Multe e costi
+- ✅ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5) — l'assegnazione crea/aggiorna l'autovettura del dipendente in Common (tabella ponte `Ast_VeicoloAssegnazione`, scelta provvisoria `AST-D3`); fringe benefit informativo in Assets, export nelle Presenze (scelta provvisoria `AST-D2`)
+- ✅ `AST-FLO.2` Scadenze (bollo, assicurazione, revisione, tagliando) nello scadenzario — fonti `ast.veicolo.scadenza` e `ast.veicolo.contratto` (noleggio/leasing)
+- ✅ `AST-FLO.3` Multe e costi — conducente dal periodo di assegnazione, notifica della multa al conducente
 
 #### `AST-BENI` – Beni assegnati
-- ⏳ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature)
-- ⏳ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`)
-- ⏳ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common)
+- ✅ `AST-BENI.1` Anagrafica dei beni (PC, telefoni, badge, attrezzature) — categorie predefinite, garanzia nello scadenzario
+- ✅ `AST-BENI.2` Consegna e restituzione con verbale (`INF-SVC.6`) — prese visione `ast.beni.consegna` / `ast.beni.restituzione` (con il documentale: verbale di consegna beni da firmare)
+- ✅ `AST-BENI.3` Elenco dei beni da restituire alla cessazione (data in Common) — beni e veicoli; verifica giornaliera con scadenzario e notifica agli amministratori
 
 #### `AST-PREN` – Prenotazioni
-- ⏳ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
-- ⏳ `AST-PREN.2` Calendario delle prenotazioni e conflitti
-- ⏳ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa)
+- ✅ `AST-PREN.1` Risorse prenotabili (postazioni, sale, auto in pool)
+- ✅ `AST-PREN.2` Calendario delle prenotazioni e conflitti — controllo atomico nel repository (transazione + lock sulla risorsa), senza approvazione (scelta provvisoria `AST-D4`)
+- ✅ `AST-PREN.3` Sincronizzazione con il calendario personale (`INF-CAL`, facoltativa) — `AstCalendarEventProvider` nel feed .ics
 
 #### `ADM` – Amministrazione (più avanti, D1, D2)
 - 🔍 `ADM.1` Scelta dell'intermediario SdI
