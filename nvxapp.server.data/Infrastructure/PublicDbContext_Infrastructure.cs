@@ -218,6 +218,8 @@ namespace nvxapp.server.data.Infrastructure
         public const string Key_PagamentiRiepilogoAutomatico = "Pagamenti_RiepilogoAutomatico";
         public const string Key_PagamentiGiornoInvioMensile = "Pagamenti_GiornoInvioMensile";
         public const string Key_PagamentiMeseInvioAnnuale = "Pagamenti_MeseInvioAnnuale";
+        // ultimo mese di cui la manutenzione ha generato le bozze ("aaaa-mm"); scritta dalla manutenzione, non seminata
+        public const string Key_PagamentiUltimaGenerazione = "Pagamenti_UltimaGenerazione";
 
         private void Gen_Payments(ModelBuilder modelBuilder)
         {

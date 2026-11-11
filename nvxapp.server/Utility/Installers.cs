@@ -148,6 +148,8 @@ namespace nvxapp.server.Utility
             builder.Services.AddHostedService<StorageMaintenanceService>();
             // licenze: rinnovi automatici, scadenze e avvisi notturni (ANALISI_LICENZE.md §6)
             builder.Services.AddHostedService<LicenseMaintenanceService>();
+            // pagamenti ai centri: bozze mensili dei rendiconti e riepiloghi annuali (ANALISI_PAGAMENTI_CENTRI.md §5)
+            builder.Services.AddHostedService<PaymentMaintenanceService>();
 
 
             return builder.Services;

@@ -97,6 +97,12 @@ export class RouteInfrastructureService {
       { path: 'licensecataloglist', loadChildren: () => import('../../pages/infrastructure/license-catalog-list-page/license-catalog-list-page.module').then(m => m.LicenseCatalogListPageModule), canActivate: [authenticatedGuard] },
       { path: 'licensecatalogedit', loadChildren: () => import('../../pages/infrastructure/license-catalog-edit-page/license-catalog-edit-page.module').then(m => m.LicenseCatalogEditPageModule), canActivate: [authenticatedGuard] },
       { path: 'licensemanagement', loadChildren: () => import('../../pages/infrastructure/license-management-page/license-management-page.module').then(m => m.LicenseManagementPageModule), canActivate: [authenticatedGuard] },
+      // pagamenti delle licenze e ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): il dettaglio del centro e i dati
+      // di liquidazione li vedono anche gli utenti del centro (i permessi li ricontrolla il server)
+      { path: 'paymentreport', loadChildren: () => import('../../pages/infrastructure/payment-report-page/payment-report-page.module').then(m => m.PaymentReportPageModule), canActivate: [RoleGuard4SuperUser] },
+      { path: 'paymentdealer', loadChildren: () => import('../../pages/infrastructure/payment-dealer-page/payment-dealer-page.module').then(m => m.PaymentDealerPageModule), canActivate: [authenticatedGuard] },
+      { path: 'paymentdealerconfig', loadChildren: () => import('../../pages/infrastructure/payment-dealer-config-page/payment-dealer-config-page.module').then(m => m.PaymentDealerConfigPageModule), canActivate: [authenticatedGuard] },
+      { path: 'paymentsettings', loadChildren: () => import('../../pages/infrastructure/payment-settings-page/payment-settings-page.module').then(m => m.PaymentSettingsPageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'licensesubscribe', loadChildren: () => import('../../pages/infrastructure/license-subscribe-page/license-subscribe-page.module').then(m => m.LicenseSubscribePageModule), canActivate: [authenticatedGuard] },
       // documentazione e impostazioni per le risposte AI ai ticket: livelli e permessi li decide il server
       { path: 'aidocumentlist', loadChildren: () => import('../../pages/infrastructure/ai-document-list-page/ai-document-list-page.module').then(m => m.AiDocumentListPageModule), canActivate: [authenticatedGuard] },

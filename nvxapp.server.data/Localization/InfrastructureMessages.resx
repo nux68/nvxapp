@@ -704,4 +704,290 @@
     <value>Widget non valido: {0}.</value>
     <comment>dashboard</comment>
   </data>
+  <data name="PaymentNotAllowed" xml:space="preserve">
+    <value>Operazione non consentita sui pagamenti.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPeriodInvalid" xml:space="preserve">
+    <value>Periodo non valido.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPeriodNotClosed" xml:space="preserve">
+    <value>Il rendiconto si genera solo per un mese concluso.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementAlreadyConfirmed" xml:space="preserve">
+    <value>Il rendiconto di questo mese è già confermato: i nuovi pagamenti entreranno nel rendiconto del mese successivo.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementStateInvalid" xml:space="preserve">
+    <value>Operazione non consentita nello stato attuale del rendiconto.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNothingToSettle" xml:space="preserve">
+    <value>Nessun pagamento da liquidare.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementChanged" xml:space="preserve">
+    <value>I pagamenti da liquidare sono cambiati nel frattempo: rigenera la bozza e riprova.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementPayInvalid" xml:space="preserve">
+    <value>Indica una data di liquidazione valida, non futura.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementNotFound" xml:space="preserve">
+    <value>Rendiconto non trovato.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerNotFound" xml:space="preserve">
+    <value>Centro non trovato.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerRequired" xml:space="preserve">
+    <value>Scegli un centro.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentDealerConfigInvalid" xml:space="preserve">
+    <value>Dati di liquidazione non validi: controlla trattenuta (0-100), IBAN ed email.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettingsInvalid" xml:space="preserve">
+    <value>Impostazioni non valide: trattenuta 0-100, giorno 1-28, mese 1-12.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentEmailNotConfigured" xml:space="preserve">
+    <value>L'invio delle email non è configurato.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNoRecipients" xml:space="preserve">
+    <value>Il centro non ha destinatari: indica l'email dell'amministrazione nei dati di liquidazione o un DealerPowerAdmin con email.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSendFailed" xml:space="preserve">
+    <value>Email non inviata.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_0" xml:space="preserve">
+    <value>Bozza</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_1" xml:space="preserve">
+    <value>Confermato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_2" xml:space="preserve">
+    <value>Liquidato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementState_3" xml:space="preserve">
+    <value>Annullato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_0" xml:space="preserve">
+    <value>Creato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_1" xml:space="preserve">
+    <value>In attesa</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_2" xml:space="preserve">
+    <value>Completato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_3" xml:space="preserve">
+    <value>Fallito</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_4" xml:space="preserve">
+    <value>Rimborsato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentState_5" xml:space="preserve">
+    <value>Debug</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementSubject" xml:space="preserve">
+    <value>{0}: rendiconto di {1}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSettlementText" xml:space="preserve">
+    <value>Rendiconto di {1} per il centro {0}.
+Incassato netto: {2}
+Trattenuta della piattaforma {3}: {4}
+Quota del centro: {5}
+In allegato il dettaglio dei pagamenti.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPaidSubject" xml:space="preserve">
+    <value>{0}: quota di {1} liquidata</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPaidText" xml:space="preserve">
+    <value>La quota del centro {0} per {1}, pari a {2}, è stata bonificata il {3}.
+Riferimento del bonifico: {4}
+In allegato il rendiconto.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSummarySubject" xml:space="preserve">
+    <value>{0}: riepilogo pagamenti {1}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentSummaryText" xml:space="preserve">
+    <value>In allegato il riepilogo dei pagamenti delle licenze dei clienti del centro {0} per {1}.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentFileName" xml:space="preserve">
+    <value>Pagamenti</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentAllDealers" xml:space="preserve">
+    <value>Tutti</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentNoDealer" xml:space="preserve">
+    <value>Senza centro</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleSettlement" xml:space="preserve">
+    <value>Rendiconto di {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleMonthly" xml:space="preserve">
+    <value>Riepilogo pagamenti di {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfTitleAnnual" xml:space="preserve">
+    <value>Riepilogo pagamenti {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealer" xml:space="preserve">
+    <value>Centro</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfState" xml:space="preserve">
+    <value>Stato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPayments" xml:space="preserve">
+    <value>Pagamenti</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfCollected" xml:space="preserve">
+    <value>Incassato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfRefunded" xml:space="preserve">
+    <value>Rimborsato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfAdjustments" xml:space="preserve">
+    <value>Rettifiche (rimborsi)</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfFee" xml:space="preserve">
+    <value>Trattenuta piattaforma</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealerShare" xml:space="preserve">
+    <value>Quota del centro</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDealerShareEstimated" xml:space="preserve">
+    <value>Quota del centro (stima)</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPaid" xml:space="preserve">
+    <value>Liquidato</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfToPay" xml:space="preserve">
+    <value>Confermato da liquidare</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPaidOn" xml:space="preserve">
+    <value>Liquidato il</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfInvoice" xml:space="preserve">
+    <value>Fattura del centro</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfSettlement" xml:space="preserve">
+    <value>Rendiconto</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfDetail" xml:space="preserve">
+    <value>Dettaglio dei pagamenti</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfMonths" xml:space="preserve">
+    <value>Mese per mese</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColDate" xml:space="preserve">
+    <value>Data</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColSubject" xml:space="preserve">
+    <value>Cliente</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColFunction" xml:space="preserve">
+    <value>Funzione e piano</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColPeriod" xml:space="preserve">
+    <value>Periodo coperto</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColAmount" xml:space="preserve">
+    <value>Importo</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfColMonth" xml:space="preserve">
+    <value>Mese</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfRefund" xml:space="preserve">
+    <value>rimborso</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfEstimatedNote" xml:space="preserve">
+    <value>Quota stimata sull'incassato del periodo con la trattenuta attuale; gli importi definitivi sono quelli dei rendiconti confermati.</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfGenerated" xml:space="preserve">
+    <value>generato il {0}</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentPdfPage" xml:space="preserve">
+    <value>Pagina</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsSummary" xml:space="preserve">
+    <value>Riepilogo</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsLevel" xml:space="preserve">
+    <value>Piano</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsFrom" xml:space="preserve">
+    <value>Coperto dal</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsTo" xml:space="preserve">
+    <value>Coperto al</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsCurrency" xml:space="preserve">
+    <value>Valuta</value>
+    <comment>pagamenti</comment>
+  </data>
+  <data name="PaymentXlsPaymentState" xml:space="preserve">
+    <value>Stato pagamento</value>
+    <comment>pagamenti</comment>
+  </data>
 </root>

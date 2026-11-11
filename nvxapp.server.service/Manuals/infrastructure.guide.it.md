@@ -589,6 +589,75 @@ Il SuperUser imposta come predefinito, per il livello Azienda, la risposta AI at
 
 => /aidocumentlist /tickettypelist /ticketlist
 
+@@ /paymentreport
+### Cosa puoi fare
+Le aziende e gli studi pagano le licenze alla piattaforma; ogni mese la piattaforma gira a ciascun centro la sua quota, cioè l'incassato dei clienti del centro meno la trattenuta della piattaforma. In questa pagina il SuperUser vede, per anno o per mese, l'incassato di ogni centro, la trattenuta, la quota del centro, quanto è già stato liquidato e quanto è confermato ma ancora da bonificare.
+
+### Come fare
+1. Scegli anno e mese (o **Tutto l'anno**).
+2. A mese concluso, dal pulsante rotondo scegli **Genera i rendiconti del mese**: per ogni centro con pagamenti da liquidare si crea una bozza.
+3. Con **Dettaglio** apri il centro, controlla la bozza e confermala: il centro riceve l'email con il PDF del rendiconto.
+4. Dopo il bonifico, sul rendiconto scegli **Liquida** e indica data e riferimento: il centro riceve la conferma.
+
+### Attenzione
+- Contano solo i pagamenti andati a buon fine; quelli di prova (debug) si vedono ma non entrano nei rendiconti.
+- Quote e trattenute dell'elenco sono stime con la percentuale attuale; gli importi definitivi sono quelli dei rendiconti.
+- I pagamenti dei clienti senza centro restano tutti alla piattaforma.
+
+=> /paymentdealer /paymentsettings
+
+@@ /paymentdealer
+### Cosa puoi fare
+I pagamenti delle licenze dei clienti del centro e i rendiconti mensili con cui la piattaforma liquida al centro la sua quota. Il SuperUser sceglie il centro; gli utenti del centro vedono sempre il proprio e solo i rendiconti confermati.
+
+### Stati del rendiconto
+| Stato | Descrizione |
+|---|---|
+| Bozza | Anteprima che il SuperUser può rigenerare o eliminare; il centro non la vede. |
+| Confermato | I pagamenti sono bloccati sul rendiconto e il centro ha ricevuto l'email; la quota è da bonificare. |
+| Liquidato | La quota è stata bonificata: data e riferimento del bonifico sono sul rendiconto. |
+| Annullato | Il rendiconto non vale più e i suoi pagamenti tornano da liquidare. |
+
+### Come fare
+- **Inviare un riepilogo**: scegli il mese o **Tutto l'anno** e, dal pulsante rotondo, **Invia il riepilogo via email**; arriva all'email dell'amministrazione del centro con il PDF.
+- **Registrare la fattura del centro** (DealerPowerAdmin o SuperUser): sul rendiconto confermato o liquidato scegli **Fattura** e indica numero e data.
+- **Scaricare i dati**: dal pulsante rotondo **PDF** (riepilogo del periodo) o **Excel** (riepilogo e dettaglio dei pagamenti).
+
+### Esempio
+Un'azienda del centro paga 100 euro il 10 settembre, la trattenuta è il 20%. Il 5 ottobre il SuperUser genera e conferma il rendiconto di settembre: quota del centro 80 euro. Il centro riceve l'email; quando arriva il bonifico il rendiconto risulta **Liquidato**.
+
+### Attenzione
+- Un pagamento confermato dopo la chiusura del rendiconto del suo mese entra nel rendiconto successivo.
+- Se un pagamento già liquidato viene rimborsato, il rendiconto successivo lo toglie come rettifica.
+
+=> /paymentdealerconfig /paymentreport
+
+@@ /paymentdealerconfig
+### Campi
+| Campo | Descrizione |
+|---|---|
+| Trattenuta in % | Da 0 a 100; vuota usa la trattenuta generale. La modifica solo il SuperUser e vale per i rendiconti generati da quel momento. |
+| IBAN | Conto su cui ricevere il bonifico, solo lettere e cifre (gli spazi vengono tolti). |
+| Intestatario | Intestatario del conto. |
+| Email dell'amministrazione | Riceve rendiconti e riepiloghi; più indirizzi separati da ;. Vuota: i DealerPowerAdmin del centro. |
+
+=> /paymentdealer
+
+@@ /paymentsettings
+### Campi
+| Campo | Descrizione |
+|---|---|
+| Trattenuta generale in % | Da 0 a 100, per i centri senza una trattenuta propria. |
+| Rendiconti e riepiloghi automatici | Acceso: ogni mese, dal giorno indicato, si generano le bozze dei rendiconti del mese precedente; nel mese indicato parte a ogni centro il riepilogo dell'anno precedente. |
+| Giorno di generazione dei rendiconti | Da 1 a 28. |
+| Mese del riepilogo annuale | Mese in cui si invia il riepilogo dell'anno precedente. |
+
+### Attenzione
+- Le bozze automatiche vanno sempre confermate dal SuperUser: è la conferma che invia l'email al centro.
+- Senza la configurazione dell'invio email i riepiloghi non partono.
+
+=> /paymentreport
+
 ## Glossario
 - **Centro**: il rivenditore che crea gli studi e attiva gli applicativi delle aziende (in inglese Dealer).
 - **Studio**: lo studio professionale che segue un gruppo di aziende (in inglese Financial advisor).

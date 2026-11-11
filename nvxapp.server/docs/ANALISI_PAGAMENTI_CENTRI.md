@@ -59,28 +59,30 @@ Azienda/Studio ──paga la licenza──▶ SuperUser (Lic_Pagamento, con il c
 
 `ClientServer-Service/infrastructure/Payments/PaymentReportService.cs` + `Controllers/Infrastructure/PaymentReportController.cs`, stesso schema di `LicenseService` (`GenericRequest<XxxInModel>`, `ExecuteAction`, `UserMessageException` con testi in `InfrastructureMessages`).
 
-| API | Chi | Cosa |
-|---|---|---|
-| `RiepilogoPerCentro(anno, mese?)` | SuperUser | per centro: n. pagamenti, incassato, rettifiche, trattenuta, quota centro, stato rendiconto, ultimo invio |
-| `RiepilogoCentro(anno, mese?)` | Centro | lo stesso per il proprio centro, suddiviso per studio/azienda |
-| `ElencoPagamenti(anno, mese?, idDealer?, stato?)` | entrambi | le righe di `Lic_Pagamento` |
-| `ElencoRendiconti(anno, idDealer?)` | entrambi (il centro non vede le bozze) | |
-| `GeneraRendiconti(anno, mese, idDealer?)` | SuperUser | crea/rigenera le bozze |
-| `ConfermaRendiconto`, `AnnullaRendiconto`, `LiquidaRendiconto(data, riferimento)`, `AggiornaFatturaCentro` | SuperUser | cambi di stato |
-| `InviaRiepilogo(idDealer, anno, mese?)` | SuperUser (a qualsiasi centro), Centro (a sé stesso) | email HTML + PDF allegato, registrata in `Pag_InvioEmail` |
-| `EsportaPdf` / `EsportaExcel` | entrambi | |
-| `DealerConfigGet/Put` | SuperUser (tutti), DealerPowerAdmin (Iban, intestatario, email del proprio centro; non la percentuale) | |
+Il calcolo e i cambi di stato stanno in `PaymentSettlementManager` (non dipende dall'utente: lo usa anche la manutenzione); i permessi in `PaymentReportService`.
 
-**Permessi** nel servizio (come `LicenseService.cs` §12 delle licenze): SuperUser vede e gestisce tutto; DealerAdmin / DealerPowerAdmin vedono **solo** il proprio centro, con `idDealer` **forzato da `CurrentDealer`** (dal token, mai dal client); gli altri ruoli nessun accesso. I guard Angular sono solo un aiuto all'interfaccia.
+| API (`api/PaymentReport/...`) | Chi | Cosa |
+|---|---|---|
+| `PaymentReportGet(anno, mese?)` | SuperUser | per centro (anche quelli senza movimenti e i clienti senza centro): pagamenti, incassato, rimborsato, debug, trattenuta, quota del centro, liquidato, da liquidare, rendiconto del mese; totali |
+| `PaymentDealerGet(idDealer?, anno, mese?)` | SuperUser, centro | riepilogo del centro, pagamenti del periodo, rendiconti dell'anno (il centro non vede le bozze), storico delle email |
+| `PaymentSettlementGenerate(anno, mese, idDealer?)` | SuperUser | crea o aggiorna le bozze (un centro o tutti quelli con qualcosa da liquidare) |
+| `PaymentSettlementConfirm` / `Cancel` / `Pay(data, riferimento, note)` | SuperUser | cambi di stato; conferma e liquidazione inviano l'email (se non parte, il cambio di stato resta e l'esito è nello storico) |
+| `PaymentSettlementInvoicePut(numero, data)` | SuperUser, DealerPowerAdmin del centro | fattura del centro sul rendiconto confermato o liquidato |
+| `PaymentSummarySend(idDealer?, anno, mese?)` | SuperUser (qualsiasi centro), centro (il proprio) | email HTML con il PDF del riepilogo, registrata in `Pag_InvioEmail` |
+| `PaymentExport(idDealer?, anno, mese?, formato)` | SuperUser, centro | PDF del riepilogo di un centro; Excel di un centro o (SuperUser) di tutti |
+| `PaymentDealerConfigGet/Put` | SuperUser (tutto), DealerPowerAdmin (IBAN, intestatario, email del proprio centro; non la trattenuta); DealerAdmin legge | |
+| `PaymentSettingsGet/Put` | SuperUser | impostazioni `Pagamenti_*` |
+
+**Permessi** nel servizio (come `LicenseService.cs` §12 delle licenze): SuperUser vede e gestisce tutto; DealerAdmin / DealerPowerAdmin vedono **solo** il proprio centro, con `idDealer` **forzato da `CurrentDealer`** (dal token, mai dal client); gli altri ruoli nessun accesso. Il SuperUser che impersona un utente del centro, senza indicare un centro, lavora sul centro impersonato. I guard Angular sono solo un aiuto all'interfaccia.
 
 ## 5. Email e automatismi
 
 - Corpo HTML costruito dai testi resx (come `LicenseSubscriptionManager`), PDF del rendiconto o del riepilogo annuale in allegato (MigraDoc).
 - Destinatari: `Pag_DealerConfig.EmailAmministrazione`, altrimenti i DealerPowerAdmin del centro (via `UserDealer`).
 - Ogni invio (riuscito o no) finisce in `Pag_InvioEmail`.
-- **`PaymentSummaryMaintenanceService`** (`nvxapp.server/Utility/`, come `StorageMaintenanceService`), attivo solo con `Pagamenti_RiepilogoAutomatico = true`:
-  - dal giorno `Pagamenti_GiornoInvioMensile`: genera le **bozze** del mese precedente; il SuperUser le conferma (e la conferma invia l'email);
-  - nel mese `Pagamenti_MeseInvioAnnuale`: invia a ogni centro il riepilogo dell'anno precedente, una volta sola (controllo su `Pag_InvioEmail`).
+- **`PaymentMaintenanceService`** (`nvxapp.server/Utility/`, come `StorageMaintenanceService`), una volta al giorno dopo le 4, attivo solo con `Pagamenti_RiepilogoAutomatico = true`:
+  - dal giorno `Pagamenti_GiornoInvioMensile`: genera le **bozze** del mese precedente, una volta per mese (`AppSetting` `Pagamenti_UltimaGenerazione` = "aaaa-mm", così una bozza eliminata dal SuperUser non ricompare); il SuperUser le conferma (e la conferma invia l'email);
+  - dal mese `Pagamenti_MeseInvioAnnuale`: invia a ogni centro con movimenti il riepilogo dell'anno precedente, una volta sola (controllo su `Pag_InvioEmail`).
 - Email di liquidazione quando il SuperUser segna il rendiconto come liquidato.
 
 ## 6. Interfaccia
@@ -106,11 +108,11 @@ Azienda/Studio ──paga la licenza──▶ SuperUser (Lic_Pagamento, con il c
 ## 8. Fasi
 
 1. **Modello dati** (fatta): campi su `Lic_Pagamento` valorizzati in `PagaAsync`, entità `Pag_*`, impostazioni, migration `PagamentiCentri` che riempie i pagamenti già presenti.
-2. **Consultazione**: servizio, API e pagina con elenco e totali per mese/anno e per centro, dettaglio.
-3. **Rendiconti**: generazione, conferma, liquidazione, annullamento, dati di liquidazione del centro.
-4. **Email e documenti**: invio manuale con PDF, esportazione Excel.
-5. **Automatismi**: `PaymentSummaryMaintenanceService`.
-6. Manuale e schermate (`nvxapp.server/Tools/ManualScreenshots`).
+2. **Consultazione** (fatta): servizio, API e pagina con elenco e totali per mese/anno e per centro, dettaglio.
+3. **Rendiconti** (fatta): generazione, conferma, liquidazione, annullamento, fattura, dati di liquidazione del centro.
+4. **Email e documenti** (fatta): invio manuale con PDF, esportazione PDF ed Excel.
+5. **Automatismi** (fatta): `PaymentMaintenanceService`.
+6. Manuale (fatto); **schermate** del manuale da rigenerare con `nvxapp.server/Tools/ManualScreenshots`.
 
 Con i pagamenti reali (Fase 3 delle licenze) la conferma del provider via webhook dovrà valorizzare `DataPagamento` come fa oggi `PagaAsync`.
 
@@ -125,3 +127,17 @@ Con i pagamenti reali (Fase 3 delle licenze) la conferma del provider via webhoo
 | Repository | `Repositories/Public/Pag_*Repository.cs` |
 | Centro e data di incasso sul pagamento | `LicenseSubscriptionManager.PagaAsync` / `CentroDelSoggettoAsync` |
 | Migration | `Migrations/Public/*_PagamentiCentri.cs` (con l'aggiornamento dei pagamenti esistenti) |
+
+### Fasi 2-5 (11/11/2026)
+
+| Parte | Dove |
+|---|---|
+| Calcoli, rendiconti, documenti, email | `ClientServer-Service/infrastructure/Payments/PaymentSettlementManager.cs` |
+| PDF (MigraDoc, font del manuale) ed Excel (ClosedXML) | `Payments/PaymentReportPdf.cs` (`PaymentReportPdf`, `PaymentReportExcel`) |
+| Impostazioni | `Payments/PaymentSettingsProvider.cs` |
+| API e permessi | `Payments/PaymentReportService.cs`, `Payments/Models/PaymentModel.cs`, `Controllers/Infrastructure/PaymentReportController.cs` |
+| Manutenzione | `nvxapp.server/Utility/PaymentMaintenanceService.cs` (registrata in `Installers.InstallServices`) |
+| Client | `ClientServer-Service/Infrastructure/Payment/` (servizio e modelli); pagine `payment-report` (SuperUser), `payment-dealer` (SuperUser e centro), `payment-dealer-config`, `payment-settings`; route in `route-infrastructure.service.ts`, voci in `Pages4SuperUser` e `Pages4DealerAdmin` |
+| Testi | `InfrastructureMessages*.resx` (chiavi `Payment*`), `assets/i18n/infrastructure/*.json` (`pages.payment*`, `menu.payments`, `menu.dealerPayments`), manuale `Manuals/infrastructure*.md` |
+
+**Verifica.** Build di server e client; prova completa delle API su un database PostgreSQL usa e getta con un server SMTP finto (49 controlli): riepiloghi e totali per centro (con debug, senza centro, centri senza movimenti), permessi (SuperUser, DealerPowerAdmin, DealerAdmin, studio, SuperUser che impersona un centro), mese non concluso, bozze, conferma con ricalcolo e aggancio dei pagamenti, doppia conferma, liquidazione (data futura rifiutata), fattura, annullamento, rimborso dopo la liquidazione come rettifica negativa, PDF ed Excel, email con PDF ai DealerPowerAdmin e all'email dell'amministrazione, dati di liquidazione (IBAN non valido, trattenuta solo dal SuperUser), sottoscrizione reale in debug che fotografa centro e data di incasso, giro della manutenzione (una bozza generata, marcatore del mese scritto).
