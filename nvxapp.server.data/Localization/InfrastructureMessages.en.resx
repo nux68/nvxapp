@@ -1191,4 +1191,8 @@ The statement is attached.</value>
     <value>Summaries generated: {0}</value>
     <comment>riepilogo</comment>
   </data>
+  <data name="UserCompanyEmployeeNotLinkable" xml:space="preserve">
+    <value>The selected employee does not exist in this company or already has an account.</value>
+    <comment>account dipendente esistente</comment>
+  </data>
 </root>
