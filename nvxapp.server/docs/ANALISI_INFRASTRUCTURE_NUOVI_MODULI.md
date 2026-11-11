@@ -1,7 +1,7 @@
 # Analisi – Nuovi moduli e raggruppamento logico delle funzioni
 
 Data: 11/11/2026. Ramo: **Infrastructure_Dev** (lavoro su `Infrastructure_Dev_moduli`, worktree `wt_infra_moduli`).
-Stato: **solo analisi, nessuna modifica al codice**. Le scelte segnate "proposta" sono indicazioni di partenza, non decisioni (§9).
+Stato: **solo analisi, nessuna modifica al codice**. **Decisioni D1–D8 prese l'11/11/2026** (§9): si creano subito Risorse Umane, Compliance e Risorse aziendali; Amministrazione più avanti e solo con la fatturazione. I livelli di licenza dei nuovi moduli si definiranno con i listini.
 
 **Scopo.** Raccogliere le funzioni che possono interessare le aziende clienti e assegnarle a un gruppo logico, cioè a un applicativo con un proprio branch. Le funzioni vanno nei gruppi esistenti (Presenze, Documentale, CRM) quando ci stanno; altrimenti si propongono gruppi nuovi. Le parti comuni vanno nelle funzioni base (Infrastructure).
 Il documento sta in Infrastructure perché ogni gruppo nuovo richiede lavoro di base: valore dell'enum, DbContext e schema, licenze, menu, dati spostati in Common. Il dettaglio di ogni modulo andrà poi in un'analisi del suo ramo (`ANALISI_<RAMO>_APPLICATIVO.md`).
@@ -50,7 +50,7 @@ Il documento sta in Infrastructure perché ogni gruppo nuovo richiede lavoro di 
 | Sincronizzazione degli appuntamenti | Con Google e Outlook, tramite il motore comune (§5) |
 | Assistenza ai clienti dell'azienda | Richieste dei clienti finali, diverse dai ticket di Infrastructure che riguardano la piattaforma |
 
-## 4. Gruppi nuovi (proposta)
+## 4. Gruppi nuovi (decisi: D1, D3, D4)
 
 | Gruppo | `ApplicationType` | Branch | Schema | Prefisso tabelle | Responsabile in azienda |
 |---|---|---|---|---|---|
@@ -59,7 +59,7 @@ Il documento sta in Infrastructure perché ogni gruppo nuovo richiede lavoro di 
 | Risorse aziendali | `Assets = 7` | `Assets_Dev` → `Assets` | `tenant_<id>_7` | `Ast_` | Ufficio acquisti, logistica, IT |
 | Amministrazione | `Administration = 8` | `Administration_Dev` → `Administration` | `tenant_<id>_8` | `Adm_` | Amministrazione |
 
-Le assegnazioni dei valori dell'enum sono una proposta. Una volta in produzione **non si cambiano più**.
+Valori dell'enum e nomi dei branch confermati (D4). Una volta in produzione **non si cambiano più**. HumanResources, Compliance e Assets si creano subito (D1). Amministrazione arriva più avanti, ma il valore 8 resta riservato.
 
 ### 4.1 Risorse Umane (HumanResources)
 Il fascicolo del dipendente al di là delle presenze.
@@ -71,20 +71,20 @@ Il fascicolo del dipendente al di là delle presenze.
 ### 4.2 Compliance
 Adempimenti normativi. È il modulo che lo studio può proporre a tutte le sue aziende.
 - **Sicurezza sul lavoro (D.Lgs 81/08)**: scadenzario di corsi obbligatori, visite mediche e idoneità, consegna dei DPI (con verbale), nomine (RSPP, RLS, preposti, addetti alle emergenze), documenti DVR.
-- **Whistleblowing (D.Lgs 24/2023)**: canale di segnalazione con anonimato, codice per seguire la propria segnalazione, scadenze di legge (avviso di ricezione entro 7 giorni, risposta entro 3 mesi) e accesso limitato al gestore. Serve una **verifica legale** prima del rilascio.
+- **Whistleblowing (D.Lgs 24/2023)**, compreso nel modulo senza una licenza separata (D7): canale di segnalazione con anonimato, codice per seguire la propria segnalazione, scadenze di legge (avviso di ricezione entro 7 giorni, risposta entro 3 mesi) e accesso limitato al gestore. Serve una **verifica legale** prima del rilascio.
 - **Registro GDPR**: registro dei trattamenti, nomine e responsabili esterni, registro delle violazioni. Lo studio può gestirlo per conto delle aziende.
 - **Note**: i dati delle segnalazioni vanno protetti in modo particolare, con cifratura, accesso solo al gestore ed esclusione dalla chat AI. Serve un'analisi della sicurezza dedicata, che si aggancia a `piano-security.md`.
 
 ### 4.3 Risorse aziendali (Assets)
 Cosa possiede l'azienda e a chi lo assegna.
-- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. Oggi esiste `Dip_RapportoAutovetture` nelle Presenze, che resta lì per l'export paghe (§9, D5).
+- **Flotta**: veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione, fringe benefit e multe. `Dip_RapportoAutovetture` si sposta in Common (D5): Assets lo gestisce e le Presenze continuano a leggerlo per l'export paghe.
 - **Beni assegnati**: PC, telefoni, badge e attrezzature, con consegna e restituzione (verbale firmato tramite il Documentale) e collegamento all'offboarding di HR.
 - **Prenotazioni**: postazioni, sale e auto in pool, con calendario e sincronizzazione (§5).
 
-### 4.4 Amministrazione (Administration)
-- **Ordini e fatture elettroniche**: dal preventivo del CRM si passa a ordine, fattura, invio allo SdI tramite un intermediario e incassi.
-- **Controllo di gestione avanzato**: ricavi (dalle fatture) messi a confronto con i costi delle commesse (dalle Presenze). Richiede le commesse in Common (§6).
-- **Note**: è il gruppo più costoso (fiscalità, intermediario SdI, conservazione). Si propone di **rimandarlo** dopo HR e Compliance (§9, D2).
+### 4.4 Amministrazione (Administration) – più avanti (D1)
+- **Solo fatturazione (D2)**: dal preventivo del CRM si passa a ordine, fattura, invio allo SdI tramite un intermediario e incassi.
+- Il **controllo di gestione** resta nelle Presenze (§3.1). Collegarlo ai ricavi delle fatture sarà un'integrazione facoltativa, da valutare quando si avvia il modulo.
+- **Note**: è il gruppo più costoso (fiscalità, intermediario SdI, conservazione). Si avvia dopo aver scelto l'intermediario SdI.
 
 ## 5. Funzioni base da aggiungere in Infrastructure
 
@@ -100,12 +100,13 @@ Cosa possiede l'azienda e a chi lo assegna.
 
 Seguono la regola del §2.2: se un dato serve a più moduli, va in Common e lo sposta Infrastructure prima che i moduli lo usino. Si fa come per `Dip_Anagrafica` (`ANALISI_CRM_APPLICATIVO.md` §2.4).
 
-| Dato | Oggi | Serve a | Proposta |
+| Dato | Oggi | Serve a | Scelta |
 |---|---|---|---|
 | Sedi e reparti (`Az_Sedi`, `Az_SediReparto`) | Presenze | HR, Compliance (sicurezza per sede), Assets (beni per sede) | Spostarli in Common. Le tabelle di collegamento proprie delle Presenze (`Az_SediRepartoUser`, `Az_SediAttivita`…) restano nelle Presenze |
-| Commesse (`Az_Commessa`, `Az_SubCommessa`) | Presenze | Amministrazione, CRM (opportunità vinta che diventa commessa) | Spostarle quando si avvia Amministrazione (D2) |
-| Competenze (`Par_Competenza`, `Dip_Competenza`) | Presenze | HR, Compliance | Spostarle quando si avvia HR |
-| Rapporto di lavoro (date e tipo) | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | Da valutare: in Common basterebbero le date di assunzione e cessazione (D6) |
+| Commesse (`Az_Commessa`, `Az_SubCommessa`) | Presenze | CRM (opportunità vinta che diventa commessa), in futuro Amministrazione | Restano nelle Presenze, dove sta il controllo di gestione (D2). Da rivalutare quando si avvia Amministrazione |
+| Competenze (`Par_Competenza`, `Dip_Competenza`) | Presenze | HR, Compliance | Spostarle prima di avviare HR |
+| Autovetture del dipendente (`Dip_RapportoAutovetture`) | Presenze | Assets (flotta), Presenze (export paghe) | **Deciso (D5)**: in Common |
+| Rapporto di lavoro | Presenze (`Dip_RapportoLavoro`) | HR (onboarding e cessazione) | **Deciso (D6)**: in Common vanno **solo le date di assunzione e cessazione**. Il resto del rapporto resta nelle Presenze |
 
 ## 7. Cosa serve per aggiungere un gruppo nuovo
 
@@ -116,27 +117,27 @@ Questa è la procedura base, da ripetere per ogni gruppo:
 4. **CLAUDE.md**: aggiungere il gruppo all'elenco dei branch e alla catena di AllFunction (Infrastructure per primo, poi AttendanceTracking, CRM, DocumentManagement e i gruppi nuovi).
 5. **AllFunction_Dev**: merge e verifica di build e migration con tutti gli applicativi attivi.
 
-## 8. Ordine di lavoro proposto
+## 8. Ordine di lavoro
 
-1. **Infrastructure**: scadenzario e notifiche (§5), sedi e reparti in Common (§6), procedura del §7.
+1. **Infrastructure**: scadenzario e notifiche (§5), spostamenti in Common (§6: sedi e reparti, competenze, autovetture, date di assunzione e cessazione), procedura del §7.
 2. **Compliance**: prima la sicurezza 81/08 (usa lo scadenzario), poi il whistleblowing, poi il registro GDPR.
 3. **Risorse Umane**: portale con cedolini e CU (usa la FES del Documentale), formazione, onboarding.
 4. **Gruppi esistenti**, in parallelo quando si vuole: turni e timbratura evoluta (Presenze), PEC (Documentale), preventivi (CRM).
-5. **Risorse aziendali**.
-6. **Amministrazione**, dopo aver scelto l'intermediario SdI.
+5. **Risorse aziendali** (Assets): si crea subito (D1), dopo che `Dip_RapportoAutovetture` è passato in Common.
+6. **Amministrazione**, più avanti e solo con la fatturazione, dopo aver scelto l'intermediario SdI.
 
-## 9. Decisioni da prendere
+## 9. Decisioni (prese l'11/11/2026)
 
-| # | Decisione | Proposta |
+| # | Decisione | Esito |
 |---|---|---|
-| D1 | Quali gruppi nuovi creare | HR e Compliance subito. Assets e Amministrazione più avanti |
-| D2 | Tenere Amministrazione separata o lasciare il controllo di gestione nelle Presenze | Lasciare la parte base nelle Presenze (§3.1) e creare Amministrazione solo con la fatturazione |
-| D3 | Unire Assets dentro HR (meno branch) | No: chi compra è diverso (logistica e IT contro personale) |
-| D4 | Valori dell'enum e nomi dei branch | Quelli del §4 |
-| D5 | Dove tenere `Dip_RapportoAutovetture` | Resta nelle Presenze (serve all'export paghe). Assets lo legge se attivo |
-| D6 | Quali dati del rapporto di lavoro spostare in Common | Solo le date di assunzione e cessazione |
-| D7 | Whistleblowing nel modulo Compliance o venduto a parte | Nel modulo Compliance, ma con una licenza attivabile da sola |
-| D8 | Livelli Free/Standard/Pro per i nuovi moduli | Da definire con i listini (`ANALISI_INFRASTRUCTURE_LICENZE.md`) |
+| D1 | Quali gruppi nuovi creare | **HR, Compliance e Assets** si creano subito. **Amministrazione più avanti** |
+| D2 | Tenere Amministrazione separata o lasciare il controllo di gestione nelle Presenze | **Amministrazione solo con la fatturazione**. Il controllo di gestione resta nelle Presenze |
+| D3 | Unire Assets dentro HR (meno branch) | **No, gruppi separati**: chi compra è diverso (logistica e IT contro personale) |
+| D4 | Valori dell'enum e nomi dei branch | **Confermati quelli del §4** |
+| D5 | Dove tenere `Dip_RapportoAutovetture` | **In Common**: lo usano Assets e Presenze |
+| D6 | Quali dati del rapporto di lavoro spostare in Common | **Solo le date di assunzione e cessazione** |
+| D7 | Whistleblowing nel modulo Compliance o venduto a parte | **Nel modulo Compliance**, senza una licenza separata |
+| D8 | Livelli Free/Standard/Pro per i nuovi moduli | **Da definire con i listini**. Se serve si aggiungeranno in seguito; per ora nessun livello specifico |
 
 ---
 
@@ -147,16 +148,20 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 ### Analisi
 - ✅ Raggruppamento delle funzioni nei gruppi esistenti e nuovi (§3, §4)
 - ✅ Funzioni base e dati da spostare in Common (§5, §6)
-- 🔍 Decisioni D1–D8 (§9)
-- ⏳ Analisi di dettaglio per ogni gruppo nuovo (`ANALISI_HUMANRESOURCES_APPLICATIVO.md`, `ANALISI_COMPLIANCE_APPLICATIVO.md`, …)
+- ✅ Decisioni D1–D8 (§9), prese l'11/11/2026
+- ⏳ Analisi di dettaglio per ogni gruppo nuovo (`ANALISI_HUMANRESOURCES_APPLICATIVO.md`, `ANALISI_COMPLIANCE_APPLICATIVO.md`, `ANALISI_ASSETS_APPLICATIVO.md`)
+- 🔍 Livelli di licenza dei nuovi moduli, da definire con i listini (D8)
 
 ### Infrastructure_Dev
 - ⏳ Scadenzario comune (entità in `public` o Common, servizio, pagina, widget "In scadenza")
 - ⏳ Servizio di notifica (email, nell'app) con preferenze per utente
 - ⏳ Sedi e reparti spostati in Common, con migrazione dei dati delle Presenze
+- ⏳ Competenze (`Par_Competenza`, `Dip_Competenza`) spostate in Common
+- ⏳ `Dip_RapportoAutovetture` spostato in Common (D5), con l'export paghe delle Presenze aggiornato
+- ⏳ Date di assunzione e cessazione in Common (D6), il resto di `Dip_RapportoLavoro` resta nelle Presenze
 - ⏳ Sincronizzazione dei calendari (Google e Microsoft)
 - ⏳ Riepilogo AI periodico
-- ⏳ Valori `HumanResources`, `Compliance` (poi `Assets`, `Administration`) in `ApplicationType`, con licenze, menu, cancellazione e manuali
+- ⏳ Valori `HumanResources = 5`, `Compliance = 6`, `Assets = 7` in `ApplicationType`, con licenze, menu, cancellazione e manuali (`Administration = 8` riservato, più avanti)
 - ⏳ Aggiornamento di CLAUDE.md con i nuovi branch e la catena dei merge
 
 ### Compliance_Dev
@@ -179,7 +184,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 - ⏳ Presenze: timbratura evoluta (QR/NFC, geofencing, kiosk, offline)
 - ⏳ Presenze: smart working
 - ⏳ Presenze: analisi AI delle timbrature
-- ⏳ Presenze: controllo di gestione di base sulle commesse
+- ⏳ Presenze: controllo di gestione sulle commesse (resta qui, D2)
 - ⏳ Documentale: acquisizione delle PEC
 - ⏳ Documentale: conservazione a norma
 - ⏳ Documentale: servizio di presa visione e verbali per gli altri moduli
@@ -187,9 +192,15 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 - ⏳ CRM: sincronizzazione degli appuntamenti
 - ⏳ CRM: assistenza ai clienti dell'azienda
 
+### Assets_Dev
+- ⏳ Creazione del branch, `AssetsDbContext` e migration iniziale
+- ⏳ Flotta (su `Dip_RapportoAutovetture` in Common)
+- ⏳ Beni assegnati ai dipendenti, con verbale di consegna e collegamento all'offboarding di HR
+- ⏳ Prenotazioni di postazioni, sale e auto in pool
+- ⏳ Widget e comandi vocali
+
 ### Più avanti
-- ⏳ Assets: flotta, beni assegnati, prenotazioni
-- ⏳ Amministrazione: commesse in Common, ordini, fatture elettroniche e SdI, controllo di gestione avanzato
+- ⏳ Amministrazione (D1, D2): ordini, fatture elettroniche e SdI, incassi; scelta dell'intermediario SdI
 
 ---
 
@@ -202,11 +213,12 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da decidere
 - ✅ 11/11/2026 – Stesura di questo documento (§1–§10) e commit locale
 - ✅ 11/11/2026 – Catena dei merge del documento: `Infrastructure_Dev_moduli` → `Infrastructure_Dev` → `Infrastructure` → `AttendanceTracking_Dev`/`CRM_Dev`/`DocumentManagement_Dev` → `AttendanceTracking`/`CRM`/`DocumentManagement` → `AllFunction_Dev` → `AllFunction` (solo locale, nessun push)
 - ✅ 11/11/2026 – Rimozione del worktree `wt_infra_moduli` e del ramo di lavoro dopo i merge
+- ✅ 11/11/2026 – Decisioni D1–D8 registrate (§9) e documento aggiornato (§4, §6, §8, §10)
 
 ### Da fare
-- 🔍 Prendere le decisioni D1–D8 (§9). È il prerequisito di tutto il resto
-- ⏳ Scrivere l'analisi di dettaglio dei gruppi scelti (prima Compliance e Risorse Umane)
-- ⏳ Infrastructure_Dev: scadenzario, notifiche, sedi e reparti in Common, nuovi valori di `ApplicationType` (§10, sezione Infrastructure_Dev)
+- ⏳ Scrivere l'analisi di dettaglio dei gruppi scelti (Compliance, Risorse Umane, Risorse aziendali)
+- ⏳ Infrastructure_Dev: scadenzario, notifiche, spostamenti in Common (sedi e reparti, competenze, autovetture, date del rapporto), nuovi valori di `ApplicationType` (§10, sezione Infrastructure_Dev)
+- 🔍 Livelli di licenza dei nuovi moduli (D8), con i listini
 - ⏳ Aggiornare CLAUDE.md con i nuovi branch e la catena dei merge di AllFunction
 - ⏳ Creare i branch dei nuovi gruppi e sviluppare i moduli (§10, sezioni per gruppo)
 - ⏳ Sviluppare le funzioni nuove dei gruppi esistenti (§10, sezione Gruppi esistenti)
