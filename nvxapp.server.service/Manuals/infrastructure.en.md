@@ -130,3 +130,15 @@ The documentation the AI assistant uses to answer tickets: uploaded documents li
 
 @@ /tickettypeaisetting
 For each request type choose whether and how the AI assistant proposes an answer to tickets.
+
+@@ /paymentreport
+The licence payments collected by the platform, split by centre, by year or by month: collected, platform fee, centre shares, paid and to be paid. **Detail** opens a centre's statements and payments; from the round button you generate the month's draft statements, download the Excel file and open the settings.
+
+@@ /paymentdealer
+The licence payments of the centre's customers and the statements with which the platform passes the centre its share: for each month collected amount, fee, centre share and, once transferred, date and reference of the transfer. From the round button you send the summary by email, download PDF and Excel and open the settlement data.
+
+@@ /paymentdealerconfig
+The centre's settlement data: platform fee (set by the SuperUser), IBAN, account holder and the administration email that receives statements and summaries.
+
+@@ /paymentsettings
+The settings of the centre payments: general platform fee and automatic sending of statements and annual summaries.
