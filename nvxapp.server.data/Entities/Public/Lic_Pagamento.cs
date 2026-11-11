@@ -7,6 +7,9 @@ namespace nvxapp.server.data.Entities.Public
      Resta anche dopo la cancellazione del soggetto o dell'abbonamento (IdAbbonamento diventa null; IdCompany e
      IdFinancialAdvisor senza chiave esterna), come lo storico dello spazio, per i resoconti degli incassi.
      Debug = true: giro completo senza transazione reale (§7.2).
+     Ripartizione ai centri (ANALISI_PAGAMENTI_CENTRI.md): IdDealer e DealerDescrizione sono il centro del cliente
+     al momento del pagamento (senza chiave esterna, come IdCompany); IdRendiconto e' il rendiconto che lo liquida al centro,
+     IdRendicontoRettifica quello che lo storna se viene rimborsato dopo la liquidazione.
     */
     public class Lic_Pagamento : BaseEntity
     {
@@ -44,5 +47,19 @@ namespace nvxapp.server.data.Entities.Public
 
         [MaxLength(500)]
         public string? Note { get; set; }
+
+        public int? IdDealer { get; set; }
+
+        [MaxLength(50)]
+        public string? DealerDescrizione { get; set; }
+
+        /// <summary>quando il pagamento e' andato a buon fine (Completato o Debug); null = non incassato</summary>
+        public DateTime? DataPagamento { get; set; }
+
+        public int? IdRendiconto { get; set; }
+        public Pag_Rendiconto? RendicontoNavigation { get; set; }
+
+        public int? IdRendicontoRettifica { get; set; }
+        public Pag_Rendiconto? RendicontoRettificaNavigation { get; set; }
     }
 }
