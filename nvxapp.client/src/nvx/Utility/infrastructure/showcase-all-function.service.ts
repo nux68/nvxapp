@@ -155,8 +155,8 @@ export class ShowcaseAllFunctionService {
       pricing: {
         titolo: t('pricing.titolo'),
         sottotitolo: t('pricing.sottotitolo'),
-        ambiti: [AmbitoLicenza.Cumulativo, AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
-          AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets],
+        ambiti: [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
+          AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets, AmbitoLicenza.Cumulativo],
         inclusi: [
           t('pricing.inclusi.anagraficheComuni'),
           t('pricing.inclusi.scadenzario'),
