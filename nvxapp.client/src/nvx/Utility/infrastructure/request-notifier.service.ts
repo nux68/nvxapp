@@ -2,7 +2,8 @@ import { Injectable, Signal, signal } from '@angular/core';
 import { combineLatest, debounceTime, Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
-import { RequestCountInModel, RequestNotifierData } from '../../ClientServer-Service/Infrastructure/Request/Models/request-model';
+import { RequestCountApp, RequestCountInModel, RequestNotifierData } from '../../ClientServer-Service/Infrastructure/Request/Models/request-model';
+import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { RequestService } from '../../ClientServer-Service/Infrastructure/Request/request.service';
 import { AuthService } from './auth.service';
 import { SignalrService } from './signalr.service';
@@ -13,6 +14,7 @@ import { APPLICATIVI_RICHIESTE } from './request-ui.model';
  /requestsadmin e /requests (MainMenuInfrastructureService):
    - daApprovare: richieste che l'utente (amministratore) puo' approvare adesso
    - inAttesa: richieste dell'utente in attesa di decisione
+   - daApprovareDi / inAttesaDi: gli stessi contatori di un solo applicativo (badge delle voci dei moduli, es. "Prenotazioni")
  Si ricalcolano dopo il login (e l'impersonificazione) e all'evento SignalR "RequestNotifier" mandato dai moduli;
  changed$: le pagine delle richieste aperte si ricaricano.
 */
@@ -26,6 +28,8 @@ export class RequestNotifierService {
 
   private readonly _inAttesa = signal(0);
   public readonly inAttesa: Signal<number> = this._inAttesa.asReadonly();
+
+  private readonly _perApplicativo = signal<RequestCountApp[]>([]);
 
   private readonly _changed = new Subject<RequestNotifierData>();
   public readonly changed$: Observable<RequestNotifierData> = this._changed.asObservable();
@@ -55,13 +59,25 @@ export class RequestNotifierService {
     }
 
     this.requestService.RequestCount(new GenericRequest<RequestCountInModel>(RequestCountInModel)).subscribe(res => {
-      this.set(res.success && res.data ? res.data.daApprovare : 0, res.success && res.data ? res.data.inAttesa : 0);
+      this.set(res.success && res.data ? res.data.daApprovare : 0, res.success && res.data ? res.data.inAttesa : 0,
+               res.success && res.data ? res.data.perApplicativo : []);
     });
   }
 
   /** contatori gia' noti (es. restituiti dall'elenco o da un'azione) */
-  public set(daApprovare: number, inAttesa: number): void {
+  public set(daApprovare: number, inAttesa: number, perApplicativo?: RequestCountApp[] | null): void {
     this._daApprovare.set(daApprovare);
     this._inAttesa.set(inAttesa);
+    this._perApplicativo.set(perApplicativo ?? []);
+  }
+
+  /** richieste di un applicativo che l'utente (amministratore) puo' approvare adesso */
+  public daApprovareDi(application: ApplicationType): number {
+    return this._perApplicativo().find(x => x.application === application)?.daApprovare ?? 0;
+  }
+
+  /** richieste dell'utente di un applicativo in attesa di decisione */
+  public inAttesaDi(application: ApplicationType): number {
+    return this._perApplicativo().find(x => x.application === application)?.inAttesa ?? 0;
   }
 }

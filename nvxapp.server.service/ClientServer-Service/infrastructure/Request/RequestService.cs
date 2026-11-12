@@ -64,9 +64,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
                 var ctx = await ContestoAsync();
                 if (ctx != null)
                 {
-                    var counts = await ContaAsync(ctx);
+                    var (counts, perApp) = await ContaAsync(ctx);
                     retVal.DaApprovare = counts.DaApprovare;
                     retVal.InAttesa = counts.InAttesa;
+                    retVal.PerApplicativo = perApp;
                 }
                 return retVal;
             }, isSubProcess);
@@ -142,9 +143,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
                 retVal.Richieste = righe.Select(x => x.Item).OrderByDescending(x => x.Dal).ToList();
                 retVal.Applicativi = righe.Select(x => x.Item.Application).Distinct().OrderBy(x => x).ToList();
 
-                var counts = await ContaAsync(ctx);
+                var (counts, perApp) = await ContaAsync(ctx);
                 retVal.DaApprovare = counts.DaApprovare;
                 retVal.InAttesa = counts.InAttesa;
+                retVal.PerApplicativo = perApp;
                 return retVal;
             }, isSubProcess);
         }
@@ -177,24 +179,36 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
 
                 await azione(ctx.Handlers[r.RichiestaTipo], r);
 
-                var counts = await ContaAsync(ctx);
+                var (counts, perApp) = await ContaAsync(ctx);
                 retVal.DaApprovare = counts.DaApprovare;
                 retVal.InAttesa = counts.InAttesa;
+                retVal.PerApplicativo = perApp;
                 return retVal;
             }, isSubProcess);
         }
 
-        private async Task<RequestCounts> ContaAsync(Contesto ctx)
+        // contatori totali e per applicativo (per i badge delle voci dei moduli)
+        private async Task<(RequestCounts Totale, List<RequestCountApp> PerApplicativo)> ContaAsync(Contesto ctx)
         {
             var tot = new RequestCounts();
+            var perApp = new Dictionary<int, RequestCountApp>();
             foreach (var r in await QueryAsync(ctx, !ctx.Amministratore, soloInAttesa: true))
             {
+                var h = ctx.Handlers[r.RichiestaTipo];
+                if (!perApp.TryGetValue((int)h.Application, out var app))
+                    perApp[(int)h.Application] = app = new RequestCountApp { Application = (int)h.Application };
                 if (r.IdAspNetUsers == ctx.IdAspNetUsers)
+                {
                     tot.InAttesa++;
-                if (ctx.Amministratore && RichiestaRegole.PuoDecidere(r, ctx.IdAspNetUsers, true, ctx.Strategie[ctx.Handlers[r.RichiestaTipo]]))
+                    app.InAttesa++;
+                }
+                if (ctx.Amministratore && RichiestaRegole.PuoDecidere(r, ctx.IdAspNetUsers, true, ctx.Strategie[h]))
+                {
                     tot.DaApprovare++;
+                    app.DaApprovare++;
+                }
             }
-            return tot;
+            return (tot, perApp.Values.OrderBy(x => x.Application).ToList());
         }
 
         // richieste dell'azienda dei tipi gestiti (dell'utente se mie), escluse quelle annullate prima della decisione
