@@ -120,7 +120,7 @@ Support requests (tickets). With **+** you open a new one choosing the request t
 The ticket request types, with the support levels that handle them.
 
 @@ /licensemanagement
-The licences of your company (or firm) for Attendance, CRM and Documents: for each function the level (Free, Standard or Pro), whether it is yours or the firm's, the expiry date and the maximum number of users. The PowerAdmin subscribes, changes plan, renews and turns on automatic renewal; the payment history is here too. A firm sees the companies covered by its licences.
+The licences of your company (or firm) for Attendance, CRM and Documents: for each function the level (Free, Standard or Pro), whether it is yours or the firm's, the expiry date and the maximum number of users. The PowerAdmin subscribes, changes plan, renews and turns on automatic renewal; **Cancel** ends a licence that is no longer needed straight away, so the menu items of that function disappear (the period already paid is not refunded). The payment history is here too. A firm sees the companies covered by its licences.
 
 @@ /licensecataloglist
 The licence price lists: for each subject type (company or firm) and function, the three plans Free, Standard and Pro with monthly and yearly prices and maximum users. The SuperUser manages the global price lists and the settings; an enabled centre can define its own price lists.
