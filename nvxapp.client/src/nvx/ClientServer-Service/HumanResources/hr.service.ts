@@ -60,6 +60,10 @@ export class HrService {
   MieiDocumenti(m: GenericRequest<M.HrEmptyInModel>) { return this.post<M.HrEmptyInModel, M.HrMieiDocumentiOutModel>('Hr_Cedolino', 'Hr_MieiDocumenti', m); }
   MioDocDownload(id: number): Promise<void> { return this.download('Hr_Cedolino', 'Hr_MioDocDownload', 'id=' + id, 'documento.pdf'); }
 
+  // widget della dashboard (ANALISI_HUMANRESOURCES_WIDGET.md)
+  WidgetOnboardingGet(m: GenericRequest<M.HrEmptyInModel>) { return this.post<M.HrEmptyInModel, M.HrWidgetOnboardingGetOutModel>('Hr_Widget', 'Hr_WidgetOnboardingGet', m); }
+  WidgetFormazioneGet(m: GenericRequest<M.HrEmptyInModel>) { return this.post<M.HrEmptyInModel, M.HrWidgetFormazioneGetOutModel>('Hr_Widget', 'Hr_WidgetFormazioneGet', m); }
+
   // formazione
   CorsoList(m: GenericRequest<M.HrEmptyInModel>) { return this.post<M.HrEmptyInModel, M.HrCorsoListOutModel>('Hr_Formazione', 'Hr_CorsoList', m); }
   CorsoGet(m: GenericRequest<M.HrIdInModel>) { return this.post<M.HrIdInModel, M.HrCorsoGetOutModel>('Hr_Formazione', 'Hr_CorsoGet', m); }
