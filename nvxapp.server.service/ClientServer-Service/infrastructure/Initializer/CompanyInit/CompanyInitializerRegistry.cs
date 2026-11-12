@@ -51,6 +51,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
             _logger = logger;
         }
 
+        // dimentica l'inizializzazione di un applicativo (schema eliminato alla disdetta della licenza): alla prossima
+        // attivazione gli inizializzatori ricreano i dati iniziali
+        public static void Forget(int idCompany, ApplicationType application)
+            => _initialized.TryRemove((idCompany, application), out _);
+
         public async Task InitializeAllAsync(Company company)
         {
             var applications = new List<ApplicationType?> { null };
