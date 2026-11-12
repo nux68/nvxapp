@@ -12,7 +12,7 @@ Stato (11/11/2026): **modulo base (`AST-BASE`) e aree funzionali `AST-FLO`, `AST
 **Cosa possiede l'azienda e a chi lo assegna** (ufficio acquisti, logistica, IT):
 - **Flotta** (`AST-FLO`): veicoli, scadenze (bollo, assicurazione, revisione, tagliando), assegnazione ai dipendenti, fringe benefit, multe e costi. L'assegnazione dell'auto al dipendente è `Dip_RapportoAutovetture`, spostata in Common (D5): Assets la gestisce, le Presenze continuano a leggerla per l'export paghe.
 - **Beni assegnati** (`AST-BENI`): PC, telefoni, badge, attrezzature, con consegna e restituzione (verbale tramite presa visione/firma) e l'elenco dei beni da restituire alla cessazione.
-- **Prenotazioni** (`AST-PREN`): postazioni, sale e auto in pool, con calendario, controllo dei conflitti e sincronizzazione facoltativa con il calendario personale (`INF-CAL`).
+- **Prenotazioni** (`AST-PREN`): postazioni, sale e auto in pool, con calendario, controllo dei conflitti e sincronizzazione facoltativa con il calendario personale (`INF-CAL`). Approvazione facoltativa per risorsa (`AST-RICH`): le richieste si decidono nelle pagine comuni delle richieste di Infrastructure (`ANALISI_INFRASTRUCTURE_RICHIESTE.md`).
 
 Il modulo funziona da solo; HR, Presenze e Documentale sono integrazioni facoltative (§6).
 
@@ -60,8 +60,8 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 - `Ast_BeneAssegnazione`: bene, dipendente, data di consegna, data di restituzione, condizioni, verbale di consegna e di restituzione (presa visione).
 
 ### 4.4 Prenotazioni (`AST-PREN`)
-- `Ast_Risorsa`: risorsa prenotabile (tipo: postazione / sala / auto in pool con riferimento a `Ast_Veicolo`), sede, capienza, attiva.
-- `Ast_Prenotazione`: risorsa, utente, inizio/fine, note, stato (confermata / annullata); indice per il controllo dei conflitti (sovrapposizione degli intervalli sulla stessa risorsa).
+- `Ast_Risorsa`: risorsa prenotabile (tipo: postazione / sala / auto in pool con riferimento a `Ast_Veicolo`), sede, capienza, attiva, `RichiedeApprovazione` (`AST-RICH`).
+- `Ast_Prenotazione`: risorsa, utente, inizio/fine, note, stato (confermata / annullata / in attesa di approvazione / rifiutata); indice per il controllo dei conflitti (sovrapposizione degli intervalli sulla stessa risorsa: occupano la fascia le confermate e le in attesa). Per l'approvazione (`AST-RICH`, migration `AstPrenotazioniApprovazione`): `RichiestaApprovazione` (nata in attesa: è una "richiesta"), `IdAspNetUsersDecisione`, `DataDecisione`, `MotivoRifiuto`.
 
 ## 5. Uso dei servizi comuni (Infrastructure)
 
@@ -104,6 +104,15 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 - **Notifiche**: categorie proprie (`AST-SEG.1`, `INF-SVC.7`): `ast.flotta` (multe al conducente), `ast.beni` (beni e veicoli da restituire), `ast.prenotazioni` (prenotazione annullata); rispettano `Ast_Cfg.NotificheAttive`.
 - **Prova** su DB usa e getta multi-tenant (60 controlli, tutti ok): azienda, attivazione Assets, CRUD e permessi, autovettura in Common, scadenze nello scadenzario (aperte/chiuse), multa notificata, verbale di consegna creato, restituzioni alla cessazione (scadenze e notifica), conflitti di prenotazione rifiutati anche con 6 richieste concorrenti, prenotazione nel feed .ics dell'utente, conteggi nell'anteprima di cancellazione.
 
+### 7.2 Fatto in `AST-RICH` (12/11/2026, ramo `Assets_Dev_richieste`)
+
+- **Dati** (migration `AstPrenotazioniApprovazione`): `Ast_Risorsa.RichiedeApprovazione`; `AstStatoPrenotazione` + `InAttesa = 2`, `Rifiutata = 3`; `Ast_Prenotazione.RichiestaApprovazione`, `IdAspNetUsersDecisione`, `DataDecisione`, `MotivoRifiuto`.
+- **Prenotazioni** (`Ast_PrenotazioniService`): su una risorsa con approvazione la prenotazione (o la modifica) di chi non è amministratore nasce in attesa; un amministratore che prenota (o modifica una richiesta) conferma subito. Conflitti (`Ast_PrenotazioneRepository.SalvaSeLiberaAsync`) con confermate e in attesa; l'elenco mostra le in attesa come occupate e, tra le proprie, anche le rifiutate con il motivo; feed .ics solo con le confermate.
+- **Richieste comuni** (`AstRequestProvider`, prefisso `ast`): contatori, elenchi (mie / da approvare / tutte / approvate), approva (con il ricontrollo dei conflitti), rifiuta con motivo, annulla del richiedente.
+- **Scadenza e notifiche** (`AstApprovazioni`): le richieste ancora in attesa con inizio passato si annullano in modo pigro all'inizio di elenchi, contatori e salvataggi (i contatori del menu si ricalcolano a ogni login e a ogni evento delle richieste), con notifica al richiedente; notifiche della categoria comune `richieste` (nuova richiesta agli amministratori, esito al richiedente) e avviso SignalR `RequestNotifier`.
+- **Client**: spunta "Richiede approvazione" nella risorsa, colonna stato nelle prenotazioni, avviso "richiesta inviata" dopo il salvataggio, la pagina di modifica carica da sola risorse e limiti (aperta da "Nuova prenotazione" nelle richieste comuni), widget "Le mie prenotazioni" con le in attesa indicate (le rifiutate no), `request-ui-assets.service.ts`.
+- **Comandi vocali**: "prenota..." risponde "richiesta inviata, in attesa di approvazione"; le mie prenotazioni indicano le in attesa; le risorse libere considerano occupate anche le in attesa.
+
 ## 8. Decisioni aperte
 
 | # | Decisione | Note |
@@ -111,7 +120,7 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 | AST-D1 | Livelli Free/Standard/Pro e prezzi (D8, `ANA.10`) | Oggi listini con la struttura del CRM e **prezzi segnaposto**, nessun limite |
 | AST-D2 | Fringe benefit: calcolo in Assets o solo dati per le Presenze | **Scelta provvisoria** (la proposta): Assets tiene costo ACI, percentuale e periodi e mostra il valore a titolo informativo; l'export resta nelle Presenze |
 | AST-D3 | Legame tra `Dip_RapportoAutovetture` (Common) e `Ast_Veicolo` | **Scelta provvisoria**: tabella ponte in Assets (`Ast_VeicoloAssegnazione.IdDip_RapportoAutovetture`); l'assegnazione crea/aggiorna l'autovettura in Common, che a fine assegnazione resta |
-| AST-D4 | Auto in pool: prenotazione con o senza approvazione | **Scelta provvisoria** (la proposta): senza approvazione, con durata massima e anticipo massimo in `Ast_Cfg` |
+| AST-D4 | Auto in pool: prenotazione con o senza approvazione | ✅ **Decisa il 12/11/2026** (`AST-RICH`): approvazione facoltativa per risorsa (`Ast_Risorsa.RichiedeApprovazione`); approvano gli amministratori dell'azienda (CompanyPowerAdmin, CompanyAdmin), ne basta uno; le prenotazioni degli amministratori sono confermate subito; il ciclo passa dalle richieste comuni di Infrastructure (`/requests`, `/requestsadmin`, `ANALISI_INFRASTRUCTURE_RICHIESTE.md`); una richiesta non decisa all'ora di inizio viene annullata con notifica. Restano durata massima e anticipo massimo in `Ast_Cfg` |
 | AST-D5 | Inventario con codici a barre/QR | Utile con `AT-TIMB.1` (QR); da valutare |
 | AST-D6 | Cartella i18n e `i18n-folders.ts` | Come per HR: riga aggiunta in `i18n-folders.ts` (file di Infrastructure), conflitto banale nel merge di AllFunction, oppure stub `i18n-assets.ts` in Infrastructure |
 
@@ -142,6 +151,10 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### Seguiti
 - ✅ `AST-SEG.1` Categorie di notifica proprie (`INF-SVC.7`) — fatta, da mergiare: `AstNotificationCategoryProvider` con `ast.flotta` (email predefinita), `ast.beni`, `ast.prenotazioni` al posto di `generale` (`AstUtility.NotificaAsync` riceve la categoria), titoli nei testi del modulo, visibili nelle preferenze solo con Risorse aziendali attivo; le scadenze restano `scadenze`, i verbali `presevisione`. Compilata (server e client); provata sul ramo HR la parte comune
 
+#### `AST-RICH` – Approvazione delle prenotazioni (richieste comuni)
+- ✅ `AST-RICH` Risorse con approvazione, prenotazioni in attesa/rifiutate, `AstRequestProvider` nelle richieste comuni di Infrastructure, scadenza e notifiche, client e comandi vocali (§7.2) — fatta il 12/11/2026 su `Assets_Dev_richieste`, da mergiare
+
 #### Decisioni
 - 🔍 `AST-D1`, `AST-D5`, `AST-D6` (§8)
-- 🔍 `AST-D2`, `AST-D3`, `AST-D4`: scelte provvisorie applicate in `AST-FLO`/`AST-PREN`, da confermare
+- 🔍 `AST-D2`, `AST-D3`: scelte provvisorie applicate in `AST-FLO`/`AST-PREN`, da confermare
+- ✅ `AST-D4` decisa il 12/11/2026: approvazione facoltativa per risorsa (`AST-RICH`)

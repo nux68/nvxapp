@@ -134,7 +134,8 @@
       "resourceEdit": {
         "title": "Bookable resource",
         "titleNew": "New bookable resource",
-        "poolNote": "You can choose the fleet vehicles with \"pool\" use."
+        "poolNote": "You can choose the fleet vehicles with \"pool\" use.",
+        "approvalNote": "With approval, users' bookings stay pending until an administrator approves them in Requests to approve; administrators' bookings are confirmed immediately."
       },
       "booking": {
         "title": "Bookings",
@@ -150,7 +151,8 @@
       "bookingEdit": {
         "title": "Booking",
         "titleNew": "New booking",
-        "limits": "Maximum length {{ore}} hours, at most {{giorni}} days in advance. A resource already booked at that time cannot be booked."
+        "limits": "Maximum length {{ore}} hours, at most {{giorni}} days in advance. A resource already booked at that time cannot be booked.",
+        "pending": "Request sent: awaiting approval by an administrator."
       }
     },
     "common": {
@@ -224,6 +226,8 @@
       "dettaglio": "Detail",
       "capienza": "Seats",
       "attiva": "Active",
+      "richiedeApprovazione": "Requires approval",
+      "statoPrenotazione": "Status",
       "quando": "When",
       "risorsa": "Resource",
       "prenotatoDa": "Booked by",
@@ -232,6 +236,12 @@
       "fine": "End"
     },
     "enums": {
+      "statoPrenotazione": {
+        "0": "Confirmed",
+        "1": "Cancelled",
+        "2": "Awaiting approval",
+        "3": "Rejected"
+      },
       "uso": {
         "0": "Assigned",
         "1": "Pool (bookable)"
@@ -292,12 +302,16 @@
         "2": "Pool car"
       }
     },
+    "requests": {
+      "newBooking": "New booking"
+    },
     "widgets": {
       "noData": "Data not available",
       "myBookings": {
         "title": "My bookings",
         "description": "Your upcoming bookings of desks, rooms and pool cars",
         "today": "Today",
+        "pending": "awaiting approval",
         "next": "Next {{n}} days",
         "none": "No bookings scheduled",
         "open": "Go to bookings"

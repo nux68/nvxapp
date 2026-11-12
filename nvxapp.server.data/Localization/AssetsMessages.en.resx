@@ -207,6 +207,54 @@
   <data name="BookingCancelledText" xml:space="preserve">
     <value>An administrator cancelled your booking of {0} on {1}-{2}.</value>
   </data>
+  <data name="BookingPendingNewTitle" xml:space="preserve">
+    <value>Booking request: {0}</value>
+  </data>
+  <data name="BookingPendingNewText" xml:space="preserve">
+    <value>{0} requests {1} on {2}-{3}: the request needs approval.</value>
+  </data>
+  <data name="BookingApprovedTitle" xml:space="preserve">
+    <value>Booking approved: {0}</value>
+  </data>
+  <data name="BookingApprovedText" xml:space="preserve">
+    <value>Your request for {0} on {1}-{2} has been approved.</value>
+  </data>
+  <data name="BookingRejectedTitle" xml:space="preserve">
+    <value>Booking rejected: {0}</value>
+  </data>
+  <data name="BookingRejectedText" xml:space="preserve">
+    <value>Your request for {0} on {1}-{2} has been rejected.</value>
+  </data>
+  <data name="BookingRejectedReason" xml:space="preserve">
+    <value>Reason: {0}</value>
+  </data>
+  <data name="BookingExpiredTitle" xml:space="preserve">
+    <value>Request expired: {0}</value>
+  </data>
+  <data name="BookingExpiredText" xml:space="preserve">
+    <value>Your request for {0} on {1}-{2} was not decided before it started and has been cancelled.</value>
+  </data>
+  <data name="BookingNotPending" xml:space="preserve">
+    <value>The request is no longer awaiting approval.</value>
+  </data>
+  <data name="RequestTypeBooking" xml:space="preserve">
+    <value>Booking</value>
+  </data>
+  <data name="RequestStatePending" xml:space="preserve">
+    <value>Awaiting approval</value>
+  </data>
+  <data name="RequestStateApproved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="RequestStateRejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="RequestStateRejectedReason" xml:space="preserve">
+    <value>Rejected: {0}</value>
+  </data>
+  <data name="RequestStateCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
   <data name="CalendarBookingTitle" xml:space="preserve">
     <value>Booking: {0}</value>
   </data>
@@ -345,6 +393,9 @@
   <data name="ChatMyBookingsTitle" xml:space="preserve">
     <value>You have {0} bookings {1}:</value>
   </data>
+  <data name="ChatBookingPendingSuffix" xml:space="preserve">
+    <value>(awaiting approval)</value>
+  </data>
   <data name="ChatFreeResourcesDisplayName" xml:space="preserve">
     <value>Free resources</value>
   </data>
@@ -467,6 +518,9 @@
   </data>
   <data name="ChatBookResourceDone" xml:space="preserve">
     <value>Booked: {0}, {1}.</value>
+  </data>
+  <data name="ChatBookResourcePending" xml:space="preserve">
+    <value>Request sent: {0}, {1}, awaiting approval by an administrator.</value>
   </data>
   <data name="ChatCancelBookingDisplayName" xml:space="preserve">
     <value>Cancel one of my bookings</value>

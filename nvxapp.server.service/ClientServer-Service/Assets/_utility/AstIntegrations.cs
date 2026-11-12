@@ -131,7 +131,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 return;
             var ora = DateTime.Now;
             await rep.Ast_Prenotazione.FindAll(x => x.IdAspNetUsers == idAspNetUsers && x.Ast_RisorsaNavigation!.IdAz_Anagrafica == idAz
-                                                    && x.Stato == AstStatoPrenotazione.Confermata && x.Fine > ora)
+                                                    && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa) && x.Fine > ora)
                                       .ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, AstStatoPrenotazione.Annullata)
                                                                 .SetProperty(x => x.DataAnnullamento, ora), cancellationToken);
         }

@@ -207,6 +207,54 @@
   <data name="BookingCancelledText" xml:space="preserve">
     <value>Un amministratore ha annullato la tua prenotazione di {0} del {1}-{2}.</value>
   </data>
+  <data name="BookingPendingNewTitle" xml:space="preserve">
+    <value>Richiesta di prenotazione: {0}</value>
+  </data>
+  <data name="BookingPendingNewText" xml:space="preserve">
+    <value>{0} chiede {1} il {2}-{3}: la richiesta è da approvare.</value>
+  </data>
+  <data name="BookingApprovedTitle" xml:space="preserve">
+    <value>Prenotazione approvata: {0}</value>
+  </data>
+  <data name="BookingApprovedText" xml:space="preserve">
+    <value>La tua richiesta di {0} del {1}-{2} è stata approvata.</value>
+  </data>
+  <data name="BookingRejectedTitle" xml:space="preserve">
+    <value>Prenotazione rifiutata: {0}</value>
+  </data>
+  <data name="BookingRejectedText" xml:space="preserve">
+    <value>La tua richiesta di {0} del {1}-{2} è stata rifiutata.</value>
+  </data>
+  <data name="BookingRejectedReason" xml:space="preserve">
+    <value>Motivo: {0}</value>
+  </data>
+  <data name="BookingExpiredTitle" xml:space="preserve">
+    <value>Richiesta scaduta: {0}</value>
+  </data>
+  <data name="BookingExpiredText" xml:space="preserve">
+    <value>La tua richiesta di {0} del {1}-{2} non è stata decisa prima dell'inizio ed è stata annullata.</value>
+  </data>
+  <data name="BookingNotPending" xml:space="preserve">
+    <value>La richiesta non è più in attesa di approvazione.</value>
+  </data>
+  <data name="RequestTypeBooking" xml:space="preserve">
+    <value>Prenotazione</value>
+  </data>
+  <data name="RequestStatePending" xml:space="preserve">
+    <value>In attesa di approvazione</value>
+  </data>
+  <data name="RequestStateApproved" xml:space="preserve">
+    <value>Approvata</value>
+  </data>
+  <data name="RequestStateRejected" xml:space="preserve">
+    <value>Rifiutata</value>
+  </data>
+  <data name="RequestStateRejectedReason" xml:space="preserve">
+    <value>Rifiutata: {0}</value>
+  </data>
+  <data name="RequestStateCancelled" xml:space="preserve">
+    <value>Annullata</value>
+  </data>
   <data name="CalendarBookingTitle" xml:space="preserve">
     <value>Prenotazione: {0}</value>
   </data>
@@ -345,6 +393,9 @@
   <data name="ChatMyBookingsTitle" xml:space="preserve">
     <value>Hai {0} prenotazioni {1}:</value>
   </data>
+  <data name="ChatBookingPendingSuffix" xml:space="preserve">
+    <value>(in attesa di approvazione)</value>
+  </data>
   <data name="ChatFreeResourcesDisplayName" xml:space="preserve">
     <value>Risorse libere</value>
   </data>
@@ -467,6 +518,9 @@
   </data>
   <data name="ChatBookResourceDone" xml:space="preserve">
     <value>Prenotato: {0}, {1}.</value>
+  </data>
+  <data name="ChatBookResourcePending" xml:space="preserve">
+    <value>Richiesta inviata: {0}, {1}, in attesa di approvazione di un amministratore.</value>
   </data>
   <data name="ChatCancelBookingDisplayName" xml:space="preserve">
     <value>Annulla una mia prenotazione</value>
