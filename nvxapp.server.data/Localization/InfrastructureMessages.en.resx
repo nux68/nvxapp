@@ -1115,6 +1115,18 @@ The statement is attached.</value>
     <value>Weekly summary</value>
     <comment>riepilogo</comment>
   </data>
+  <data name="NotificationCategory_richieste" xml:space="preserve">
+    <value>Requests to approve</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotAllowed" xml:space="preserve">
+    <value>Operation not allowed on requests.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Request not found.</value>
+    <comment>richieste</comment>
+  </data>
   <data name="DigestSectionDeadlines" xml:space="preserve">
     <value>Deadlines</value>
     <comment>riepilogo</comment>
