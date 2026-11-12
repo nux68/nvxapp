@@ -103,7 +103,7 @@ export class RequestListPageComponent {
         this.applicativo = null;
       this.preparaColonne();
       if (res.success && res.data)
-        this.requestNotifierService.set(res.data.daApprovare, res.data.inAttesa);
+        this.requestNotifierService.set(res.data.daApprovare, res.data.inAttesa, res.data.perApplicativo);
     });
   }
 
@@ -229,7 +229,7 @@ export class RequestListPageComponent {
 
   private dopoAzione(res: GenericResult<RequestActionOutModel>) {
     if (res.success && res.data)
-      this.requestNotifierService.set(res.data.daApprovare, res.data.inAttesa);
+      this.requestNotifierService.set(res.data.daApprovare, res.data.inAttesa, res.data.perApplicativo);
     this.load();
   }
 
