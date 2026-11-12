@@ -134,7 +134,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `CMP-BASE` – Avvio del modulo
 - ✅ `CMP-BASE.1` `ComplianceDbContext` registrato, migration `InitCompliance` con `Cmp_Cfg`, repository, inizializzatore e `CmpDataDeleter`
 - ✅ `CMP-BASE.2` Cartelle del modulo, servizio/controller della configurazione, pagina `/cmpsettings`, ruoli (§3)
-- ✅ `CMP-BASE.3` Menu, rotta, manuale e i18n; widget e comandi vocali: nessuno per ora
+- ✅ `CMP-BASE.3` Menu, rotta, manuale e i18n; widget: nessuno per ora; comandi vocali in `CMP-VOC`
 
 #### `CMP-81` – Sicurezza sul lavoro (D.Lgs 81/08)
 - ✅ `CMP-81.1` Corsi obbligatori per mansione e scadenze (`Cmp_Mansione`, `Cmp_MansioneCorso`, `Cmp_Formazione`) — più assegnazioni e situazione della formazione
@@ -163,3 +163,4 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ⏳ `CMP-81.8` Presa visione del DVR e delle procedure da parte dei dipendenti (`cmp.documento`)
 - ⏳ `CMP-GDPR.5` Collegamento dei responsabili esterni ai fornitori comuni (`Az_Cliente`)
 - ✅ `CMP-SEG.1` Categoria di notifica propria (`INF-SVC.7`) — fatta, da mergiare: `CmpNotificationCategoryProvider` con `cmp.gdpr` (nuova violazione dei dati agli amministratori, email predefinita, titolo `NotificationCategory_Gdpr` nei testi di Compliance), visibile nelle preferenze solo con Compliance attivo; le scadenze restano `scadenze`, DPI e nomine `presevisione`. Compilata (server e client); provata sul ramo HR la parte comune
+- ✅ `CMP-VOC` Comandi vocali / chat AI (sicurezza e GDPR, segnalazioni escluse): vedi `ANALISI_COMPLIANCE_VOCALI.md` (ramo `Compliance_Dev_vocali`)
