@@ -1,5 +1,10 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController, ToastController } from '@ionic/angular';
+import { AlertController, NavController, ToastController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { RequestService } from '../../../ClientServer-Service/Infrastructure/Request/request.service';
+import { RequestActionInModel, RequestActionOutModel } from '../../../ClientServer-Service/Infrastructure/Request/Models/request-model';
+import { GenericResult } from '../../../ClientServer-Service/ModelsBase/generic-result';
+import { RequestNotifierService } from '../../../Utility/infrastructure/request-notifier.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { AstService } from '../../../ClientServer-Service/Assets/ast.service';
@@ -40,8 +45,16 @@ export class AstBookingPageComponent {
   public readonly iconOf = (x: P.AstPrenotazioneModel) => x.tipoRisorsa === P.AstTipoRisorsa.Sala ? 'people-outline'
                                                           : x.tipoRisorsa === P.AstTipoRisorsa.AutoPool ? 'car-outline' : 'desktop-outline';
 
+  // prenotazioni da decidere evidenziate, come nella pagina delle richieste
+  public readonly highlight = (x: P.AstPrenotazioneModel) => x.daDecidere || this.mia(x);
+  // richieste cambiate (SignalR "RequestNotifier"): la pagina si ricarica
+  private changedSub: Subscription | null = null;
+
   constructor(private navCtrl: NavController,
               private toastCtrl: ToastController,
+              private alertController: AlertController,
+              private requestService: RequestService,
+              private requestNotifierService: RequestNotifierService,
               public fabMenuService: FabMenuService,
               userInterfaceService: UserInterfaceService,
               private service: AstService,
@@ -63,7 +76,18 @@ export class AstBookingPageComponent {
     bEdit.event = (x: P.AstPrenotazioneModel) => this.apri(x);
     const bAnnulla = userInterfaceService.Btn_Cancella;
     bAnnulla.event = (x: P.AstPrenotazioneModel) => this.annulla(x);
-    this.actions = [{ button: bAnnulla, visible: x => x.modificabile }, { button: bEdit, visible: x => x.modificabile }];
+    // amministratori: le prenotazioni da decidere (richiesta o annullamento in attesa) si approvano o si rifiutano,
+    // con lo stesso ciclo della pagina delle richieste; le altre si modificano o si annullano
+    const bApprova = userInterfaceService.Btn_Approva;
+    bApprova.event = (x: P.AstPrenotazioneModel) => this.approva(x);
+    const bRifiuta = userInterfaceService.Btn_Rifiuta;
+    bRifiuta.event = (x: P.AstPrenotazioneModel) => this.rifiuta(x);
+    this.actions = [
+      { button: bApprova, visible: x => x.daDecidere },
+      { button: bRifiuta, visible: x => x.daDecidere },
+      { button: bAnnulla, visible: x => x.modificabile && !x.daDecidere },
+      { button: bEdit, visible: x => x.modificabile && !x.daDecidere },
+    ];
     const bCal = userInterfaceService.Btn_Calendario;
     bCal.event = () => this.navCtrl.navigateForward('/calendarfeed');
     this.buttonbar = [bCal];
@@ -75,6 +99,8 @@ export class AstBookingPageComponent {
 
   ionViewWillEnter() {
     this.load();
+    this.changedSub?.unsubscribe();
+    this.changedSub = this.requestNotifierService.changed$.subscribe(() => this.load());
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('ast.pages.booking.new'), 'add-circle-outline', () => this.apri(null)),
     ];
@@ -82,6 +108,45 @@ export class AstBookingPageComponent {
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+    this.changedSub?.unsubscribe();
+    this.changedSub = null;
+  }
+
+  private async approva(x: P.AstPrenotazioneModel) {
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('pages.requestList.confirmApprove')))
+      return;
+    this.requestService.RequestApprove(this.azione(x)).subscribe(res => this.dopoAzione(res));
+  }
+
+  private async rifiuta(x: P.AstPrenotazioneModel) {
+    const alert = await this.alertController.create({
+      header: this.transloco.translate('pages.requestList.confirmRejectTitle'),
+      message: this.transloco.translate('pages.requestList.confirmReject'),
+      inputs: [{ name: 'motivo', type: 'textarea', placeholder: this.transloco.translate('pages.requestList.rejectReason'), attributes: { maxlength: 500 } }],
+      buttons: [
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+        { text: this.transloco.translate('pages.requestList.reject'), role: 'confirm' },
+      ],
+    });
+    await alert.present();
+    const esito = await alert.onDidDismiss();
+    if (esito.role !== 'confirm')
+      return;
+    const request = this.azione(x);
+    request.data.motivo = (esito.data?.values?.motivo ?? '').trim() || null;
+    this.requestService.RequestReject(request).subscribe(res => this.dopoAzione(res));
+  }
+
+  private azione(x: P.AstPrenotazioneModel): GenericRequest<RequestActionInModel> {
+    const request = new GenericRequest<RequestActionInModel>(RequestActionInModel);
+    request.data.key = String(x.idRichiesta ?? '');
+    return request;
+  }
+
+  private dopoAzione(res: GenericResult<RequestActionOutModel>) {
+    if (res.success && res.data)
+      this.requestNotifierService.set(res.data.daApprovare, res.data.inAttesa, res.data.perApplicativo);
+    this.load();
   }
 
   load() {

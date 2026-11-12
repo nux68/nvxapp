@@ -181,10 +181,12 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var nomi = await _approvazioni.NomiAsync(ctx, righe.Select(x => x.IdAspNetUsers));
                 var motivi = await _approvazioni.MotiviAsync(righe);
                 var revoche = await _approvazioni.RevocheInAttesaAsync(righe);
+                var daDecidere = await _approvazioni.DaDecidereAsync(ctx, righe);
                 return new Ast_PrenotazioneListOutModel
                 {
                     Permessi = new Ast_PermessiModel { PowerAdmin = ctx.PowerAdmin, Admin = ctx.Admin },
-                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id), revoche.Contains(x.Id))).ToList(),
+                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id), revoche.Contains(x.Id),
+                                                                       daDecidere.TryGetValue(x.Id, out var idR) ? idR : null)).ToList(),
                     Risorsa = await RisorseAsync(ctx, false),
                     DurataMaxOre = cfg.PrenotazioneDurataMaxOre,
                     AnticipoMaxGiorni = cfg.PrenotazioneAnticipoMaxGiorni,
@@ -354,7 +356,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                })
                .OrderBy(x => x.Tipo).ThenBy(x => x.Descrizione).ToList();
 
-        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null, bool annullamentoRichiesto = false)
+        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null, bool annullamentoRichiesto = false,
+                                                               int? richiestaDaDecidere = null)
         {
             bool mia = p.IdAspNetUsers == ctx.IdUtente;
             return new Ast_PrenotazioneModel
@@ -371,8 +374,12 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 Stato = (int)p.Stato,
                 Mia = mia,
                 Utente = mia || ctx.Amministratore ? (nomi.TryGetValue(p.IdAspNetUsers, out var n) ? n : null) : null,
+                // la prenotazione da decidere (richiesta o annullamento in attesa) per l'amministratore si approva o si rifiuta,
+                // come nella pagina delle richieste: niente modifica/annullamento sulla riga
                 Modificabile = (mia || ctx.Amministratore) && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
-                               && p.Fine > DateTime.Now,
+                               && p.Fine > DateTime.Now && (richiestaDaDecidere == null || mia),
+                DaDecidere = richiestaDaDecidere != null,
+                IdRichiesta = richiestaDaDecidere,
                 MotivoRifiuto = mia || ctx.Amministratore ? motivoRifiuto : null,
                 AnnullamentoRichiesto = (mia || ctx.Amministratore) && annullamentoRichiesto,
             };
