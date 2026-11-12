@@ -13,6 +13,38 @@
       "templates": "Modelli di checklist",
       "studioPayslips": "Cedolini delle aziende"
     },
+    "widgets": {
+      "noData": "Dati non disponibili",
+      "myPayslips": {
+        "title": "I miei cedolini",
+        "description": "Ultimo cedolino pubblicato e documenti di cui confermare la presa visione",
+        "last": "Ultimo cedolino",
+        "toConfirm": "Da confermare",
+        "total": "Documenti disponibili: {{n}}",
+        "notEmployee": "Il tuo utente non è collegato a un dipendente dell'azienda",
+        "open": "Apri i miei cedolini"
+      },
+      "onboarding": {
+        "title": "Assunzioni e cessazioni",
+        "description": "Checklist aperte e voci da completare, scadute e dei prossimi giorni",
+        "open": "Checklist aperte",
+        "overdue": "Voci scadute",
+        "upcoming": "Prossimi {{n}} giorni",
+        "byType": "Assunzioni: {{a}} · Cessazioni: {{c}}",
+        "none": "Nessuna voce da completare",
+        "openAll": "Apri le checklist"
+      },
+      "trainingExpiring": {
+        "title": "Attestati in scadenza",
+        "description": "Attestati dei corsi scaduti o in scadenza nei prossimi 60 giorni",
+        "expired": "Scaduti",
+        "within30": "Entro 30 giorni",
+        "within60": "Entro {{n}} giorni",
+        "mandatory": "obbligatorio",
+        "none": "Nessun attestato in scadenza",
+        "openAll": "Apri i corsi"
+      }
+    },
     "common": {
       "showDisabled": "Mostra disattivati",
       "none": "Nessuno"

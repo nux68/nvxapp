@@ -1,0 +1,36 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'hr.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="dati.scaduti > 0" [class.success]="dati.scaduti === 0" (click)="apri()">
+      <div class="valore">{{ dati.scaduti }}</div>
+      <div class="etichetta">{{ 'hr.widgets.trainingExpiring.expired' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dati.entro30 > 0" (click)="apri()">
+      <div class="valore">{{ dati.entro30 }}</div>
+      <div class="etichetta">{{ 'hr.widgets.trainingExpiring.within30' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" (click)="apri()">
+      <div class="valore">{{ dati.entro60 }}</div>
+      <div class="etichetta">{{ 'hr.widgets.trainingExpiring.within60' | transloco: { n: dati.giorniFinestra } }}</div>
+    </div>
+  </div>
+
+  @if (dati.attestati.length === 0) {
+    <div class="nvx-w-empty">{{ 'hr.widgets.trainingExpiring.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-hrw-list">
+      @for (a of dati.attestati; track $index) {
+        <li>
+          <button type="button" (click)="apriCorso(a)">
+            <span class="nvx-hrw-date" [class.danger]="scaduto(a)" [class.warning]="vicino(a)">{{ data(a) }}</span>
+            <span class="nvx-hrw-desc">{{ a.corso }} <small>· {{ a.dipendente }}@if (a.obbligatorio) { · {{ 'hr.widgets.trainingExpiring.mandatory' | transloco }} }</small></span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'hr.widgets.trainingExpiring.openAll' | transloco }}</button>
+}

@@ -244,3 +244,35 @@ export class HrChecklistPutInModel { public id = 0; public stato = HrStatoCheckl
 export class HrChecklistVocePutInModel { public voce = new HrChecklistVoceModel(); }
 export class HrChecklistVoceOutModel extends ModelResult { public voce = new HrChecklistVoceModel(); }
 export class HrVoceDocUploadModel { public idVoce = 0; }
+
+// ---------------------------------------------------------------- widget della dashboard (ANALISI_HUMANRESOURCES_WIDGET.md)
+export class HrWidgetVoceModel {
+  public idHr_Checklist = 0;
+  public dipendente = '';
+  public tipo = 0;
+  public descrizione = '';
+  public dataPrevista = '';
+}
+export class HrWidgetOnboardingGetOutModel extends ModelResult {
+  public checklistAperte = 0;
+  public assunzioni = 0;
+  public cessazioni = 0;
+  public vociScadute = 0;
+  public vociProssime = 0;
+  public giorniProssime = 7;
+  public voci: HrWidgetVoceModel[] = [];
+}
+export class HrWidgetAttestatoModel {
+  public idHr_Corso = 0;
+  public corso = '';
+  public dipendente = '';
+  public dataScadenza = '';
+  public obbligatorio = false;
+}
+export class HrWidgetFormazioneGetOutModel extends ModelResult {
+  public scaduti = 0;
+  public entro30 = 0;
+  public entro60 = 0;
+  public giorniFinestra = 60;
+  public attestati: HrWidgetAttestatoModel[] = [];
+}

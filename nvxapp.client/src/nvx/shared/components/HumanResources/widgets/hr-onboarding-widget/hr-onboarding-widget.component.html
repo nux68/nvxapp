@@ -1,0 +1,37 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'hr.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat primary cliccabile" (click)="apri()">
+      <div class="valore">{{ dati.checklistAperte }}</div>
+      <div class="etichetta">{{ 'hr.widgets.onboarding.open' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.danger]="dati.vociScadute > 0" [class.success]="dati.vociScadute === 0" (click)="apri()">
+      <div class="valore">{{ dati.vociScadute }}</div>
+      <div class="etichetta">{{ 'hr.widgets.onboarding.overdue' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dati.vociProssime > 0" (click)="apri()">
+      <div class="valore">{{ dati.vociProssime }}</div>
+      <div class="etichetta">{{ 'hr.widgets.onboarding.upcoming' | transloco: { n: dati.giorniProssime } }}</div>
+    </div>
+  </div>
+  <div class="nvx-w-muted nvx-hrw-info">{{ 'hr.widgets.onboarding.byType' | transloco: { a: dati.assunzioni, c: dati.cessazioni } }}</div>
+
+  @if (dati.voci.length === 0) {
+    <div class="nvx-w-empty">{{ 'hr.widgets.onboarding.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-hrw-list">
+      @for (v of dati.voci; track $index) {
+        <li>
+          <button type="button" (click)="apriVoce(v)">
+            <span class="nvx-hrw-date" [class.danger]="scaduta(v)" [class.warning]="!scaduta(v)">{{ data(v) }}</span>
+            <span class="nvx-hrw-desc">{{ v.descrizione }} <small>· {{ v.dipendente }} ({{ 'hr.enums.tipoChecklist.' + v.tipo | transloco }})</small></span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'hr.widgets.onboarding.openAll' | transloco }}</button>
+}

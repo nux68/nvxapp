@@ -1,0 +1,8 @@
+@use '../hr-widget' as hrw;
+
+@include hrw.hr-widget;
+
+// il periodo (es. "Settembre 2026") e' piu' lungo di un numero
+.nvx-w-stat.primary .valore {
+  font-size: 1.3rem;
+}
