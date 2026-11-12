@@ -130,6 +130,26 @@ aggiunte prima (`IdAspNetUsersDecisione`, `DataDecisione`, `MotivoRifiuto`, `Ric
 comandi vocali, client di Presenze e Risorse aziendali, correzioni di `SetState`. Si rifanno: il contratto server
 dell'hub, i provider dei due moduli, la parte dati di Risorse aziendali.
 
+## 3ter. Ciclo unico delle richieste (12/11/2026)
+
+Richiesta dell'utente: tutti i tipi di richiesta (timbrature, giustificativi, note spese, straordinari, scambio turni, prenotazioni) seguono lo stesso ciclo, con gli stessi pulsanti e gli stessi testi.
+
+| Percorso | Esito | Testo dello stato |
+|---|---|---|
+| richiesta → il richiedente la ritira | `RichiestaStato = Cancellata` (fine) | Cancellata |
+| richiesta → l'approvatore la rifiuta | `RichiestaStato = Rifiutata` (fine) | Rifiutata |
+| approvata → annullamento chiesto → approvato | `RevocaStato = Approvata` (fine) | Annullata (annullamento approvato) |
+| approvata → annullamento chiesto → respinto | `RevocaStato = Rifiutata` (fine), la richiesta resta approvata | Approvata (annullamento respinto) |
+| approvata → annullamento chiesto → ritirato dal richiedente | `RevocaStato = Cancellata` (fine), la richiesta resta approvata | Approvata (annullamento ritirato) |
+
+Stati intermedi: In attesa, Approvazione in corso, Approvata, Approvata (annullamento in attesa); Inserimento diretto per le registrazioni senza richiesta.
+L'annullamento si chiede **una volta sola** (decisione del 12/11/2026): respinto o ritirato, la pratica è conclusa.
+
+- **Server** `RichiestaRegole`: `PuoAnnullare` (senza più `Diretta`), `PuoChiedereAnnullamento`, `AnnullamentoInAttesa`, `TipoAnnullamento`, `TestoStato` (testi `RequestState*` in `InfrastructureMessages`); `RequestService` usa `TestoStato` come testo predefinito e manda `CancelKind` (Ritira / ChiediAnnullamento / RitiraAnnullamento).
+- **Client** `Utility/infrastructure/richiesta-stato.ts`: le stesse regole e `statoRichiestaUi` (testo `common.requestState.*`, colore del badge, icona); pagina `/requests` con tre pulsanti distinti (Annulla richiesta, Chiedi annullamento, Ritira annullamento) e la conferma adatta.
+- **Presenze**: il ritiro dell'annullamento non azzera più la revoca (`RevocaStato = Cancellata`), l'annullamento non si richiede due volte, le pagine usano `statoRichiestaUi`.
+- **Prenotazioni**: testi e colori di `statoRichiestaUi`.
+
 ## 4. Visibilità e permessi
 
 | Ruolo | Le mie richieste | Richieste da approvare |
@@ -196,6 +216,12 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `RICH-AST` – Risorse aziendali
 - ✅ `RICH-AST.1`–`RICH-AST.5` (prima versione, ciclo proprio in `Ast_Prenotazione`): spunta "Richiede approvazione", conflitti con le in attesa, scadenza pigra, notifiche, client, comandi vocali, analisi del modulo; prova API 25/25
 - ✅ `RICH-AST.6` (variante, branch `Assets_Dev_richieste`, commit 46147cd0) Prenotazione appoggiata a `Dip_GG_Richiesta` (`IdDip_GG_Richiesta`), colonne di decisione tolte, `AstRichiestaTipoHandler` su `RichiestaCommonService`, `InitAssets` rigenerata; prova API 33/33
+
+#### `RICH-CICLO` – Ciclo unico delle richieste (§3ter)
+- ✅ `RICH-CICLO.1` Infrastructure: regole e testi comuni (`RichiestaRegole`, `richiesta-stato.ts`), `CancelKind` e tre pulsanti nella pagina `/requests` — branch `Infrastructure_Dev_ciclorichieste`, compilata
+- ⏳ `RICH-CICLO.2` Presenze: ritiro dell'annullamento che chiude la pratica, niente seconda richiesta di annullamento, stato comune nelle pagine
+- ⏳ `RICH-CICLO.3` Prenotazioni: stato comune nella pagina `/astbookings` e nelle richieste comuni
+- ⏳ `RICH-CICLO.4` Catena dei merge
 
 #### Merge
 - ⏳ `RICH-M` DB ricreato e catena: Infrastructure → AttendanceTracking, Assets → Applicativo completo (AllFunction_Dev, AllFunction)
