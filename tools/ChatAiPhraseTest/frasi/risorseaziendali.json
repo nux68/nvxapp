@@ -1,0 +1,32 @@
+// Frasi di prova dei comandi di Risorse aziendali (formato: vedi README.md; analisi: ANALISI_ASSETS_VOCALI.md)
+[
+  { "frase": "quali sono le mie prenotazioni?", "intent": "AstMyBookings", "ruolo": "User" },
+  { "frase": "cosa ho prenotato domani?", "intent": "AstMyBookings", "slots": { "from": "=domani" }, "ruolo": "User" },
+  { "frase": "le mie prenotazioni della prossima settimana", "intent": "AstMyBookings", "pagina": "/astbookings" },
+  { "frase": "show my bookings", "intent": "AstMyBookings", "ruolo": "User" },
+  { "frase": "che sale sono libere domani dalle 10 alle 11?", "intent": "AstFreeResources",
+    "slots": { "resourceType": "sala", "date": "=domani", "start": "10:00", "end": "11:00" }, "ruolo": "User" },
+  { "frase": "c'è una postazione libera oggi alle 14?", "intent": "AstFreeResources", "slots": { "resourceType": "postazione", "start": "14:00" } },
+  { "frase": "le auto aziendali sono libere venerdì?", "intent": "AstFreeResources", "slots": { "resourceType": "auto", "date": "=venerdì" } },
+  { "frase": "quali sono le scadenze della flotta?", "intent": "AstFleetDeadlines" },
+  { "frase": "quando scade il bollo della Panda?", "intent": "AstFleetDeadlines", "slots": { "deadlineType": "bollo", "vehicle": "Panda" } },
+  { "frase": "revisioni dei veicoli nei prossimi 60 giorni", "intent": "AstFleetDeadlines", "slots": { "deadlineType": "revisione", "days": "60" } },
+  { "frase": "che beni ho in dotazione?", "intent": "AstAssignedGoods", "ruolo": "User" },
+  { "frase": "cosa ha in dotazione Rossi?", "intent": "AstAssignedGoods", "slots": { "person": "Rossi" } },
+  { "frase": "prenota la sala riunioni domani dalle 10 alle 11", "intent": "AstBookResource",
+    "slots": { "resource": "sala riunioni", "date": "=domani", "start": "10:00", "end": "11:00" }, "ruolo": "User" },
+  { "frase": "prenotami una postazione per lunedì alle 9", "intent": "AstBookResource",
+    "slots": { "resource": "postazione", "date": "=lunedì", "start": "09:00", "end": "10:00" }, "ruolo": "User" },
+  { "messaggi": ["prenota un'auto aziendale", "venerdì dalle 8 alle 18"], "intent": "AstBookResource",
+    "slots": { "date": "=venerdì", "start": "08:00", "end": "18:00" } },
+  { "frase": "book the meeting room tomorrow from 3 to 4 pm", "intent": "AstBookResource",
+    "slots": { "date": "=domani", "start": "15:00", "end": "16:00" }, "ruolo": "User" },
+  { "frase": "annulla la prenotazione della sala riunioni di domani", "intent": "AstCancelBooking",
+    "slots": { "resource": "sala riunioni", "date": "=domani" }, "ruolo": "User" },
+  { "frase": "apri il veicolo AB123CD", "intent": "OpenEntity", "slots": { "entity": "veicolo" } },
+  { "frase": "apri il bene INV-001", "intent": "OpenEntity", "slots": { "entity": "bene" } },
+  { "frase": "portami alle prenotazioni", "intent": "Navigate", "slots": { "page": "prenotazioni" }, "ruolo": "User" },
+  { "frase": "vai alla flotta", "intent": "Navigate", "slots": { "page": "flotta" } },
+  // la prenotazione di una risorsa non e' una richiesta di ferie o permesso (presenze)
+  { "frase": "vorrei prenotare la sala grande per giovedì alle 15", "intent": "AstBookResource", "slots": { "start": "15:00" }, "ruolo": "User" }
+]
