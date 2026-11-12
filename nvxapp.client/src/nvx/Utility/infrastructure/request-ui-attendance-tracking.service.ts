@@ -29,9 +29,9 @@ export class RequestUiAttendanceTrackingService implements iRequestUiProvider {
 
   public get NewRequests(): RequestNewItem[] {
     return [
-      { title: 'attendance.menu.richiestaGiustificativo', url: '/requestjustificationuser', roles: ['User'] },
-      { title: 'attendance.menu.richiestaTimbratura', url: '/requestclockinguser', roles: ['User'] },
-      { title: 'attendance.menu.richiestaRimborso', url: '/notaspesarequestuser', roles: ['User'] },
+      { title: 'attendance.menu.richiestaGiustificativo', url: '/requestjustificationuser', roles: ['User'], icon: 'document-text-outline' },
+      { title: 'attendance.menu.richiestaTimbratura', url: '/requestclockinguser', roles: ['User'], icon: 'time-outline' },
+      { title: 'attendance.menu.richiestaRimborso', url: '/notaspesarequestuser', roles: ['User'], icon: 'wallet-outline' },
     ];
   }
 }
