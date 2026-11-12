@@ -14,6 +14,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request.Mode
         public int DaApprovare { get; set; }
         // richieste dell'utente in attesa di decisione
         public int InAttesa { get; set; }
+        // gli stessi contatori per applicativo (badge delle voci dei moduli, es. "Prenotazioni")
+        public List<RequestCountApp> PerApplicativo { get; set; } = new List<RequestCountApp>();
+    }
+
+    public class RequestCountApp
+    {
+        // valore di ApplicationType
+        public int Application { get; set; }
+        public int DaApprovare { get; set; }
+        public int InAttesa { get; set; }
     }
 
     public class RequestListInModel
@@ -30,6 +40,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request.Mode
         public List<int> Applicativi { get; set; } = new List<int>();
         public int DaApprovare { get; set; }
         public int InAttesa { get; set; }
+        public List<RequestCountApp> PerApplicativo { get; set; } = new List<RequestCountApp>();
     }
 
     public class RequestActionInModel
@@ -44,5 +55,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request.Mode
     {
         public int DaApprovare { get; set; }
         public int InAttesa { get; set; }
+        public List<RequestCountApp> PerApplicativo { get; set; } = new List<RequestCountApp>();
     }
 }
