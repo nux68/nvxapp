@@ -5,7 +5,7 @@ import { ActionSheetController, AlertController, NavController } from '@ionic/an
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { RequestActionInModel, RequestActionOutModel, RequestFilter, RequestItemModel, RequestListInModel, RequestState } from '../../../ClientServer-Service/Infrastructure/Request/Models/request-model';
+import { RequestActionInModel, RequestActionOutModel, RequestFilter, RequestItemModel, RequestListInModel, RequestState, RequestCancelKind } from '../../../ClientServer-Service/Infrastructure/Request/Models/request-model';
 import { RequestService } from '../../../ClientServer-Service/Infrastructure/Request/request.service';
 import { GenericResult } from '../../../ClientServer-Service/ModelsBase/generic-result';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
@@ -165,8 +165,14 @@ export class RequestListPageComponent {
     btnApprova.event = (item: RequestItemModel) => this.approva(item);
     const btnRifiuta = this.userInterfaceService.Btn_Rifiuta;
     btnRifiuta.event = (item: RequestItemModel) => this.rifiuta(item);
+    // annulla del richiedente, con il ciclo unico delle richieste: ritira la richiesta in attesa, chiede l'annullamento
+    // di quella approvata (una volta sola) o ritira l'annullamento in attesa (resta approvata, la pratica si chiude)
     const btnAnnulla = new ButtonItem(this.transloco.translate('pages.requestList.cancel'), 'close-circle-outline', 'danger', false,
                                       (item: RequestItemModel) => this.annulla(item));
+    const btnChiedi = new ButtonItem(this.transloco.translate('common.requestAction.askCancellation'), 'close-circle-outline', 'danger', false,
+                                     (item: RequestItemModel) => this.annulla(item));
+    const btnRitira = new ButtonItem(this.transloco.translate('common.requestAction.withdrawCancellation'), 'arrow-undo-outline', 'warning', false,
+                                     (item: RequestItemModel) => this.annulla(item));
 
     this.actions = [
       ...extra,
@@ -177,7 +183,9 @@ export class RequestListPageComponent {
             { button: btnRifiuta, visible: (item: RequestItemModel) => item.canReject },
           ]
         : [
-            { button: btnAnnulla, visible: (item: RequestItemModel) => item.canCancel },
+            { button: btnAnnulla, visible: (item: RequestItemModel) => item.canCancel && item.cancelKind === RequestCancelKind.Ritira },
+            { button: btnChiedi, visible: (item: RequestItemModel) => item.canCancel && item.cancelKind === RequestCancelKind.ChiediAnnullamento },
+            { button: btnRitira, visible: (item: RequestItemModel) => item.canCancel && item.cancelKind === RequestCancelKind.RitiraAnnullamento },
           ]),
     ];
   }
@@ -230,7 +238,9 @@ export class RequestListPageComponent {
   }
 
   private async annulla(item: RequestItemModel) {
-    const key = item.stato === RequestState.Approvata ? 'pages.requestList.confirmRevoke' : 'pages.requestList.confirmCancel';
+    const key = item.cancelKind === RequestCancelKind.ChiediAnnullamento ? 'common.requestAction.confirmAskCancellation'
+              : item.cancelKind === RequestCancelKind.RitiraAnnullamento ? 'common.requestAction.confirmWithdrawCancellation'
+              : 'pages.requestList.confirmCancel';
     if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate(key)))
       return;
     this.requestService.RequestCancel(this.azione(item)).subscribe(res => this.dopoAzione(res));
