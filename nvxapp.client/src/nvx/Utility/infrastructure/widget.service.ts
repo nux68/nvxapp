@@ -68,6 +68,7 @@ export class WidgetService {
     const ruoli = this.authService.RoleNames;
     return this.Catalogo.filter(w =>
       (w.application == null || this.authService.hasApplication(w.application)) &&
+      (!w.anyApplication || w.anyApplication.some(a => this.authService.hasApplication(a))) &&
       (!w.roles || w.roles.length === 0 || w.roles.some(r => ruoli.includes(r))));
   }
 
