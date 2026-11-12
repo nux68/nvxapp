@@ -38,12 +38,14 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_Competenza> Par_Competenza { get; set; }
         public virtual DbSet<Dip_Competenza> Dip_Competenza { get; set; }
         public virtual DbSet<Dip_RapportoAutovetture> Dip_RapportoAutovetture { get; set; }
+        public virtual DbSet<Dip_GG_Richiesta> Dip_GG_Richiesta { get; set; }
 
         // tipi del modello Common (tabelle comuni e tabelle di public referenziate)
         private static readonly HashSet<Type> _commonTypes = new()
         {
             typeof(Az_Anagrafica), typeof(Az_Cliente), typeof(Az_ClienteContatto), typeof(Dip_Anagrafica),
             typeof(Az_Sedi), typeof(Az_SediReparto), typeof(Par_Competenza), typeof(Dip_Competenza), typeof(Dip_RapportoAutovetture),
+            typeof(Dip_GG_Richiesta),
             typeof(Company), typeof(ApplicationUser),
         };
 
@@ -211,6 +213,29 @@ namespace nvxapp.server.data.Infrastructure
                       .WithMany()
                       .HasForeignKey(t => t.IdDip_Anagrafica)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            /*
+             Dip_GG_Richiesta: richieste da approvare di tutti gli applicativi (ANALISI_INFRASTRUCTURE_RICHIESTE.md §3bis).
+             In cascata dall'azienda e dal dipendente (nelle presenze era in cascata dal rapporto di lavoro, che sta nelle
+             presenze: IdDip_RapportoLavoro qui e' senza FK). Le collection verso le tabelle delle presenze le aggiunge il
+             ramo Presenze in un partial.
+            */
+            modelBuilder.Entity<Dip_GG_Richiesta>(entity =>
+            {
+                entity.ToTable("Dip_GG_Richiesta");
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(t => new { t.IdAz_Anagrafica, t.RichiestaStato });
+                entity.HasIndex(t => t.IdAspNetUsers);
+                entity.HasIndex(t => t.IdDip_RapportoLavoro);
             });
         }
     }
