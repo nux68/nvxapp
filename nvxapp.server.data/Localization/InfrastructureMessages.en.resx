@@ -1171,6 +1171,18 @@ The statement is attached.</value>
     <value>Request rejected</value>
     <comment>richieste</comment>
   </data>
+  <data name="RequestNotifyNewRevoke" xml:space="preserve">
+    <value>New cancellation request to approve</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRevokeApproved" xml:space="preserve">
+    <value>Cancellation approved</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRevokeRejected" xml:space="preserve">
+    <value>Cancellation rejected: the request stays approved</value>
+    <comment>richieste</comment>
+  </data>
   <data name="RequestNotifyReason" xml:space="preserve">
     <value>Reason: {0}</value>
     <comment>richieste</comment>
