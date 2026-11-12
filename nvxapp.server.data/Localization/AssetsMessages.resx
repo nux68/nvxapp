@@ -228,4 +228,268 @@
     <value>Risorse aziendali: prenotazioni</value>
     <comment>categoria di notifica</comment>
   </data>
+  <data name="ChatCategoryBookings" xml:space="preserve">
+    <value>Prenotazioni di sale, postazioni e auto</value>
+  </data>
+  <data name="ChatCategoryResources" xml:space="preserve">
+    <value>Flotta e beni aziendali</value>
+  </data>
+  <data name="ChatPeriodDay" xml:space="preserve">
+    <value>il {0}</value>
+  </data>
+  <data name="ChatPeriodRange" xml:space="preserve">
+    <value>dal {0} al {1}</value>
+  </data>
+  <data name="ChatNextDays" xml:space="preserve">
+    <value>nei prossimi {0} giorni</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Operazione non riuscita: {0}</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>... e altri {0}.</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>Non ho capito la data "{0}". Puoi ripeterla?</value>
+  </data>
+  <data name="ChatInvalidTime" xml:space="preserve">
+    <value>Non ho capito l'orario "{0}". Puoi ripeterlo?</value>
+  </data>
+  <data name="ChatFromQuestion" xml:space="preserve">
+    <value>Da quale giorno?</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>Dal</value>
+  </data>
+  <data name="ChatToQuestion" xml:space="preserve">
+    <value>Fino a quale giorno?</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>Al</value>
+  </data>
+  <data name="ChatDateQuestion" xml:space="preserve">
+    <value>Per quale giorno?</value>
+  </data>
+  <data name="ChatDateLabel" xml:space="preserve">
+    <value>Giorno</value>
+  </data>
+  <data name="ChatStartQuestion" xml:space="preserve">
+    <value>Da che ora?</value>
+  </data>
+  <data name="ChatStartLabel" xml:space="preserve">
+    <value>Dalle</value>
+  </data>
+  <data name="ChatEndQuestion" xml:space="preserve">
+    <value>Fino a che ora?</value>
+  </data>
+  <data name="ChatEndLabel" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="ChatEndBeforeStart" xml:space="preserve">
+    <value>L'ora di fine ({0}) deve seguire l'ora di inizio ({1}). Fino a che ora?</value>
+  </data>
+  <data name="ChatResourceQuestion" xml:space="preserve">
+    <value>Quale risorsa? (es. sala riunioni, una postazione, un'auto)</value>
+  </data>
+  <data name="ChatResourceLabel" xml:space="preserve">
+    <value>Risorsa</value>
+  </data>
+  <data name="ChatResourceTypeQuestion" xml:space="preserve">
+    <value>Che tipo di risorsa: sala, postazione o auto?</value>
+  </data>
+  <data name="ChatResourceTypeLabel" xml:space="preserve">
+    <value>Tipo di risorsa</value>
+  </data>
+  <data name="ChatResourceType_0" xml:space="preserve">
+    <value>postazione</value>
+  </data>
+  <data name="ChatResourceType_1" xml:space="preserve">
+    <value>sala</value>
+  </data>
+  <data name="ChatResourceType_2" xml:space="preserve">
+    <value>auto in pool</value>
+  </data>
+  <data name="ChatResourceSeats" xml:space="preserve">
+    <value>{0} posti</value>
+  </data>
+  <data name="ChatResourcesGeneric" xml:space="preserve">
+    <value>risorse</value>
+  </data>
+  <data name="ChatResourcesOfType_0" xml:space="preserve">
+    <value>postazioni</value>
+  </data>
+  <data name="ChatResourcesOfType_1" xml:space="preserve">
+    <value>sale</value>
+  </data>
+  <data name="ChatResourcesOfType_2" xml:space="preserve">
+    <value>auto in pool</value>
+  </data>
+  <data name="ChatNoResources" xml:space="preserve">
+    <value>Non ci sono {0} prenotabili.</value>
+  </data>
+  <data name="ChatResourceNotFound" xml:space="preserve">
+    <value>Non trovo la risorsa "{0}". Risorse prenotabili: {1}.</value>
+  </data>
+  <data name="ChatResourceAmbiguous" xml:space="preserve">
+    <value>Ho trovato {0} risorse per "{1}": {2}. Quale?</value>
+  </data>
+  <data name="ChatMyBookingsDisplayName" xml:space="preserve">
+    <value>Le mie prenotazioni</value>
+  </data>
+  <data name="ChatMyBookingsDescription" xml:space="preserve">
+    <value>Elenca le prenotazioni di sale, postazioni e auto aziendali fatte dall'utente in un periodo (non ferie, permessi o richieste di assenza)</value>
+  </data>
+  <data name="ChatMyBookingsNone" xml:space="preserve">
+    <value>Non hai prenotazioni {0}.</value>
+  </data>
+  <data name="ChatMyBookingsTitle" xml:space="preserve">
+    <value>Hai {0} prenotazioni {1}:</value>
+  </data>
+  <data name="ChatFreeResourcesDisplayName" xml:space="preserve">
+    <value>Risorse libere</value>
+  </data>
+  <data name="ChatFreeResourcesDescription" xml:space="preserve">
+    <value>Dice quali sale, postazioni o auto aziendali in pool sono libere in un giorno o in una fascia oraria</value>
+  </data>
+  <data name="ChatFreeResourcesNone" xml:space="preserve">
+    <value>Nessuna delle {0} è libera il {1}.</value>
+  </data>
+  <data name="ChatFreeResourcesTitle" xml:space="preserve">
+    <value>Libere {0} su {1} {2} il {3}:</value>
+  </data>
+  <data name="ChatAvailabilityTitle" xml:space="preserve">
+    <value>Disponibilità delle {0} il {1}:</value>
+  </data>
+  <data name="ChatAvailabilityBusy" xml:space="preserve">
+    <value>{0}: occupata {1}</value>
+  </data>
+  <data name="ChatAvailabilityFree" xml:space="preserve">
+    <value>{0}: libera tutto il giorno</value>
+  </data>
+  <data name="ChatFleetDeadlinesDisplayName" xml:space="preserve">
+    <value>Scadenze della flotta</value>
+  </data>
+  <data name="ChatFleetDeadlinesDescription" xml:space="preserve">
+    <value>Elenca le scadenze dei veicoli aziendali (bollo, assicurazione, revisione, tagliando, contratto di noleggio o leasing) scadute e in arrivo entro N giorni</value>
+  </data>
+  <data name="ChatDeadlineTypeQuestion" xml:space="preserve">
+    <value>Quale scadenza: bollo, assicurazione, revisione, tagliando o contratto?</value>
+  </data>
+  <data name="ChatDeadlineTypeLabel" xml:space="preserve">
+    <value>Tipo di scadenza</value>
+  </data>
+  <data name="ChatVehicleQuestion" xml:space="preserve">
+    <value>Quale veicolo? (targa o modello)</value>
+  </data>
+  <data name="ChatVehicleLabel" xml:space="preserve">
+    <value>Veicolo</value>
+  </data>
+  <data name="ChatVehicleNotFound" xml:space="preserve">
+    <value>Non trovo il veicolo "{0}" tra quelli attivi.</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Entro quanti giorni?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Giorni</value>
+  </data>
+  <data name="ChatDeadlineKm" xml:space="preserve">
+    <value>(a {0} km)</value>
+  </data>
+  <data name="ChatDeadlineContract" xml:space="preserve">
+    <value>Fine contratto di {0}</value>
+  </data>
+  <data name="ChatFleetDeadlinesNone" xml:space="preserve">
+    <value>Nessuna scadenza della flotta nei prossimi {0} giorni{1}.</value>
+  </data>
+  <data name="ChatFleetDeadlinesOverdue" xml:space="preserve">
+    <value>{0} scadenze già passate{1}:</value>
+  </data>
+  <data name="ChatFleetDeadlinesTitle" xml:space="preserve">
+    <value>{0} scadenze nei prossimi {1} giorni{2}:</value>
+  </data>
+  <data name="ChatAssignedGoodsDisplayName" xml:space="preserve">
+    <value>Beni in dotazione</value>
+  </data>
+  <data name="ChatAssignedGoodsDescription" xml:space="preserve">
+    <value>Elenca i beni aziendali (PC, telefoni, badge, cespiti) e il veicolo in dotazione all'utente o, per gli amministratori, a un dipendente</value>
+  </data>
+  <data name="ChatPersonQuestion" xml:space="preserve">
+    <value>Di quale dipendente?</value>
+  </data>
+  <data name="ChatPersonLabel" xml:space="preserve">
+    <value>Dipendente</value>
+  </data>
+  <data name="ChatAssignedGoodsOthersNotAllowed" xml:space="preserve">
+    <value>Puoi vedere solo i beni in dotazione a te: chiedi "che beni ho in dotazione?".</value>
+  </data>
+  <data name="ChatAssignedGoodsNoneFor" xml:space="preserve">
+    <value>Nessun bene o veicolo risulta in dotazione a "{0}".</value>
+  </data>
+  <data name="ChatPersonAmbiguous" xml:space="preserve">
+    <value>Ho trovato {0} dipendenti per "{1}": {2}. Quale?</value>
+  </data>
+  <data name="ChatAssignedGoodsTitleFor" xml:space="preserve">
+    <value>{0} ha in dotazione {1} elementi:</value>
+  </data>
+  <data name="ChatAssignedGoodsNoneMine" xml:space="preserve">
+    <value>Non hai beni né veicoli in dotazione.</value>
+  </data>
+  <data name="ChatAssignedGoodsTitleMine" xml:space="preserve">
+    <value>Hai in dotazione {0} elementi:</value>
+  </data>
+  <data name="ChatAssignedVehicle" xml:space="preserve">
+    <value>Veicolo {0}</value>
+  </data>
+  <data name="ChatAssignedSince" xml:space="preserve">
+    <value>dal {0}</value>
+  </data>
+  <data name="ChatAssignedToConfirm" xml:space="preserve">
+    <value>verbale di consegna da confermare</value>
+  </data>
+  <data name="ChatBookResourceDisplayName" xml:space="preserve">
+    <value>Prenota una risorsa</value>
+  </data>
+  <data name="ChatBookResourceDescription" xml:space="preserve">
+    <value>Prenota a nome dell'utente una sala, una postazione o un'auto aziendale in pool in un giorno e in una fascia oraria (non serve per ferie, permessi o richieste di assenza)</value>
+  </data>
+  <data name="ChatBookResourceSummary" xml:space="preserve">
+    <value>prenotazione di {resource} il {date} dalle {start} alle {end}</value>
+  </data>
+  <data name="ChatTitleQuestion" xml:space="preserve">
+    <value>Per quale motivo?</value>
+  </data>
+  <data name="ChatTitleLabel" xml:space="preserve">
+    <value>Motivo</value>
+  </data>
+  <data name="ChatBookResourceNoneFree" xml:space="preserve">
+    <value>Nessuna risorsa "{0}" è libera il {1}.</value>
+  </data>
+  <data name="ChatBookResourceDone" xml:space="preserve">
+    <value>Prenotato: {0}, {1}.</value>
+  </data>
+  <data name="ChatCancelBookingDisplayName" xml:space="preserve">
+    <value>Annulla una mia prenotazione</value>
+  </data>
+  <data name="ChatCancelBookingDescription" xml:space="preserve">
+    <value>Annulla una prenotazione futura dell'utente (sala, postazione o auto aziendale)</value>
+  </data>
+  <data name="ChatCancelBookingSummary" xml:space="preserve">
+    <value>annullare la prenotazione {resource} {date} {start}</value>
+  </data>
+  <data name="ChatCancelBookingNone" xml:space="preserve">
+    <value>Non trovo prenotazioni tue da annullare con queste indicazioni.</value>
+  </data>
+  <data name="ChatCancelBookingAmbiguous" xml:space="preserve">
+    <value>Hai {0} prenotazioni che corrispondono: {1}. Indica risorsa, giorno o ora.</value>
+  </data>
+  <data name="ChatCancelBookingDone" xml:space="preserve">
+    <value>Prenotazione annullata: {0}, {1}.</value>
+  </data>
+  <data name="ChatOpenVehicleLabel" xml:space="preserve">
+    <value>Veicolo</value>
+  </data>
+  <data name="ChatOpenGoodLabel" xml:space="preserve">
+    <value>Bene</value>
+  </data>
 </root>
