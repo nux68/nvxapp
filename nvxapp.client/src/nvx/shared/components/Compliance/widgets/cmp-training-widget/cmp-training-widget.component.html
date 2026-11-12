@@ -1,0 +1,26 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (errore) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.noData' | transloco }}</div>
+} @else if (requisiti === 0) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.training.none' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="mancanti > 0" [class.success]="mancanti === 0" (click)="apri()">
+      <div class="valore">{{ mancanti }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.training.missing' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.danger]="scaduti > 0" [class.success]="scaduti === 0" (click)="apri()">
+      <div class="valore">{{ scaduti }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.training.expired' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="inScadenza > 0" (click)="apri()">
+      <div class="valore">{{ inScadenza }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.training.expiring' | transloco }}</div>
+    </div>
+  </div>
+  <div class="nvx-w-muted nvx-ctw-info">
+    {{ 'cmp.widgets.training.employees' | transloco: { n: nonInRegola, tot: dipendenti } }}
+  </div>
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'cmp.widgets.training.open' | transloco }}</button>
+}

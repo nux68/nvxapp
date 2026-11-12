@@ -1,0 +1,13 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+.nvx-cgw-info {
+  margin-top: 10px;
+}
+
+.nvx-cgw-alert {
+  margin-top: 10px;
+  color: var(--ion-color-danger);
+  font-weight: 600;
+}
