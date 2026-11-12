@@ -38,6 +38,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         // l'amministratore collegato puo' approvarla o rifiutarla adesso (richiesta o annullamento in attesa): id della richiesta comune
         public bool DaDecidere { get; set; }
         public int? IdRichiesta { get; set; }
+        // richiedente: ritira la richiesta ancora in attesa ("Annulla")
+        public bool Ritirabile { get; set; }
+        // richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato)
+        public bool AnnullamentoChiedibile { get; set; }
         /// <summary>prenotazione dell'utente collegato</summary>
         public bool Mia { get; set; }
         /// <summary>chi ha prenotato: solo per le proprie e per gli amministratori</summary>
@@ -61,8 +65,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
 
     public class Ast_PrenotazioneListInModel
     {
-        public DateTime Dal { get; set; }
-        public DateTime Al { get; set; }
+        // facoltative: senza, da oggi per 7 giorni (es. pagina di modifica aperta da "Nuova richiesta", che chiede solo risorse e limiti)
+        public DateTime? Dal { get; set; }
+        public DateTime? Al { get; set; }
         public int? IdAst_Risorsa { get; set; }
         public bool SoloMie { get; set; }
     }

@@ -163,8 +163,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var ctx = await _utility.ContestoAsync();
                 await _approvazioni.ScadiAsync(ctx);
                 var d = model.Data;
-                var dal = d.Dal == DateTime.MinValue ? DateTime.Today : d.Dal;
-                var al = d.Al <= dal ? dal.AddDays(7) : d.Al;
+                var dal = d.Dal == null || d.Dal == DateTime.MinValue ? DateTime.Today : d.Dal.Value;
+                var al = d.Al == null || d.Al <= dal ? dal.AddDays(7) : d.Al.Value;
                 if ((al - dal).TotalDays > 62)
                     al = dal.AddDays(62);
                 var cfg = await _utility.CfgAsync(ctx);
@@ -360,6 +360,15 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                                                int? richiestaDaDecidere = null)
         {
             bool mia = p.IdAspNetUsers == ctx.IdUtente;
+            // pulsanti della riga, come nella pagina di approvazione delle presenze:
+            //   - prenotazione con richiesta (risorsa che richiede approvazione):
+            //       in attesa      -> richiedente: Annulla (ritira la richiesta)   | amministratore: Approva / Rifiuta
+            //       rifiutata      -> nessuno                                      | nessuno
+            //       approvata      -> richiedente: Cancella (richiesta di annullamento) | amministratore: nessuno
+            //       annullamento richiesto -> richiedente: nessuno               | amministratore: Approva / Rifiuta
+            //   - prenotazione senza richiesta: Modifica / Cancella per chi l'ha fatta e per gli amministratori
+            bool conRichiesta = p.IdDip_GG_Richiesta != null;
+            bool nonFinita = p.Fine > DateTime.Now;
             return new Ast_PrenotazioneModel
             {
                 Id = p.Id,
@@ -374,10 +383,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 Stato = (int)p.Stato,
                 Mia = mia,
                 Utente = mia || ctx.Amministratore ? (nomi.TryGetValue(p.IdAspNetUsers, out var n) ? n : null) : null,
-                // la prenotazione da decidere (richiesta o annullamento in attesa) per l'amministratore si approva o si rifiuta,
-                // come nella pagina delle richieste: niente modifica/annullamento sulla riga
-                Modificabile = (mia || ctx.Amministratore) && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
-                               && p.Fine > DateTime.Now && (richiestaDaDecidere == null || mia),
+                Modificabile = !conRichiesta && (mia || ctx.Amministratore) && nonFinita
+                               && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa),
+                Ritirabile = conRichiesta && mia && nonFinita && p.Stato == AstStatoPrenotazione.InAttesa,
+                AnnullamentoChiedibile = conRichiesta && mia && nonFinita && p.Stato == AstStatoPrenotazione.Confermata && !annullamentoRichiesto,
                 DaDecidere = richiestaDaDecidere != null,
                 IdRichiesta = richiestaDaDecidere,
                 MotivoRifiuto = mia || ctx.Amministratore ? motivoRifiuto : null,
