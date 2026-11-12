@@ -205,6 +205,7 @@ namespace nvxapp.server.data.Migrations.Assets
                     Capienza = table.Column<int>(type: "integer", nullable: true),
                     IdAst_Veicolo = table.Column<int>(type: "integer", nullable: true),
                     Attiva = table.Column<bool>(type: "boolean", nullable: false),
+                    RichiedeApprovazione = table.Column<bool>(type: "boolean", nullable: false),
                     Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -381,6 +382,7 @@ namespace nvxapp.server.data.Migrations.Assets
                     Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     Stato = table.Column<int>(type: "integer", nullable: false),
                     DataAnnullamento = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)

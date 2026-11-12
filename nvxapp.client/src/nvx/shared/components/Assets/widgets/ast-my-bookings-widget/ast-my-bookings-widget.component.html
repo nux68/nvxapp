@@ -23,7 +23,7 @@
           <button type="button" (click)="apri()">
             <span class="desc">
               {{ p.risorsa }}{{ p.titolo ? ' · ' + p.titolo : '' }}
-              <div class="nvx-ast-sub">{{ periodo(p) }}</div>
+              <div class="nvx-ast-sub">{{ periodo(p) }}@if (inAttesa(p)) { · {{ 'ast.widgets.myBookings.pending' | transloco }} }</div>
             </span>
           </button>
         </li>
