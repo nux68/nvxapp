@@ -553,6 +553,14 @@
     <value>Licence activated in debug mode: no real payment was made.</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicenseNotCancellable" xml:space="preserve">
+    <value>This licence has already been cancelled.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicenseCancelled" xml:space="preserve">
+    <value>{0} licence cancelled: the function is no longer available.</value>
+    <comment>licenze</comment>
+  </data>
   <data name="LicenseRenewed" xml:space="preserve">
     <value>Licence renewed until {0}.</value>
     <comment>licenze</comment>

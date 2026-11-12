@@ -310,4 +310,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
     {
         public LicenseSubscriptionModel Abbonamento { get; set; } = new LicenseSubscriptionModel();
     }
+
+    public class LicenseCancelInModel
+    {
+        public int IdAbbonamento { get; set; }
+    }
+    public class LicenseCancelOutModel : ModelResult
+    {
+        public LicenseSubscriptionModel Abbonamento { get; set; } = new LicenseSubscriptionModel();
+    }
 }
