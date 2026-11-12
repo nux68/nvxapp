@@ -119,10 +119,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
                         Dal = r.Data,
                         Al = r.DataA,
                         Stato = stato,
-                        StatoTesto = r.RichiestaStato.ToString(),
+                        StatoTesto = RichiestaRegole.TestoStato(r),
                         CanApprove = scope == RequestScope.Admin && puoDecidere,
                         CanReject = scope == RequestScope.Admin && puoDecidere,
                         CanCancel = scope == RequestScope.Mine && r.IdAspNetUsers == ctx.IdAspNetUsers && RichiestaRegole.PuoAnnullare(r),
+                        CancelKind = RichiestaRegole.TipoAnnullamento(r),
                         DataRichiesta = r.CreationDate,
                     }, h));
                 }
