@@ -180,10 +180,11 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var righe = await q.Include(x => x.Ast_RisorsaNavigation).OrderBy(x => x.Inizio).Take(2000).ToListAsync();
                 var nomi = await _approvazioni.NomiAsync(ctx, righe.Select(x => x.IdAspNetUsers));
                 var motivi = await _approvazioni.MotiviAsync(righe);
+                var revoche = await _approvazioni.RevocheInAttesaAsync(righe);
                 return new Ast_PrenotazioneListOutModel
                 {
                     Permessi = new Ast_PermessiModel { PowerAdmin = ctx.PowerAdmin, Admin = ctx.Admin },
-                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id))).ToList(),
+                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id), revoche.Contains(x.Id))).ToList(),
                     Risorsa = await RisorseAsync(ctx, false),
                     DurataMaxOre = cfg.PrenotazioneDurataMaxOre,
                     AnticipoMaxGiorni = cfg.PrenotazioneAnticipoMaxGiorni,
@@ -261,8 +262,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                             .SetProperty(x => x.Fine, prima.Fine).SetProperty(x => x.Titolo, prima.Titolo).SetProperty(x => x.Note, prima.Note)
                             .SetProperty(x => x.Stato, prima.Stato).SetProperty(x => x.IdDip_GG_Richiesta, prima.IdDip_GG_Richiesta));
                     await _approvazioni.CreaRichiestaAsync(ctx, p, risorsa.Descrizione, compensa);
+                    // la vecchia richiesta approvata e' sostituita dalla nuova: si chiude (non serve la richiesta di annullamento)
                     if (richiesta != null && richiesta.IdAspNetUsers == ctx.IdUtente && richiesta.RichiestaStato == StatoRichiesta.Approvata)
-                        await _approvazioni.AnnullaRichiestaAsync(ctx, new Ast_Prenotazione { IdDip_GG_Richiesta = richiesta.Id, Inizio = prima.Inizio, Fine = prima.Fine }, risorsa.Descrizione);
+                        await _approvazioni.AnnullaRichiestaAsync(ctx, new Ast_Prenotazione { IdDip_GG_Richiesta = richiesta.Id, Inizio = prima.Inizio, Fine = prima.Fine }, risorsa.Descrizione, sostituita: true);
                 }
                 else if (eraInAttesa && richiesta != null && RichiestaRegole.InAttesa(richiesta))
                 {
@@ -289,27 +291,34 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                         ?? throw new UserMessageException(AssetsMessages.Get("NotFound"));
                 if (p.IdAspNetUsers != ctx.IdUtente && !ctx.Amministratore)
                     throw new UserMessageException(AssetsMessages.Get("NotAllowed"));
+                bool revocaRichiesta = false;
                 if (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
                 {
-                    // prima la richiesta collegata (il motore ricontrolla i permessi): il richiedente la annulla; un amministratore
-                    // che annulla la prenotazione in attesa di un altro la rifiuta (il richiedente riceve l'esito dal motore)
+                    // prima la richiesta collegata (il motore ricontrolla i permessi): il richiedente ritira quella in attesa o, se
+                    // approvata, chiede l'annullamento (va approvato: la prenotazione resta confermata); un amministratore che annulla
+                    // la prenotazione in attesa di un altro la rifiuta (il richiedente riceve l'esito dal motore)
                     bool rifiutata = false;
                     var richiesta = await _approvazioni.RichiestaAsync(p.IdDip_GG_Richiesta);
+                    if (richiesta != null && p.IdAspNetUsers == ctx.IdUtente && AstApprovazioni.RevocaInAttesa(richiesta))
+                        throw new UserMessageException(AssetsMessages.Get("BookingCancelAlreadyRequested"));
                     if (richiesta != null)
                     {
                         if (p.IdAspNetUsers == ctx.IdUtente)
-                            await _approvazioni.AnnullaRichiestaAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione);
+                            revocaRichiesta = await _approvazioni.AnnullaRichiestaAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione) == EsitoAnnullamento.RevocaRichiesta;
                         else if (ctx.Amministratore && RichiestaRegole.InAttesa(richiesta))
                         {
                             await _approvazioni.RifiutaRichiestaAsync(ctx, richiesta, p, p.Ast_RisorsaNavigation!.Descrizione, null);
                             rifiutata = true;
                         }
                     }
-                    p.Stato = rifiutata ? AstStatoPrenotazione.Rifiutata : AstStatoPrenotazione.Annullata;
-                    p.DataAnnullamento = DateTime.Now;
-                    p.ModifiedDate = DateTime.Now;
-                    p.ChangeUser = ctx.IdUtente;
-                    await _Ast_Prenotazione.SaveChange();
+                    if (!revocaRichiesta)
+                    {
+                        p.Stato = rifiutata ? AstStatoPrenotazione.Rifiutata : AstStatoPrenotazione.Annullata;
+                        p.DataAnnullamento = DateTime.Now;
+                        p.ModifiedDate = DateTime.Now;
+                        p.ChangeUser = ctx.IdUtente;
+                        await _Ast_Prenotazione.SaveChange();
+                    }
                     if (p.IdAspNetUsers != ctx.IdUtente && !rifiutata)
                         await _utility.NotificaAsync(ctx, AstNotificationCategoryProvider.Prenotazioni, new[] { p.IdAspNetUsers },
                                                      AssetsMessages.Get("BookingCancelledTitle", p.Ast_RisorsaNavigation!.Descrizione),
@@ -318,7 +327,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 }
                 var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
                 var motivi = await _approvazioni.MotiviAsync(new[] { p });
-                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi, motivi.GetValueOrDefault(p.Id)) };
+                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi, motivi.GetValueOrDefault(p.Id), revocaRichiesta) };
             }, isSubProcess);
         }
 
@@ -345,7 +354,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                })
                .OrderBy(x => x.Tipo).ThenBy(x => x.Descrizione).ToList();
 
-        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null)
+        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null, bool annullamentoRichiesto = false)
         {
             bool mia = p.IdAspNetUsers == ctx.IdUtente;
             return new Ast_PrenotazioneModel
@@ -365,6 +374,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 Modificabile = (mia || ctx.Amministratore) && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
                                && p.Fine > DateTime.Now,
                 MotivoRifiuto = mia || ctx.Amministratore ? motivoRifiuto : null,
+                AnnullamentoRichiesto = (mia || ctx.Amministratore) && annullamentoRichiesto,
             };
         }
     }

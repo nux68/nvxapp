@@ -147,6 +147,8 @@
         "busy": "Busy",
         "empty": "No bookings this week",
         "confirmCancel": "Cancel the booking of {{nome}}?",
+        "cancelRequested": "Cancellation requested: awaiting approval",
+        "cancelRequestSent": "Cancellation request sent: the booking stays valid until an administrator approves it.",
         "note": "Your bookings also appear in your personal calendar (Calendar button)."
       },
       "bookingEdit": {
