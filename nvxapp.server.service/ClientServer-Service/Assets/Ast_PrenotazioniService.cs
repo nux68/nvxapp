@@ -40,7 +40,6 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
         private readonly IAst_RisorsaRepository _Ast_Risorsa;
         private readonly IAst_PrenotazioneRepository _Ast_Prenotazione;
         private readonly IAst_VeicoloRepository _Ast_Veicolo;
-        private readonly IAst_Dip_AnagraficaReadRepository _Dip_Anagrafica;
         private readonly IAst_Az_SediReadRepository _Az_Sedi;
         private readonly IAstUtility _utility;
         private readonly IAstApprovazioni _approvazioni;
@@ -54,7 +53,6 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                        IAst_RisorsaRepository ast_RisorsaRepository,
                                        IAst_PrenotazioneRepository ast_PrenotazioneRepository,
                                        IAst_VeicoloRepository ast_VeicoloRepository,
-                                       IAst_Dip_AnagraficaReadRepository dip_AnagraficaRepository,
                                        IAst_Az_SediReadRepository az_SediRepository,
                                        IAstUtility utility,
                                        IAstApprovazioni approvazioni) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -62,7 +60,6 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
             _Ast_Risorsa = ast_RisorsaRepository;
             _Ast_Prenotazione = ast_PrenotazioneRepository;
             _Ast_Veicolo = ast_VeicoloRepository;
-            _Dip_Anagrafica = dip_AnagraficaRepository;
             _Az_Sedi = az_SediRepository;
             _utility = utility;
             _approvazioni = approvazioni;

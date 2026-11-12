@@ -2,14 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.Assets;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Request;
 
 namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 {
@@ -117,7 +120,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 
         /*
          utente rimosso dall'azienda: le sue prenotazioni future si annullano (le passate restano come storico; se l'utente viene
-         cancellato del tutto le porta via la chiave esterna). Beni e veicoli sono assegnati al dipendente (Common), non all'utente:
+         cancellato del tutto le porta via la chiave esterna). Le richieste di approvazione collegate ancora aperte (Dip_GG_Richiesta,
+         Common) diventano Cancellate, senza notifiche: l'utente non c'e' piu' e il job gira senza utente collegato (schema Common
+         aperto con la factory, come gli altri deleter). Beni e veicoli sono assegnati al dipendente (Common), non all'utente:
          restano finche' non si registra la restituzione.
         */
         public async Task DeleteUserDataAsync(int idCompany, string idAspNetUsers, CancellationToken cancellationToken = default)
@@ -130,10 +135,31 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             if (idAz == 0)
                 return;
             var ora = DateTime.Now;
-            await rep.Ast_Prenotazione.FindAll(x => x.IdAspNetUsers == idAspNetUsers && x.Ast_RisorsaNavigation!.IdAz_Anagrafica == idAz
-                                                    && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa) && x.Fine > ora)
-                                      .ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, AstStatoPrenotazione.Annullata)
-                                                                .SetProperty(x => x.DataAnnullamento, ora), cancellationToken);
+            var daAnnullare = rep.Ast_Prenotazione.FindAll(x => x.IdAspNetUsers == idAspNetUsers && x.Ast_RisorsaNavigation!.IdAz_Anagrafica == idAz
+                                                              && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa) && x.Fine > ora);
+            var richieste = await daAnnullare.Where(x => x.IdDip_GG_Richiesta != null).Select(x => x.IdDip_GG_Richiesta!.Value).ToListAsync(cancellationToken);
+            await daAnnullare.ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, AstStatoPrenotazione.Annullata)
+                                                      .SetProperty(x => x.DataAnnullamento, ora), cancellationToken);
+            if (richieste.Count > 0)
+                await CancellaRichiesteAsync(idCompany, richieste, cancellationToken);
+        }
+
+        // richieste collegate ancora da decidere -> Cancellata (repository Common sullo schema Common dell'azienda)
+        private async Task CancellaRichiesteAsync(int idCompany, List<int> ids, CancellationToken cancellationToken)
+        {
+            string schema = TenantSchemaName.Public;
+            if (_tenancy.MultiTenant)
+            {
+                schema = TenantSchemaName.For(idCompany, ApplicationType.Common);
+                if (!(await _provisioning.CompanySchemasAsync(idCompany, cancellationToken)).Contains(schema))
+                    return;
+            }
+            await using var common = (CommonDbContext)_factory.Create(ApplicationType.Common, schema);
+            var repRichieste = new Dip_GG_RichiestaCommonRepository(common, _sp, _http);
+            var aperte = RichiestaRegole.StatiInAttesa;
+            await repRichieste.FindAll(x => ids.Contains(x.Id) && x.RevocaStato == null && aperte.Contains(x.RichiestaStato))
+                              .ExecuteUpdateAsync(u => u.SetProperty(x => x.RichiestaStato, StatoRichiesta.Cancellata)
+                                                        .SetProperty(x => x.ModifiedDate, DateTime.Now), cancellationToken);
         }
     }
 }
