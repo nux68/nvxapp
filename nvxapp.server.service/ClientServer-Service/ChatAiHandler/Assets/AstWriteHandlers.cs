@@ -218,6 +218,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
             var esito = await _service.Ast_PrenotazioneAnnulla(new GenericRequest<Ast_IdInModel>(new Ast_IdInModel { Id = prenotazione.Id }), false);
             if (!esito.Success) return Fallito(esito);
 
+            // prenotazione approvata: l'annullamento e' una richiesta da approvare, la prenotazione resta valida
+            if (esito.Data?.Prenotazione?.AnnullamentoRichiesto == true)
+                return CommandResult.Ok(AssetsMessages.Get("ChatCancelBookingRequested", prenotazione.Risorsa, Fascia(prenotazione.Inizio, prenotazione.Fine)));
             return CommandResult.Ok(AssetsMessages.Get("ChatCancelBookingDone", prenotazione.Risorsa, Fascia(prenotazione.Inizio, prenotazione.Fine)));
         }
     }

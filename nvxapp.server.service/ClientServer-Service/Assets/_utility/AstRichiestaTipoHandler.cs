@@ -12,6 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
      Prenotazioni da approvare nelle richieste comuni di Infrastructure (ANALISI_INFRASTRUCTURE_RICHIESTE.md §3bis, AST-RICH):
      tipo PrenotazioneRisorsa di Dip_GG_Richiesta, approvato da un amministratore dell'azienda (strategia Singola, motore
      RichiestaCommonService). Qui: testi delle righe e stato della prenotazione allineato all'esito.
+     Ciclo: richiesta -> approvata / rifiutata (fine); approvata -> il richiedente puo' chiedere l'annullamento, che va approvato
+     (approvato: prenotazione annullata; rifiutato: resta confermata), come la revoca delle presenze.
         - la prenotazione e' la fonte dello stato mostrato: se un amministratore l'ha annullata dalla pagina prenotazioni,
           la riga dice "Annullata" anche se la richiesta era approvata
         - StrategiaAsync applica prima la scadenza pigra (AstApprovazioni.ScadiAsync): RequestService la chiama a ogni conteggio
@@ -71,8 +73,11 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 item.Dal = p.Inizio;
                 item.Al = p.Fine;
                 item.Dettaglio = Dettaglio(p);
-                item.Stato = Stato(p.Stato);
-                item.StatoTesto = p.Stato switch
+                bool revocaInAttesa = p.Stato == AstStatoPrenotazione.Confermata && AstApprovazioni.RevocaInAttesa(r);
+                item.Stato = revocaInAttesa ? RequestState.InAttesa : Stato(p.Stato);
+                item.StatoTesto = revocaInAttesa ? AssetsMessages.Get("RequestStateRevokePending")
+                    : p.Stato == AstStatoPrenotazione.Confermata && r.RevocaStato == StatoRichiesta.Rifiutata ? AssetsMessages.Get("RequestStateRevokeRejected")
+                    : p.Stato switch
                 {
                     AstStatoPrenotazione.Confermata => AssetsMessages.Get("RequestStateApproved"),
                     AstStatoPrenotazione.Rifiutata => AstApprovazioni.Motivo(r) is string m ? AssetsMessages.Get("RequestStateRejectedReason", m)
@@ -81,9 +86,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                     _ => AssetsMessages.Get("RequestStatePending"),
                 };
                 bool inAttesa = p.Stato == AstStatoPrenotazione.InAttesa;
-                item.CanApprove = item.CanApprove && inAttesa && p.Inizio > ora;
-                item.CanReject = item.CanReject && inAttesa;
-                // il richiedente annulla la prenotazione in attesa o confermata finche' non e' finita
+                // da decidere: la prenotazione in attesa (prima dell'inizio) o l'annullamento di una confermata (prima della fine)
+                item.CanApprove = item.CanApprove && ((inAttesa && p.Inizio > ora) || (revocaInAttesa && p.Fine > ora));
+                item.CanReject = item.CanReject && (inAttesa || revocaInAttesa);
+                // il richiedente ritira la richiesta in attesa, chiede l'annullamento di una confermata o lo ritira, finche' non e' finita
                 item.CanCancel = item.CanCancel && p.Fine > ora && (inAttesa || p.Stato == AstStatoPrenotazione.Confermata);
             }
         }
@@ -91,6 +97,16 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         public async Task ApproveAsync(Dip_GG_Richiesta richiesta)
         {
             var (ctx, p) = await PrenotazioneAsync(richiesta);
+            if (AstApprovazioni.RevocaInAttesa(richiesta))
+            {
+                // annullamento approvato: la prenotazione si annulla (fascia libera)
+                if (p.Stato != AstStatoPrenotazione.Confermata)
+                    throw new UserMessageException(AssetsMessages.Get("BookingNotEditable"));
+                _utility.RichiediAmministratore(ctx);
+                await _richieste.ApprovaAsync(richiesta, await _approvazioni.AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione));
+                await ImpostaAsync(ctx, p, AstStatoPrenotazione.Annullata);
+                return;
+            }
             if (p.Stato != AstStatoPrenotazione.InAttesa || p.Inizio <= DateTime.Now)
                 throw new UserMessageException(AssetsMessages.Get("BookingNotPending"));
             _utility.RichiediAmministratore(ctx);
@@ -116,6 +132,12 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         public async Task RejectAsync(Dip_GG_Richiesta richiesta, string? motivo)
         {
             var (ctx, p) = await PrenotazioneAsync(richiesta);
+            if (AstApprovazioni.RevocaInAttesa(richiesta))
+            {
+                // annullamento rifiutato: la prenotazione resta confermata
+                await _richieste.RifiutaAsync(richiesta, AstUtility.Testo(motivo, 500), await _approvazioni.AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione));
+                return;
+            }
             if (p.Stato != AstStatoPrenotazione.InAttesa)
                 throw new UserMessageException(AssetsMessages.Get("BookingNotPending"));
             await _richieste.RifiutaAsync(richiesta, AstUtility.Testo(motivo, 500), await _approvazioni.AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione));
@@ -127,8 +149,11 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             var (ctx, p) = await PrenotazioneAsync(richiesta);
             if ((p.Stato != AstStatoPrenotazione.InAttesa && p.Stato != AstStatoPrenotazione.Confermata) || p.Fine <= DateTime.Now)
                 throw new UserMessageException(AssetsMessages.Get("BookingNotEditable"));
-            await _richieste.AnnullaAsync(richiesta, await _approvazioni.AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione));
-            await ImpostaAsync(ctx, p, AstStatoPrenotazione.Annullata);
+            // in attesa: si ritira (prenotazione annullata); confermata: parte la richiesta di annullamento (la prenotazione resta
+            // confermata finche' un amministratore non la approva); annullamento in attesa: si ritira
+            var esito = await _richieste.AnnullaAsync(richiesta, await _approvazioni.AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione));
+            if (esito == EsitoAnnullamento.Ritirata)
+                await ImpostaAsync(ctx, p, AstStatoPrenotazione.Annullata);
         }
 
         // ---------------------------------------------------------------------------

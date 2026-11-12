@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { AstService } from '../../../ClientServer-Service/Assets/ast.service';
@@ -41,6 +41,7 @@ export class AstBookingPageComponent {
                                                           : x.tipoRisorsa === P.AstTipoRisorsa.AutoPool ? 'car-outline' : 'desktop-outline';
 
   constructor(private navCtrl: NavController,
+              private toastCtrl: ToastController,
               public fabMenuService: FabMenuService,
               userInterfaceService: UserInterfaceService,
               private service: AstService,
@@ -117,6 +118,8 @@ export class AstBookingPageComponent {
   }
 
   public stato(x: P.AstPrenotazioneModel): string {
+    if (x.annullamentoRichiesto)
+      return this.transloco.translate('ast.pages.booking.cancelRequested');
     if (x.stato === P.AstStatoPrenotazione.InAttesa)
       return this.transloco.translate('ast.enums.statoPrenotazione.2');
     if (x.stato === P.AstStatoPrenotazione.Rifiutata)
@@ -129,7 +132,16 @@ export class AstBookingPageComponent {
       return;
     const request = new GenericRequest<F.AstIdInModel>(F.AstIdInModel);
     request.data.id = x.id;
-    this.service.PrenotazioneAnnulla(request).subscribe(res => { if (res.success) this.load(); });
+    this.service.PrenotazioneAnnulla(request).subscribe(async res => {
+      if (!res.success)
+        return;
+      // prenotazione approvata: l'annullamento e' una richiesta da approvare, la prenotazione resta confermata
+      if (res.data?.prenotazione?.annullamentoRichiesto) {
+        const toast = await this.toastCtrl.create({ message: this.transloco.translate('ast.pages.booking.cancelRequestSent'), duration: 4000, position: 'top', color: 'warning' });
+        await toast.present();
+      }
+      this.load();
+    });
   }
 
   Filter(CurrFilter: any) {

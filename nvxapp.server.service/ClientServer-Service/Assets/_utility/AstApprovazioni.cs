@@ -111,18 +111,39 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             await _Dip_GG_Richiesta.UpdateAsync(r);
         }
 
-        public async Task ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa)
+        public async Task<FaseRichiesta> ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa)
             => await _richieste.ApprovaAsync(r, await AvvisoAsync(ctx, p, risorsa));
 
-        public async Task RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo)
+        public async Task<FaseRichiesta> RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo)
             => await _richieste.RifiutaAsync(r, motivo, await AvvisoAsync(ctx, p, risorsa));
 
-        /// <summary>Annulla la richiesta aperta (o approvata) del richiedente collegata alla prenotazione, se c'e'.</summary>
-        public async Task AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa)
+        /// <summary>
+        /// Annullamento della richiesta del richiedente collegata alla prenotazione, se c'e' (null = nessuna richiesta da annullare):
+        /// in attesa si ritira; approvata apre la richiesta di annullamento da approvare (salvo sostituita: si chiude)
+        /// </summary>
+        public async Task<EsitoAnnullamento?> AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, bool sostituita = false)
         {
             var r = await RichiestaAsync(p.IdDip_GG_Richiesta);
-            if (r != null && r.IdAspNetUsers == ctx.IdUtente && (RichiestaRegole.InAttesa(r) || r.RichiestaStato == StatoRichiesta.Approvata))
-                await _richieste.AnnullaAsync(r, await AvvisoAsync(ctx, p, risorsa));
+            if (r == null || r.IdAspNetUsers != ctx.IdUtente || !RichiestaRegole.PuoAnnullare(r))
+                return null;
+            return await _richieste.AnnullaAsync(r, await AvvisoAsync(ctx, p, risorsa), sostituita);
+        }
+
+        /// <summary>la richiesta di annullamento della prenotazione (approvata) e' in attesa di decisione</summary>
+        public static bool RevocaInAttesa(Dip_GG_Richiesta? r)
+            => r?.RevocaStato != null && RichiestaRegole.StatiInAttesa.Contains(r.RevocaStato.Value);
+
+        /// <summary>id delle prenotazioni con la richiesta di annullamento in attesa</summary>
+        public async Task<HashSet<int>> RevocheInAttesaAsync(IEnumerable<Ast_Prenotazione> prenotazioni)
+        {
+            var conRichiesta = prenotazioni.Where(x => x.Stato == AstStatoPrenotazione.Confermata && x.IdDip_GG_Richiesta != null).ToList();
+            if (conRichiesta.Count == 0)
+                return new HashSet<int>();
+            var ids = conRichiesta.Select(x => x.IdDip_GG_Richiesta!.Value).Distinct().ToList();
+            var stati = RichiestaRegole.StatiInAttesa;
+            var revoche = (await _Dip_GG_Richiesta.FindAll(x => ids.Contains(x.Id) && x.RevocaStato != null && stati.Contains(x.RevocaStato.Value))
+                                                  .Select(x => x.Id).ToListAsync()).ToHashSet();
+            return conRichiesta.Where(x => revoche.Contains(x.IdDip_GG_Richiesta!.Value)).Select(x => x.Id).ToHashSet();
         }
 
         public async Task<Dip_GG_Richiesta?> RichiestaAsync(int? idDip_GG_Richiesta)
@@ -208,11 +229,13 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 
         Task AggiornaPeriodoAsync(Dip_GG_Richiesta r, Ast_Prenotazione p);
 
-        Task ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa);
+        Task<FaseRichiesta> ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa);
 
-        Task RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo);
+        Task<FaseRichiesta> RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo);
 
-        Task AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa);
+        Task<EsitoAnnullamento?> AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, bool sostituita = false);
+
+        Task<HashSet<int>> RevocheInAttesaAsync(IEnumerable<Ast_Prenotazione> prenotazioni);
 
         Task<Dip_GG_Richiesta?> RichiestaAsync(int? idDip_GG_Richiesta);
 
