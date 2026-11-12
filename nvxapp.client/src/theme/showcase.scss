@@ -108,6 +108,61 @@
   }
 }
 
+// funzionalita' raggruppate: indice in cima e intestazione di ogni gruppo
+.nvx-sc-index {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.nvx-sc-index-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--nvx-border);
+  border-radius: 999px;
+  background: var(--nvx-surface);
+  color: var(--ion-text-color);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+  }
+
+  &:hover {
+    background: var(--nvx-surface-soft);
+  }
+}
+
+.nvx-sc-group {
+  scroll-margin-top: 12px;
+}
+
+.nvx-sc-group-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 16px 0;
+
+  h2 {
+    margin: 0;
+    font-size: clamp(20px, 2.6vw, 26px);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 4px 0 0 0;
+    color: var(--nvx-text-muted);
+    font-size: 15px;
+  }
+}
+
 // passi numerati
 .nvx-sc-step-num {
   display: inline-flex;
