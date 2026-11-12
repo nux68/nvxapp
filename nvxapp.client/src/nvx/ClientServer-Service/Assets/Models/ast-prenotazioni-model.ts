@@ -36,6 +36,10 @@ export class AstPrenotazioneModel {
   public motivoRifiuto: string | null = null;
   /** confermata con la richiesta di annullamento in attesa di approvazione */
   public annullamentoRichiesto = false;
+  /** l'amministratore puo' approvarla o rifiutarla adesso (richiesta o annullamento in attesa) */
+  public daDecidere = false;
+  /** id della richiesta comune (pagine /requests) da approvare o rifiutare */
+  public idRichiesta: number | null = null;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;

@@ -48,9 +48,18 @@ export class RequestItemModel {
 export class RequestCountInModel {
 }
 
+/** contatori di un applicativo (valore di ApplicationType) */
+export class RequestCountApp {
+  public application = 0;
+  public daApprovare = 0;
+  public inAttesa = 0;
+}
+
 export class RequestCountOutModel extends ModelResult {
   public daApprovare = 0;
   public inAttesa = 0;
+  /** gli stessi contatori per applicativo (badge delle voci dei moduli, es. "Prenotazioni") */
+  public perApplicativo: RequestCountApp[] = [];
 }
 
 export class RequestListInModel {
@@ -64,6 +73,7 @@ export class RequestListOutModel extends ModelResult {
   public applicativi: number[] = [];
   public daApprovare = 0;
   public inAttesa = 0;
+  public perApplicativo: RequestCountApp[] = [];
 }
 
 export class RequestActionInModel {
@@ -74,6 +84,7 @@ export class RequestActionInModel {
 export class RequestActionOutModel extends ModelResult {
   public daApprovare = 0;
   public inAttesa = 0;
+  public perApplicativo: RequestCountApp[] = [];
 }
 
 /** payload dell'evento SignalR "RequestNotifier" */
