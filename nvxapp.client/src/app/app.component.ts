@@ -305,6 +305,13 @@ export class AppComponent implements OnInit {
       t + g.menuItem.filter(p => p.menuType === MenuType.MenuItem && s.mostra(p.component)).reduce((n, p) => n + this.menuBadge(p), 0), 0), 0);
   }
 
+  // somma dei contatori delle voci visibili di un gruppo (es. "Servizi": richieste da approvare, notifiche non lette),
+  // mostrata sull'intestazione del gruppo cosi' si vede anche a gruppo chiuso (ANALISI_INFRASTRUCTURE_RICHIESTE.md)
+  public gruppoBadge(gruppo: GroupMainMenuItem, mostra: (component: string) => boolean): number {
+    return gruppo.menuItem.filter(p => p.menuType === MenuType.MenuItem && mostra(p.component) && !this.voceDisattivata(p))
+                          .reduce((n, p) => n + this.menuBadge(p), 0);
+  }
+
   // voce soggetta a un livello di licenza (MainMenuItem.minLicense) che l'azienda non ha: resta nel menu ma disattivata
   public voceDisattivata(p: MainMenuItem): boolean {
     return p.minLicense != null && p.application != null && !this.authService.hasLicenseAtLeast(p.application, p.minLicense);
