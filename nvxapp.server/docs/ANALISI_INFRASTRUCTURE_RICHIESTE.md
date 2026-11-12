@@ -177,6 +177,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-INF.2` Categoria di notifica `richieste` e testi (it/en)
 - ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`, comandi vocali
 - ✅ `RICH-INF.4` Widget `infrastructure.requests`
+- ✅ `RICH-INF.8` Badge sull'intestazione dei gruppi del menu (es. "Servizi"): somma dei contatori delle voci visibili, come per le sezioni degli applicativi; senza, a gruppo chiuso l'arrivo di una richiesta non si vedeva (prima le voci delle richieste stavano nella sezione Presenze, che il totale lo mostrava)
 - ✅ `RICH-INF.6` (variante, commit 4f232d79) `Dip_GG_Richiesta` in Common, `CommonDbContext`, repository, `InitCommon` rigenerata
 - ✅ `RICH-INF.7` (variante) `IRichiestaTipoHandler`, `RequestService` sulla tabella comune, `RichiestaCommonService`
 - 🔄 `RICH-INF.5` Build server e client ✅; merge in `Infrastructure` con la catena finale
