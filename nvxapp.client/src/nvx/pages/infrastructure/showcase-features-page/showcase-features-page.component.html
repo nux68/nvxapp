@@ -11,17 +11,50 @@
       <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
     </section>
 
-    <section class="nvx-sc-section">
-      <div class="nvx-sc-grid">
-        @for (s of c.sezioni; track s.title) {
-          <div class="nvx-sc-card">
-            <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
-            <h3>{{ s.title }}</h3>
-            <p>{{ s.text }}</p>
-          </div>
+    @if (c.gruppi?.length) {
+      <!-- funzionalita' raggruppate: indice in cima e un blocco per gruppo, uno sotto l'altro -->
+      <nav class="nvx-sc-index">
+        @for (g of c.gruppi; track g.titolo; let i = $index) {
+          <button type="button" class="nvx-sc-index-item" (click)="vaiAlGruppo(i)">
+            @if (g.icon) { <ion-icon [name]="g.icon"></ion-icon> }
+            {{ g.titolo }}
+          </button>
         }
-      </div>
-    </section>
+      </nav>
+
+      @for (g of c.gruppi; track g.titolo; let i = $index) {
+        <section class="nvx-sc-section nvx-sc-group" [id]="'nvx-sc-gruppo-' + i">
+          <div class="nvx-sc-group-head">
+            @if (g.icon) { <div class="nvx-sc-card-icon"><ion-icon [name]="g.icon"></ion-icon></div> }
+            <div>
+              <h2>{{ g.titolo }}</h2>
+              @if (g.sottotitolo) { <p>{{ g.sottotitolo }}</p> }
+            </div>
+          </div>
+          <div class="nvx-sc-grid">
+            @for (s of g.sezioni; track s.title) {
+              <div class="nvx-sc-card">
+                <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
+                <h3>{{ s.title }}</h3>
+                <p>{{ s.text }}</p>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    } @else {
+      <section class="nvx-sc-section">
+        <div class="nvx-sc-grid">
+          @for (s of c.sezioni; track s.title) {
+            <div class="nvx-sc-card">
+              <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
+              <h3>{{ s.title }}</h3>
+              <p>{{ s.text }}</p>
+            </div>
+          }
+        </div>
+      </section>
+    }
 
     <section class="nvx-sc-band">
       <h2>{{ showcaseService.Contenuti.home.chiusuraTitolo }}</h2>
