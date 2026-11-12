@@ -12,7 +12,7 @@ This manual follows **your menu**: there is a chapter for each item of the **Com
 - **Employee**: books desks, rooms and pool cars; in the **My resources** page sees the items they hold (with the reports to confirm), the assigned vehicle and the fines concerning them.
 
 @@ /astsettings
-In the **Settings** page the CompanyPowerAdmin sets the general parameters of the module:
+In the **Settings** page (*Configuration* menu) the CompanyPowerAdmin sets the general parameters of the module:
 - **Deadline notice days**: how many days in advance the module reports the deadlines it records in the shared deadline schedule (default 30).
 - **Notifications on**: clear it and the module sends no notifications or reminders. Each user still chooses how to receive them (in the app or by email) from the notification preferences.
 - **Bookings**: maximum length of a booking (hours) and maximum advance (days); 0 = no limit. Bookings need no approval.
@@ -69,4 +69,4 @@ From the row you edit or cancel your future bookings; administrators can cancel 
 Your bookings appear in your personal calendar (Google, Outlook, Apple): the **Calendar** button opens the page with the address to add.
 
 @@ /astresources
-The **Bookable resources** page (CompanyPowerAdmin) lists desks, rooms and pool cars. With the **+** you add a resource: type, description, site, the seats for rooms and, for cars, the fleet vehicle with *Pool* use. A resource with future bookings cannot be deleted: deactivate it.
+The **Bookable resources** page (*Configuration* menu, CompanyPowerAdmin) lists desks, rooms and pool cars. With the **+** you add a resource: type, description, site, the seats for rooms and, for cars, the fleet vehicle with *Pool* use. A resource with future bookings cannot be deleted: deactivate it.

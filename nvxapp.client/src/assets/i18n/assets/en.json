@@ -2,6 +2,7 @@
   "ast": {
     "menu": {
       "section": "Company assets",
+      "settingsSection": "Configuration",
       "settings": "Settings",
       "manual": "Company assets manual",
       "vehicles": "Vehicles",

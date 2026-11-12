@@ -12,7 +12,7 @@ Questo manuale è costruito sul **tuo menu**: trovi un capitolo per ogni voce de
 - **Dipendente**: prenota postazioni, sale e auto in pool; nella pagina **Le mie risorse** vede i beni che ha in consegna (con i verbali da confermare), il veicolo assegnato e le multe che lo riguardano.
 
 @@ /astsettings
-Nella pagina **Impostazioni** il CompanyPowerAdmin imposta i parametri generali del modulo:
+Nella pagina **Impostazioni** (menu *Configurazione*) il CompanyPowerAdmin imposta i parametri generali del modulo:
 - **Giorni di preavviso delle scadenze**: con quanti giorni di anticipo il modulo segnala le scadenze che registra nello scadenzario comune (predefinito 30).
 - **Notifiche attive**: se togli la spunta il modulo non invia notifiche né promemoria. Ogni utente sceglie comunque come riceverle (nell'app o per email) dalle preferenze delle notifiche.
 - **Prenotazioni**: durata massima di una prenotazione (ore) e anticipo massimo (giorni); 0 = nessun limite. Le prenotazioni non richiedono approvazione.
@@ -69,4 +69,4 @@ Dalla riga modifichi o annulli le tue prenotazioni future; gli amministratori po
 Le tue prenotazioni compaiono nel tuo calendario personale (Google, Outlook, Apple): il pulsante **Calendario** apre la pagina con l'indirizzo da aggiungere.
 
 @@ /astresources
-La pagina **Risorse prenotabili** (CompanyPowerAdmin) elenca postazioni, sale e auto in pool. Con il **+** aggiungi una risorsa: tipo, descrizione, sede, i posti per le sale e, per le auto, il veicolo della flotta con uso *Pool*. Una risorsa con prenotazioni future non si elimina: disattivala.
+La pagina **Risorse prenotabili** (menu *Configurazione*, CompanyPowerAdmin) elenca postazioni, sale e auto in pool. Con il **+** aggiungi una risorsa: tipo, descrizione, sede, i posti per le sale e, per le auto, il veicolo della flotta con uso *Pool*. Una risorsa con prenotazioni future non si elimina: disattivala.

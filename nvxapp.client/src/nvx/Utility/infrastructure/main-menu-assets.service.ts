@@ -3,7 +3,7 @@ import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-me
 
 /*
  Voci di menu di Risorse aziendali (titoli = chiavi di traduzione ast.menu.*). Gruppo 70: sezione propria, distinta da quelle degli
- altri applicativi. Le voci compaiono se l'applicativo e' attivo per l'azienda (vedi MainMenuService); i permessi veri li
+ altri applicativi; gruppo 72: "Configurazione" (parametri del modulo); gruppo 71: dipendenti. Le voci compaiono se l'applicativo e' attivo per l'azienda (vedi MainMenuService); i permessi veri li
  controlla il server.
 */
 @Injectable({
@@ -25,9 +25,11 @@ export class MainMenuAssetsService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 700100, group: 70, title: 'ast.menu.vehicles', roles: tutti, component: 'AstVehicleListPageComponent', url: '/astvehicles', icon: 'car' },
       { menuType: MenuType.MenuItem, zorder: 700200, group: 70, title: 'ast.menu.goods', roles: tutti, component: 'AstGoodsListPageComponent', url: '/astgoods', icon: 'cube' },
       { menuType: MenuType.MenuItem, zorder: 700300, group: 70, title: 'ast.menu.bookings', roles: tutti, component: 'AstBookingPageComponent', url: '/astbookings', icon: 'calendar' },
-      { menuType: MenuType.MenuItem, zorder: 700400, group: 70, title: 'ast.menu.resources', roles: ['CompanyPowerAdmin'], component: 'AstResourceListPageComponent', url: '/astresources', icon: 'business' },
       { menuType: MenuType.MenuItem, zorder: 700800, group: 70, title: 'ast.menu.mine', roles: tutti, component: 'AstMinePageComponent', url: '/astmine', icon: 'person-circle' },
-      { menuType: MenuType.MenuItem, zorder: 700900, group: 70, title: 'ast.menu.settings', roles: ['CompanyPowerAdmin'], component: 'AstSettingsPageComponent', url: '/astsettings', icon: 'construct' },
+      // "Configurazione": parametri del modulo (risorse prenotabili e impostazioni), solo CompanyPowerAdmin
+      { menuType: MenuType.MenuHeader, zorder: 709000, group: 72, title: 'ast.menu.settingsSection', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 709100, group: 72, title: 'ast.menu.resources', roles: ['CompanyPowerAdmin'], component: 'AstResourceListPageComponent', url: '/astresources', icon: 'business' },
+      { menuType: MenuType.MenuItem, zorder: 709200, group: 72, title: 'ast.menu.settings', roles: ['CompanyPowerAdmin'], component: 'AstSettingsPageComponent', url: '/astsettings', icon: 'construct' },
     ];
   }
 
