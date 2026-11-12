@@ -61,8 +61,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
 
     public class Ast_PrenotazioneListInModel
     {
-        public DateTime Dal { get; set; }
-        public DateTime Al { get; set; }
+        // facoltative: senza, da oggi per 7 giorni (es. pagina di modifica aperta da "Nuova richiesta", che chiede solo risorse e limiti)
+        public DateTime? Dal { get; set; }
+        public DateTime? Al { get; set; }
         public int? IdAst_Risorsa { get; set; }
         public bool SoloMie { get; set; }
     }

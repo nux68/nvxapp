@@ -163,8 +163,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 var ctx = await _utility.ContestoAsync();
                 await _approvazioni.ScadiAsync(ctx);
                 var d = model.Data;
-                var dal = d.Dal == DateTime.MinValue ? DateTime.Today : d.Dal;
-                var al = d.Al <= dal ? dal.AddDays(7) : d.Al;
+                var dal = d.Dal == null || d.Dal == DateTime.MinValue ? DateTime.Today : d.Dal.Value;
+                var al = d.Al == null || d.Al <= dal ? dal.AddDays(7) : d.Al.Value;
                 if ((al - dal).TotalDays > 62)
                     al = dal.AddDays(62);
                 var cfg = await _utility.CfgAsync(ctx);

@@ -6,7 +6,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { AstService } from '../../../ClientServer-Service/Assets/ast.service';
 import * as P from '../../../ClientServer-Service/Assets/Models/ast-prenotazioni-model';
-import { astDataOraLocale, astPerInputDataOra } from '../../../Utility/Assets/ast-format.service';
+import { astDataOraLocale, astOggi, astPerInputDataOra } from '../../../Utility/Assets/ast-format.service';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 
@@ -43,6 +43,7 @@ export class AstBookingEditPageComponent extends BasePageConfirmCancelComponent<
     if (this.risorse.length === 0) {
       const request = new GenericRequest<P.AstPrenotazioneListInModel>(P.AstPrenotazioneListInModel);
       request.data.soloMie = true;
+      request.data.dal = astOggi();
       this.service.PrenotazioneList(request).subscribe(res => {
         if (res.success && res.data) {
           this.risorse = res.data.risorsa;
