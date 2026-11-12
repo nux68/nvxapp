@@ -149,7 +149,7 @@ Sotto i 992px nessun widget è più stretto di metà riga (i small vanno due per
   pulsante **Ripristina predefiniti**.
 - **Widget disponibili**: quelli non ancora scelti, raggruppati per applicativo (Funzioni base, Presenze, CRM,
   Documentale; solo i gruppi con widget), ognuno con **Aggiungi**.
-- Barra dei pulsanti: **Conferma** salva e apre la dashboard; **Annulla** ricarica la configurazione salvata.
+- Barra dei pulsanti: **Conferma** salva e apre la dashboard; **Annulla** scarta le modifiche e torna alla dashboard (prima ricaricava solo la configurazione salvata e, senza modifiche in corso, sembrava non fare nulla).
 - Classe base comune delle tre pagine: `DashboardConfigPageBase`.
 
 ### 5.3 Stile
@@ -199,3 +199,7 @@ Una chiave, una volta rilasciata, **non si cambia**: è salvata nelle dashboard 
 - Trascinamento per riordinare i widget; dimensione scelta dall'utente.
 - Dashboard predefinita decisa dall'azienda (CompanyPowerAdmin) per i propri utenti.
 - Aggiornamento in tempo reale dei widget con le notifiche SignalR già presenti.
+
+## 10. Checklist correzioni
+
+- [x] Pagine dei ruoli (User, CompanyAdmin, CompanyPowerAdmin): **Annulla** non faceva nulla di visibile (ricaricava solo la configurazione salvata); ora scarta le modifiche e torna alla dashboard (`DashboardConfigPageBase`).

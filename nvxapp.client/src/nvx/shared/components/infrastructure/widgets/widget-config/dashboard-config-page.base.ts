@@ -5,7 +5,7 @@ import { WidgetConfigComponent } from './widget-config.component';
 
 /*
  Base delle pagine dei ruoli (User, CompanyAdmin, CompanyPowerAdmin) in cui l'utente configura la propria dashboard
- (ANALISI_INFRASTRUCTURE_WIDGET.md): Conferma salva e apre la dashboard, Annulla ricarica la configurazione salvata.
+ (ANALISI_INFRASTRUCTURE_WIDGET.md): Conferma salva e apre la dashboard, Annulla scarta le modifiche e torna alla dashboard.
 */
 @Directive()
 export abstract class DashboardConfigPageBase {
@@ -19,7 +19,8 @@ export abstract class DashboardConfigPageBase {
     const btnConferma = userInterfaceService.Btn_Conferma;
     btnConferma.event = () => this.salva();
     const btnAnnulla = userInterfaceService.Btn_Annulla;
-    btnAnnulla.event = () => this.widgetConfig?.carica();
+    // le modifiche non salvate si perdono: rientrando, ionViewWillEnter ricarica la configurazione salvata
+    btnAnnulla.event = () => this.navCtrl.navigateRoot('/dashboard');
     this.buttonbar = [btnConferma, btnAnnulla];
   }
 
