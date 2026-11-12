@@ -920,6 +920,10 @@
       "renew": "Renew",
       "autoRenew": "Automatic renewal",
       "confirmRenew": "Renew the {{piano}} licence for {{prezzo}} {{valuta}}? The new period starts from the current expiry date.",
+      "cancel": "Cancel",
+      "confirmCancel": "Cancel the {{piano}} licence for {{funzione}}? Cancellation is immediate: the function will no longer be available and its menu items will disappear.",
+      "confirmCancelNoRefund": "The period already paid (until {{data}}) is not refunded.",
+      "confirmCancelShared": "The licence also covers the studio's companies: they will lose it too, unless they have their own.",
       "usersOfLimit": "Active users: {{attivi}} of {{limite}}",
       "usersUnlimited": "Active users: {{attivi}} (unlimited)"
     },
