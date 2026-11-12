@@ -138,8 +138,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       // richieste da approvare comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md): solo se l'azienda ha un applicativo che porta richieste
       { menuType: MenuType.MenuItem,   zorder: 524, group: GRUPPO_SERVIZI, title: 'menu.requestsAdmin', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "RequestListPageComponent", url: '/requestsadmin', icon: 'checkmark-done',
         badge: this.requestNotifierService.daApprovare, anyApplication: APPLICATIVI_RICHIESTE },
-      { menuType: MenuType.MenuItem,   zorder: 526, group: GRUPPO_SERVIZI, title: 'menu.requests', roles: RUOLI_AZIENDA, component: "RequestListPageComponent", url: '/requests', icon: 'paper-plane',
-        badge: this.requestNotifierService.inAttesa, anyApplication: APPLICATIVI_RICHIESTE },
+      // "Le mie richieste" non sta piu' in questa sezione: le proprie richieste si vedono nei moduli (Presenze: /attendancerequests,
+      // Prenotazioni: /astbookings); /requests resta raggiungibile dai collegamenti (es. notifiche)
       { menuType: MenuType.MenuItem,   zorder: 530, group: GRUPPO_SERVIZI, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number',
         anyApplication: APPLICATIVI_MODULI },
       // calendario personale (INF-CAL.3): feed .ics da sottoscrivere in Google / Outlook / Apple
