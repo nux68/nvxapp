@@ -198,6 +198,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
         public static readonly NotificationCategory PreseVisione = new() { Code = "presevisione", DefaultEmail = true, Ordine = 20 };
         // riepilogo AI periodico (INF-AI): l'utente lo puo' disattivare dalle preferenze
         public static readonly NotificationCategory Riepilogo = new() { Code = "riepilogo", DefaultApp = true, DefaultEmail = true, Ordine = 30 };
+        // richieste da approvare comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md): nuova richiesta agli approvatori, esito al richiedente
+        public static readonly NotificationCategory Richieste = new() { Code = "richieste", DefaultApp = true, DefaultEmail = true, Ordine = 25 };
     }
 
     /// <summary>
@@ -214,7 +216,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
     {
         public IEnumerable<NotificationCategory> Categories => new[]
         {
-            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione, NotificationCategory.Riepilogo
+            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione, NotificationCategory.Riepilogo, NotificationCategory.Richieste
         };
     }
 
