@@ -1279,4 +1279,44 @@ The statement is attached.</value>
     <value>The selected employee does not exist in this company or already has an account.</value>
     <comment>account dipendente esistente</comment>
   </data>
+  <data name="RequestStateDirect" xml:space="preserve">
+    <value>Direct entry</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStatePending" xml:space="preserve">
+    <value>Pending</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateInProgress" xml:space="preserve">
+    <value>Approval in progress</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateApproved" xml:space="preserve">
+    <value>Approved</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRejected" xml:space="preserve">
+    <value>Rejected</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokePending" xml:space="preserve">
+    <value>Approved (cancellation pending)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokeRejected" xml:space="preserve">
+    <value>Approved (cancellation rejected)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokeWithdrawn" xml:space="preserve">
+    <value>Approved (cancellation withdrawn)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevoked" xml:space="preserve">
+    <value>Cancelled (cancellation approved)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
 </root>
