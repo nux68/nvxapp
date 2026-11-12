@@ -1905,15 +1905,6 @@
         "ofTotal": "of {{total}} employees on duty",
         "justified": "{{count}} justified absences",
         "noEmployees": "No employees on duty today."
-      },
-      "requests": {
-        "title": "Requests",
-        "description": "Requests to approve (administrators) or pending (employees) and requests approved this month.",
-        "toApprove": "To approve",
-        "pending": "Pending",
-        "approvedMonth": "Approved this month",
-        "ownPending": "Your pending requests: {{count}}",
-        "open": "Go to requests"
       }
     }
   },

@@ -9,7 +9,8 @@ import { AuthService } from '../infrastructure/auth.service';
 import { SignalrService } from '../infrastructure/signalr.service';
 
 /*
- Contatori del menu "Richieste" (badge delle voci /requestlistadmin e /requestlistuser, vedi MainMenuAttendanceTrackingService):
+ Contatori delle richieste di Presenze per le pagine interne del modulo (cartellini, piano ferie). I badge del menu sono
+ quelli delle pagine comuni /requestsadmin e /requests (RequestNotifierService di Infrastructure, ANALISI_INFRASTRUCTURE_RICHIESTE.md):
    - daApprovare: richieste che l'utente (amministratore) puo' approvare adesso
    - inAttesa: richieste dell'utente in attesa di approvazione
  Si ricalcolano dopo il login (e l'impersonificazione) e all'evento SignalR "RichiestaNotifier";

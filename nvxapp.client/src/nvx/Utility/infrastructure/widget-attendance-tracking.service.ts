@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { iWidgetProvider, WidgetDefinition } from './widget.model';
 import { PresentTodayWidgetComponent } from '../../shared/components/GestionePresenze/widgets/present-today-widget/present-today-widget.component';
-import { RequestsWidgetComponent } from '../../shared/components/GestionePresenze/widgets/requests-widget/requests-widget.component';
 import { DaysToFixWidgetComponent } from '../../shared/components/GestionePresenze/widgets/days-to-fix-widget/days-to-fix-widget.component';
 import { AbsenceForecastWidgetComponent } from '../../shared/components/GestionePresenze/widgets/absence-forecast-widget/absence-forecast-widget.component';
 import { JobHoursWidgetComponent } from '../../shared/components/GestionePresenze/widgets/job-hours-widget/job-hours-widget.component';
@@ -27,18 +26,6 @@ export class WidgetAttendanceTrackingService implements iWidgetProvider {
         default: true,
         zorder: 200100,
         component: PresentTodayWidgetComponent
-      },
-      {
-        key: 'attendance.requests',
-        title: 'attendance.widgets.requests.title',
-        description: 'attendance.widgets.requests.description',
-        icon: 'create-outline',
-        // amministratori: da approvare; utenti: proprie richieste
-        roles: ['CompanyPowerAdmin', 'CompanyAdmin', 'User'],
-        size: 'small',
-        default: true,
-        zorder: 200200,
-        component: RequestsWidgetComponent
       },
       {
         // giornate da sistemare prima dell'export paghe (ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md)

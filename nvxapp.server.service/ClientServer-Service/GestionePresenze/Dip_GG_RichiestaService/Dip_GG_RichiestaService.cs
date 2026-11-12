@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -750,6 +751,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null)
                 {
                     var richieste = _dip_GG_RichiestaRepository.FindAll(x => model.Data.IdDip_GG_Richiesta.Contains(x.Id)).ToList();
+
+                    // RICH-AT.4 (ANALISI_INFRASTRUCTURE_RICHIESTE.md): permessi, prima di cambiare qualsiasi richiesta; solo per le
+                    // azioni del client: il motore del cartellino (sottoprocesso) approva per conto dell'amministratore che salva
+                    if (!isSubProcess)
+                    {
+                        bool admin = await AmministratoreAziendaAsync();
+                        foreach (var r in richieste)
+                        {
+                            var errore = VerificaPermesso(r, model.Data.RichiestaStato, model.Data.FromHR, resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo, admin);
+                            if (errore != null)
+                                throw new UserMessageException(errore);
+                        }
+                    }
+
                     foreach (var curr_richiesta in richieste)
                     {
 
@@ -1020,6 +1035,64 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
+        // utente collegato amministratore dell'azienda (CompanyAdmin, CompanyPowerAdmin)
+        private async Task<bool> AmministratoreAziendaAsync()
+        {
+            var user = await _userManager.FindByIdAsync(this.CurrentUserId);
+            if (user == null)
+                return false;
+            var ruoli = await _userManager.GetRolesAsync(user);
+            return ruoli.Contains(nameof(RoleCode.CompanyAdmin)) || ruoli.Contains(nameof(RoleCode.CompanyPowerAdmin));
+        }
+
+        // utente del dipendente che ha fatto la richiesta
+        private string? Richiedente(Dip_GG_Richiesta r)
+        {
+            var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(x => x.Id == r.IdDip_RapportoLavoro).Select(x => x.IdDip_Anagrafica).FirstOrDefault();
+            return _dip_AnagraficaRepository.FindAll(x => x.Id == idDip_Anagrafica).Select(x => x.IdAspNetUsers).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// RICH-AT.4: chi puo' portare la richiesta al nuovo stato (null = consentito, altrimenti il testo dell'errore)
+        ///  - revoca (Immessa) e cancellazione: il richiedente o un amministratore dell'azienda
+        ///  - approvazione / rifiuto per conto dell'ufficio del personale (FromHR): un amministratore dell'azienda
+        ///  - approvazione / rifiuto: un approvatore della fase corrente (richiesta o revoca); con SigleAdmin anche un
+        ///    amministratore dell'azienda; con AllAdmin / AllAdminHierarchy solo se non ha ancora deciso e, in gerarchia,
+        ///    dopo l'approvatore precedente. Una fase gia' decisa non e' un errore: SetState non la cambia
+        /// </summary>
+        private string? VerificaPermesso(Dip_GG_Richiesta r, StatoRichiesta nuovo, bool fromHR, TipoApprovazione tipo, bool admin)
+        {
+            switch (nuovo)
+            {
+                case StatoRichiesta.Immessa:
+                case StatoRichiesta.Cancellata:
+                    return admin || Richiedente(r) == this.CurrentUserId ? null : AttendanceTrackingMessages.Get("RequestNotAllowedCancel");
+
+                case StatoRichiesta.Approvata:
+                case StatoRichiesta.Rifiutata:
+                    if (fromHR)
+                        return admin ? null : AttendanceTrackingMessages.Get("RequestNotAllowedHR");
+
+                    bool revoca = r.RevocaStato != null && StatiInApprovazione.Contains(r.RevocaStato.Value);
+                    if (!revoca && !StatiInApprovazione.Contains(r.RichiestaStato))
+                        return null;
+
+                    var lista = Approvatori(revoca ? r.RevocaApprovazioneData : r.RichiestaApprovazioneData);
+                    int idx = lista.FindIndex(x => x.IdAspNetUsers == this.CurrentUserId);
+                    var negato = AttendanceTrackingMessages.Get("RequestNotApprover");
+                    if (tipo == TipoApprovazione.SigleAdmin)
+                        return admin || idx >= 0 ? null : negato;
+                    if (idx < 0 || lista[idx].RichiestaStato != StatoRichiesta.Immessa)
+                        return negato;
+                    if (tipo == TipoApprovazione.AllAdminHierarchy && idx > 0 && lista[idx - 1].RichiestaStato != StatoRichiesta.Approvata)
+                        return negato;
+                    return null;
+
+                default:
+                    return null;
+            }
+        }
+
         private void UpdateRetVal_SetStatus(Dip_GG_Richiesta_SetState_OutModel outModel,
                                             Dip_GG_RichiestaModel? dip_GG_Richiesta = null,
                                             Dip_GG_TimbraturaModel? dip_GG_Timbratura = null,
@@ -1248,6 +1321,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null)
             {
+                // senza tracking: sotto lo stato della fase corrente viene portato a quello personale dell'approvatore e non deve
+                // finire salvato da un SetState successivo nella stessa richiesta HTTP (es. chat AI: elenco e poi approvazione).
+                // Year/Month non filtrano (filtro commentato qui sotto): pagine delle richieste, chat AI e hub delle richieste comuni
+                // (ANALISI_INFRASTRUCTURE_RICHIESTE.md) vogliono tutte le richieste ancora da decidere, di qualunque mese
                 richiesta = _dip_GG_RichiestaRepository.FindAll(x => idDipRappList.Contains(x.IdDip_RapportoLavoro)
                                                                                   // &&
                                                                                   //(
@@ -1256,6 +1333,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                                                   //    (x.Data.Year < Year || (x.Data.Year == Year && x.Data.Month < Month)) && (x.DataA.Year > Year || (x.DataA.Year == Year && x.DataA.Month > Month))
                                                                                   //)
                                                                                   )
+                                                                          .AsNoTracking()
                                                                           .ToList();
 
                 if (richiesta.Count > 0)
@@ -1292,7 +1370,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                             {
                                                 case TipoApprovazione.AllAdminHierarchy:
-                                                    if (lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
+                                                    // il primo approvatore della gerarchia non ha un precedente (RICH-AT.4)
+                                                    if (idxReq == 0 || lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
                                                     {
                                                         showReq = true;
                                                         //forzatura 
@@ -1375,7 +1454,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
 
             // prima quelle da approvare, poi per data (piu' recenti prima)
-            richiesta = richiesta.OrderByDescending(x => InApprovazione(x)).ThenByDescending(x => x.Data).ToList();
+            // una richiesta con revoca passa da entrambe le fasi: una sola volta
+            richiesta = richiesta.GroupBy(x => x.Id).Select(g => g.First())
+                                 .OrderByDescending(x => InApprovazione(x)).ThenByDescending(x => x.Data).ToList();
 
             return richiesta;
         }

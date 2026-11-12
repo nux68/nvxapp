@@ -12,10 +12,10 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["timbratura"]                = "/timeclockuser",
             ["timeclockuser"]             = "/timeclockuser",
             ["presenze"]                  = "/timeclockuser",
-            ["richieste"]                 = "/requestlistuser",
-            ["le mie richieste"]          = "/requestlistuser",
-            ["mie richieste"]             = "/requestlistuser",
-            ["requestlistuser"]           = "/requestlistuser",
+            ["richieste"]                 = "/requests",
+            ["le mie richieste"]          = "/requests",
+            ["mie richieste"]             = "/requests",
+            ["requestlistuser"]           = "/requests",
             ["calendario"]                = "/usertimesheet",
             ["il mio calendario"]         = "/usertimesheet",
             ["mio calendario"]            = "/usertimesheet",
@@ -25,8 +25,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["richiesta timbratura"]      = "/requestclockinguser",
 
             // --- CompanyAdmin / PowerAdmin ---
-            ["richieste admin"]           = "/requestlistadmin",
-            ["requestlistadmin"]          = "/requestlistadmin",
+            ["richieste admin"]           = "/requestsadmin",
+            ["requestlistadmin"]          = "/requestsadmin",
             ["calendario hr"]             = "/poweradmintimesheet",
             ["poweradmintimesheet"]       = "/poweradmintimesheet",
             ["calendario admin"]          = "/admintimesheet",
@@ -64,8 +64,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["time clock"]                = "/timeclockuser",
             ["clock in"]                  = "/timeclockuser",
             ["attendance"]                = "/timeclockuser",
-            ["requests"]                  = "/requestlistuser",
-            ["my requests"]               = "/requestlistuser",
+            ["requests"]                  = "/requests",
+            ["my requests"]               = "/requests",
             ["calendar"]                  = "/usertimesheet",
             ["timesheet"]                 = "/usertimesheet",
             ["my timesheet"]              = "/usertimesheet",
@@ -75,7 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["clocking request"]          = "/requestclockinguser",
 
             // --- CompanyAdmin / PowerAdmin ---
-            ["admin requests"]            = "/requestlistadmin",
+            ["admin requests"]            = "/requestsadmin",
             ["hr calendar"]               = "/poweradmintimesheet",
             ["hr timesheet"]              = "/poweradmintimesheet",
             ["admin calendar"]            = "/admintimesheet",
@@ -117,8 +117,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         // con "le mie richieste" / "il mio calendario"
         private static readonly List<RoleRoute> _roleRoutes =
         [
-            new("richieste",  "/requestlistadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
-            new("requests",   "/requestlistadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
+            new("richieste",  "/requestsadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
+            new("requests",   "/requestsadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
             new("calendario", "/poweradmintimesheet", "CompanyPowerAdmin"),
             new("calendar",   "/poweradmintimesheet", "CompanyPowerAdmin"),
             new("timesheet",  "/poweradmintimesheet", "CompanyPowerAdmin"),
