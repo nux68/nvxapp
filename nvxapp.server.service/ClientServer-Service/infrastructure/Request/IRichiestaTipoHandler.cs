@@ -55,6 +55,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
     /// <summary>stato comune (per colori e filtri); il testo preciso lo da' il modulo in StatoTesto</summary>
     public enum RequestState { InAttesa = 0, InApprovazione = 1, Approvata = 2, Rifiutata = 3, Annullata = 4 }
 
+    public enum RequestCancelKind { Ritira = 0, ChiediAnnullamento = 1, RitiraAnnullamento = 2 }
+
     public class RequestCounts
     {
         public int DaApprovare { get; set; }
@@ -98,6 +100,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
         public bool CanReject { get; set; }
 
         public bool CanCancel { get; set; }
+
+        /// <summary>
+        /// cosa fa "annulla" del richiedente (RichiestaRegole): Ritira la richiesta in attesa, ChiediAnnullamento di quella
+        /// approvata, RitiraAnnullamento ancora in attesa (la pratica si chiude, resta approvata)
+        /// </summary>
+        public RequestCancelKind CancelKind { get; set; }
 
         /// <summary>pagina del client con il dettaglio (facoltativa) e stato da passarle</summary>
         public string? Url { get; set; }
