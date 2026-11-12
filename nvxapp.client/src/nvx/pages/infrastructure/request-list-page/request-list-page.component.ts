@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
-import { AlertController, NavController } from '@ionic/angular';
+import { ActionSheetController, AlertController, NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -14,6 +14,7 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { RequestNotifierService } from '../../../Utility/infrastructure/request-notifier.service';
 import { RequestUiService } from '../../../Utility/infrastructure/request-ui.service';
+import { RequestNewItem } from '../../../Utility/infrastructure/request-ui.model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 /*
@@ -54,6 +55,7 @@ export class RequestListPageComponent {
   constructor(router: Router,
               private navCtrl: NavController,
               private alertController: AlertController,
+              private actionSheetCtrl: ActionSheetController,
               private requestService: RequestService,
               private requestNotifierService: RequestNotifierService,
               private requestUiService: RequestUiService,
@@ -180,12 +182,25 @@ export class RequestListPageComponent {
     ];
   }
 
-  // voci "Nuova richiesta" dei moduli attivi (solo nella pagina dell'utente)
+  // "+" del fab (solo nella pagina dell'utente): un solo pulsante "Nuova richiesta" che apre l'elenco delle pagine di invio dei
+  // moduli attivi in un action sheet, come nelle altre pagine dell'applicazione; con una sola voce apre direttamente la pagina
   private preparaNuove() {
-    this.fabMenuService.fabMenuItem = this.admin
+    const nuove = this.admin ? [] : this.requestUiService.NewRequests;
+    this.fabMenuService.fabMenuItem = nuove.length === 0
       ? []
-      : this.requestUiService.NewRequests.map(n => new FabMenuItem(this.transloco.translate(n.title), 'add-circle-outline',
-                                                                   () => this.navCtrl.navigateForward(n.url)));
+      : [new FabMenuItem(this.transloco.translate('pages.requestList.new'), 'add-circle-outline',
+                         () => nuove.length === 1 ? this.navCtrl.navigateForward(nuove[0].url) : this.scegliNuova(nuove))];
+  }
+
+  private async scegliNuova(nuove: RequestNewItem[]) {
+    const sheet = await this.actionSheetCtrl.create({
+      header: this.transloco.translate('pages.requestList.new'),
+      buttons: [
+        ...nuove.map(n => ({ text: this.transloco.translate(n.title), icon: n.icon ?? 'add-circle-outline', handler: () => { this.navCtrl.navigateForward(n.url); } })),
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+      ],
+    });
+    await sheet.present();
   }
 
   private async approva(item: RequestItemModel) {
