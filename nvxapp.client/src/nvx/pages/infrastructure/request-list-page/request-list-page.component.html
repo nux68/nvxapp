@@ -10,7 +10,7 @@
     <ion-card-content>
 
       <ion-row>
-        <ion-col size-xs="12" [sizeMd]="applicativi.length > 1 ? '8' : '12'">
+        <ion-col size-xs="12" [sizeMd]="applicativoFisso === null && applicativi.length > 1 ? '8' : '12'">
           <ion-segment [value]="filtro" (ionChange)="onFiltroChange($event.detail.value)" [scrollable]="true">
             @for (f of filtri; track f.value) {
               <ion-segment-button [value]="f.value">
@@ -19,8 +19,8 @@
             }
           </ion-segment>
         </ion-col>
-        <!-- filtro per applicativo solo quando le richieste arrivano da piu' applicativi -->
-        @if (applicativi.length > 1) {
+        <!-- filtro per applicativo solo quando le richieste arrivano da piu' applicativi (e la pagina non e' di un solo modulo) -->
+        @if (applicativoFisso === null && applicativi.length > 1) {
           <ion-col size-xs="12" size-md="4">
             <ion-item>
               <ion-select [value]="applicativo ?? 'all'" (ionChange)="onApplicativoChange($event.detail.value)" interface="popover"
