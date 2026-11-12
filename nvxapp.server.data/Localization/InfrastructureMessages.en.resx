@@ -558,7 +558,7 @@
     <comment>licenze</comment>
   </data>
   <data name="LicenseCancelled" xml:space="preserve">
-    <value>{0} licence cancelled: the function is no longer available.</value>
+    <value>{0} licence cancelled.</value>
     <comment>licenze</comment>
   </data>
   <data name="NotificationCategory_licenze" xml:space="preserve">
@@ -586,7 +586,7 @@
     <comment>licenze</comment>
   </data>
   <data name="LicenseCancelNotifyStudioText" xml:space="preserve">
-    <value>The firm {0} cancelled the licence that covered your company: {1} are no longer available. The data is kept: to use them again, subscribe to a licence from Licence management.</value>
+    <value>The firm {0} cancelled the licence that covered your company. Functions no longer available: {1}. The data is kept: to use them again, subscribe to a licence from Licence management.</value>
     <comment>licenze</comment>
   </data>
   <data name="LicenseRenewed" xml:space="preserve">
