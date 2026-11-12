@@ -221,7 +221,12 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-CICLO.1` Infrastructure: regole e testi comuni (`RichiestaRegole`, `richiesta-stato.ts`), `CancelKind` e tre pulsanti nella pagina `/requests` — branch `Infrastructure_Dev_ciclorichieste`, compilata
 - ✅ `RICH-CICLO.2` Presenze: ritiro dell'annullamento che chiude la pratica (`RevocaStato = Cancellata`), niente seconda richiesta di annullamento (`RequestRevokeClosed`), filtro Approvate con lo stato comune, stato comune in calendario, note spese (utente, admin con `RevocaStato` sulle spese, dettaglio) — branch `AttendanceTracking_Dev_ciclorichieste`, compilata
 - ✅ `RICH-CICLO.3` Prenotazioni: stato comune (`AstApprovazioni.StatoComeRichiesta`) nella pagina `/astbookings` e nelle richieste comuni, tre pulsanti del richiedente — branch `Assets_Dev_ciclorichieste`, compilata
-- ⏳ `RICH-CICLO.4` Catena dei merge
+- ✅ `RICH-CICLO.4` Catena dei merge (12/11/2026, AllFunction 7c1b1828)
+
+#### `RICH-APP` – Richieste per modulo (12/11/2026)
+- ✅ `RICH-APP.1` Infrastructure: le pagine comuni accettano `RequestRouteData` (`requestAdmin`, `requestApplication`) da una route del modulo: solo le richieste di quell'applicativo, niente filtro per applicativo, solo le sue "Nuova richiesta"; tolta la voce "Le mie richieste" (`/requests`) dalla sezione Notifiche e scadenze — branch `Infrastructure_Dev_richiesteapp`, compilata
+- ⏳ `RICH-APP.2` Presenze: route `/attendancerequests` e `/attendancerequestsadmin`, voci "Richieste" del menu Presenze verso di esse con i badge delle sole presenze, comandi vocali
+- ⏳ `RICH-APP.3` Catena dei merge
 
 #### Merge
 - ⏳ `RICH-M` DB ricreato e catena: Infrastructure → AttendanceTracking, Assets → Applicativo completo (AllFunction_Dev, AllFunction)
