@@ -600,5 +600,5 @@ Richiesta: poter **disdire un piano** per non avere nel menu voci di funzioni ch
 - [x] Testi client (it, en) e manuale `/licensemanagement` (it, en)
 - [x] Build server e client
 - [x] Prova API su DB di prova (Infrastructure_Dev, listino Cumulativo): disdetta di un Free e di uno Standard in debug, copertura tolta, rinnovo automatico spento, annullato fuori elenco, pagamento nello storico, nuova sottoscrizione possibile; negata all'Admin, allo studio sull'abbonamento dell'azienda e su un abbonamento già disdetto
-- [ ] Verifica in AllFunction (moduli registrati): le voci di menu della funzione spariscono dopo la disdetta
-- [ ] Merge nella catena (Infrastructure → rami → AllFunction), su conferma
+- [x] Merge nella catena (Infrastructure → rami → AllFunction), 12/11/2026
+- [x] Verifica in AllFunction (moduli registrati): CRM Free compare nel menu e sparisce dopo la disdetta; col Cumulativo compaiono i sei applicativi e spariscono tutti dopo la disdetta
