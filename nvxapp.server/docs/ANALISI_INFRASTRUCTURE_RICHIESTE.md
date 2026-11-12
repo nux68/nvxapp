@@ -4,7 +4,7 @@ Analisi del 12/11/2026, branch **Infrastructure_Dev** (lavoro su `Infrastructure
 Documenti collegati: `ANALISI_ASSETS_APPLICATIVO.md` (decisione `AST-D4`, prenotazioni senza approvazione),
 `ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md` (servizi comuni `INF-SVC`), `ANALISI_INFRASTRUCTURE_WIDGET.md` (stub per ramo).
 
-Stato: **decisioni confermate il 12/11/2026 (§7), lavori in corso**.
+Stato: **variante del 12/11/2026 (§3bis): `Dip_GG_Richiesta` in Common; lavori in corso**.
 
 ---
 
@@ -95,6 +95,41 @@ Cartella `ClientServer-Service/infrastructure/Request/`:
 - Pagina Prenotazioni e "Le mie prenotazioni": stato InAttesa/Rifiutata visibile; pagina risorsa: spunta "Richiede approvazione".
 - Comandi vocali: `AstBookResource` risponde "richiesta inviata, in attesa di approvazione" quando la risorsa la richiede.
 
+## 3bis. Variante del 12/11/2026 (sostituisce la parte "dati" del §3)
+
+Richiesta dell'utente: **`Dip_GG_Richiesta` esce dallo schema delle Presenze e va in Common**; le approvazioni delle
+Presenze restano come sono (responsabili di reparto, strategie, gerarchia, revoca); le prenotazioni di Risorse
+aziendali si appoggiano a `Dip_GG_Richiesta` per il funzionamento di base; la pagina delle approvazioni resta quella
+comune di Infrastructure (§3.2). Decisioni: le prenotazioni le approvano gli **amministratori dell'azienda** (D1 invariata);
+il DB si ricrea: le modifiche entrano nelle migration `Init` unificate (`InitCommon`, `AttendanceTracking_Init`, `InitAssets`), nessuna copia dei dati.
+
+**Dati (Common, come `Dip_RapportoAutovetture` in INF-COM.3)**
+- `Dip_GG_Richiesta` (partial) in `Entities/Tenant/Common`, stessi campi di oggi piu':
+  `IdAz_Anagrafica` (azienda, obbligatorio), `IdAspNetUsers` (utente richiedente), `IdDip_Anagrafica` (facoltativo: chi prenota
+  una risorsa puo' non essere un dipendente censito), `IdDip_RapportoLavoro` diventa **facoltativo e senza FK** in Common
+  (lo valorizzano le Presenze). Enum `TipoRichiesta` + `PrenotazioneRisorsa = 5`; `StatoRichiesta` e la cronologia invariati.
+- Le navigazioni verso le Presenze (rapporto di lavoro, giustificativi, timbrature, note spese) stanno in
+  `Dip_GG_Richiesta.Presenze.cs` del ramo AttendanceTracking; il contesto delle Presenze mappa la tabella con
+  `ExcludeFromMigrations()`. Scritture dal repository Common (`Dip_GG_RichiestaCommonRepository`).
+
+**Motore**
+- Presenze: `Dip_GG_RichiestaService` resta il motore dei suoi tipi (Send, SetState con permessi, effetti sul cartellino), sulla tabella comune.
+- Infrastructure: `RichiestaCommonService`, motore semplice per i tipi approvati dagli amministratori dell'azienda
+  (oggi: prenotazioni): crea la richiesta con l'elenco degli amministratori nella cronologia, approva/rifiuta/annulla,
+  notifica (categoria `richieste`) e chiama il gestore del tipo per gli effetti.
+- Pagine: `RequestService` legge **direttamente** la tabella comune (mie = `IdAspNetUsers`; da approvare = richieste
+  dell'azienda che l'amministratore puo' decidere adesso, calcolate dalla cronologia e dalla strategia del tipo);
+  i testi e le azioni li da' il gestore del tipo `IRichiestaTipoHandler` (sostituisce `IRequestProvider`):
+  Presenze → `SetState` esistente; Risorse aziendali → `RichiestaCommonService` + aggiornamento di `Ast_Prenotazione`.
+
+**Risorse aziendali**: `Ast_Prenotazione.IdDip_GG_Richiesta` (richiesta collegata, se la risorsa richiede approvazione) e
+lo stato della prenotazione allineato all'esito (serve al controllo dei conflitti); tolte le colonne di decisione
+aggiunte prima (`IdAspNetUsersDecisione`, `DataDecisione`, `MotivoRifiuto`, `RichiestaApprovazione`): stanno nella richiesta.
+
+**Cosa resta del lavoro precedente**: pagine, menu, badge, widget, notifier SignalR, categoria di notifica, testi,
+comandi vocali, client di Presenze e Risorse aziendali, correzioni di `SetState`. Si rifanno: il contratto server
+dell'hub, i provider dei due moduli, la parte dati di Risorse aziendali.
+
 ## 4. Visibilità e permessi
 
 | Ruolo | Le mie richieste | Richieste da approvare |
@@ -126,6 +161,8 @@ Le pagine sono di Infrastructure: visibili se l'azienda ha **almeno uno** tra Pr
 | D2 | Pagine di Presenze | ✅ Sostituite dalle pagine dell'hub (redirect delle vecchie rotte) |
 | D3 | Correzioni di sicurezza/robustezza di `SetState` e `Get_Dip_GG_Richiesta` | ✅ Farle subito in `RICH-AT.4` |
 | D4 | Richiesta non decisa all'ora di inizio | ✅ Annullata automaticamente con notifica |
+| D5 | Dove stanno le richieste | ✅ (variante 12/11) `Dip_GG_Richiesta` in Common per tutti i moduli (§3bis) |
+| D6 | Dati esistenti | ✅ Il DB si ricrea: modifiche nelle migration `Init`, nessuna copia |
 
 ## 8. Checklist
 
@@ -136,25 +173,25 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-D` Decisioni D1–D4 (§7) confermate il 12/11/2026
 
 #### `RICH-INF` – Infrastructure
-- ✅ `RICH-INF.1` `IRequestProvider`, modelli, `RequestHubService`, `RequestController`, notifier SignalR generico
+- ✅ `RICH-INF.1` (prima versione, a provider) `IRequestProvider`, `RequestHubService`, `RequestController`, notifier SignalR generico
 - ✅ `RICH-INF.2` Categoria di notifica `richieste` e testi (it/en)
-- ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`
+- ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`, comandi vocali
 - ✅ `RICH-INF.4` Widget `infrastructure.requests`
-- 🔄 `RICH-INF.5` Build server e client ✅ (12/11/2026); merge in `Infrastructure` con la catena finale
+- ⏳ `RICH-INF.6` (variante) `Dip_GG_Richiesta` in Common, `CommonDbContext`, repository, `InitCommon` rigenerata
+- ⏳ `RICH-INF.7` (variante) `IRichiestaTipoHandler`, `RequestService` sulla tabella comune, `RichiestaCommonService`
+- ⏳ `RICH-INF.5` Build server e client, merge in `Infrastructure`
 
 #### `RICH-AT` – Presenze
-- ⏳ `RICH-AT.1` `AtRequestProvider` su `Dip_GG_RichiestaService` (testi di tipo/stato/dettaglio lato server)
-- ⏳ `RICH-AT.2` Redirect di `requestlistuser`/`requestlistadmin`, voci di menu tolte, dettaglio nota spese come azione `request-ui-attendance-tracking`
-- ⏳ `RICH-AT.3` Widget e chat AI (richieste in attesa, approvazione) tramite l'hub; rotte vocali
-- ⏳ `RICH-AT.4` Correzioni: permessi in `SetState`, indice della gerarchia, filtro per periodo
-- ⏳ `RICH-AT.5` Prova delle tre strategie di approvazione e della revoca
+- ✅ `RICH-AT.1` (prima versione) `AtRequestProvider`, testi lato server — da trasformare in gestore del tipo (`RICH-AT.6`)
+- ✅ `RICH-AT.2` Redirect di `requestlistuser`/`requestlistadmin`, voci di menu tolte, dettaglio nota spese come azione `request-ui-attendance-tracking`
+- ✅ `RICH-AT.3` Widget `attendance.requests` tolto (sostituito da `infrastructure.requests`), chat AI e rotte vocali
+- ✅ `RICH-AT.4` Correzioni: permessi in `SetState`, indice della gerarchia, AsNoTracking, `vistaApprovatore`; filtro per periodo lasciato disattivato (motivato)
+- ✅ `RICH-AT.5` Prova API su DB usa e getta (SigleAdmin, revoca, gerarchia)
+- ⏳ `RICH-AT.6` (variante) Tabella in Common: partial con le navigazioni, mapping `ExcludeFromMigrations`, scritture dal repository Common, nuovi campi valorizzati, gestore del tipo, `AttendanceTracking_Init` rigenerata, nuova prova
 
 #### `RICH-AST` – Risorse aziendali
-- ⏳ `RICH-AST.1` `Ast_Risorsa.RichiedeApprovazione`, stati InAttesa/Rifiutata, migration
-- ⏳ `RICH-AST.2` Conflitti con le InAttesa, approva/rifiuta/annulla, scadenza all'ora di inizio
-- ⏳ `RICH-AST.3` `AstRequestProvider`, notifiche
-- ⏳ `RICH-AST.4` Pagine (risorsa, prenotazioni, le mie risorse), feed .ics, widget, comandi vocali
-- ⏳ `RICH-AST.5` Aggiornare `ANALISI_ASSETS_APPLICATIVO.md` (chiusura `AST-D4`)
+- ✅ `RICH-AST.1`–`RICH-AST.5` (prima versione, ciclo proprio in `Ast_Prenotazione`): spunta "Richiede approvazione", conflitti con le in attesa, scadenza pigra, notifiche, client, comandi vocali, analisi del modulo; prova API 25/25
+- ⏳ `RICH-AST.6` (variante) Prenotazione appoggiata a `Dip_GG_Richiesta` (`IdDip_GG_Richiesta`), colonne di decisione tolte, gestore del tipo su `RichiestaCommonService`, `InitAssets` rigenerata (senza migration separata), nuova prova
 
 #### Merge
-- ⏳ `RICH-M` Catena: Infrastructure → AttendanceTracking, Assets → Applicativo completo (AllFunction_Dev, AllFunction)
+- ⏳ `RICH-M` DB ricreato e catena: Infrastructure → AttendanceTracking, Assets → Applicativo completo (AllFunction_Dev, AllFunction)

@@ -34,7 +34,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request.Mode
 
     public class RequestActionInModel
     {
-        // "<Prefix>:<Id>"
+        // id di Dip_GG_Richiesta
         public string Key { get; set; } = string.Empty;
         // solo per il rifiuto
         public string? Motivo { get; set; }
