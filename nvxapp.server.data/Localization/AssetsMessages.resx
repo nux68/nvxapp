@@ -229,6 +229,9 @@
   <data name="BookingCancelAlreadyRequested" xml:space="preserve">
     <value>L'annullamento è già stato chiesto ed è in attesa di approvazione.</value>
   </data>
+  <data name="BookingCancelClosed" xml:space="preserve">
+    <value>L'annullamento è già stato deciso: la prenotazione resta approvata.</value>
+  </data>
   <data name="RequestStateApproved" xml:space="preserve">
     <value>Approvata</value>
   </data>
