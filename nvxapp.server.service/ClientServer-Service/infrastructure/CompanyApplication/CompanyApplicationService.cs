@@ -9,6 +9,8 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
+using Microsoft.EntityFrameworkCore;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -39,6 +41,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         private readonly IApplicationActivationAuthorizer _applicationActivationAuthorizer;
         private readonly ILicenseGuard _licenseGuard;
         private readonly ILicenseSubscriptionManager _licenseSubscriptionManager;
+        private readonly IScadenzaRepository _scadenzaRepository;
+        private readonly IPresaVisioneRepository _presaVisioneRepository;
 
         public CompanyApplicationService(IMapper mapper,
                                          UserManager<ApplicationUser> userManager,
@@ -54,10 +58,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                                          ApplicationDbContextRegistry applicationDbContextRegistry,
                                          IApplicationActivationAuthorizer applicationActivationAuthorizer,
                                          ILicenseGuard licenseGuard,
-                                         ILicenseSubscriptionManager licenseSubscriptionManager) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                         ILicenseSubscriptionManager licenseSubscriptionManager,
+                                         IScadenzaRepository scadenzaRepository,
+                                         IPresaVisioneRepository presaVisioneRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _licenseGuard = licenseGuard;
             _licenseSubscriptionManager = licenseSubscriptionManager;
+            _scadenzaRepository = scadenzaRepository;
+            _presaVisioneRepository = presaVisioneRepository;
             _companyRepository = companyRepository;
             _companyApplicationRepository = companyApplicationRepository;
             _tenantProvisioningService = tenantProvisioningService;
@@ -196,6 +204,51 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
             return attivati;
         }
 
+        /*
+         Disdetta della licenza dell'azienda (ANALISI_INFRASTRUCTURE_LICENZE.md §15.9), da chiamare dopo aver annullato
+         l'abbonamento e dentro la transazione della disdetta. Per ogni applicativo della licenza che resta senza copertura
+         (nessun'altra licenza propria, dello studio o cumulativa): applicativo disattivato, schema eliminato con tutti i dati,
+         scadenze e prese visione del modulo eliminate, cache degli inizializzatori azzerata (una nuova sottoscrizione riparte
+         da uno schema nuovo con i dati iniziali). Con il sistema licenze spento non fa nulla: gli applicativi si usano senza licenza.
+         I file su disco (chiavi nelle tabelle dello schema) non vengono toccati.
+         Restituisce gli applicativi i cui dati sono stati eliminati.
+        */
+        public async Task<List<ApplicationType>> RemoveForLicenseCancelAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito)
+        {
+            var rimossi = new List<ApplicationType>();
+            if (!await _licenseGuard.EnabledAsync())
+                return rimossi;
+
+            var applicativi = ambito == nvxapp.server.data.Entities.Public.AmbitoLicenza.Cumulativo
+                              ? LicenseGuard.Funzioni.Select(x => (ApplicationType)(int)x).ToList()
+                              : new List<ApplicationType> { (ApplicationType)(int)ambito };
+            foreach (var application in applicativi.Where(a => a.IsActivatable() && _applicationDbContextRegistry.IsRegistered(a)))
+            {
+                var copertura = await _licenseGuard.CoverageAsync(idCompany, (nvxapp.server.data.Entities.Public.AmbitoLicenza)(int)application, reale: true);
+                if (copertura.Livello != null)
+                    continue;
+
+                var row = _companyApplicationRepository.FindAll(x => x.IdCompany == idCompany && x.ApplicationType == application).FirstOrDefault();
+                if (row?.Active == true)
+                {
+                    row.Active = false;
+                    row.DeactivationDate = DateTime.Now;
+                    await _companyApplicationRepository.UpdateAsync(row);
+                }
+
+                var schema = await _tenantProvisioningService.DropApplicationSchemaAsync(idCompany, application);
+                int app = (int)application;
+                await _scadenzaRepository.FindAll(x => x.IdCompany == idCompany && x.Application == app).ExecuteDeleteAsync();
+                await _presaVisioneRepository.FindAll(x => x.IdCompany == idCompany && x.Application == app).ExecuteDeleteAsync();
+                CompanyInitializerRegistry.Forget(idCompany, application);
+                UserInitializerRegistry.Forget(idCompany, application);
+
+                if (row != null || schema != null)
+                    rimossi.Add(application);
+            }
+            return rimossi;
+        }
+
         // attiva o disattiva (gia' autorizzato): attivazione con schema e dati iniziali, disattivazione con soli dati conservati
         private async Task<nvxapp.server.data.Entities.Public.CompanyApplication?> SetActiveAsync(Company company, ApplicationType application, bool active,
                                                                                                   nvxapp.server.data.Entities.Public.CompanyApplication? row)
@@ -278,6 +331,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
         // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6): chi puo' cambiare lo stato, elenco con licenza e diritti, attivazione da sottoscrizione
         public Task<bool> CanChangeAsync(int idCompany, ApplicationType application, int idFinancialAdvisor = 0);
+
+        // disdetta (§15.9): elimina schema e dati degli applicativi della licenza rimasti senza copertura
+        public Task<List<ApplicationType>> RemoveForLicenseCancelAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito);
         public Task<List<CompanyApplicationModel>> ApplicationsWithRightsAsync(int idCompany, int idFinancialAdvisor = 0);
         public Task<List<ApplicationType>> ActivateForLicenseAsync(int idCompany, nvxapp.server.data.Entities.Public.AmbitoLicenza ambito);
     }
