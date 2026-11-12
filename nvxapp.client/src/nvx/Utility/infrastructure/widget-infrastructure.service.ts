@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { iWidgetProvider, WidgetDefinition } from './widget.model';
 import { AskAssistantWidgetComponent } from '../../shared/components/infrastructure/widgets/ask-assistant-widget/ask-assistant-widget.component';
 import { DeadlinesWidgetComponent } from '../../shared/components/infrastructure/widgets/deadlines-widget/deadlines-widget.component';
+import { RequestsWidgetComponent } from '../../shared/components/infrastructure/widgets/requests-widget/requests-widget.component';
 import { RUOLI_AZIENDA } from './notification-notifier.service';
+import { APPLICATIVI_RICHIESTE } from './request-ui.model';
 
 /*
  Widget delle funzioni base (ANALISI_INFRASTRUCTURE_WIDGET.md), disponibili in ogni ramo e per ogni utente.
@@ -35,6 +37,19 @@ export class WidgetInfrastructureService implements iWidgetProvider {
         default: false,
         zorder: 200,
         component: DeadlinesWidgetComponent
+      },
+      // richieste da approvare comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md, RICH-INF.4): solo con un applicativo che porta richieste
+      {
+        key: 'infrastructure.requests',
+        title: 'widgets.requests.title',
+        description: 'widgets.requests.description',
+        icon: 'checkmark-done-outline',
+        roles: RUOLI_AZIENDA,
+        anyApplication: APPLICATIVI_RICHIESTE,
+        size: 'small',
+        default: true,
+        zorder: 150,
+        component: RequestsWidgetComponent
       }
     ];
   }

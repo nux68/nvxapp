@@ -19,6 +19,8 @@ export interface WidgetDefinition {
   key: string;
   /** applicativo a cui appartiene (assente = Infrastructure): il widget c'e' solo se l'applicativo e' attivo per l'azienda */
   application?: ApplicationType;
+  /** widget di Infrastructure disponibile solo se l'azienda ha almeno uno di questi applicativi (es. le richieste) */
+  anyApplication?: ApplicationType[];
   /** chiavi di traduzione del titolo e della descrizione (pagina di configurazione) */
   title: string;
   description: string;
