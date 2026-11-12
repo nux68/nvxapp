@@ -64,7 +64,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 if (id == null || !prenotazioni.TryGetValue(id.Value, out var p))
                 {
                     // prenotazione cancellata (es. risorsa eliminata): la richiesta resta solo in lettura
-                    item.StatoTesto = AssetsMessages.Get("RequestStateCancelled");
+                    item.StatoTesto = RichiestaRegole.TestoStato(StatoRichiesta.Cancellata, null);
                     item.Stato = RequestState.Annullata;
                     item.CanApprove = item.CanReject = item.CanCancel = false;
                     continue;
@@ -75,16 +75,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                 item.Dettaglio = Dettaglio(p);
                 bool revocaInAttesa = p.Stato == AstStatoPrenotazione.Confermata && AstApprovazioni.RevocaInAttesa(r);
                 item.Stato = revocaInAttesa ? RequestState.InAttesa : Stato(p.Stato);
-                item.StatoTesto = revocaInAttesa ? AssetsMessages.Get("RequestStateRevokePending")
-                    : p.Stato == AstStatoPrenotazione.Confermata && r.RevocaStato == StatoRichiesta.Rifiutata ? AssetsMessages.Get("RequestStateRevokeRejected")
-                    : p.Stato switch
-                {
-                    AstStatoPrenotazione.Confermata => AssetsMessages.Get("RequestStateApproved"),
-                    AstStatoPrenotazione.Rifiutata => AstApprovazioni.Motivo(r) is string m ? AssetsMessages.Get("RequestStateRejectedReason", m)
-                                                                                              : AssetsMessages.Get("RequestStateRejected"),
-                    AstStatoPrenotazione.Annullata => AssetsMessages.Get("RequestStateCancelled"),
-                    _ => AssetsMessages.Get("RequestStatePending"),
-                };
+                // testo comune a tutti i tipi di richiesta (ciclo unico), con il motivo del rifiuto
+                var (statoRichiesta, statoRevoca) = AstApprovazioni.StatoComeRichiesta(p, r);
+                item.StatoTesto = RichiestaRegole.TestoStato(statoRichiesta, statoRevoca)
+                                  + (p.Stato == AstStatoPrenotazione.Rifiutata && AstApprovazioni.Motivo(r) is string m ? ": " + m : string.Empty);
                 bool inAttesa = p.Stato == AstStatoPrenotazione.InAttesa;
                 // da decidere: la prenotazione in attesa (prima dell'inizio) o l'annullamento di una confermata (prima della fine)
                 item.CanApprove = item.CanApprove && ((inAttesa && p.Inizio > ora) || (revocaInAttesa && p.Fine > ora));
