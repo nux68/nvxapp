@@ -227,7 +227,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
           ?? res.data?.actionResults?.find(r => r.navigate != null)?.navigate
           ?? null;
 
-        // nel testo della navigazione il server mette la route ("/requestlistadmin"): si mostra e si
+        // nel testo della navigazione il server mette la route ("/requestsadmin"): si mostra e si
         // pronuncia il nome della voce di menu ("Richieste")
         const responce = this.withPageTitle(res.data?.responce ?? '', navigatePayload?.route);
         const speechText = this.withPageTitle(res.data?.speechText ?? '', navigatePayload?.route);

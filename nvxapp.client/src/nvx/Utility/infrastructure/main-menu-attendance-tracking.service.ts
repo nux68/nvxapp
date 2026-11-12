@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
-import { RichiestaNotifierService } from '../GestionePresenze/richiesta-notifier.service';
 import { LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Injectable({
@@ -9,8 +8,9 @@ import { LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Accoun
 // i titoli delle voci sono chiavi di traduzione (attendance.menu.*), tradotte nel template con la pipe transloco
 export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
-  // badge delle voci "Richieste": da approvare (amministratore) e in attesa (dipendente)
-  constructor(private richiestaNotifierService: RichiestaNotifierService) { }
+  // le voci "Richieste" (da approvare / le mie, con i badge) sono di Infrastructure: pagine comuni /requestsadmin e /requests
+  // (ANALISI_INFRASTRUCTURE_RICHIESTE.md), insieme alle richieste degli altri applicativi
+  constructor() { }
 
   public get Pages4SuperUser(): MainMenuItem[] { return []; }
   public get Pages4Admin(): MainMenuItem[] { return []; }
@@ -19,7 +19,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
-      { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'attendance.menu.richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create', badge: this.richiestaNotifierService.daApprovare },
       { menuType: MenuType.MenuItem, zorder: 2200, group: 0, title: 'attendance.menu.calendarioHR', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'calendar-number' },
       { menuType: MenuType.MenuItem, zorder: 2240, group: 0, title: 'attendance.menu.anomalie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AnomaliePageComponent", url: '/attendanceanomalies', icon: 'alert-circle' },
       { menuType: MenuType.MenuItem, zorder: 2250, group: 0, title: 'attendance.menu.quadraturaMensile', roles: ['CompanyPowerAdmin'], component: "QuadraturaMensilePageComponent", url: '/quadraturamensile', icon: 'checkmark-done-circle' },
@@ -86,7 +85,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuHeader, zorder: 1000, group: 1, title: 'attendance.menu.presenze', roles: ['User'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 2050, group: 1, title: 'attendance.menu.timbraturaInSede', component: "TimbraturaQrPageComponent", url: '/timbraturaqr', icon: 'qr-code-outline' },
       { menuType: MenuType.MenuItem, zorder: 2000, group: 1, title: 'attendance.menu.timbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'finger-print' },
-      { menuType: MenuType.MenuItem, zorder: 3000, group: 1, title: 'attendance.menu.richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'create', badge: this.richiestaNotifierService.inAttesa },
       { menuType: MenuType.MenuItem, zorder: 4000, group: 1, title: 'attendance.menu.calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'calendar-number' },
       { menuType: MenuType.MenuItem, zorder: 4200, group: 1, title: 'attendance.menu.lavoroAgile', component: "LavoroAgilePageComponent", url: '/lavoroagile', icon: 'home-outline' },
       { menuType: MenuType.MenuItem, zorder: 4100, group: 1, title: 'attendance.menu.mieiTurni', component: "MieiTurniPageComponent", url: '/mieiturni', icon: 'repeat' },
