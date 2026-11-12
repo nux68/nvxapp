@@ -1169,6 +1169,7 @@
       "confirmDelete": "Eliminare l'indirizzo del calendario? I calendari in cui l'hai aggiunto non riceveranno più le scadenze."
     },
     "requestList": {
+      "new": "Nuova richiesta",
       "title": "Le mie richieste",
       "titleAdmin": "Richieste da approvare",
       "filter": {
