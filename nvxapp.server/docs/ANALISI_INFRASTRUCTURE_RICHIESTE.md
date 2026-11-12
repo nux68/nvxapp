@@ -219,8 +219,8 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 
 #### `RICH-CICLO` – Ciclo unico delle richieste (§3ter)
 - ✅ `RICH-CICLO.1` Infrastructure: regole e testi comuni (`RichiestaRegole`, `richiesta-stato.ts`), `CancelKind` e tre pulsanti nella pagina `/requests` — branch `Infrastructure_Dev_ciclorichieste`, compilata
-- ⏳ `RICH-CICLO.2` Presenze: ritiro dell'annullamento che chiude la pratica, niente seconda richiesta di annullamento, stato comune nelle pagine
-- ⏳ `RICH-CICLO.3` Prenotazioni: stato comune nella pagina `/astbookings` e nelle richieste comuni
+- ✅ `RICH-CICLO.2` Presenze: ritiro dell'annullamento che chiude la pratica (`RevocaStato = Cancellata`), niente seconda richiesta di annullamento (`RequestRevokeClosed`), filtro Approvate con lo stato comune, stato comune in calendario, note spese (utente, admin con `RevocaStato` sulle spese, dettaglio) — branch `AttendanceTracking_Dev_ciclorichieste`, compilata
+- ✅ `RICH-CICLO.3` Prenotazioni: stato comune (`AstApprovazioni.StatoComeRichiesta`) nella pagina `/astbookings` e nelle richieste comuni, tre pulsanti del richiedente — branch `Assets_Dev_ciclorichieste`, compilata
 - ⏳ `RICH-CICLO.4` Catena dei merge
 
 #### Merge
