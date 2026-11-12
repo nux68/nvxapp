@@ -225,7 +225,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 
 #### `RICH-APP` – Richieste per modulo (12/11/2026)
 - ✅ `RICH-APP.1` Infrastructure: le pagine comuni accettano `RequestRouteData` (`requestAdmin`, `requestApplication`) da una route del modulo: solo le richieste di quell'applicativo, niente filtro per applicativo, solo le sue "Nuova richiesta"; tolta la voce "Le mie richieste" (`/requests`) dalla sezione Notifiche e scadenze — branch `Infrastructure_Dev_richiesteapp`, compilata
-- ⏳ `RICH-APP.2` Presenze: route `/attendancerequests` e `/attendancerequestsadmin`, voci "Richieste" del menu Presenze verso di esse con i badge delle sole presenze, comandi vocali
+- ✅ `RICH-APP.2` Presenze: route `/attendancerequests` e `/attendancerequestsadmin`, voci "Richieste" del menu Presenze verso di esse con i badge delle sole presenze (`daApprovareDi` / `inAttesaDi`), comandi vocali — branch `AttendanceTracking_Dev_richiesteapp`, compilata
 - ⏳ `RICH-APP.3` Catena dei merge
 
 #### Merge
