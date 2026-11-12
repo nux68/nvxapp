@@ -26,6 +26,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         - cambio di piano sulla stessa funzione: il nuovo abbonamento parte da oggi e il precedente viene annullato
           (nessun calcolo pro-rata in questa fase)
         - al rinnovo si rifotografano prezzo, limiti (utenti, clienti, spazio) ed etichette dal piano, se esiste ancora ed e' attivo (§5.1)
+        - disdetta: immediata, l'abbonamento diventa Annullato e la funzione esce dal menu; nessun rimborso (§15.8)
     */
     public interface ILicenseSubscriptionManager
     {
@@ -34,6 +35,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
         /// <summary>rinnova; automatico = dalla manutenzione notturna (null = non rinnovabile adesso, es. gestito dal provider)</summary>
         Task<SubscribeResult?> RenewAsync(Lic_Abbonamento abbonamento, bool automatico, string? returnUrl);
+
+        /// <summary>disdetta immediata: Annullato e rinnovo automatico spento (nessun rimborso del periodo residuo)</summary>
+        Task<Lic_Abbonamento> CancelAsync(Lic_Abbonamento abbonamento);
 
         /// <summary>livello piu' alto con cui lo studio copre l'azienda per la funzione (null = nessuno)</summary>
         Task<LivelloLicenza?> StudioCoverageLevelAsync(int idFinancialAdvisor, AmbitoLicenza ambito);
@@ -257,6 +261,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             abbonamento.DataUltimoAvviso = null;
             retVal.Abbonamento = await _abbonamentoRepository.UpdateAsync(abbonamento);
             return retVal;
+        }
+
+        public async Task<Lic_Abbonamento> CancelAsync(Lic_Abbonamento abbonamento)
+        {
+            if (abbonamento.Stato == StatoAbbonamento.Annullato)
+                throw new UserMessageException(InfrastructureMessages.Get("LicenseNotCancellable"));
+            abbonamento.Stato = StatoAbbonamento.Annullato;
+            abbonamento.RinnovoAutomatico = false;
+            return await _abbonamentoRepository.UpdateAsync(abbonamento);
         }
 
         public async Task<LivelloLicenza?> StudioCoverageLevelAsync(int idFinancialAdvisor, AmbitoLicenza ambito)
