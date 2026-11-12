@@ -37,6 +37,13 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         /// In modalita' singola non fa nulla.
         /// </summary>
         Task<List<string>> DropCompanySchemasAsync(int idCompany, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Elimina lo schema di un solo applicativo di un'azienda con tutti i dati (DROP SCHEMA ... CASCADE), per la disdetta
+        /// della licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §15.9). Mai Common. Usa la connessione di PublicDbContext: dentro una
+        /// sua transazione si annulla con il rollback. Restituisce lo schema eliminato, null se non esisteva o in modalita' singola.
+        /// </summary>
+        Task<string?> DropApplicationSchemaAsync(int idCompany, ApplicationType application, CancellationToken cancellationToken = default);
     }
 
     public sealed class TenantProvisioningService : ITenantProvisioningService
@@ -155,6 +162,23 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
                 _logger.LogInformation("[Tenancy] Schema {Schema} eliminato (azienda {IdCompany}).", schema, idCompany);
             }
             return schemas;
+        }
+
+        public async Task<string?> DropApplicationSchemaAsync(int idCompany, ApplicationType application, CancellationToken cancellationToken = default)
+        {
+            if (application == ApplicationType.Common)
+                throw new InvalidOperationException("Lo schema Common non si elimina con la disdetta di una licenza.");
+
+            var schema = TenantSchemaName.For(idCompany, application);
+            if (!(await CompanySchemasAsync(idCompany, cancellationToken)).Contains(schema))
+                return null;
+
+            // un identificatore non puo' essere un parametro SQL: il nome e' validato e quotato da TenantSchemaName
+            string dropSchemaSql = "DROP SCHEMA IF EXISTS " + TenantSchemaName.Quote(schema) + " CASCADE";
+            await _publicDbContext.Database.ExecuteSqlRawAsync(dropSchemaSql, cancellationToken);
+            _logger.LogWarning("[Tenancy] Schema {Schema} eliminato per la disdetta della licenza (azienda {IdCompany}, {Application}).",
+                               schema, idCompany, application);
+            return schema;
         }
 
         private async Task MigrateSchemaAsync(ApplicationType application, string schema, bool createSchema, CancellationToken cancellationToken)
