@@ -122,14 +122,15 @@ Nessuna migrazione: si leggono solo tabelle esistenti.
 
 | # | Punto | Stato |
 |---|---|---|
-| CMP-W.1 | Endpoint `Cmp_WidgetScadenzeGet` (scadenzario comune, solo amministratori) | ✅ fatta, da mergiare |
-| CMP-W.2 | Endpoint `Cmp_WidgetGdprGet` (conteggi registro GDPR, solo amministratori) | ✅ fatta, da mergiare |
-| CMP-W.3 | Client API `cmp-widget.service.ts` e modelli | ✅ fatta, da mergiare |
-| CMP-W.4 | Widget `compliance.deadlines` | ✅ fatta, da mergiare |
-| CMP-W.5 | Widget `compliance.trainingStatus` (riusa `Cmp_FormazioneStato`) | ✅ fatta, da mergiare |
-| CMP-W.6 | Widget `compliance.gdpr` | ✅ fatta, da mergiare |
-| CMP-W.7 | Widget `compliance.mine` (riusa `Cmp_Mine`, solo data della visita) | ✅ fatta, da mergiare |
-| CMP-W.8 | Registrazione in `widget-compliance.service.ts` | ✅ fatta, da mergiare |
-| CMP-W.9 | Traduzioni it/en `cmp.widgets` | ✅ fatta, da mergiare |
-| CMP-W.10 | Build server e client | ✅ fatta |
+| CMP-W.1 | Endpoint `Cmp_WidgetScadenzeGet` (scadenzario comune, solo amministratori) | ✅ fatta, mergiata |
+| CMP-W.2 | Endpoint `Cmp_WidgetGdprGet` (conteggi registro GDPR, solo amministratori) | ✅ fatta, mergiata |
+| CMP-W.3 | Client API `cmp-widget.service.ts` e modelli | ✅ fatta, mergiata |
+| CMP-W.4 | Widget `compliance.deadlines` | ✅ fatta, mergiata |
+| CMP-W.5 | Widget `compliance.trainingStatus` (riusa `Cmp_FormazioneStato`) | ✅ fatta, mergiata |
+| CMP-W.6 | Widget `compliance.gdpr` | ✅ fatta, mergiata |
+| CMP-W.7 | Widget `compliance.mine` (riusa `Cmp_Mine`, solo data della visita) | ✅ fatta, mergiata |
+| CMP-W.8 | Registrazione in `widget-compliance.service.ts` | ✅ fatta, mergiata |
+| CMP-W.9 | Traduzioni it/en `cmp.widgets` | ✅ fatta, mergiata |
+| CMP-W.10 | Build server e client | ✅ fatta, mergiata |
 | CMP-W.11 | Prova manuale in AllFunction con Compliance attivo (dopo la catena dei merge) | ⏳ da fare |
+| CMP-W.12 | Merge Compliance_Dev → Compliance → AllFunction_Dev → AllFunction | ✅ fatta (12/11/2026) |
