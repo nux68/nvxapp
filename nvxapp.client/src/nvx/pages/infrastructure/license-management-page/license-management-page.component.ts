@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -6,7 +7,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  AmbitoLicenza, FonteCopertura, LicenseAutoRenewPutInModel, LicenseFunctionStatusModel, LicenseOfferModel, LicenseRenewInModel,
+  AmbitoLicenza, FonteCopertura, LicenseAutoRenewPutInModel, LicenseCancelInModel, LicenseFunctionStatusModel, LicenseOfferModel, LicenseRenewInModel,
   LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscriptionModel, StatoAbbonamento, TipoSoggettoLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
@@ -14,7 +15,7 @@ import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Accou
 /*
  Gestione licenze dell'azienda o dello studio (ANALISI_INFRASTRUCTURE_LICENZE.md §4.3, §6, §10):
     - stato per funzione (Presenze, CRM, Documentale): livello, da dove viene (propria o dello studio), scadenza, limite utenti
-    - licenze sottoscritte: rinnovo e rinnovo automatico (solo PowerAdmin)
+    - licenze sottoscritte: rinnovo, rinnovo automatico e disdetta (solo PowerAdmin); la disdetta toglie subito la funzione dal menu
     - sottoscrizione o cambio piano dal listino risolto (l'azienda coperta dallo studio vede solo i piani superiori)
     - storico dei pagamenti; per lo studio, le aziende coperte dalle sue licenze
  Pagina di sola consultazione con azioni: i form stanno nella pagina di sottoscrizione.
@@ -136,6 +137,37 @@ export class LicenseManagementPageComponent {
       else
         this.load();
     });
+  }
+
+  // disdetta immediata (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8): la funzione esce dal menu, nessun rimborso
+  async disdici(a: LicenseSubscriptionModel) {
+    const t = (k: string, p?: any) => this.transloco.translate(k, p);
+    const message = [
+      t('pages.licenseManagement.confirmCancel', {
+        piano: a.descrizionePiano || t('pages.license.level' + a.livello),
+        funzione: t('pages.license.function' + a.ambito)
+      }),
+      a.prezzo > 0 && a.stato === StatoAbbonamento.Attivo
+        ? t('pages.licenseManagement.confirmCancelNoRefund', { data: formatDate(a.dataScadenza, 'dd/MM/yyyy', 'en-US') })
+        : '',
+      a.disponibileSuCompany ? t('pages.licenseManagement.confirmCancelShared') : ''
+    ].filter(x => x).join(' ');
+    if (!await this.collectionDialogService.ConfirmCancelDialog(message))
+      return;
+    const request = new GenericRequest<LicenseCancelInModel>(LicenseCancelInModel);
+    request.data.idAbbonamento = a.id;
+    this.licenseService.LicenseCancel(request).subscribe(res => {
+      if (res.success) {
+        this.messaggio = res.data?.messages?.[0]?.text ?? null;
+        // rilegge applicativi e licenza: le voci di menu della funzione disdetta spariscono
+        this.userNavigationService.RefreshLicense();
+      }
+      this.load();
+    });
+  }
+
+  disdicibile(a: LicenseSubscriptionModel): boolean {
+    return !!this.status?.canManage && a.stato !== StatoAbbonamento.Annullato;
   }
 
   rinnovabile(a: LicenseSubscriptionModel): boolean {
