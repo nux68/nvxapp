@@ -38,12 +38,19 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         // l'amministratore collegato puo' approvarla o rifiutarla adesso (richiesta o annullamento in attesa): id della richiesta comune
         public bool DaDecidere { get; set; }
         public int? IdRichiesta { get; set; }
-        // richiedente: ritira la richiesta ancora in attesa ("Annulla")
+        // richiedente: ritira la richiesta ancora in attesa o la richiesta di annullamento ancora in attesa ("Annulla"),
+        // come la revoca delle presenze (RichiestaRegole.PuoAnnullare)
         public bool Ritirabile { get; set; }
         // richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato)
         public bool AnnullamentoChiedibile { get; set; }
-        // annullamento gia' chiesto e rifiutato (o ritirato): pratica conclusa, resta approvata
+        // annullamento chiesto e rifiutato: pratica conclusa, resta approvata
         public bool AnnullamentoRifiutato { get; set; }
+        // annullamento chiesto e ritirato dal richiedente: pratica conclusa, resta approvata
+        public bool AnnullamentoRitirato { get; set; }
+        // annullata perche' l'annullamento (revoca) e' stato approvato
+        public bool Revocata { get; set; }
+        // prenotazione soggetta ad approvazione (con richiesta comune): confermata = "Approvata"
+        public bool ConRichiesta { get; set; }
         /// <summary>prenotazione dell'utente collegato</summary>
         public bool Mia { get; set; }
         /// <summary>chi ha prenotato: solo per le proprie e per gli amministratori</summary>
