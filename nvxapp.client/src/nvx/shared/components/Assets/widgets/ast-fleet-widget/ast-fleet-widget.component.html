@@ -1,0 +1,40 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'ast.widgets.noData' | transloco }}</div>
+} @else if (dati.veicoliAttivi === 0) {
+  <div class="nvx-w-empty">{{ 'ast.widgets.fleet.noVehicles' | transloco }}</div>
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'ast.widgets.fleet.open' | transloco }}</button>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="dati.scadute > 0" [class.success]="dati.scadute === 0" (click)="apri()">
+      <div class="valore">{{ dati.scadute }}</div>
+      <div class="etichetta">{{ 'ast.widgets.fleet.expired' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dati.inArrivo > 0" (click)="apri()">
+      <div class="valore">{{ dati.inArrivo }}</div>
+      <div class="etichetta">{{ 'ast.widgets.fleet.expiring' | transloco: { n: dati.giorniPreavviso } }}</div>
+    </div>
+  </div>
+
+  @if (dati.multeDaNotificare > 0) {
+    <div class="nvx-w-muted nvx-ast-alert">{{ 'ast.widgets.fleet.fines' | transloco: { n: dati.multeDaNotificare } }}</div>
+  }
+
+  @if (dati.scadenze.length === 0) {
+    <div class="nvx-w-empty">{{ 'ast.widgets.fleet.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-ast-list">
+      @for (s of dati.scadenze; track $index) {
+        <li>
+          <button type="button" (click)="apriVeicolo(s)">
+            <span class="nvx-ast-date" [class.danger]="s.scaduta" [class.warning]="!s.scaduta">{{ data(s) }}</span>
+            <span class="desc">{{ s.targa }} · {{ s.descrizione }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'ast.widgets.fleet.open' | transloco }}</button>
+}

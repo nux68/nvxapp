@@ -492,4 +492,7 @@
   <data name="ChatOpenGoodLabel" xml:space="preserve">
     <value>Bene</value>
   </data>
+  <data name="WidgetContractDeadline" xml:space="preserve">
+    <value>Contratto di {0}</value>
+  </data>
 </root>
