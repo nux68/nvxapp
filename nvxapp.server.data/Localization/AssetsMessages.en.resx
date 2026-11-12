@@ -228,4 +228,268 @@
     <value>Company resources: bookings</value>
     <comment>categoria di notifica</comment>
   </data>
+  <data name="ChatCategoryBookings" xml:space="preserve">
+    <value>Room, desk and car bookings</value>
+  </data>
+  <data name="ChatCategoryResources" xml:space="preserve">
+    <value>Fleet and company assets</value>
+  </data>
+  <data name="ChatPeriodDay" xml:space="preserve">
+    <value>on {0}</value>
+  </data>
+  <data name="ChatPeriodRange" xml:space="preserve">
+    <value>from {0} to {1}</value>
+  </data>
+  <data name="ChatNextDays" xml:space="preserve">
+    <value>in the next {0} days</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Operation failed: {0}</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>... and {0} more.</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>I didn't understand the date "{0}". Could you repeat it?</value>
+  </data>
+  <data name="ChatInvalidTime" xml:space="preserve">
+    <value>I didn't understand the time "{0}". Could you repeat it?</value>
+  </data>
+  <data name="ChatFromQuestion" xml:space="preserve">
+    <value>From which day?</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ChatToQuestion" xml:space="preserve">
+    <value>Until which day?</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="ChatDateQuestion" xml:space="preserve">
+    <value>For which day?</value>
+  </data>
+  <data name="ChatDateLabel" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="ChatStartQuestion" xml:space="preserve">
+    <value>From what time?</value>
+  </data>
+  <data name="ChatStartLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ChatEndQuestion" xml:space="preserve">
+    <value>Until what time?</value>
+  </data>
+  <data name="ChatEndLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="ChatEndBeforeStart" xml:space="preserve">
+    <value>The end time ({0}) must be after the start time ({1}). Until what time?</value>
+  </data>
+  <data name="ChatResourceQuestion" xml:space="preserve">
+    <value>Which resource? (e.g. meeting room, a desk, a car)</value>
+  </data>
+  <data name="ChatResourceLabel" xml:space="preserve">
+    <value>Resource</value>
+  </data>
+  <data name="ChatResourceTypeQuestion" xml:space="preserve">
+    <value>Which kind of resource: room, desk or car?</value>
+  </data>
+  <data name="ChatResourceTypeLabel" xml:space="preserve">
+    <value>Resource type</value>
+  </data>
+  <data name="ChatResourceType_0" xml:space="preserve">
+    <value>desk</value>
+  </data>
+  <data name="ChatResourceType_1" xml:space="preserve">
+    <value>room</value>
+  </data>
+  <data name="ChatResourceType_2" xml:space="preserve">
+    <value>pool car</value>
+  </data>
+  <data name="ChatResourceSeats" xml:space="preserve">
+    <value>{0} seats</value>
+  </data>
+  <data name="ChatResourcesGeneric" xml:space="preserve">
+    <value>resources</value>
+  </data>
+  <data name="ChatResourcesOfType_0" xml:space="preserve">
+    <value>desks</value>
+  </data>
+  <data name="ChatResourcesOfType_1" xml:space="preserve">
+    <value>rooms</value>
+  </data>
+  <data name="ChatResourcesOfType_2" xml:space="preserve">
+    <value>pool cars</value>
+  </data>
+  <data name="ChatNoResources" xml:space="preserve">
+    <value>There are no bookable {0}.</value>
+  </data>
+  <data name="ChatResourceNotFound" xml:space="preserve">
+    <value>I can't find the resource "{0}". Bookable resources: {1}.</value>
+  </data>
+  <data name="ChatResourceAmbiguous" xml:space="preserve">
+    <value>I found {0} resources for "{1}": {2}. Which one?</value>
+  </data>
+  <data name="ChatMyBookingsDisplayName" xml:space="preserve">
+    <value>My bookings</value>
+  </data>
+  <data name="ChatMyBookingsDescription" xml:space="preserve">
+    <value>Lists the user's room, desk and company car bookings in a period (not leave or absence requests)</value>
+  </data>
+  <data name="ChatMyBookingsNone" xml:space="preserve">
+    <value>You have no bookings {0}.</value>
+  </data>
+  <data name="ChatMyBookingsTitle" xml:space="preserve">
+    <value>You have {0} bookings {1}:</value>
+  </data>
+  <data name="ChatFreeResourcesDisplayName" xml:space="preserve">
+    <value>Free resources</value>
+  </data>
+  <data name="ChatFreeResourcesDescription" xml:space="preserve">
+    <value>Tells which rooms, desks or pool cars are free on a day or in a time slot</value>
+  </data>
+  <data name="ChatFreeResourcesNone" xml:space="preserve">
+    <value>None of the {0} is free on {1}.</value>
+  </data>
+  <data name="ChatFreeResourcesTitle" xml:space="preserve">
+    <value>{0} of {1} {2} free on {3}:</value>
+  </data>
+  <data name="ChatAvailabilityTitle" xml:space="preserve">
+    <value>Availability of {0} on {1}:</value>
+  </data>
+  <data name="ChatAvailabilityBusy" xml:space="preserve">
+    <value>{0}: booked {1}</value>
+  </data>
+  <data name="ChatAvailabilityFree" xml:space="preserve">
+    <value>{0}: free all day</value>
+  </data>
+  <data name="ChatFleetDeadlinesDisplayName" xml:space="preserve">
+    <value>Fleet deadlines</value>
+  </data>
+  <data name="ChatFleetDeadlinesDescription" xml:space="preserve">
+    <value>Lists company vehicle deadlines (road tax, insurance, inspection, service, rental or lease contract), overdue and due within N days</value>
+  </data>
+  <data name="ChatDeadlineTypeQuestion" xml:space="preserve">
+    <value>Which deadline: road tax, insurance, inspection, service or contract?</value>
+  </data>
+  <data name="ChatDeadlineTypeLabel" xml:space="preserve">
+    <value>Deadline type</value>
+  </data>
+  <data name="ChatVehicleQuestion" xml:space="preserve">
+    <value>Which vehicle? (plate or model)</value>
+  </data>
+  <data name="ChatVehicleLabel" xml:space="preserve">
+    <value>Vehicle</value>
+  </data>
+  <data name="ChatVehicleNotFound" xml:space="preserve">
+    <value>I can't find the vehicle "{0}" among the active ones.</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Within how many days?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="ChatDeadlineKm" xml:space="preserve">
+    <value>(at {0} km)</value>
+  </data>
+  <data name="ChatDeadlineContract" xml:space="preserve">
+    <value>End of {0} contract</value>
+  </data>
+  <data name="ChatFleetDeadlinesNone" xml:space="preserve">
+    <value>No fleet deadlines in the next {0} days{1}.</value>
+  </data>
+  <data name="ChatFleetDeadlinesOverdue" xml:space="preserve">
+    <value>{0} overdue deadlines{1}:</value>
+  </data>
+  <data name="ChatFleetDeadlinesTitle" xml:space="preserve">
+    <value>{0} deadlines in the next {1} days{2}:</value>
+  </data>
+  <data name="ChatAssignedGoodsDisplayName" xml:space="preserve">
+    <value>Assigned assets</value>
+  </data>
+  <data name="ChatAssignedGoodsDescription" xml:space="preserve">
+    <value>Lists the company assets (PCs, phones, badges) and the vehicle assigned to the user or, for administrators, to an employee</value>
+  </data>
+  <data name="ChatPersonQuestion" xml:space="preserve">
+    <value>Which employee?</value>
+  </data>
+  <data name="ChatPersonLabel" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="ChatAssignedGoodsOthersNotAllowed" xml:space="preserve">
+    <value>You can only see the assets assigned to you: ask "which assets do I have?".</value>
+  </data>
+  <data name="ChatAssignedGoodsNoneFor" xml:space="preserve">
+    <value>No assets or vehicles are assigned to "{0}".</value>
+  </data>
+  <data name="ChatPersonAmbiguous" xml:space="preserve">
+    <value>I found {0} employees for "{1}": {2}. Which one?</value>
+  </data>
+  <data name="ChatAssignedGoodsTitleFor" xml:space="preserve">
+    <value>{0} has {1} assigned items:</value>
+  </data>
+  <data name="ChatAssignedGoodsNoneMine" xml:space="preserve">
+    <value>You have no assets or vehicles assigned.</value>
+  </data>
+  <data name="ChatAssignedGoodsTitleMine" xml:space="preserve">
+    <value>You have {0} assigned items:</value>
+  </data>
+  <data name="ChatAssignedVehicle" xml:space="preserve">
+    <value>Vehicle {0}</value>
+  </data>
+  <data name="ChatAssignedSince" xml:space="preserve">
+    <value>since {0}</value>
+  </data>
+  <data name="ChatAssignedToConfirm" xml:space="preserve">
+    <value>delivery receipt to confirm</value>
+  </data>
+  <data name="ChatBookResourceDisplayName" xml:space="preserve">
+    <value>Book a resource</value>
+  </data>
+  <data name="ChatBookResourceDescription" xml:space="preserve">
+    <value>Books a room, desk or pool car for the user on a day and time slot (not for leave or absence requests)</value>
+  </data>
+  <data name="ChatBookResourceSummary" xml:space="preserve">
+    <value>booking of {resource} on {date} from {start} to {end}</value>
+  </data>
+  <data name="ChatTitleQuestion" xml:space="preserve">
+    <value>What is it for?</value>
+  </data>
+  <data name="ChatTitleLabel" xml:space="preserve">
+    <value>Purpose</value>
+  </data>
+  <data name="ChatBookResourceNoneFree" xml:space="preserve">
+    <value>No "{0}" resource is free on {1}.</value>
+  </data>
+  <data name="ChatBookResourceDone" xml:space="preserve">
+    <value>Booked: {0}, {1}.</value>
+  </data>
+  <data name="ChatCancelBookingDisplayName" xml:space="preserve">
+    <value>Cancel one of my bookings</value>
+  </data>
+  <data name="ChatCancelBookingDescription" xml:space="preserve">
+    <value>Cancels one of the user's future bookings (room, desk or company car)</value>
+  </data>
+  <data name="ChatCancelBookingSummary" xml:space="preserve">
+    <value>cancel the booking {resource} {date} {start}</value>
+  </data>
+  <data name="ChatCancelBookingNone" xml:space="preserve">
+    <value>I can't find any of your bookings to cancel matching that.</value>
+  </data>
+  <data name="ChatCancelBookingAmbiguous" xml:space="preserve">
+    <value>You have {0} matching bookings: {1}. Please tell me the resource, day or time.</value>
+  </data>
+  <data name="ChatCancelBookingDone" xml:space="preserve">
+    <value>Booking cancelled: {0}, {1}.</value>
+  </data>
+  <data name="ChatOpenVehicleLabel" xml:space="preserve">
+    <value>Vehicle</value>
+  </data>
+  <data name="ChatOpenGoodLabel" xml:space="preserve">
+    <value>Asset</value>
+  </data>
 </root>
