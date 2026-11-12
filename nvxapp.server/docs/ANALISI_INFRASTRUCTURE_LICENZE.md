@@ -636,5 +636,5 @@ Comportamento (`LicenseService.LicenseCancel`):
 - [x] Testi server e client (it, en), conferma con avviso di eliminazione definitiva, manuale `/licensemanagement`
 - [x] Build server e client
 - [x] Prova API in AllFunction (prova a secco su AllFunction_Dev + questo ramo, DB usa e getta, 29 controlli): schema CRM eliminato e applicativo disattivato alla disdetta, Common conservato, notifica al PowerAdmin; nuova sottoscrizione che ricrea lo schema con tutte le tabelle; CRM coperto anche dal Cumulativo: schema conservato e notifica "nessun dato eliminato"; disdetta del Cumulativo: restano solo gli schemi Common; disdetta dello studio: notifica all'azienda e al PowerAdmin dello studio, schema dell'azienda conservato
-- [ ] Merge nella catena e cancellazione del worktree
+- [x] Merge nella catena (fino ad AllFunction, build server e client di AllFunction) e cancellazione del worktree, 12/11/2026
 - [ ] (rami dei moduli) eliminazione dei file su disco dell'applicativo prima del `DROP SCHEMA`
