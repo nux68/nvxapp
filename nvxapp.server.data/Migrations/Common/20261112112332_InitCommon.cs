@@ -221,6 +221,45 @@ namespace nvxapp.server.data.Migrations.Common
                 });
 
             migrationBuilder.CreateTable(
+                name: "Dip_GG_Richiesta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsers = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    IdDip_Anagrafica = table.Column<int>(type: "integer", nullable: true),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: true),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RichiestaTipo = table.Column<int>(type: "integer", nullable: false),
+                    Dati = table.Column<string>(type: "text", nullable: false),
+                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
+                    RichiestaApprovazioneData = table.Column<string>(type: "text", nullable: false),
+                    RevocaStato = table.Column<int>(type: "integer", nullable: true),
+                    RevocaApprovazioneData = table.Column<string>(type: "text", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_Richiesta", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Richiesta_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Richiesta_Dip_Anagrafica_IdDip_Anagrafica",
+                        column: x => x.IdDip_Anagrafica,
+                        principalTable: "Dip_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dip_RapportoAutovetture",
                 columns: table => new
                 {
@@ -333,6 +372,26 @@ namespace nvxapp.server.data.Migrations.Common
                 column: "IdPar_Competenza");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_Richiesta_IdAspNetUsers",
+                table: "Dip_GG_Richiesta",
+                column: "IdAspNetUsers");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_Richiesta_IdAz_Anagrafica_RichiestaStato",
+                table: "Dip_GG_Richiesta",
+                columns: new[] { "IdAz_Anagrafica", "RichiestaStato" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_Richiesta_IdDip_Anagrafica",
+                table: "Dip_GG_Richiesta",
+                column: "IdDip_Anagrafica");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_Richiesta_IdDip_RapportoLavoro",
+                table: "Dip_GG_Richiesta",
+                column: "IdDip_RapportoLavoro");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dip_RapportoAutovetture_IdDip_Anagrafica",
                 table: "Dip_RapportoAutovetture",
                 column: "IdDip_Anagrafica");
@@ -354,6 +413,9 @@ namespace nvxapp.server.data.Migrations.Common
 
             migrationBuilder.DropTable(
                 name: "Dip_Competenza");
+
+            migrationBuilder.DropTable(
+                name: "Dip_GG_Richiesta");
 
             migrationBuilder.DropTable(
                 name: "Dip_RapportoAutovetture");

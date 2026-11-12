@@ -1115,6 +1115,42 @@ The statement is attached.</value>
     <value>Weekly summary</value>
     <comment>riepilogo</comment>
   </data>
+  <data name="NotificationCategory_richieste" xml:space="preserve">
+    <value>Requests to approve</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotAllowed" xml:space="preserve">
+    <value>Operation not allowed on requests.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Request not found.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNoApprover" xml:space="preserve">
+    <value>No company administrator can approve the request.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyNew" xml:space="preserve">
+    <value>New request to approve</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyApproved" xml:space="preserve">
+    <value>Request approved</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRejected" xml:space="preserve">
+    <value>Request rejected</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyReason" xml:space="preserve">
+    <value>Reason: {0}</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyExpired" xml:space="preserve">
+    <value>Request cancelled: it was not decided in time</value>
+    <comment>richieste</comment>
+  </data>
   <data name="DigestSectionDeadlines" xml:space="preserve">
     <value>Deadlines</value>
     <comment>riepilogo</comment>
