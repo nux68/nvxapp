@@ -14,6 +14,14 @@ export interface ShowcaseVoce {
   text: string;
 }
 
+/** Gruppo di voci con intestazione propria (pagina funzionalita'). */
+export interface ShowcaseGruppo {
+  titolo: string;
+  sottotitolo?: string;
+  icon?: string;
+  sezioni: ShowcaseVoce[];
+}
+
 export interface ShowcaseDomanda {
   domanda: string;
   risposta: string;
@@ -41,6 +49,9 @@ export interface ShowcaseContenuti {
     titolo: string;
     sottotitolo: string;
     sezioni: ShowcaseVoce[];
+    /** facoltativo: funzionalita' raggruppate (es. una per applicativo nella versione completa).
+     *  Se presente la pagina mostra i gruppi uno sotto l'altro al posto di sezioni. */
+    gruppi?: ShowcaseGruppo[];
   };
   /** pagina prezzi: piani e prezzi vengono dai listini globali del SuperUser (License/LicensePublicPriceList) */
   pricing: {
