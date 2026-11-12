@@ -19,9 +19,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
         // flotta e beni: amministratori dell'azienda (come il menu "Veicoli" e "Beni")
         public static List<string> RuoliAmministratori => new() { "CompanyPowerAdmin", "CompanyAdmin" };
 
-        // posizione delle sezioni nell'help: dopo CRM (650-660) e Documentale (700), prima dei comandi comuni
-        public const int CategoryOrderPrenotazioni = 720;
-        public const int CategoryOrderRisorse = 730;
+        // posizione delle sezioni nell'help (coordinamento: CRM 650-660, Risorse Umane 680, Compliance 690, Risorse aziendali 700)
+        public const int CategoryOrderPrenotazioni = 700;
+        public const int CategoryOrderRisorse = 701;
 
         // durata di una prenotazione quando l'utente dice solo l'inizio
         public const int DurataPredefinitaMinuti = 60;
