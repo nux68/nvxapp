@@ -44,6 +44,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
         private readonly IAstUtility _utility;
         private readonly IAstApprovazioni _approvazioni;
 
+        // avviso SignalR "RequestNotifier" a chi ha prenotato quando un amministratore cambia la sua prenotazione: la sua pagina
+        // delle prenotazioni (e i contatori) si ricarica anche se le notifiche sono disattivate
+        private readonly IRequestNotifier _requestNotifier;
+
         public Ast_PrenotazioniService(IMapper mapper,
                                        UserManager<ApplicationUser> userManager,
                                        IAspNetUsersRepository aspNetUsersRepository,
@@ -55,8 +59,10 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                        IAst_VeicoloRepository ast_VeicoloRepository,
                                        IAst_Az_SediReadRepository az_SediRepository,
                                        IAstUtility utility,
-                                       IAstApprovazioni approvazioni) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                       IAstApprovazioni approvazioni,
+                                       IRequestNotifier requestNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _requestNotifier = requestNotifier;
             _Ast_Risorsa = ast_RisorsaRepository;
             _Ast_Prenotazione = ast_PrenotazioneRepository;
             _Ast_Veicolo = ast_VeicoloRepository;
@@ -277,6 +283,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                         await _approvazioni.AnnullaRichiestaAsync(ctx, p, risorsa.Descrizione);
                 }
 
+                if (p.IdAspNetUsers != ctx.IdUtente)
+                    await _requestNotifier.NotifyAsync(new[] { p.IdAspNetUsers });
                 var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
                 return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi) };
             }, isSubProcess);
@@ -326,6 +334,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                                      AssetsMessages.Get("BookingCancelledTitle", p.Ast_RisorsaNavigation!.Descrizione),
                                                      AssetsMessages.Get("BookingCancelledText", p.Ast_RisorsaNavigation.Descrizione, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")),
                                                      UrlPrenotazioni);
+                    if (p.IdAspNetUsers != ctx.IdUtente)
+                        await _requestNotifier.NotifyAsync(new[] { p.IdAspNetUsers });
                 }
                 var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
                 var motivi = await _approvazioni.MotiviAsync(new[] { p });
