@@ -50,13 +50,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
             return strategia != StrategiaApprovazione.Gerarchia || idx == 0 || lista[idx - 1].RichiestaStato == StatoRichiesta.Approvata;
         }
 
-        /// <summary>il richiedente puo' annullare (in attesa) o chiedere la revoca (approvata, senza revoca in corso)</summary>
+        /// <summary>
+        /// il richiedente puo' ritirare la richiesta in attesa, chiedere l'annullamento (revoca) di quella approvata o ritirare
+        /// l'annullamento ancora in attesa. Come nelle presenze: una volta che l'annullamento e' deciso (rifiutato) o ritirato
+        /// la pratica e' conclusa e la richiesta resta approvata
+        /// </summary>
         public static bool PuoAnnullare(Dip_GG_Richiesta r)
         {
             if (r.RevocaStato == null)
                 return StatiInAttesa.Contains(r.RichiestaStato) || r.RichiestaStato == StatoRichiesta.Approvata || r.RichiestaStato == StatoRichiesta.Diretta;
-            // revoca in attesa: si puo' ritirare; revoca rifiutata o ritirata: si puo' chiedere di nuovo
-            return r.RevocaStato != StatoRichiesta.Approvata;
+            return StatiInAttesa.Contains(r.RevocaStato.Value);
         }
 
         /// <summary>stato comune per le pagine</summary>
