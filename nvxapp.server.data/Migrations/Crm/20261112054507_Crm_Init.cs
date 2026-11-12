@@ -129,6 +129,7 @@ namespace nvxapp.server.data.Migrations.Crm
                     Prezzo = table.Column<decimal>(type: "numeric(18,4)", nullable: false),
                     Um = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     AliquotaIva = table.Column<decimal>(type: "numeric(5,2)", nullable: false),
+                    TipoProdotto = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -542,6 +543,8 @@ namespace nvxapp.server.data.Migrations.Crm
                     Iva = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Totale = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     DataInvio = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataEsito = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    IdOrdineAmministrazione = table.Column<int>(type: "integer", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -601,6 +604,69 @@ namespace nvxapp.server.data.Migrations.Crm
                         principalTable: "Crm_Opportunita",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Crm_Richiesta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Anno = table.Column<int>(type: "integer", nullable: false),
+                    Numero = table.Column<int>(type: "integer", nullable: false),
+                    IdAz_Cliente = table.Column<int>(type: "integer", nullable: false),
+                    IdAz_ClienteContatto = table.Column<int>(type: "integer", nullable: true),
+                    Oggetto = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
+                    Canale = table.Column<int>(type: "integer", nullable: false),
+                    Priorita = table.Column<int>(type: "integer", nullable: false),
+                    Stato = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsersAssegnatario = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    DataApertura = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DataPresaInCarico = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataRisoluzione = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataChiusura = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Soluzione = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    IdCrm_Opportunita = table.Column<int>(type: "integer", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Crm_Richiesta", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Crm_Richiesta_AspNetUsers_IdAspNetUsersAssegnatario",
+                        column: x => x.IdAspNetUsersAssegnatario,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Crm_Richiesta_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Crm_Richiesta_Az_ClienteContatto_IdAz_ClienteContatto",
+                        column: x => x.IdAz_ClienteContatto,
+                        principalTable: "Az_ClienteContatto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Crm_Richiesta_Az_Cliente_IdAz_Cliente",
+                        column: x => x.IdAz_Cliente,
+                        principalTable: "Az_Cliente",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Crm_Richiesta_Crm_Opportunita_IdCrm_Opportunita",
+                        column: x => x.IdCrm_Opportunita,
+                        principalTable: "Crm_Opportunita",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -686,6 +752,32 @@ namespace nvxapp.server.data.Migrations.Crm
                         principalTable: "Crm_Par_Prodotto",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Crm_RichiestaMessaggio",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdCrm_Richiesta = table.Column<int>(type: "integer", nullable: false),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IdAspNetUsersAutore = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Testo = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: false),
+                    Sistema = table.Column<bool>(type: "boolean", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Crm_RichiestaMessaggio", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Crm_RichiestaMessaggio_Crm_Richiesta_IdCrm_Richiesta",
+                        column: x => x.IdCrm_Richiesta,
+                        principalTable: "Crm_Richiesta",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -916,6 +1008,42 @@ namespace nvxapp.server.data.Migrations.Crm
                 name: "IX_Crm_Par_TipoAttivita_IdAz_Anagrafica",
                 table: "Crm_Par_TipoAttivita",
                 column: "IdAz_Anagrafica");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdAspNetUsersAssegnatario",
+                table: "Crm_Richiesta",
+                column: "IdAspNetUsersAssegnatario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdAz_Anagrafica_Anno_Numero",
+                table: "Crm_Richiesta",
+                columns: new[] { "IdAz_Anagrafica", "Anno", "Numero" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdAz_Anagrafica_Stato",
+                table: "Crm_Richiesta",
+                columns: new[] { "IdAz_Anagrafica", "Stato" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdAz_Cliente",
+                table: "Crm_Richiesta",
+                column: "IdAz_Cliente");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdAz_ClienteContatto",
+                table: "Crm_Richiesta",
+                column: "IdAz_ClienteContatto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_Richiesta_IdCrm_Opportunita",
+                table: "Crm_Richiesta",
+                column: "IdCrm_Opportunita");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Crm_RichiestaMessaggio_IdCrm_Richiesta",
+                table: "Crm_RichiestaMessaggio",
+                column: "IdCrm_Richiesta");
         }
 
         /// <inheritdoc />
@@ -946,6 +1074,9 @@ namespace nvxapp.server.data.Migrations.Crm
                 name: "Crm_OpportunitaStorico");
 
             migrationBuilder.DropTable(
+                name: "Crm_RichiestaMessaggio");
+
+            migrationBuilder.DropTable(
                 name: "Crm_Par_TipoAttivita");
 
             migrationBuilder.DropTable(
@@ -959,6 +1090,9 @@ namespace nvxapp.server.data.Migrations.Crm
 
             migrationBuilder.DropTable(
                 name: "Crm_Par_Prodotto");
+
+            migrationBuilder.DropTable(
+                name: "Crm_Richiesta");
 
             migrationBuilder.DropTable(
                 name: "Crm_Opportunita");

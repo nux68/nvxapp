@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Crm
 {
     [DbContext(typeof(CrmDbContext))]
-    [Migration("20261111220343_Crm_PreventiviAssistenza")]
-    partial class Crm_PreventiviAssistenza
+    [Migration("20261112054507_Crm_Init")]
+    partial class Crm_Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
