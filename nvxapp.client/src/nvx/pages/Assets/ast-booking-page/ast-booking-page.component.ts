@@ -69,8 +69,9 @@ export class AstBookingPageComponent {
       { key: 'risorsa', title: t('ast.fields.risorsa'), mobile: 'title' },
       { key: 'utente', title: t('ast.fields.prenotatoDa'), mobile: 'subtitle', value: x => x.utente ?? t('ast.pages.booking.busy') },
       { key: 'titolo', title: t('ast.fields.titolo'), mobile: 'hidden' },
-      // approvazione (risorse con RichiedeApprovazione): in attesa o rifiutata, con il motivo; vuoto se confermata
-      { key: 'stato', title: t('ast.fields.statoPrenotazione'), mobile: 'note', value: x => this.stato(x) },
+      // stato sempre visibile (badge colorato), come le richieste delle presenze e le note spese: confermata (senza
+      // approvazione), in attesa, approvata, rifiutata (con il motivo), annullata/revocata e la fase dell'annullamento
+      { key: 'stato', title: t('ast.fields.statoPrenotazione'), mobile: 'note', value: x => this.stato(x).testo },
     ];
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: P.AstPrenotazioneModel) => this.apri(x);
@@ -82,12 +83,14 @@ export class AstBookingPageComponent {
     bApprova.event = (x: P.AstPrenotazioneModel) => this.approva(x);
     const bRifiuta = userInterfaceService.Btn_Rifiuta;
     bRifiuta.event = (x: P.AstPrenotazioneModel) => this.rifiuta(x);
-    // richiedente: ritira la richiesta in attesa
+    // richiedente: ritira la richiesta in attesa o la richiesta di annullamento in attesa (la prenotazione resta approvata)
     const bRitira = new ButtonItem(t('pages.requestList.cancel'), 'close-circle-outline', 'danger', false,
-                                   (x: P.AstPrenotazioneModel) => this.annulla(x, 'pages.requestList.confirmCancel'));
-    // pulsanti decisi dal server per stato e utente (come la pagina di approvazione delle presenze):
+                                   (x: P.AstPrenotazioneModel) => this.annulla(x, x.annullamentoRichiesto ? 'ast.pages.booking.confirmWithdrawCancel'
+                                                                                                         : 'pages.requestList.confirmCancel'));
+    // pulsanti decisi dal server per stato e utente, con il ciclo delle richieste delle presenze e delle note spese:
     // in attesa: richiedente Annulla, amministratore Approva/Rifiuta; approvata: richiedente Cancella (richiesta di annullamento);
-    // annullamento richiesto: amministratore Approva/Rifiuta; senza richiesta: Modifica/Cancella
+    // annullamento richiesto: richiedente Annulla (lo ritira), amministratore Approva/Rifiuta; annullamento rifiutato o
+    // ritirato, rifiutata, annullata: nessuno; senza richiesta: Modifica/Cancella
     this.actions = [
       { button: bApprova, visible: x => x.daDecidere },
       { button: bRifiuta, visible: x => x.daDecidere },
@@ -189,16 +192,29 @@ export class AstBookingPageComponent {
     });
   }
 
-  public stato(x: P.AstPrenotazioneModel): string {
+  /**
+   stato da mostrare (testo e colore del badge), con le stesse regole delle richieste delle presenze e delle note spese:
+   la fase dell'annullamento (revoca) prevale sullo stato della richiesta
+  */
+  public stato(x: P.AstPrenotazioneModel): { testo: string, colore: string } {
+    const t = (k: string) => this.transloco.translate(k);
     if (x.annullamentoRichiesto)
-      return this.transloco.translate('ast.pages.booking.cancelRequested');
+      return { testo: t('ast.pages.booking.cancelRequested'), colore: 'warning' };
+    if (x.revocata)
+      return { testo: t('ast.pages.booking.revoked'), colore: 'dark' };
     if (x.annullamentoRifiutato)
-      return this.transloco.translate('ast.pages.booking.cancelRejected');
-    if (x.stato === P.AstStatoPrenotazione.InAttesa)
-      return this.transloco.translate('ast.enums.statoPrenotazione.2');
-    if (x.stato === P.AstStatoPrenotazione.Rifiutata)
-      return this.transloco.translate('ast.enums.statoPrenotazione.3') + (x.motivoRifiuto ? ': ' + x.motivoRifiuto : '');
-    return '';
+      return { testo: t('ast.pages.booking.cancelRejected'), colore: 'success' };
+    switch (x.stato) {
+      case P.AstStatoPrenotazione.InAttesa:
+        return { testo: t('ast.enums.statoPrenotazione.2'), colore: 'medium' };
+      case P.AstStatoPrenotazione.Rifiutata:
+        return { testo: t('ast.enums.statoPrenotazione.3') + (x.motivoRifiuto ? ': ' + x.motivoRifiuto : ''), colore: 'danger' };
+      case P.AstStatoPrenotazione.Annullata:
+        return { testo: t('ast.enums.statoPrenotazione.1'), colore: 'dark' };
+      default:
+        // confermata: "Approvata" se e' passata dall'approvazione (anche con l'annullamento ritirato), altrimenti "Confermata"
+        return { testo: t(x.conRichiesta ? 'ast.pages.booking.approved' : 'ast.enums.statoPrenotazione.0'), colore: 'success' };
+    }
   }
 
   private async annulla(x: P.AstPrenotazioneModel, conferma: string = 'ast.pages.booking.confirmCancel') {
@@ -209,9 +225,12 @@ export class AstBookingPageComponent {
     this.service.PrenotazioneAnnulla(request).subscribe(async res => {
       if (!res.success)
         return;
-      // prenotazione approvata: l'annullamento e' una richiesta da approvare, la prenotazione resta confermata
-      if (res.data?.prenotazione?.annullamentoRichiesto) {
-        const toast = await this.toastCtrl.create({ message: this.transloco.translate('ast.pages.booking.cancelRequestSent'), duration: 4000, position: 'top', color: 'warning' });
+      // prenotazione approvata: l'annullamento e' una richiesta da approvare, la prenotazione resta confermata;
+      // annullamento in attesa ritirato: la prenotazione resta approvata
+      const esito = res.data?.prenotazione?.annullamentoRichiesto ? 'ast.pages.booking.cancelRequestSent'
+                  : res.data?.prenotazione?.annullamentoRitirato ? 'ast.pages.booking.cancelRequestWithdrawn' : null;
+      if (esito) {
+        const toast = await this.toastCtrl.create({ message: this.transloco.translate(esito), duration: 4000, position: 'top', color: 'warning' });
         await toast.present();
       }
       this.load();
