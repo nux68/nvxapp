@@ -1246,6 +1246,18 @@ In allegato il rendiconto.</value>
     <value>Richiesta rifiutata</value>
     <comment>richieste</comment>
   </data>
+  <data name="RequestNotifyNewRevoke" xml:space="preserve">
+    <value>Nuova richiesta di annullamento da approvare</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRevokeApproved" xml:space="preserve">
+    <value>Annullamento approvato</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRevokeRejected" xml:space="preserve">
+    <value>Annullamento rifiutato: la richiesta resta approvata</value>
+    <comment>richieste</comment>
+  </data>
   <data name="RequestNotifyReason" xml:space="preserve">
     <value>Motivo: {0}</value>
     <comment>richieste</comment>
