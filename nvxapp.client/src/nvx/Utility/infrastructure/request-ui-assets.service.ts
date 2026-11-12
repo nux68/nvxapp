@@ -15,7 +15,7 @@ export class RequestUiAssetsService implements iRequestUiProvider {
   public get Actions(): RequestUiAction[] { return []; }
   public get NewRequests(): RequestNewItem[] {
     return [
-      { title: 'ast.requests.newBooking', url: '/astbookingedit', roles: ['CompanyPowerAdmin', 'CompanyAdmin', 'User'], application: ApplicationType.Assets },
+      { title: 'ast.requests.newBooking', url: '/astbookingedit', roles: ['CompanyPowerAdmin', 'CompanyAdmin', 'User'], application: ApplicationType.Assets, icon: 'calendar-outline' },
     ];
   }
 }

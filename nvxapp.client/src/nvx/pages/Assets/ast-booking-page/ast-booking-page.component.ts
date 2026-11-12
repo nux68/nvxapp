@@ -82,11 +82,18 @@ export class AstBookingPageComponent {
     bApprova.event = (x: P.AstPrenotazioneModel) => this.approva(x);
     const bRifiuta = userInterfaceService.Btn_Rifiuta;
     bRifiuta.event = (x: P.AstPrenotazioneModel) => this.rifiuta(x);
+    // richiedente: ritira la richiesta in attesa
+    const bRitira = new ButtonItem(t('pages.requestList.cancel'), 'close-circle-outline', 'danger', false,
+                                   (x: P.AstPrenotazioneModel) => this.annulla(x, 'pages.requestList.confirmCancel'));
+    // pulsanti decisi dal server per stato e utente (come la pagina di approvazione delle presenze):
+    // in attesa: richiedente Annulla, amministratore Approva/Rifiuta; approvata: richiedente Cancella (richiesta di annullamento);
+    // annullamento richiesto: amministratore Approva/Rifiuta; senza richiesta: Modifica/Cancella
     this.actions = [
       { button: bApprova, visible: x => x.daDecidere },
       { button: bRifiuta, visible: x => x.daDecidere },
-      { button: bAnnulla, visible: x => x.modificabile && !x.daDecidere },
-      { button: bEdit, visible: x => x.modificabile && !x.daDecidere },
+      { button: bRitira, visible: x => x.ritirabile },
+      { button: bAnnulla, visible: x => x.modificabile || x.annullamentoChiedibile },
+      { button: bEdit, visible: x => x.modificabile },
     ];
     const bCal = userInterfaceService.Btn_Calendario;
     bCal.event = () => this.navCtrl.navigateForward('/calendarfeed');
@@ -192,8 +199,8 @@ export class AstBookingPageComponent {
     return '';
   }
 
-  private async annulla(x: P.AstPrenotazioneModel) {
-    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('ast.pages.booking.confirmCancel', { nome: x.risorsa ?? '' })))
+  private async annulla(x: P.AstPrenotazioneModel, conferma: string = 'ast.pages.booking.confirmCancel') {
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate(conferma, { nome: x.risorsa ?? '' })))
       return;
     const request = new GenericRequest<F.AstIdInModel>(F.AstIdInModel);
     request.data.id = x.id;
