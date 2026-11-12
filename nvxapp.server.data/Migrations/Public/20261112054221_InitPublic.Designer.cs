@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261111174633_CalendarioFeed")]
-    partial class CalendarioFeed
+    [Migration("20261112054221_InitPublic")]
+    partial class InitPublic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1726,6 +1726,77 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("PresaVisione", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Riepilogo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Al")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Dal")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Fatti")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("GeneratoConAI")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("Manuale")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("ProviderAI")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Testo")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Titolo")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers", "Al");
+
+                    b.HasIndex("IdCompany", "Al");
+
+                    b.HasIndex("IdFinancialAdvisor", "Al");
+
+                    b.ToTable("Riepilogo", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Scadenza", b =>
                 {
                     b.Property<int>("Id")
@@ -2667,6 +2738,24 @@ namespace nvxapp.server.data.Migrations.Public
                         .HasForeignKey("IdCompany")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Riepilogo", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", null)
+                        .WithMany()
+                        .HasForeignKey("IdFinancialAdvisor")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Scadenza", b =>

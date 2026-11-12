@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Common
 {
     [DbContext(typeof(CommonDbContext))]
-    [Migration("20261111170455_CommonSediCompetenzeAutovetture")]
-    partial class CommonSediCompetenzeAutovetture
+    [Migration("20261112054258_InitCommon")]
+    partial class InitCommon
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
