@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.HumanResources
 {
     [DbContext(typeof(HumanResourcesDbContext))]
-    [Migration("20261111183442_HrCedoliniFormazioneOnboarding")]
-    partial class HrCedoliniFormazioneOnboarding
+    [Migration("20261112054538_InitHumanResources")]
+    partial class InitHumanResources
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
