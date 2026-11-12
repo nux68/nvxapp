@@ -177,9 +177,9 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-INF.2` Categoria di notifica `richieste` e testi (it/en)
 - ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`, comandi vocali
 - ✅ `RICH-INF.4` Widget `infrastructure.requests`
-- ⏳ `RICH-INF.6` (variante) `Dip_GG_Richiesta` in Common, `CommonDbContext`, repository, `InitCommon` rigenerata
-- ⏳ `RICH-INF.7` (variante) `IRichiestaTipoHandler`, `RequestService` sulla tabella comune, `RichiestaCommonService`
-- ⏳ `RICH-INF.5` Build server e client, merge in `Infrastructure`
+- ✅ `RICH-INF.6` (variante, commit 4f232d79) `Dip_GG_Richiesta` in Common, `CommonDbContext`, repository, `InitCommon` rigenerata
+- ✅ `RICH-INF.7` (variante) `IRichiestaTipoHandler`, `RequestService` sulla tabella comune, `RichiestaCommonService`
+- 🔄 `RICH-INF.5` Build server e client ✅; merge in `Infrastructure` con la catena finale
 
 #### `RICH-AT` – Presenze
 - ✅ `RICH-AT.1` (prima versione) `AtRequestProvider`, testi lato server — da trasformare in gestore del tipo (`RICH-AT.6`)
@@ -187,11 +187,12 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-AT.3` Widget `attendance.requests` tolto (sostituito da `infrastructure.requests`), chat AI e rotte vocali
 - ✅ `RICH-AT.4` Correzioni: permessi in `SetState`, indice della gerarchia, AsNoTracking, `vistaApprovatore`; filtro per periodo lasciato disattivato (motivato)
 - ✅ `RICH-AT.5` Prova API su DB usa e getta (SigleAdmin, revoca, gerarchia)
-- ⏳ `RICH-AT.6` (variante) Tabella in Common: partial con le navigazioni, mapping `ExcludeFromMigrations`, scritture dal repository Common, nuovi campi valorizzati, gestore del tipo, `AttendanceTracking_Init` rigenerata, nuova prova
+- ✅ `RICH-AT.6` (variante, branch `AttendanceTracking_Dev_richieste`, commit 78aea959) Tabella in Common: partial con le navigazioni, mapping `ExcludeFromMigrations`, scritture dal repository Common (`SalvaRichiestaAsync` valorizza azienda/dipendente/utente), `AtRichiestaTipoHandler`, `AttendanceTracking_Init` rigenerata; prova API ok (SigleAdmin, revoca, gerarchia, FK tra schemi)
+- 🔍 `RICH-AT.7` Deleter dei dati delle Presenze (`IApplicationDataDeleter`) assente: eliminando lo schema delle presenze le richieste in Common restano finché non si cancella il dipendente o l'azienda
 
 #### `RICH-AST` – Risorse aziendali
 - ✅ `RICH-AST.1`–`RICH-AST.5` (prima versione, ciclo proprio in `Ast_Prenotazione`): spunta "Richiede approvazione", conflitti con le in attesa, scadenza pigra, notifiche, client, comandi vocali, analisi del modulo; prova API 25/25
-- ⏳ `RICH-AST.6` (variante) Prenotazione appoggiata a `Dip_GG_Richiesta` (`IdDip_GG_Richiesta`), colonne di decisione tolte, gestore del tipo su `RichiestaCommonService`, `InitAssets` rigenerata (senza migration separata), nuova prova
+- ✅ `RICH-AST.6` (variante, branch `Assets_Dev_richieste`, commit 46147cd0) Prenotazione appoggiata a `Dip_GG_Richiesta` (`IdDip_GG_Richiesta`), colonne di decisione tolte, `AstRichiestaTipoHandler` su `RichiestaCommonService`, `InitAssets` rigenerata; prova API 33/33
 
 #### Merge
 - ⏳ `RICH-M` DB ricreato e catena: Infrastructure → AttendanceTracking, Assets → Applicativo completo (AllFunction_Dev, AllFunction)
