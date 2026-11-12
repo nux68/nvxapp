@@ -316,4 +316,382 @@
     <value>Compliance: registro GDPR e violazioni dei dati</value>
     <comment>categoria di notifica</comment>
   </data>
+  <data name="ChatCategorySafety" xml:space="preserve">
+    <value>Sicurezza sul lavoro</value>
+  </data>
+  <data name="ChatCategoryGdpr" xml:space="preserve">
+    <value>Registro GDPR</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Non sono riuscito a leggere i dati di Compliance. {0}</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>… e altri {0}</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>La data "{0}" non è valida.</value>
+  </data>
+  <data name="ChatPersonQuestion" xml:space="preserve">
+    <value>Per quale dipendente?</value>
+  </data>
+  <data name="ChatPersonLabel" xml:space="preserve">
+    <value>Dipendente</value>
+  </data>
+  <data name="ChatPersonNotFound" xml:space="preserve">
+    <value>Non trovo il dipendente "{0}".</value>
+  </data>
+  <data name="ChatPersonAmbiguous" xml:space="preserve">
+    <value>Ci sono {0} dipendenti per "{1}": {2}. Quale?</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Entro quanti giorni?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Giorni</value>
+  </data>
+  <data name="ChatAreaQuestion" xml:space="preserve">
+    <value>Quale argomento: corsi, visite, nomine o documenti?</value>
+  </data>
+  <data name="ChatAreaLabel" xml:space="preserve">
+    <value>Argomento</value>
+  </data>
+  <data name="ChatCourseType_0" xml:space="preserve">
+    <value>Formazione generale</value>
+  </data>
+  <data name="ChatCourseType_1" xml:space="preserve">
+    <value>Formazione specifica</value>
+  </data>
+  <data name="ChatCourseType_2" xml:space="preserve">
+    <value>Aggiornamento</value>
+  </data>
+  <data name="ChatCourseType_3" xml:space="preserve">
+    <value>Antincendio</value>
+  </data>
+  <data name="ChatCourseType_4" xml:space="preserve">
+    <value>Primo soccorso</value>
+  </data>
+  <data name="ChatCourseType_5" xml:space="preserve">
+    <value>Preposti</value>
+  </data>
+  <data name="ChatCourseType_6" xml:space="preserve">
+    <value>Dirigenti</value>
+  </data>
+  <data name="ChatCourseType_7" xml:space="preserve">
+    <value>RLS</value>
+  </data>
+  <data name="ChatCourseType_8" xml:space="preserve">
+    <value>RSPP / ASPP</value>
+  </data>
+  <data name="ChatCourseType_9" xml:space="preserve">
+    <value>Attrezzature</value>
+  </data>
+  <data name="ChatCourseType_10" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+  <data name="ChatDocType_0" xml:space="preserve">
+    <value>DVR</value>
+  </data>
+  <data name="ChatDocType_1" xml:space="preserve">
+    <value>Piano di emergenza</value>
+  </data>
+  <data name="ChatDocType_2" xml:space="preserve">
+    <value>DUVRI</value>
+  </data>
+  <data name="ChatDocType_3" xml:space="preserve">
+    <value>Procedura</value>
+  </data>
+  <data name="ChatDocType_4" xml:space="preserve">
+    <value>Documento</value>
+  </data>
+  <data name="ChatSection_formazione" xml:space="preserve">
+    <value>corsi svolti</value>
+  </data>
+  <data name="ChatSection_stato" xml:space="preserve">
+    <value>situazione della formazione</value>
+  </data>
+  <data name="ChatSection_visite" xml:space="preserve">
+    <value>visite mediche</value>
+  </data>
+  <data name="ChatSection_consegne" xml:space="preserve">
+    <value>consegne DPI</value>
+  </data>
+  <data name="ChatSection_nomine" xml:space="preserve">
+    <value>nomine</value>
+  </data>
+  <data name="ChatSection_documenti" xml:space="preserve">
+    <value>documenti (DVR)</value>
+  </data>
+  <data name="ChatSection_mansioni" xml:space="preserve">
+    <value>mansioni</value>
+  </data>
+  <data name="ChatSection_dpi" xml:space="preserve">
+    <value>catalogo DPI</value>
+  </data>
+  <data name="ChatSection_trattamenti" xml:space="preserve">
+    <value>trattamenti</value>
+  </data>
+  <data name="ChatSection_responsabili" xml:space="preserve">
+    <value>responsabili esterni</value>
+  </data>
+  <data name="ChatSection_violazioni" xml:space="preserve">
+    <value>violazioni dei dati</value>
+  </data>
+  <data name="ChatSafetyExpiriesDisplayName" xml:space="preserve">
+    <value>Scadenze sicurezza</value>
+  </data>
+  <data name="ChatSafetyExpiriesDescription" xml:space="preserve">
+    <value>scadenze della sicurezza sul lavoro già passate o in arrivo: corsi obbligatori, visite mediche, nomine (RSPP, RLS, preposti, addetti) e documenti (DVR, piani di emergenza)</value>
+  </data>
+  <data name="ChatSafetyExpiriesNone" xml:space="preserve">
+    <value>Nessuna scadenza della sicurezza passata o nei prossimi {0} giorni.</value>
+  </data>
+  <data name="ChatSafetyExpiriesOverdue" xml:space="preserve">
+    <value>Scadute ({0}):</value>
+  </data>
+  <data name="ChatSafetyExpiriesUpcoming" xml:space="preserve">
+    <value>In scadenza nei prossimi {1} giorni ({0}):</value>
+  </data>
+  <data name="ChatSafetyExpiriesMissingCourses" xml:space="preserve">
+    <value>Corsi obbligatori mai svolti: {0} (chiedi la situazione della formazione sicurezza per l'elenco).</value>
+  </data>
+  <data name="ChatExpiryCourse" xml:space="preserve">
+    <value>corso {0} di {1}</value>
+  </data>
+  <data name="ChatExpiryVisit" xml:space="preserve">
+    <value>visita medica di {0}</value>
+  </data>
+  <data name="ChatExpiryAppointment" xml:space="preserve">
+    <value>nomina {0} di {1}</value>
+  </data>
+  <data name="ChatExpiryDocument" xml:space="preserve">
+    <value>{0} "{1}"</value>
+  </data>
+  <data name="ChatSafetyTrainingDisplayName" xml:space="preserve">
+    <value>Formazione sicurezza</value>
+  </data>
+  <data name="ChatSafetyTrainingDescription" xml:space="preserve">
+    <value>situazione dei corsi di sicurezza obbligatori richiesti dalle mansioni, di tutti o di un dipendente: validi, in scadenza, scaduti, mancanti</value>
+  </data>
+  <data name="ChatSafetyTrainingEmpty" xml:space="preserve">
+    <value>Nessun corso obbligatorio richiesto: assegna le mansioni ai dipendenti e i corsi alle mansioni.</value>
+  </data>
+  <data name="ChatSafetyTrainingNonePerson" xml:space="preserve">
+    <value>Nessun corso obbligatorio richiesto per "{0}".</value>
+  </data>
+  <data name="ChatSafetyTrainingPersonTitle" xml:space="preserve">
+    <value>Corsi obbligatori di {0} ({1}):</value>
+  </data>
+  <data name="ChatSafetyTrainingSummary" xml:space="preserve">
+    <value>Formazione obbligatoria: {0} corsi richiesti a {1} dipendenti. Validi {2}, in scadenza {3}, scaduti {4}, mancanti {5}.</value>
+  </data>
+  <data name="ChatSafetyTrainingProblems" xml:space="preserve">
+    <value>Da sistemare ({0}):</value>
+  </data>
+  <data name="ChatTrainingMissing" xml:space="preserve">
+    <value>{0}: mai svolto</value>
+  </data>
+  <data name="ChatTrainingExpired" xml:space="preserve">
+    <value>{0}: scaduto il {1}</value>
+  </data>
+  <data name="ChatTrainingExpiring" xml:space="preserve">
+    <value>{0}: scade il {1}</value>
+  </data>
+  <data name="ChatTrainingValidUntil" xml:space="preserve">
+    <value>{0}: valido fino al {1}</value>
+  </data>
+  <data name="ChatTrainingValid" xml:space="preserve">
+    <value>{0}: valido</value>
+  </data>
+  <data name="ChatDataBreachesDisplayName" xml:space="preserve">
+    <value>Data breach aperti</value>
+  </data>
+  <data name="ChatDataBreachesDescription" xml:space="preserve">
+    <value>violazioni dei dati personali (data breach) da notificare al Garante e termine delle 72 ore dalla scoperta</value>
+  </data>
+  <data name="ChatDataBreachesNone" xml:space="preserve">
+    <value>Nessuna violazione dei dati da notificare al Garante. Violazioni registrate quest'anno: {0}.</value>
+  </data>
+  <data name="ChatDataBreachesTitle" xml:space="preserve">
+    <value>Violazioni da notificare al Garante ({0}):</value>
+  </data>
+  <data name="ChatDataBreachOpen" xml:space="preserve">
+    <value>scoperta il {0}, {1}: notifica entro il {2} (mancano circa {3} ore)</value>
+  </data>
+  <data name="ChatDataBreachLate" xml:space="preserve">
+    <value>scoperta il {0}, {1}: termine delle 72 ore superato il {2}, indica il motivo del ritardo nella notifica</value>
+  </data>
+  <data name="ChatDataBreachesYear" xml:space="preserve">
+    <value>Violazioni registrate quest'anno: {0}.</value>
+  </data>
+  <data name="ChatGdprRegisterDisplayName" xml:space="preserve">
+    <value>Stato del registro GDPR</value>
+  </data>
+  <data name="ChatGdprRegisterDescription" xml:space="preserve">
+    <value>stato del registro GDPR: trattamenti registrati e incompleti, contratti dei responsabili esterni scaduti o in scadenza, violazioni dei dati</value>
+  </data>
+  <data name="ChatGdprRegisterTitle" xml:space="preserve">
+    <value>Registro GDPR:</value>
+  </data>
+  <data name="ChatGdprTreatments" xml:space="preserve">
+    <value>trattamenti attivi: {0} (con dati particolari: {1})</value>
+  </data>
+  <data name="ChatGdprTreatmentsIncomplete" xml:space="preserve">
+    <value>trattamenti da completare (finalità, interessati, dati, termini di cancellazione o misure di sicurezza mancanti): {0} — {1}</value>
+  </data>
+  <data name="ChatGdprProcessors" xml:space="preserve">
+    <value>responsabili esterni: {0} (contratti scaduti: {1}, in scadenza: {2})</value>
+  </data>
+  <data name="ChatGdprProcessorExpired" xml:space="preserve">
+    <value>contratto di {0} scaduto il {1}</value>
+  </data>
+  <data name="ChatGdprProcessorExpiring" xml:space="preserve">
+    <value>contratto di {0} in scadenza il {1}</value>
+  </data>
+  <data name="ChatGdprBreaches" xml:space="preserve">
+    <value>violazioni dei dati quest'anno: {0} (da notificare: {1})</value>
+  </data>
+  <data name="ChatMyComplianceDisplayName" xml:space="preserve">
+    <value>I miei adempimenti</value>
+  </data>
+  <data name="ChatMyComplianceDescription" xml:space="preserve">
+    <value>i miei corsi di sicurezza con le scadenze, la prossima visita medica, i DPI ricevuti, le nomine e le prese visione da confermare</value>
+  </data>
+  <data name="ChatMyComplianceTitle" xml:space="preserve">
+    <value>I tuoi adempimenti:</value>
+  </data>
+  <data name="ChatMyComplianceNoEmployee" xml:space="preserve">
+    <value>Il tuo utente non è collegato a un dipendente: non ci sono adempimenti da mostrare.</value>
+  </data>
+  <data name="ChatMyNoCourses" xml:space="preserve">
+    <value>nessun corso di sicurezza registrato</value>
+  </data>
+  <data name="ChatMyCourseNoExpiry" xml:space="preserve">
+    <value>{0}: svolto il {1}, senza scadenza</value>
+  </data>
+  <data name="ChatMyVisitNext" xml:space="preserve">
+    <value>prossima visita medica entro il {0}</value>
+  </data>
+  <data name="ChatMyVisitExpired" xml:space="preserve">
+    <value>visita medica scaduta il {0}</value>
+  </data>
+  <data name="ChatMyPpe" xml:space="preserve">
+    <value>DPI ricevuti: {0} (ultimi: {1})</value>
+  </data>
+  <data name="ChatMyAppointment" xml:space="preserve">
+    <value>nomina {0} dal {1}</value>
+  </data>
+  <data name="ChatMyToAcknowledge" xml:space="preserve">
+    <value>prese visione da confermare: {0} (pagina Prese visione)</value>
+  </data>
+  <data name="ChatRegisterTrainingDisplayName" xml:space="preserve">
+    <value>Registra corso sicurezza</value>
+  </data>
+  <data name="ChatRegisterTrainingDescription" xml:space="preserve">
+    <value>registra un corso di sicurezza svolto da un dipendente (antincendio, primo soccorso, formazione generale o specifica…); la scadenza si calcola dalle mansioni</value>
+  </data>
+  <data name="ChatRegisterTrainingSummary" xml:space="preserve">
+    <value>registrare il corso {courseType} di {person} del {date}</value>
+  </data>
+  <data name="ChatCourseTypeQuestion" xml:space="preserve">
+    <value>Quale corso? ({0})</value>
+  </data>
+  <data name="ChatCourseTypeLabel" xml:space="preserve">
+    <value>Corso</value>
+  </data>
+  <data name="ChatCourseTypeNotFound" xml:space="preserve">
+    <value>Non riconosco il corso "{0}". Tipi di corso: {1}.</value>
+  </data>
+  <data name="ChatCourseDateQuestion" xml:space="preserve">
+    <value>In che giorno si è svolto il corso?</value>
+  </data>
+  <data name="ChatCourseDateLabel" xml:space="preserve">
+    <value>Data del corso</value>
+  </data>
+  <data name="ChatCourseDateFuture" xml:space="preserve">
+    <value>La data del corso non può essere futura: registra il corso dopo averlo svolto.</value>
+  </data>
+  <data name="ChatRegisterTrainingDone" xml:space="preserve">
+    <value>Ho registrato il corso {0} di {1} del {2}, valido fino al {3}.</value>
+  </data>
+  <data name="ChatRegisterTrainingDoneNoExpiry" xml:space="preserve">
+    <value>Ho registrato il corso {0} di {1} del {2} (nessuna scadenza: nessuna mansione richiede questo corso con una validità).</value>
+  </data>
+  <data name="ChatPpeDeliveryDisplayName" xml:space="preserve">
+    <value>Consegna DPI</value>
+  </data>
+  <data name="ChatPpeDeliveryDescription" xml:space="preserve">
+    <value>registra la consegna di un DPI a un dipendente (guanti, scarpe antinfortunistiche, elmetto…); il dipendente riceve la richiesta di presa visione del verbale</value>
+  </data>
+  <data name="ChatPpeDeliverySummary" xml:space="preserve">
+    <value>consegnare {quantity} {ppe} a {person} il {date}</value>
+  </data>
+  <data name="ChatPpeQuestion" xml:space="preserve">
+    <value>Quale DPI hai consegnato?</value>
+  </data>
+  <data name="ChatPpeLabel" xml:space="preserve">
+    <value>DPI</value>
+  </data>
+  <data name="ChatPpeNotFound" xml:space="preserve">
+    <value>Non trovo il DPI "{0}" nel catalogo. DPI disponibili: {1}.</value>
+  </data>
+  <data name="ChatPpeAmbiguous" xml:space="preserve">
+    <value>Ci sono {0} DPI per "{1}": {2}. Quale?</value>
+  </data>
+  <data name="ChatQuantityQuestion" xml:space="preserve">
+    <value>Quanti ne hai consegnati?</value>
+  </data>
+  <data name="ChatQuantityLabel" xml:space="preserve">
+    <value>Quantità</value>
+  </data>
+  <data name="ChatSizeQuestion" xml:space="preserve">
+    <value>Quale taglia?</value>
+  </data>
+  <data name="ChatSizeLabel" xml:space="preserve">
+    <value>Taglia</value>
+  </data>
+  <data name="ChatDeliveryDateQuestion" xml:space="preserve">
+    <value>In che giorno è avvenuta la consegna?</value>
+  </data>
+  <data name="ChatDeliveryDateLabel" xml:space="preserve">
+    <value>Data di consegna</value>
+  </data>
+  <data name="ChatDeliveryDateFuture" xml:space="preserve">
+    <value>La data di consegna non può essere futura.</value>
+  </data>
+  <data name="ChatPpeDeliveryDone" xml:space="preserve">
+    <value>Ho registrato la consegna di {0} × {1} a {2} del {3}.</value>
+  </data>
+  <data name="ChatPpeDeliveryAck" xml:space="preserve">
+    <value>Il dipendente riceverà la richiesta di presa visione del verbale.</value>
+  </data>
+  <data name="ChatOpenDisplayName" xml:space="preserve">
+    <value>Apri sezione Compliance</value>
+  </data>
+  <data name="ChatOpenDescription" xml:space="preserve">
+    <value>apre una sezione della sicurezza sul lavoro o del registro GDPR (corsi, visite mediche, consegne DPI, nomine, DVR, mansioni, trattamenti, responsabili esterni, violazioni) o un suo elemento (es. il DVR, la nomina dell'RSPP, un trattamento)</value>
+  </data>
+  <data name="ChatOpenSectionQuestion" xml:space="preserve">
+    <value>Quale sezione apro? (corsi, visite mediche, consegne DPI, nomine, documenti, mansioni, catalogo DPI, trattamenti, responsabili esterni, violazioni)</value>
+  </data>
+  <data name="ChatOpenSectionLabel" xml:space="preserve">
+    <value>Sezione</value>
+  </data>
+  <data name="ChatOpenNameQuestion" xml:space="preserve">
+    <value>Quale elemento?</value>
+  </data>
+  <data name="ChatOpenNameLabel" xml:space="preserve">
+    <value>Elemento</value>
+  </data>
+  <data name="ChatOpenOpeningSection" xml:space="preserve">
+    <value>Apro la sezione {0}.</value>
+  </data>
+  <data name="ChatOpenOpeningItem" xml:space="preserve">
+    <value>Apro {0}: {1}.</value>
+  </data>
+  <data name="ChatOpenNotFound" xml:space="preserve">
+    <value>Non trovo "{0}".</value>
+  </data>
+  <data name="ChatOpenAmbiguous" xml:space="preserve">
+    <value>Ci sono {0} elementi per "{1}": {2}.</value>
+  </data>
 </root>

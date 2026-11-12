@@ -1,0 +1,28 @@
+// Frasi di prova dei comandi di Compliance (formato: vedi README.md; analisi: ANALISI_COMPLIANCE_VOCALI.md)
+[
+  { "frase": "quali sono le scadenze della sicurezza?", "intent": "CmpSafetyExpiries" },
+  { "frase": "visite mediche in scadenza nei prossimi 60 giorni", "intent": "CmpSafetyExpiries", "slots": { "days": "60", "area": "visite" } },
+  { "frase": "il DVR è scaduto?", "intent": "CmpSafetyExpiries", "slots": { "area": "documenti" }, "ruolo": "CompanyAdmin" },
+  { "frase": "which safety deadlines are coming up?", "intent": "CmpSafetyExpiries" },
+  { "frase": "com'è la situazione della formazione sicurezza?", "intent": "CmpSafetyTraining" },
+  { "frase": "corsi sicurezza di Rossi", "intent": "CmpSafetyTraining", "slots": { "person": "Rossi" }, "pagina": "/cmp81" },
+  { "frase": "chi non ha fatto i corsi obbligatori?", "intent": "CmpSafetyTraining" },
+  { "frase": "ci sono data breach aperti?", "intent": "CmpDataBreaches" },
+  { "frase": "violazioni dei dati da notificare al Garante", "intent": "CmpDataBreaches", "pagina": "/cmpgdpr" },
+  { "frase": "com'è messo il registro GDPR?", "intent": "CmpGdprRegister" },
+  { "frase": "ci sono contratti dei responsabili esterni in scadenza?", "intent": "CmpGdprRegister" },
+  { "frase": "quando scade la mia visita medica?", "intent": "CmpMyCompliance", "ruolo": "User" },
+  { "frase": "i miei corsi sicurezza sono in regola?", "intent": "CmpMyCompliance", "ruolo": "User" },
+  { "frase": "registra il corso antincendio di Rossi fatto ieri", "intent": "CmpRegisterTraining",
+    "slots": { "person": "Rossi", "courseType": "antincendio", "date": "=ieri" } },
+  { "messaggi": ["Bianchi ha fatto il corso di primo soccorso", "il 3 novembre"], "intent": "CmpRegisterTraining",
+    "slots": { "person": "Bianchi", "date": "=3 novembre" } },
+  { "frase": "consegna due paia di guanti a Rossi", "intent": "CmpPpeDelivery", "slots": { "person": "Rossi", "ppe": "guanti", "quantity": "2" } },
+  { "frase": "ho dato le scarpe antinfortunistiche taglia 42 a Verdi ieri", "intent": "CmpPpeDelivery",
+    "slots": { "person": "Verdi", "size": "42", "date": "=ieri" } },
+  { "frase": "apri le visite mediche", "intent": "CmpOpen", "slots": { "section": "visite" } },
+  { "frase": "apri il DVR", "intent": "CmpOpen", "slots": { "section": "documenti" } },
+  { "frase": "open the data breaches", "intent": "CmpOpen", "slots": { "section": "violazioni" } },
+  { "frase": "portami al registro gdpr", "intent": "Navigate", "slots": { "page": "registro gdpr" } },
+  { "frase": "take me to workplace safety", "intent": "Navigate" }
+]
