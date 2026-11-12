@@ -600,7 +600,8 @@ Comportamento (`LicenseService.LicenseCancel`):
 - **Limiti noti**:
   - i **file su disco** dei moduli (documenti, allegati: chiavi nelle tabelle dello schema, cartelle per azienda e non per applicativo) **restano** come file orfani; vanno eliminati dai rami dei moduli prima del `DROP SCHEMA` (punto aperto in checklist);
   - in **modalità singola** (non usata: `MultiTenant = true` in configurazione e nei deploy) non c'è uno schema per azienda: si disattiva l'applicativo ma i dati restano nelle tabelle di `public`;
-  - le cache degli inizializzatori sono per istanza del server: con più istanze le altre non vengono azzerate.
+  - le cache degli inizializzatori sono per istanza del server: con più istanze le altre non vengono azzerate;
+  - le aziende create dallo studio nascono con Presenze attivo e il suo schema anche senza licenza (`ActivateForNewCompanyAsync`): alla prima disdetta di una licenza che copre Presenze (es. Cumulativo), se non resta un'altra copertura, anche quello schema viene eliminato, compresi i dati inseriti prima della licenza.
 
 ---
 
@@ -634,6 +635,6 @@ Comportamento (`LicenseService.LicenseCancel`):
 - [x] `LicenseService.LicenseCancel`: annullamento ed eliminazione in una transazione; notifiche (categoria `licenze`) ai PowerAdmin del soggetto e alle aziende dello studio che perdono la copertura
 - [x] Testi server e client (it, en), conferma con avviso di eliminazione definitiva, manuale `/licensemanagement`
 - [x] Build server e client
-- [ ] Prova API in AllFunction: schema eliminato e applicativo disattivato alla disdetta; schema conservato se c'è un'altra copertura; nuova sottoscrizione che ricrea lo schema; notifiche; disdetta dello studio senza eliminazione
+- [x] Prova API in AllFunction (prova a secco su AllFunction_Dev + questo ramo, DB usa e getta, 29 controlli): schema CRM eliminato e applicativo disattivato alla disdetta, Common conservato, notifica al PowerAdmin; nuova sottoscrizione che ricrea lo schema con tutte le tabelle; CRM coperto anche dal Cumulativo: schema conservato e notifica "nessun dato eliminato"; disdetta del Cumulativo: restano solo gli schemi Common; disdetta dello studio: notifica all'azienda e al PowerAdmin dello studio, schema dell'azienda conservato
 - [ ] Merge nella catena e cancellazione del worktree
 - [ ] (rami dei moduli) eliminazione dei file su disco dell'applicativo prima del `DROP SCHEMA`
