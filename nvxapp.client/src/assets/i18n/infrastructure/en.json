@@ -1196,7 +1196,7 @@
       "confirmReject": "You can give a reason: the requester will see it.",
       "rejectReason": "Reason (optional)",
       "confirmCancel": "Cancel the request?",
-      "confirmRevoke": "The request is already approved: ask to revoke it?"
+      "confirmRevoke": "The request is already approved: cancel it? For some requests (e.g. attendance) the cancellation must be approved."
     },
     "acknowledgementList": {
       "title": "Acknowledgements",
