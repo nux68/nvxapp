@@ -573,9 +573,34 @@ Richiesta: poter **disdire un piano** per non avere nel menu voci di funzioni ch
 - **Nessun rimborso** del periodo residuo (come il cambio piano, §15.3); la conferma lo dice per le licenze a pagamento attive.
 - **Licenza dello studio valida per le aziende** (`DisponibileSuCompany`): la disdetta toglie la copertura anche alle aziende dello studio che non hanno una licenza propria; la conferma lo avvisa.
 - Disdicibili gli abbonamenti in qualunque stato tranne `Annullato`: `Attivo`, `InAttesa` (pagamento rimasto in sospeso, che altrimenti blocca una nuova sottoscrizione), `Scaduto`, `Sospeso`.
-- **L'applicativo non viene disattivato** (`CompanyApplication` resta com'è): come alla scadenza (§15.6) è solo nascosto; una nuova sottoscrizione lo rende di nuovo visibile, con i dati intatti. Nessuna migration.
+- ~~**L'applicativo non viene disattivato** (`CompanyApplication` resta com'è): come alla scadenza (§15.6) è solo nascosto; una nuova sottoscrizione lo rende di nuovo visibile, con i dati intatti.~~ **Superato dal §15.9** (12/11/2026): per l'azienda la disdetta disattiva l'applicativo ed elimina schema e dati delle funzioni rimaste senza copertura. Nessuna migration.
 - Lo storico dei pagamenti resta.
 - Testi: `LicenseCancelled`, `LicenseNotCancellable` (`InfrastructureMessages*.resx`), `pages.licenseManagement.cancel` / `confirmCancel*` (`assets/i18n/infrastructure/*.json`), manuale `infrastructure.*.md` (`/licensemanagement`).
+
+### 15.9 Disdetta: notifica ed eliminazione dello schema (12/11/2026)
+
+Richiesta: quando un piano viene disdetto, dare notifica ed eliminare lo schema corrispondente. Decisioni dell'utente (12/11/2026):
+- lo schema si elimina **solo alla disdetta** (non alla scadenza: una licenza scaduta nasconde la funzione e conserva i dati, §15.6);
+- l'eliminazione è **immediata**, alla conferma della disdetta;
+- se disdice lo **studio**, le aziende che perdono la copertura ricevono **solo una notifica**: i loro schemi restano.
+
+Comportamento (`LicenseService.LicenseCancel`):
+- **Azienda**, sistema licenze acceso: in una sola transazione con l'annullamento dell'abbonamento, per ogni applicativo della licenza (Cumulativo = tutti) che resta **senza copertura** (nessun'altra licenza propria, dello studio con `DisponibileSuCompany` o cumulativa, `ILicenseGuard.CoverageAsync(reale: true)`), `CompanyApplicationService.RemoveForLicenseCancelAsync`:
+  - disattiva l'applicativo (`CompanyApplication.Active = false`), così una nuova sottoscrizione lo riattiva e ricrea lo schema (`ActivateForLicenseAsync`);
+  - elimina lo schema `tenant_<IdAzienda>_<IdApp>` con tutti i dati (`ITenantProvisioningService.DropApplicationSchemaAsync`, mai Common; in PostgreSQL il `DROP SCHEMA` si annulla con il rollback);
+  - elimina scadenze e prese visione del modulo dell'azienda (`Scadenza`, `PresaVisione` in `public`, colonna `Application`);
+  - azzera la cache degli inizializzatori di azienda e utenti per quell'applicativo (`CompanyInitializerRegistry.Forget`, `UserInitializerRegistry.Forget`): alla nuova attivazione i dati iniziali vengono ricreati.
+- Gli applicativi ancora coperti da un'altra licenza **non si toccano**.
+- **Sistema licenze spento**: nessuna eliminazione (gli applicativi si usano senza licenza); la disdetta annulla solo l'abbonamento.
+- **Studio**: nessuno schema da eliminare (`FinancialAdvisorApplication` non ne ha).
+- **Notifiche** (categoria nuova `licenze`, app ed email predefinite, disattivabile dalle preferenze), inviate dopo la conferma; un errore nell'invio non annulla la disdetta:
+  - ai PowerAdmin del soggetto: chi ha disdetto, piano, funzione e i dati eliminati (oppure "nessun dato eliminato");
+  - per una licenza dello studio valida per le aziende: ai PowerAdmin di ogni azienda dello studio che resta senza copertura per applicativi attivi, con le funzioni perse e l'indicazione che i dati sono conservati.
+- **Client**: la conferma della disdetta dell'azienda avverte che i dati delle funzioni senza altra copertura vengono eliminati subito e definitivamente; dopo la disdetta la pagina mostra anche l'elenco dei dati eliminati.
+- **Limiti noti**:
+  - i **file su disco** dei moduli (documenti, allegati: chiavi nelle tabelle dello schema, cartelle per azienda e non per applicativo) **restano** come file orfani; vanno eliminati dai rami dei moduli prima del `DROP SCHEMA` (punto aperto in checklist);
+  - in **modalità singola** (non usata: `MultiTenant = true` in configurazione e nei deploy) non c'è uno schema per azienda: si disattiva l'applicativo ma i dati restano nelle tabelle di `public`;
+  - le cache degli inizializzatori sono per istanza del server: con più istanze le altre non vengono azzerate.
 
 ---
 
@@ -602,3 +627,13 @@ Richiesta: poter **disdire un piano** per non avere nel menu voci di funzioni ch
 - [x] Prova API su DB di prova (Infrastructure_Dev, listino Cumulativo): disdetta di un Free e di uno Standard in debug, copertura tolta, rinnovo automatico spento, annullato fuori elenco, pagamento nello storico, nuova sottoscrizione possibile; negata all'Admin, allo studio sull'abbonamento dell'azienda e su un abbonamento già disdetto
 - [x] Merge nella catena (Infrastructure → rami → AllFunction), 12/11/2026
 - [x] Verifica in AllFunction (moduli registrati): CRM Free compare nel menu e sparisce dopo la disdetta; col Cumulativo compaiono i sei applicativi e spariscono tutti dopo la disdetta
+
+### Disdetta: notifica ed eliminazione dello schema (§15.9)
+- [x] `ITenantProvisioningService.DropApplicationSchemaAsync` (uno schema, mai Common)
+- [x] `CompanyApplicationService.RemoveForLicenseCancelAsync`: applicativi senza copertura disattivati, schema eliminato, scadenze e prese visione del modulo eliminate, cache degli inizializzatori azzerata
+- [x] `LicenseService.LicenseCancel`: annullamento ed eliminazione in una transazione; notifiche (categoria `licenze`) ai PowerAdmin del soggetto e alle aziende dello studio che perdono la copertura
+- [x] Testi server e client (it, en), conferma con avviso di eliminazione definitiva, manuale `/licensemanagement`
+- [x] Build server e client
+- [ ] Prova API in AllFunction: schema eliminato e applicativo disattivato alla disdetta; schema conservato se c'è un'altra copertura; nuova sottoscrizione che ricrea lo schema; notifiche; disdetta dello studio senza eliminazione
+- [ ] Merge nella catena e cancellazione del worktree
+- [ ] (rami dei moduli) eliminazione dei file su disco dell'applicativo prima del `DROP SCHEMA`
