@@ -634,6 +634,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             }, isSubProcess);
         }
 
+        /*
+         Disdetta (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8): solo il PowerAdmin del soggetto, effetto immediato.
+         L'applicativo non viene disattivato (CompanyApplication resta com'e'): senza copertura sparisce dal menu,
+         come alla scadenza, e torna visibile con una nuova sottoscrizione.
+        */
+        public virtual async Task<GenericResult<LicenseCancelOutModel>> LicenseCancel(GenericRequest<LicenseCancelInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var (soggetto, canManage) = await SoggettoCorrente();
+                if (!canManage)
+                    throw new UserMessageException(InfrastructureMessages.Get("LicenseNotAllowed"));
+
+                var abbonamento = await AbbonamentiSoggetto(soggetto).FirstOrDefaultAsync(x => x.Id == model.Data.IdAbbonamento)
+                                  ?? throw new UserMessageException(InfrastructureMessages.Get("LicenseSubscriptionNotFound"));
+                abbonamento = await _subscriptionManager.CancelAsync(abbonamento);
+                var retVal = new LicenseCancelOutModel { Abbonamento = SubscriptionModel(abbonamento, await _settingsProvider.GetAsync()) };
+                retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseCancelled", LicenseSubscriptionManager.NomeFunzione(abbonamento.Ambito)), MessageType.Information));
+                return retVal;
+            }, isSubProcess);
+        }
+
         // ---------------------------------------------------------------------------
 
         private sealed class Accesso
@@ -824,5 +846,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         Task<GenericResult<LicenseSubscribeOutModel>> LicenseSubscribe(GenericRequest<LicenseSubscribeInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseRenewOutModel>> LicenseRenew(GenericRequest<LicenseRenewInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseAutoRenewPutOutModel>> LicenseAutoRenewPut(GenericRequest<LicenseAutoRenewPutInModel> model, Boolean isSubProcess);
+        Task<GenericResult<LicenseCancelOutModel>> LicenseCancel(GenericRequest<LicenseCancelInModel> model, Boolean isSubProcess);
     }
 }
