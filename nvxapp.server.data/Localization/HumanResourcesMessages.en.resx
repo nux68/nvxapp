@@ -229,4 +229,259 @@
     <value>Human resources: payslips and CU</value>
     <comment>categoria di notifica</comment>
   </data>
+  <data name="ChatCategory" xml:space="preserve">
+    <value>Human resources</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>Operation failed: {0}</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>... and {0} more</value>
+  </data>
+  <data name="ChatAmbiguous" xml:space="preserve">
+    <value>I found {0} matches for "{1}": {2}. Can you be more specific?</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>"{0}" is not a valid date.</value>
+  </data>
+  <data name="ChatLateMark" xml:space="preserve">
+    <value>(late)</value>
+  </data>
+  <data name="ChatEmployeeQuestion" xml:space="preserve">
+    <value>Which employee?</value>
+  </data>
+  <data name="ChatEmployeeLabel" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="ChatEmployeeNotFound" xml:space="preserve">
+    <value>I can't find the employee "{0}".</value>
+  </data>
+  <data name="ChatCourseQuestion" xml:space="preserve">
+    <value>Which course?</value>
+  </data>
+  <data name="ChatCourseLabel" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="ChatCourseNotFound" xml:space="preserve">
+    <value>I can't find an active course "{0}" in the catalogue.</value>
+  </data>
+  <data name="ChatYearQuestion" xml:space="preserve">
+    <value>Which year?</value>
+  </data>
+  <data name="ChatYearLabel" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Within how many days?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="ChatByQuestion" xml:space="preserve">
+    <value>By when must it be done?</value>
+  </data>
+  <data name="ChatByLabel" xml:space="preserve">
+    <value>By</value>
+  </data>
+  <data name="ChatItemQuestion" xml:space="preserve">
+    <value>Which checklist item?</value>
+  </data>
+  <data name="ChatItemLabel" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="ChatPlanQuestion" xml:space="preserve">
+    <value>In which training plan?</value>
+  </data>
+  <data name="ChatPlanLabel" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="ChatChecklistTypeHire" xml:space="preserve">
+    <value>Hiring</value>
+  </data>
+  <data name="ChatChecklistTypeEnd" xml:space="preserve">
+    <value>Leaving</value>
+  </data>
+  <data name="ChatExpiriesDisplayName" xml:space="preserve">
+    <value>HR deadlines</value>
+  </data>
+  <data name="ChatExpiriesDescription" xml:space="preserve">
+    <value>Human resources deadlines (courses to renew and checklist items) overdue or due within some days, also for one employee</value>
+  </data>
+  <data name="ChatExpiriesNone" xml:space="preserve">
+    <value>No human resources deadlines within {0} days{1}.</value>
+  </data>
+  <data name="ChatExpiriesOverdue" xml:space="preserve">
+    <value>{0} deadlines already passed{1}:</value>
+  </data>
+  <data name="ChatExpiriesTitle" xml:space="preserve">
+    <value>{0} deadlines in the next {1} days{2}:</value>
+  </data>
+  <data name="ChatTrainingToDoDisplayName" xml:space="preserve">
+    <value>Courses to do</value>
+  </data>
+  <data name="ChatTrainingToDoDescription" xml:space="preserve">
+    <value>Courses still to be taken according to the year's training plans, by employee or by course</value>
+  </data>
+  <data name="ChatTrainingNoPlan" xml:space="preserve">
+    <value>There is no training plan for {0}.</value>
+  </data>
+  <data name="ChatTrainingNoneEmployee" xml:space="preserve">
+    <value>I can't find the employee "{0}" in the training plans.</value>
+  </data>
+  <data name="ChatTrainingNoneCourse" xml:space="preserve">
+    <value>I can't find the course "{0}" in the {1} training plans.</value>
+  </data>
+  <data name="ChatTrainingAllDone" xml:space="preserve">
+    <value>All {0} planned courses have been taken{1}.</value>
+  </data>
+  <data name="ChatTrainingTitle" xml:space="preserve">
+    <value>{0} courses to do{1} ({2} of {3} done):</value>
+  </data>
+  <data name="ChatTrainingBy" xml:space="preserve">
+    <value>by {0}</value>
+  </data>
+  <data name="ChatTrainingLate" xml:space="preserve">
+    <value>was due by {0}</value>
+  </data>
+  <data name="ChatOnboardingDisplayName" xml:space="preserve">
+    <value>Onboarding in progress</value>
+  </data>
+  <data name="ChatOnboardingDescription" xml:space="preserve">
+    <value>Open hiring and leaving checklists with their progress; for one employee, the items still to do</value>
+  </data>
+  <data name="ChatOnboardingNone" xml:space="preserve">
+    <value>No open hiring or leaving checklists.</value>
+  </data>
+  <data name="ChatOnboardingNoneEmployee" xml:space="preserve">
+    <value>There are no open checklists for "{0}".</value>
+  </data>
+  <data name="ChatOnboardingTitle" xml:space="preserve">
+    <value>{0} open checklists:</value>
+  </data>
+  <data name="ChatOnboardingProgress" xml:space="preserve">
+    <value>{0} of {1} items done</value>
+  </data>
+  <data name="ChatOnboardingNext" xml:space="preserve">
+    <value>next item on {0}</value>
+  </data>
+  <data name="ChatOnboardingDetail" xml:space="preserve">
+    <value>{0} of {1} on {2}: {3} of {4} items done. Still to do:</value>
+  </data>
+  <data name="ChatEmployeeInfoDisplayName" xml:space="preserve">
+    <value>Employee HR record</value>
+  </data>
+  <data name="ChatEmployeeInfoDescription" xml:space="preserve">
+    <value>Employee data in Human resources: employee number, email, hiring and leaving dates, account, open checklists</value>
+  </data>
+  <data name="ChatEmployeeActive" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="ChatEmployeeInactive" xml:space="preserve">
+    <value>Not active</value>
+  </data>
+  <data name="ChatEmployeeNumber" xml:space="preserve">
+    <value>Employee number: {0}</value>
+  </data>
+  <data name="ChatEmployeeEmail" xml:space="preserve">
+    <value>Email: {0}</value>
+  </data>
+  <data name="ChatEmployeeHired" xml:space="preserve">
+    <value>Hired on {0}</value>
+  </data>
+  <data name="ChatEmployeeEnd" xml:space="preserve">
+    <value>Leaving on {0}</value>
+  </data>
+  <data name="ChatEmployeeAccount" xml:space="preserve">
+    <value>Account: {0}</value>
+  </data>
+  <data name="ChatEmployeeAccountDisabled" xml:space="preserve">
+    <value>Account {0} disabled</value>
+  </data>
+  <data name="ChatEmployeeNoAccount" xml:space="preserve">
+    <value>No application account</value>
+  </data>
+  <data name="ChatEmployeeChecklist" xml:space="preserve">
+    <value>Open {0} checklist: {1} of {2} items done</value>
+  </data>
+  <data name="ChatMyPayslipsDisplayName" xml:space="preserve">
+    <value>My payslips</value>
+  </data>
+  <data name="ChatMyPayslipsDescription" xml:space="preserve">
+    <value>Your published payslips and tax certificates: latest period available and documents to confirm</value>
+  </data>
+  <data name="ChatMyPayslipsNotEmployee" xml:space="preserve">
+    <value>Your user is not linked to an employee of the company: there are no payslips to show.</value>
+  </data>
+  <data name="ChatMyPayslipsNone" xml:space="preserve">
+    <value>You have no published payslips or tax certificates{0}.</value>
+  </data>
+  <data name="ChatMyPayslipsTitle" xml:space="preserve">
+    <value>You have {0} published documents{1}:</value>
+  </data>
+  <data name="ChatMyPayslipsLast" xml:space="preserve">
+    <value>{0} payslips, the latest for {1}</value>
+  </data>
+  <data name="ChatMyPayslipsCu" xml:space="preserve">
+    <value>{0} tax certificates (CU), the latest for {1}</value>
+  </data>
+  <data name="ChatMyPayslipsMonths" xml:space="preserve">
+    <value>Months: {0}</value>
+  </data>
+  <data name="ChatMyPayslipsAllConfirmed" xml:space="preserve">
+    <value>No documents to confirm</value>
+  </data>
+  <data name="ChatMyPayslipsToConfirm" xml:space="preserve">
+    <value>{0} to confirm: {1} (from the My payslips page)</value>
+  </data>
+  <data name="ChatCompleteItemDisplayName" xml:space="preserve">
+    <value>Complete checklist item</value>
+  </data>
+  <data name="ChatCompleteItemDescription" xml:space="preserve">
+    <value>Marks as done an item of an employee's open hiring or leaving checklist</value>
+  </data>
+  <data name="ChatCompleteItemSummary" xml:space="preserve">
+    <value>item "{item}" of {employeeName}'s checklist to be marked as done</value>
+  </data>
+  <data name="ChatCompleteItemNoneOpen" xml:space="preserve">
+    <value>{0}'s checklists have no items left to do.</value>
+  </data>
+  <data name="ChatCompleteItemNotFound" xml:space="preserve">
+    <value>I can't find the item "{0}" among those still to do for {1}. Open items: {2}.</value>
+  </data>
+  <data name="ChatCompleteItemAction" xml:space="preserve">
+    <value>The item "{0}" creates or disables the employee's account: complete it from the checklist page.</value>
+  </data>
+  <data name="ChatCompleteItemDone" xml:space="preserve">
+    <value>Item "{0}" of the {1} checklist of {2} marked as done. Items still to do: {3}.</value>
+  </data>
+  <data name="ChatAddPlanDisplayName" xml:space="preserve">
+    <value>Course in the training plan</value>
+  </data>
+  <data name="ChatAddPlanDescription" xml:space="preserve">
+    <value>Adds a course to be taken by an employee to the year's training plan, with the date by which to take it</value>
+  </data>
+  <data name="ChatAddPlanSummary" xml:space="preserve">
+    <value>course {course} to be added to the training plan for {employeeName}</value>
+  </data>
+  <data name="ChatAddPlanWhichPlan" xml:space="preserve">
+    <value>There are {0} training plans for {1}: {2}. Which one should I add it to?</value>
+  </data>
+  <data name="ChatAddPlanAlready" xml:space="preserve">
+    <value>The course {0} for {1} is already in the plan "{2}".</value>
+  </data>
+  <data name="ChatAddPlanDone" xml:space="preserve">
+    <value>Added the course {0} for {1} to the plan "{2}" ({3}){4}.</value>
+  </data>
+  <data name="ChatOpenEmployeeLabel" xml:space="preserve">
+    <value>HR record</value>
+  </data>
+  <data name="ChatOpenCourseLabel" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="ChatOpenPlanLabel" xml:space="preserve">
+    <value>Training plan</value>
+  </data>
+  <data name="ChatOpenChecklistLabel" xml:space="preserve">
+    <value>HR checklist</value>
+  </data>
 </root>

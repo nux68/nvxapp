@@ -41,7 +41,7 @@ Il modulo è indipendente: funziona anche senza Presenze, Documentale e Complian
 Regole:
 - i permessi li controlla il server in ogni servizio (`HrUtility.ContestoAsync`, come `CrmUtility`); le pagine li rispecchiano soltanto;
 - il dipendente è collegato al proprio utente tramite `Dip_Anagrafica.IdAspNetUsers` (Common): senza utente non ha l'area del dipendente, ma i suoi documenti restano consultabili dall'ufficio del personale;
-- i cedolini sono **dati personali** (retribuzione): accesso solo al dipendente, all'ufficio del personale e allo studio che li carica; esclusi dalla chat AI salvo le sole funzioni dell'utente sui propri dati (da decidere, §8).
+- i cedolini sono **dati personali** (retribuzione): accesso solo al dipendente, all'ufficio del personale e allo studio che li carica; esclusi dalla chat AI salvo le sole funzioni dell'utente sui propri dati (HR-D6: "I miei cedolini" a voce, solo periodi e conferme, `ANALISI_HUMANRESOURCES_VOCALI.md`).
 
 ## 4. Modello dati proposto (schema `tenant_<id>_5`, prefisso `Hr_`)
 
@@ -124,7 +124,7 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 | HR-D3 | Criterio di abbinamento delle pagine (codice fiscale, matricola, AI) e cosa fare degli scarti | Proposta: codice fiscale, poi matricola, poi proposta AI da confermare a mano. **Scelta provvisoria (HR-CED)**: codice fiscale, poi matricola ("Matricola …"); al posto dell'AI una proposta per cognome e nome trovati nella pagina, sempre da confermare a mano; le pagine di seguito senza codice sono scarti |
 | HR-D4 | Conservazione dei documenti del dipendente cessato o dell'utente rimosso | Obblighi di legge: i documenti restano all'azienda; l'utente perde solo l'accesso. **Scelta provvisoria**: così (cancellazione dell'utente: i documenti restano, chiavi `Restrict` verso il dipendente) |
 | HR-D5 | Catalogo dei corsi: in HR, in Compliance o in Common | Se lo usano entrambi i moduli va in Common (regola del §2.2 del documento generale). **Scelta provvisoria (HR-FOR)**: in HR (`Hr_Corso`); se la Compliance lo usa (`CMP-81.1`) si sposta in Common |
-| HR-D6 | Chat AI sui dati del modulo | Proposta: esclusi cedolini e CU; corsi e checklist ammessi per i ruoli che li vedono. **Scelta provvisoria**: per ora nessuna funzione della chat AI sul modulo |
+| HR-D6 | Chat AI sui dati del modulo | Proposta: esclusi cedolini e CU; corsi e checklist ammessi per i ruoli che li vedono. **Scelta (vocali)**: scadenze, corsi da fare, checklist e scheda HR per l'ufficio del personale; dei cedolini solo "I miei cedolini" del dipendente (periodi pubblicati e conferme, mai contenuti o importi), nessun cedolino altrui; vedi `ANALISI_HUMANRESOURCES_VOCALI.md` |
 | HR-D7 | Cartella i18n e `i18n-folders.ts` | Il ramo aggiunge `i18n-human-resources.ts` e una riga in `i18n-folders.ts` (file di Infrastructure): nel merge di AllFunction con gli altri moduli nuovi c'è un conflitto banale (tenere tutte le righe). In alternativa Infrastructure aggiunge gli stub `i18n-<app>.ts` a `null` come fece per il CRM |
 
 ## 9. Checklist
@@ -134,7 +134,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `HR-BASE` – Avvio del modulo
 - ✅ `HR-BASE.1` `HumanResourcesDbContext` registrato, migration `InitHumanResources` con `Hr_Cfg`, repository, inizializzatore e `HrDataDeleter`
 - ✅ `HR-BASE.2` Cartelle del modulo, servizio/controller della configurazione, pagina `/hrsettings`, ruoli (§3); area del dipendente prevista, pagine con `HR-CED`
-- ✅ `HR-BASE.3` Menu, rotta, manuale e i18n; widget e comandi vocali: nessuno per ora
+- ✅ `HR-BASE.3` Menu, rotta, manuale e i18n; widget: nessuno per ora; comandi vocali con `ANALISI_HUMANRESOURCES_VOCALI.md`
 
 #### `HR-CED` – Portale con cedolini e CU
 - ✅ `HR-CED.1` Caricamento del PDF unico da parte dello studio o dell'azienda (`Hr_DocCaricamento`, job) — pagine lato studio con la scelta dell'azienda (§7.1)
