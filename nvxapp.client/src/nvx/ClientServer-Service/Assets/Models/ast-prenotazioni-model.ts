@@ -34,6 +34,8 @@ export class AstPrenotazioneModel {
   public stato = 0;
   /** motivo del rifiuto (proprie e amministratori) */
   public motivoRifiuto: string | null = null;
+  /** confermata con la richiesta di annullamento in attesa di approvazione */
+  public annullamentoRichiesto = false;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;
