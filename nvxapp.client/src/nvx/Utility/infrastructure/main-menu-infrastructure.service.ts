@@ -18,6 +18,11 @@ const RUOLI_RIEPILOGHI = ['CompanyPowerAdmin', 'CompanyAdmin', 'FinancialAdvisor
 // livello come Accesso (app.component), non una sottosezione di Amministrazione
 export const GRUPPO_SERVIZI = 9;
 
+// applicativi soggetti a licenza: scadenzario, calendario e prese visione servono solo se l'azienda ne usa almeno uno
+// (con il sistema licenze acceso AuthService conosce solo gli applicativi attivi e coperti da licenza)
+const APPLICATIVI_MODULI = [ApplicationType.AttendanceTracking, ApplicationType.Crm, ApplicationType.DocumentManagement,
+                            ApplicationType.HumanResources, ApplicationType.Compliance, ApplicationType.Assets];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -121,15 +126,18 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.preferences', component: "UserPageComponent", url: '/user', icon: 'options', nonConfigurabile: true },
       // servizi comuni (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC) in una sezione dedicata del menu, subito dopo Accesso
       // (gruppo GRUPPO_SERVIZI, vedi app.component): notifiche per tutti gli utenti collegati;
-      // scadenzario, calendario e prese visione per chi lavora in un'azienda (visibilita' e permessi li ricontrolla il server)
+      // scadenzario, calendario e prese visione per chi lavora in un'azienda (visibilita' e permessi li ricontrolla il server),
+      // solo se l'azienda ha almeno un applicativo attivo e coperto da licenza: le scadenze e le prese visione arrivano dai moduli
       { menuType: MenuType.MenuHeader, zorder: 510, group: GRUPPO_SERVIZI, title: 'menu.services', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 520, group: GRUPPO_SERVIZI, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
         badge: this.notificationNotifierService.nonLette },
-      { menuType: MenuType.MenuItem,   zorder: 530, group: GRUPPO_SERVIZI, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem,   zorder: 530, group: GRUPPO_SERVIZI, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number',
+        anyApplication: APPLICATIVI_MODULI },
       // calendario personale (INF-CAL.3): feed .ics da sottoscrivere in Google / Outlook / Apple
-      { menuType: MenuType.MenuItem,   zorder: 535, group: GRUPPO_SERVIZI, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar' },
+      { menuType: MenuType.MenuItem,   zorder: 535, group: GRUPPO_SERVIZI, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar',
+        anyApplication: APPLICATIVI_MODULI },
       { menuType: MenuType.MenuItem,   zorder: 540, group: GRUPPO_SERVIZI, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
-        badge: this.notificationNotifierService.daConfermare },
+        badge: this.notificationNotifierService.daConfermare, anyApplication: APPLICATIVI_MODULI },
       // riepilogo AI periodico (INF-AI.3)
       { menuType: MenuType.MenuItem,   zorder: 545, group: 0, title: 'menu.digests', roles: RUOLI_RIEPILOGHI, component: "DigestListPageComponent", url: '/digests', icon: 'sparkles' },
       // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
