@@ -35,6 +35,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         public string? MotivoRifiuto { get; set; }
         // confermata con la richiesta di annullamento in attesa di approvazione
         public bool AnnullamentoRichiesto { get; set; }
+        // l'amministratore collegato puo' approvarla o rifiutarla adesso (richiesta o annullamento in attesa): id della richiesta comune
+        public bool DaDecidere { get; set; }
+        public int? IdRichiesta { get; set; }
         /// <summary>prenotazione dell'utente collegato</summary>
         public bool Mia { get; set; }
         /// <summary>chi ha prenotato: solo per le proprie e per gli amministratori</summary>
