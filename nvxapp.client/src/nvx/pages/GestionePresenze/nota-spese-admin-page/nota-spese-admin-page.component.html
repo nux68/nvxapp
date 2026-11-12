@@ -127,7 +127,7 @@
               </span>
               <span class="ns-gruppo-stato">
                 @if (g.nota; as nota) {
-                  <ion-badge [color]="coloreStato(nota.stato)">{{ nota.stato | statoRichiestaLongText }}</ion-badge>
+                  <ion-badge [color]="coloreStato(nota.stato, nota.revoca)">{{ testoStato(nota.stato, nota.revoca) }}</ion-badge>
                 }
               </span>
               <span class="ns-gruppo-numero">{{ g.spese.length }} {{ (g.spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }}</span>
@@ -158,7 +158,7 @@
                 <!-- per dipendente lo stato e' sulla riga della nota (uguale per tutte le sue spese) -->
                 <span class="ns-riga-stato">
                   @if (!g.nota) {
-                    <ion-badge [color]="coloreStato(s.richiestaStato)">{{ s.richiestaStato | statoRichiestaLongText }}</ion-badge>
+                    <ion-badge [color]="coloreStato(s.richiestaStato, s.revocaStato)">{{ testoStato(s.richiestaStato, s.revocaStato) }}</ion-badge>
                   }
                 </span>
                 <span class="ns-importo">{{ euro(s.importo) }}</span>

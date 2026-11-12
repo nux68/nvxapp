@@ -34,7 +34,7 @@
             </div>
             <div class="ns-nota-importo">{{ euro(riepilogo(nota).totale) }}</div>
             <ion-badge [color]="stato(nota).colore">
-              {{ stato(nota).testo ?? (nota.richiestaStato | statoRichiestaLongText) }}
+              {{ stato(nota).testo }}
             </ion-badge>
           </div>
 
@@ -73,7 +73,7 @@
                   @if (puoAnnullare(nota)) {
                     <ion-button fill="outline" size="small" shape="round" color="danger" (click)="annulla(nota)">
                       <ion-icon slot="start" name="close-circle-outline"></ion-icon>
-                      {{ (nota.richiestaStato === 6 ? 'attendance.pages.notaSpeseUser.chiediRevoca' : 'attendance.pages.notaSpeseUser.annullaNota') | transloco }}
+                      {{ etichettaAnnulla(nota) }}
                     </ion-button>
                   }
                 </div>

@@ -10,6 +10,7 @@ import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/D
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { statoRichiestaUi } from '../../../Utility/infrastructure/richiesta-stato';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
@@ -23,7 +24,7 @@ interface GruppoSpese {
   spese: Dip_GG_NotaSpesaModel[];
   totale: number;
   /** solo per la nota spese: periodo (date delle spese, "YYYY-MM-DD"), descrizione, stato e dipendente */
-  nota?: { idDip_GG_Richiesta: number | null, idAspNetUsers: string, dal: string, al: string, descrizione: string, stato: StatoRichiesta };
+  nota?: { idDip_GG_Richiesta: number | null, idAspNetUsers: string, dal: string, al: string, descrizione: string, stato: StatoRichiesta, revoca: StatoRichiesta | null };
 }
 
 /** fetta della torta per tipo di spesa: quota sul totale, tracciato SVG (null = unica fetta, cerchio intero) e posizione del numero */
@@ -178,7 +179,7 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
       if (!g) {
         g = { chiave, titolo: this.raggruppa === 'dipendente' ? this.dipendente(s.idAspNetUsers) : this.tipo(s.idPar_TipoSpesa), spese: [], totale: 0 };
         if (this.raggruppa === 'dipendente')
-          g.nota = { idDip_GG_Richiesta: s.idDip_GG_Richiesta, idAspNetUsers: s.idAspNetUsers, dal: this.giorno(s.data), al: this.giorno(s.data), descrizione: s.richiestaDescrizione ?? '', stato: s.richiestaStato };
+          g.nota = { idDip_GG_Richiesta: s.idDip_GG_Richiesta, idAspNetUsers: s.idAspNetUsers, dal: this.giorno(s.data), al: this.giorno(s.data), descrizione: s.richiestaDescrizione ?? '', stato: s.richiestaStato, revoca: s.revocaStato };
         gruppi.set(chiave, g);
       }
       g.spese.push(s);
@@ -237,14 +238,14 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     return this.tipiSpesa.find(t => t.id === id)?.descrizione ?? '';
   }
 
-  /** colore dello stato: approvata verde, rifiutata rossa, annullata scura, in attesa grigia */
-  public coloreStato(stato: StatoRichiesta): string {
-    switch (stato) {
-      case StatoRichiesta.Approvata: return 'success';
-      case StatoRichiesta.Rifiutata: return 'danger';
-      case StatoRichiesta.Cancellata: return 'dark';
-      default: return 'medium';
-    }
+  /** colore dello stato con il ciclo unico delle richieste (richiesta-stato.ts): la fase dell'annullamento prevale */
+  public coloreStato(stato: StatoRichiesta, revoca: StatoRichiesta | null = null): string {
+    return statoRichiestaUi(stato, revoca).colore;
+  }
+
+  /** testo dello stato comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)") */
+  public testoStato(stato: StatoRichiesta, revoca: StatoRichiesta | null = null): string {
+    return this.transloco.translate(statoRichiestaUi(stato, revoca).chiave);
   }
 
   /** rimborso km: "120 km · Fiat Panda (AB123CD)", vuoto per le altre spese */

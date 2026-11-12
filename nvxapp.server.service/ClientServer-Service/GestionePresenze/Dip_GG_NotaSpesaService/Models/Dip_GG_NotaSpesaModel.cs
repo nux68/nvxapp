@@ -22,6 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         public string? AutovetturaDescrizione { get; set; }
         public string? AutovetturaTarga { get; set; }
         public StatoRichiesta RichiestaStato { get; set; }
+        // fase dell'annullamento della nota (ciclo unico delle richieste: lo stato mostrato la tiene in conto)
+        public StatoRichiesta? RevocaStato { get; set; }
         public List<Dip_GG_NotaSpesa_AllegatoModel> Allegati { get; set; } = new List<Dip_GG_NotaSpesa_AllegatoModel>();
     }
 

@@ -203,7 +203,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.DaApprovare)
                         richiesta = richiesta.Where(x => InApprovazione(x)).ToList();
                     else if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.Approvate)
-                        richiesta = richiesta.Where(x => StatiApprovati.Contains(x.RevocaStato ?? x.RichiestaStato)).ToList();
+                        // approvate: anche con l'annullamento respinto o ritirato (restano approvate), non con l'annullamento approvato
+                        richiesta = richiesta.Where(x => nvxapp.server.service.ClientServer_Service.Infrastructure.Request.RichiestaRegole.StatoComune(x) == nvxapp.server.service.ClientServer_Service.Infrastructure.Request.RequestState.Approvata).ToList();
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
@@ -782,6 +783,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     }
                                     else
                                     {
+                                        // ciclo unico delle richieste: l'annullamento si chiede solo su una richiesta approvata e una volta
+                                        // sola (respinto o ritirato, la pratica e' conclusa)
+                                        if (!nvxapp.server.service.ClientServer_Service.Infrastructure.Request.RichiestaRegole.PuoChiedereAnnullamento(curr_richiesta))
+                                            throw new UserMessageException(AttendanceTrackingMessages.Get("RequestRevokeClosed"));
+
                                         // prendo la lista che ho usato nell'approvazione , azzero lo stato e la metto in RevocaApprovazioneData
                                         List<Dip_GG_Richiesta_Stato_Cronology> listaAppr = !string.IsNullOrEmpty(curr_richiesta.RichiestaApprovazioneData) ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(curr_richiesta.RichiestaApprovazioneData) ?? new List<Dip_GG_Richiesta_Stato_Cronology>() : new List<Dip_GG_Richiesta_Stato_Cronology>();
 
@@ -814,11 +820,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
                                         }
                                     }
-                                    else
+                                    else if (nvxapp.server.service.ClientServer_Service.Infrastructure.Request.RichiestaRegole.AnnullamentoInAttesa(curr_richiesta.RevocaStato))
                                     {
-
-                                        curr_richiesta.RevocaStato = null;
-                                        curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented); ;
+                                        // ritiro dell'annullamento ancora in attesa (ciclo unico delle richieste): la pratica si chiude,
+                                        // la richiesta resta approvata e l'annullamento non si puo' piu' chiedere
+                                        curr_richiesta.RevocaStato = StatoRichiesta.Cancellata;
                                         var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
                                         UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
                                     }
