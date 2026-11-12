@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.AttendanceTracking
 {
     [DbContext(typeof(AttendanceTrackingDbContext))]
-    [Migration("20261111223242_AttendanceTracking_Timbratura")]
-    partial class AttendanceTracking_Timbratura
+    [Migration("20261112054435_AttendanceTracking_Init")]
+    partial class AttendanceTracking_Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1731,6 +1731,58 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Az_SubCommessaUser");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_AccordoSW", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Al")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Dal")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DataFirma")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataRichiestaFirma")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("GiorniConsentiti")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxGiorniSettimana")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_RapportoLavoro", "Dal");
+
+                    b.ToTable("Dip_AccordoSW");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_GG_TimbraturaInfo", b =>
                 {
                     b.Property<int>("Id")
@@ -2894,6 +2946,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int?>("IdCausale")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("LavoroAgile")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -3616,6 +3671,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("AspNetUsersNavigation");
 
                     b.Navigation("Az_SubCommessaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_AccordoSW", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Dip_GG_TimbraturaInfo", b =>
