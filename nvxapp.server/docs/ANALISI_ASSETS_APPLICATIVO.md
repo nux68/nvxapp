@@ -85,7 +85,7 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 
 - Server: `AssetsDbContext` registrato in `Installers4Assets`, design-time factory in un file proprio (`AssetsDbContextDesignTimeFactory.cs`), migration `InitAssets` con `Ast_Cfg`, repository `Ast_CfgRepository`, `Ast_Az_AnagraficaReadRepository`, `AstUtility`, `AstCompanyInitializer` (priorità 70), `AstDataDeleter`, `Ast_ConfigService` + `Ast_ConfigController` (`api/Ast_Config/Ast_CfgGet` amministratori, `Ast_CfgPut` CompanyPowerAdmin), testi `AssetsMessages` (it/en), manuale `assets` (it/en), listini `AstLicenseCatalogSeed`.
 - Client: pagina `/astsettings` (`AstSettingsPageComponent`), voce di menu "Risorse aziendali › Impostazioni" (CompanyPowerAdmin, gruppo 70), manuale nella sezione Assistenza, rotta, cartella i18n `assets`.
-- Widget e comandi vocali: nessuno per ora.
+- Widget: nessuno per ora. Comandi vocali: aggiunti dopo, vedi `ANALISI_ASSETS_VOCALI.md`.
 - Prova su DB usa e getta: azienda, attivazione come SuperUser (non bloccata dalle licenze), schema `tenant_<id>_7` con `Ast_Cfg`, Get/Put del CompanyPowerAdmin, Put rifiutata al CompanyAdmin (12 controlli, tutti ok).
 
 ### 7.1 Fatto in `AST-FLO`, `AST-BENI`, `AST-PREN` (11/11/2026, ramo `Assets_Dev_f3`)
@@ -122,7 +122,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 #### `AST-BASE` – Avvio del modulo
 - ✅ `AST-BASE.1` `AssetsDbContext` registrato, migration `InitAssets` con `Ast_Cfg`, repository, inizializzatore e `AstDataDeleter`
 - ✅ `AST-BASE.2` Cartelle del modulo, servizio/controller della configurazione, pagina `/astsettings`, ruoli (§3)
-- ✅ `AST-BASE.3` Menu, rotta, manuale e i18n; widget e comandi vocali: nessuno per ora
+- ✅ `AST-BASE.3` Menu, rotta, manuale e i18n; widget: nessuno per ora; comandi vocali in `ANALISI_ASSETS_VOCALI.md`
 
 #### `AST-FLO` – Flotta
 - ✅ `AST-FLO.1` Veicoli, assegnazione e fringe benefit (su `Dip_RapportoAutovetture` in Common, D5)
