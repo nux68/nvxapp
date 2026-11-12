@@ -1,4 +1,5 @@
 import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
+import { annullamentoInAttesa, puoChiedereAnnullamento } from '../../../Utility/infrastructure/richiesta-stato';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
@@ -345,12 +346,15 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     }
 
     let text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
-    if (this.actionSheet_Dip_GG_Richiesta != null) {
-      if (this.actionSheet_Dip_GG_Richiesta.revocaStato == null)
-        text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
+    // ciclo unico delle richieste: chiedi l'annullamento di una approvata, ritira l'annullamento in attesa, cancella la richiesta in attesa
+    const rich = this.actionSheet_Dip_GG_Richiesta;
+    if (rich != null) {
+      if (puoChiedereAnnullamento(rich.richiestaStato, rich.revocaStato))
+        text = this.transloco.translate('common.requestAction.askCancellation');
+      else if (annullamentoInAttesa(rich.revocaStato))
+        text = this.transloco.translate('common.requestAction.withdrawCancellation');
       else
-        text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRevocation');
-
+        text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
     }
 
 
@@ -463,7 +467,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
         const item = this.currentMonth.dip_GG_Richiesta.find(x => x.id === IdDip_GG_Richiesta[0]);
         if (item != null) {
 
-          if (item.richiestaStato == this.StatoRichiesta.Approvata && (item.revocaStato == null || (item.revocaStato !== null && item.revocaStato == this.StatoRichiesta.Cancellata)))
+          // richiesta di annullamento solo su una approvata e una volta sola (ciclo unico delle richieste)
+          if (puoChiedereAnnullamento(item.richiestaStato, item.revocaStato))
             tipoReq = StatoRichiesta.Immessa; //revoca
           else
             tipoReq = StatoRichiesta.Cancellata;

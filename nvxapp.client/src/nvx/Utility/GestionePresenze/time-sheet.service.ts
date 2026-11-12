@@ -26,6 +26,7 @@ import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze
 import { Contatori_Anno_InModel, Contatori_Anno_MeseResult } from '../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { ContatoriService } from '../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
 import { TipoContatore } from '../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { puoAnnullareRichiesta, statoRichiestaUi } from '../infrastructure/richiesta-stato';
 
 
 
@@ -417,54 +418,13 @@ export class TimeSheetService {
     return slot?.idDip_RapportoLavoro ?? 0;
   }
 
+  // icona dello stato con il ciclo unico delle richieste (richiesta-stato.ts): la fase dell'annullamento prevale
   get_StatoRichiesta_icon(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
 
     if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
       return null;
 
-    if (dip_GG_Richiesta.revocaStato == null) {
-      switch (dip_GG_Richiesta.richiestaStato) {
-        case StatoRichiesta.Diretta:
-          return 'checkmark-circle'; // Inserimento diretto
-        case StatoRichiesta.Immessa:
-          return 'time-outline'; // In attesa
-        case StatoRichiesta.ApprovazioneInCorso:
-          return 'hourglass-outline'; // In corso
-        case StatoRichiesta.ParzialmenteApprovata:
-          return 'alert-circle-outline'; // Parzialmente approvata
-        case StatoRichiesta.Approvata:
-          return 'checkmark-circle-outline'; // Approvata
-        case StatoRichiesta.Rifiutata:
-          return 'close-circle-outline'; // Rifiutata
-        case StatoRichiesta.Cancellata:
-          return 'trash-outline'; // Cancellata
-        default:
-          return 'help-circle-outline'; // Stato sconosciuto
-      }
-    }
-    else {
-      switch (dip_GG_Richiesta.revocaStato) {
-        case StatoRichiesta.Diretta:
-          return 'checkmark-circle'; // Inserimento diretto
-        case StatoRichiesta.Immessa:
-          return 'time-outline'; // In attesa
-        case StatoRichiesta.ApprovazioneInCorso:
-          return 'hourglass-outline'; // In corso
-        case StatoRichiesta.ParzialmenteApprovata:
-          return 'alert-circle-outline'; // Parzialmente approvata
-        case StatoRichiesta.Approvata:
-          return 'checkmark-circle-outline'; // Approvata
-        case StatoRichiesta.Rifiutata:
-          return 'close-circle-outline'; // Rifiutata
-        case StatoRichiesta.Cancellata:
-          return 'trash-outline'; // Cancellata
-        default:
-          return 'help-circle-outline'; // Stato sconosciuto
-      }
-    }
-
-   
-
+    return statoRichiestaUi(dip_GG_Richiesta.richiestaStato, dip_GG_Richiesta.revocaStato).icona;
   }
 
   get_StatoRichiesta_text(status: StatoRichiesta): string {
@@ -852,40 +812,24 @@ export class TimeSheetService {
 
 
 
+  // testo dello stato comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)")
   get_StatoRichiesta_Approval_text(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
 
     if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
       return '';
 
-    if (dip_GG_Richiesta.revocaStato == null) {
-      return this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato);
-    }
-    else {
-      return this.t('statoConRevoca', { stato: this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato), revoca: this.get_StatoRichiesta_text(dip_GG_Richiesta.revocaStato) });
-    }
-    
+    return this.transloco.translate(statoRichiestaUi(dip_GG_Richiesta.richiestaStato, dip_GG_Richiesta.revocaStato).chiave);
   }
 
 
+  // il richiedente ritira la richiesta in attesa, chiede l'annullamento di quella approvata (una volta sola) o ritira
+  // l'annullamento in attesa (ciclo unico delle richieste, richiesta-stato.ts)
   public Dip_GG_Richiesta_User_Can_Delete(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
 
     if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
       return false;
 
-    if (dip_GG_Richiesta.revocaStato == null) {
-
-      if (dip_GG_Richiesta.richiestaStato == StatoRichiesta.Immessa ||
-        dip_GG_Richiesta.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
-        dip_GG_Richiesta.richiestaStato == StatoRichiesta.Approvata)
-        return true;
-      return false;
-    }
-    else {
-      if (dip_GG_Richiesta.revocaStato == StatoRichiesta.Immessa ||
-        dip_GG_Richiesta.revocaStato == StatoRichiesta.ApprovazioneInCorso)
-        return true;
-      return false;
-    }
+    return puoAnnullareRichiesta(dip_GG_Richiesta.richiestaStato, dip_GG_Richiesta.revocaStato);
   }
 
   public Dip_GG_Richiesta_Admin_Can_Approve(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
@@ -982,9 +926,7 @@ export class TimeSheetService {
     extraInfo[this.t('popup.giornoCompetenza')] = giornoComp;
 
     if (richiesta)
-      extraInfo[this.t('popup.statoRichiesta')] = new StatoRichiestaLongTextPipe().transform(
-        richiesta.revocaStato != null ? richiesta.revocaStato : richiesta.richiestaStato
-      );
+      extraInfo[this.t('popup.statoRichiesta')] = this.transloco.translate(statoRichiestaUi(richiesta.richiestaStato, richiesta.revocaStato).chiave);
 
     const attivita = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full
       ?.find(a => a.subCommessaAttivita_Id === record.idAz_SubCommessaAttivita);
