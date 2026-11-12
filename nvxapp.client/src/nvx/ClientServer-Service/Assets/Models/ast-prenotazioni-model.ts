@@ -44,6 +44,8 @@ export class AstPrenotazioneModel {
   public ritirabile = false;
   /** richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato) */
   public annullamentoChiedibile = false;
+  /** annullamento rifiutato (o ritirato): pratica conclusa, resta approvata */
+  public annullamentoRifiutato = false;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;

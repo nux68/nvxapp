@@ -162,6 +162,21 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             return res;
         }
 
+        /// <summary>
+        /// stato dell'annullamento (revoca) delle prenotazioni confermate con richiesta: id prenotazione -> RevocaStato (assente = mai chiesto)
+        /// </summary>
+        public async Task<Dictionary<int, StatoRichiesta>> RevocheAsync(IEnumerable<Ast_Prenotazione> prenotazioni)
+        {
+            var conRichiesta = prenotazioni.Where(x => x.Stato == AstStatoPrenotazione.Confermata && x.IdDip_GG_Richiesta != null).ToList();
+            if (conRichiesta.Count == 0)
+                return new Dictionary<int, StatoRichiesta>();
+            var ids = conRichiesta.Select(x => x.IdDip_GG_Richiesta!.Value).Distinct().ToList();
+            var revoche = await _Dip_GG_Richiesta.FindAll(x => ids.Contains(x.Id) && x.RevocaStato != null)
+                                                 .Select(x => new { x.Id, x.RevocaStato }).ToDictionaryAsync(x => x.Id, x => x.RevocaStato!.Value);
+            return conRichiesta.Where(x => revoche.ContainsKey(x.IdDip_GG_Richiesta!.Value))
+                               .ToDictionary(x => x.Id, x => revoche[x.IdDip_GG_Richiesta!.Value]);
+        }
+
         /// <summary>id delle prenotazioni con la richiesta di annullamento in attesa</summary>
         public async Task<HashSet<int>> RevocheInAttesaAsync(IEnumerable<Ast_Prenotazione> prenotazioni)
         {
@@ -265,6 +280,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         Task<EsitoAnnullamento?> AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, bool sostituita = false);
 
         Task<HashSet<int>> RevocheInAttesaAsync(IEnumerable<Ast_Prenotazione> prenotazioni);
+
+        Task<Dictionary<int, StatoRichiesta>> RevocheAsync(IEnumerable<Ast_Prenotazione> prenotazioni);
 
         Task<Dictionary<int, int>> DaDecidereAsync(AstContesto ctx, IEnumerable<Ast_Prenotazione> prenotazioni);
 
