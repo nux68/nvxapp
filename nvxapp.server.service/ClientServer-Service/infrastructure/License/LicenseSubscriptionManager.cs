@@ -26,7 +26,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         - cambio di piano sulla stessa funzione: il nuovo abbonamento parte da oggi e il precedente viene annullato
           (nessun calcolo pro-rata in questa fase)
         - al rinnovo si rifotografano prezzo, limiti (utenti, clienti, spazio) ed etichette dal piano, se esiste ancora ed e' attivo (§5.1)
-        - disdetta: immediata, l'abbonamento diventa Annullato e la funzione esce dal menu; nessun rimborso (§15.8)
+        - disdetta: immediata, l'abbonamento diventa Annullato e la funzione esce dal menu; nessun rimborso (§15.8);
+          schema e dati degli applicativi rimasti senza copertura li elimina LicenseService con CompanyApplicationService (§15.9)
     */
     public interface ILicenseSubscriptionManager
     {
@@ -52,6 +53,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         Task<int> SendWarningsAsync();
 
         DateTime FinePeriodo(DateTime inizio, PeriodicitaLicenza periodicita);
+
+        /// <summary>utenti PowerAdmin attivi dell'azienda (idCompany) o dello studio (idFinancialAdvisor)</summary>
+        Task<List<string>> PowerAdminIdsAsync(int? idCompany, int? idFinancialAdvisor);
     }
 
     public class LicenseSubscriptionManager : ILicenseSubscriptionManager
@@ -448,17 +452,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             return centro == null ? null : (centro.IdDealer, centro.Descrizione);
         }
 
-        private async Task<List<string>> EmailPowerAdmin(Lic_Abbonamento abbonamento)
+        public async Task<List<string>> PowerAdminIdsAsync(int? idCompany, int? idFinancialAdvisor)
         {
-            string ruolo = abbonamento.IdCompany != null ? nameof(RoleCode.CompanyPowerAdmin) : nameof(RoleCode.FinancialAdvisorPowerAdmin);
+            string ruolo = idCompany != null ? nameof(RoleCode.CompanyPowerAdmin) : nameof(RoleCode.FinancialAdvisorPowerAdmin);
             var idRuolo = await _aspNetRolesRepository.FindAll(r => r.Name == ruolo).Select(r => r.Id).FirstOrDefaultAsync();
             if (idRuolo == null)
                 return new List<string>();
 
-            var utenti = abbonamento.IdCompany != null
-                         ? await _userCompanyRepository.FindAll(x => x.IdCompany == abbonamento.IdCompany && !x.Disabled).Select(x => x.IdAspNetUsers).ToListAsync()
-                         : await _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == abbonamento.IdFinancialAdvisor && !x.Disabled).Select(x => x.IdAspNetUsers).ToListAsync();
-            var conRuolo = await _aspNetUserRolesRepository.FindAll(x => x.RoleId == idRuolo && utenti.Contains(x.UserId)).Select(x => x.UserId).ToListAsync();
+            var utenti = idCompany != null
+                         ? await _userCompanyRepository.FindAll(x => x.IdCompany == idCompany && !x.Disabled).Select(x => x.IdAspNetUsers).ToListAsync()
+                         : await _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == idFinancialAdvisor && !x.Disabled).Select(x => x.IdAspNetUsers).ToListAsync();
+            return await _aspNetUserRolesRepository.FindAll(x => x.RoleId == idRuolo && utenti.Contains(x.UserId)).Select(x => x.UserId).Distinct().ToListAsync();
+        }
+
+        private async Task<List<string>> EmailPowerAdmin(Lic_Abbonamento abbonamento)
+        {
+            var conRuolo = await PowerAdminIdsAsync(abbonamento.IdCompany, abbonamento.IdCompany == null ? abbonamento.IdFinancialAdvisor : null);
             return await _aspNetUsersRepository.FindAll(x => conRuolo.Contains(x.Id) && x.Email != null && x.Email != "")
                                                .Select(x => x.Email!)
                                                .ToListAsync();
