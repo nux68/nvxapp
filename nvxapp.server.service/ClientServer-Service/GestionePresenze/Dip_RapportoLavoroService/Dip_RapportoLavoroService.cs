@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Repositories.Tenant.Common;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
     public class Dip_RapportoLavoroService : ServiceBase, IDip_RapportoLavoroService
     {
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaCommonRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
         public Dip_RapportoLavoroService(IMapper mapper,
@@ -32,9 +34,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IConfiguration configuration,
 
-                                  IDip_RapportoLavoroRepository dip_RapportoLavoroRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                                  IDip_GG_RichiestaCommonRepository dip_GG_RichiestaCommonRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _dip_GG_RichiestaCommonRepository = dip_GG_RichiestaCommonRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
         }
 
@@ -95,6 +99,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                                 if (orig_TMP == null)
                                 {
                                     //procedo alla cancelazione
+                                    // le richieste stanno nella tabella comune, senza cascata dal rapporto di lavoro (RICH-AT.6):
+                                    // si cancellano prima, con il repository comune (i dettagli delle presenze seguono in cascata)
+                                    var richieste = _dip_GG_RichiestaCommonRepository.FindAll(x => x.IdDip_RapportoLavoro == origRec.Id).ToList();
+                                    if (richieste.Count > 0)
+                                        await _dip_GG_RichiestaCommonRepository.DeleteRangeAsync(richieste);
                                     await _dip_RapportoLavoroRepository.DeleteAsync(origRec);
                                 }
                             }

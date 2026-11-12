@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -68,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
 
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
@@ -102,7 +103,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
+                                  IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository,
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   IDip_GG_NotaSpesa_AllegatoRepository dip_GG_NotaSpesa_AllegatoRepository,
@@ -162,7 +163,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     var idDip_RapportoLavoro = new List<int>();
                     idDip_RapportoLavoro.Add(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
 
-                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month, vistaApprovatore: userId != this.CurrentUserId);
 
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
@@ -196,7 +197,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x => x.Id).ToList();
                     List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
 
-                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month, vistaApprovatore: true);
 
                     // filtro sulla fase corrente (revoca se presente, altrimenti richiesta); l'ordine resta quello di Get_Dip_GG_Richiesta
                     if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.DaApprovare)
@@ -299,7 +300,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         // richieste dei rapporti di lavoro con la richiesta o la revoca ancora da decidere
         private IQueryable<Dip_GG_Richiesta> QueryInApprovazione(List<int> idDip_RapportoLavoro)
         {
-            return _dip_GG_RichiestaRepository.FindAll(x => idDip_RapportoLavoro.Contains(x.IdDip_RapportoLavoro) &&
+            return _dip_GG_RichiestaRepository.FindAll(x => x.IdDip_RapportoLavoro != null && idDip_RapportoLavoro.Contains(x.IdDip_RapportoLavoro.Value) &&
                                                             (StatiInApprovazione.Contains(x.RichiestaStato) ||
                                                              (x.RevocaStato != null && StatiInApprovazione.Contains(x.RevocaStato.Value))));
         }
@@ -376,7 +377,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0))
                                                                 .Select(x => x.Id).ToList();
 
-                        var erroreNota = CalcolaRimborsiKm(notaSpesa, aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0, dip_GG_Richiesta.IdDip_RapportoLavoro)
+                        var erroreNota = CalcolaRimborsiKm(notaSpesa, aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0, dip_GG_Richiesta.IdDip_RapportoLavoro.Value)
                                          ?? Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
                         if (erroreNota == null && notaSpesa!.Spese!.Any(s => s.Id != null || (s.Allegati ?? new()).Any(a => a.Id != null)))
                             erroreNota = AttendanceTrackingMessages.Get("NewExpenseReportWithSavedItems");
@@ -393,7 +394,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
                     if (!isSubProcess)
                     {
-                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data, dip_GG_Richiesta.DataA < dip_GG_Richiesta.Data ? dip_GG_Richiesta.Data : dip_GG_Richiesta.DataA);
+                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(dip_GG_Richiesta.IdDip_RapportoLavoro.Value, dip_GG_Richiesta.Data, dip_GG_Richiesta.DataA < dip_GG_Richiesta.Data ? dip_GG_Richiesta.Data : dip_GG_Richiesta.DataA);
                         if (fuoriRapporto != null)
                         {
                             retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
@@ -406,7 +407,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             var body = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Timbratura>(dip_GG_Richiesta.Dati);
                             if (body != null && body.IdAz_SubCommessaAttivita > 0)
                             {
-                                var nonConsentita = await _gestionePresenzeUserUtility.VerificaAttivitaConsentita(dip_GG_Richiesta.IdDip_RapportoLavoro, body.IdAz_SubCommessaAttivita);
+                                var nonConsentita = await _gestionePresenzeUserUtility.VerificaAttivitaConsentita(dip_GG_Richiesta.IdDip_RapportoLavoro.Value, body.IdAz_SubCommessaAttivita);
                                 if (nonConsentita != null)
                                 {
                                     retVal.Messages.Add(new Message(nonConsentita, MessageType.Exception));
@@ -515,7 +516,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             }
                             // ────────────────────────────────────────────────────────────────
 
-                            dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+                            dip_GG_Richiesta = await SalvaRichiestaAsync(dip_GG_Richiesta);
 
                             retVal.Dip_GG_Richiesta.Add(_mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta));
 
@@ -542,7 +543,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                             // la nota spese non tocca il cartellino
                             if(!model.Data.ExcludeRicalc && dip_GG_Richiesta.RichiestaTipo != TipoRichiesta.NotaSpesa)
-                                await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
+                                await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro.Value, dip_GG_Richiesta.Data);
 
                             if (!isSubProcess)
                                 await NotifyRichieste(new List<int> { dip_GG_Richiesta.Id });
@@ -606,7 +607,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 var azienda = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
                 var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0)).Select(x => x.Id).ToList();
 
-                var errore = CalcolaRimborsiKm(notaSpesa, azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0, richiesta.IdDip_RapportoLavoro)
+                var errore = CalcolaRimborsiKm(notaSpesa, azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0, richiesta.IdDip_RapportoLavoro ?? 0)
                              ?? Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
 
                 // le spese e gli allegati con Id devono essere di questa nota
@@ -639,7 +640,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 {
                     var dal = notaSpesa!.Spese!.Min(x => x.Data).Date;
                     var al = notaSpesa.Spese!.Max(x => x.Data).Date;
-                    errore = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(richiesta.IdDip_RapportoLavoro, dal, al);
+                    errore = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(richiesta.IdDip_RapportoLavoro ?? 0, dal, al);
                 }
                 if (errore != null)
                 {
@@ -677,7 +678,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     {
                         dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(new Dip_GG_NotaSpesa
                         {
-                            IdDip_RapportoLavoro = richiesta.IdDip_RapportoLavoro,
+                            IdDip_RapportoLavoro = richiesta.IdDip_RapportoLavoro ?? 0,
                             IdDip_GG_Richiesta = richiesta.Id,
                             RichiestaStato = StatoRichiesta.Immessa,
                             Data = spesa.Data.Date,
@@ -724,7 +725,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     NumeroSpese = notaSpesa.Spese!.Count,
                     Spese = null
                 });
-                richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(richiesta);
+                richiesta = await SalvaRichiestaAsync(richiesta);
 
                 retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(richiesta);
 
@@ -750,6 +751,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null)
                 {
                     var richieste = _dip_GG_RichiestaRepository.FindAll(x => model.Data.IdDip_GG_Richiesta.Contains(x.Id)).ToList();
+
+                    // RICH-AT.4 (ANALISI_INFRASTRUCTURE_RICHIESTE.md): permessi, prima di cambiare qualsiasi richiesta; solo per le
+                    // azioni del client: il motore del cartellino (sottoprocesso) approva per conto dell'amministratore che salva
+                    if (!isSubProcess)
+                    {
+                        bool admin = await AmministratoreAziendaAsync();
+                        foreach (var r in richieste)
+                        {
+                            var errore = VerificaPermesso(r, model.Data.RichiestaStato, model.Data.FromHR, resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo, admin);
+                            if (errore != null)
+                                throw new UserMessageException(errore);
+                        }
+                    }
+
                     foreach (var curr_richiesta in richieste)
                     {
 
@@ -816,7 +831,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     // dal client non si approva una richiesta con giorni fuori dal rapporto di lavoro (la revoca si')
                                     if (idxStato == 0 && !isSubProcess)
                                     {
-                                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(curr_richiesta.IdDip_RapportoLavoro,
+                                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(curr_richiesta.IdDip_RapportoLavoro ?? 0,
                                                                                                                     curr_richiesta.Data,
                                                                                                                     curr_richiesta.DataA < curr_richiesta.Data ? curr_richiesta.Data : curr_richiesta.DataA);
                                         if (fuoriRapporto != null)
@@ -1003,7 +1018,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             }
                         }
                         if(!model.Data.ExcludeRicalc)
-                                await CalculateGiorno(curr_richiesta.IdDip_RapportoLavoro, curr_richiesta.Data);
+                                await CalculateGiorno(curr_richiesta.IdDip_RapportoLavoro ?? 0, curr_richiesta.Data);
                     }
 
                     // il motore del cartellino (subprocess) approva giorno per giorno: si avvisa solo per le azioni dal client
@@ -1018,6 +1033,87 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 return retVal;
             }, isSubProcess);
+        }
+
+        /// <summary>
+        /// RICH-AT.6 (ANALISI_INFRASTRUCTURE_RICHIESTE.md): la richiesta sta nella tabella comune Dip_GG_Richiesta e si scrive
+        /// solo con il repository comune. Prima di salvarla si completano dal rapporto di lavoro l'azienda, il dipendente e
+        /// l'utente richiedente (quello del dipendente, anche quando la richiesta la fa l'HR per suo conto): servono alle
+        /// pagine comuni ("Le mie richieste" = IdAspNetUsers). La richiesta va salvata prima dei dettagli che ne usano l'id.
+        /// </summary>
+        private async Task<Dip_GG_Richiesta> SalvaRichiestaAsync(Dip_GG_Richiesta richiesta)
+        {
+            if (richiesta.IdDip_RapportoLavoro != null && (richiesta.IdAz_Anagrafica == 0 || richiesta.IdDip_Anagrafica == null || string.IsNullOrEmpty(richiesta.IdAspNetUsers)))
+            {
+                var dipendente = (from rl in _dip_RapportoLavoroRepository.FindAll(x => x.Id == richiesta.IdDip_RapportoLavoro)
+                                  join a in _dip_AnagraficaRepository.FindAll(x => true) on rl.IdDip_Anagrafica equals a.Id
+                                  select new { a.Id, a.IdAz_Anagrafica, a.IdAspNetUsers }).FirstOrDefault();
+                if (dipendente != null)
+                {
+                    richiesta.IdDip_Anagrafica = dipendente.Id;
+                    richiesta.IdAz_Anagrafica = dipendente.IdAz_Anagrafica;
+                    richiesta.IdAspNetUsers = dipendente.IdAspNetUsers;
+                }
+            }
+            return await _dip_GG_RichiestaRepository.UpsertAsync(richiesta);
+        }
+
+        // utente collegato amministratore dell'azienda (CompanyAdmin, CompanyPowerAdmin)
+        private async Task<bool> AmministratoreAziendaAsync()
+        {
+            var user = await _userManager.FindByIdAsync(this.CurrentUserId);
+            if (user == null)
+                return false;
+            var ruoli = await _userManager.GetRolesAsync(user);
+            return ruoli.Contains(nameof(RoleCode.CompanyAdmin)) || ruoli.Contains(nameof(RoleCode.CompanyPowerAdmin));
+        }
+
+        // utente del dipendente che ha fatto la richiesta
+        private string? Richiedente(Dip_GG_Richiesta r)
+        {
+            var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(x => x.Id == r.IdDip_RapportoLavoro).Select(x => x.IdDip_Anagrafica).FirstOrDefault();
+            return _dip_AnagraficaRepository.FindAll(x => x.Id == idDip_Anagrafica).Select(x => x.IdAspNetUsers).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// RICH-AT.4: chi puo' portare la richiesta al nuovo stato (null = consentito, altrimenti il testo dell'errore)
+        ///  - revoca (Immessa) e cancellazione: il richiedente o un amministratore dell'azienda
+        ///  - approvazione / rifiuto per conto dell'ufficio del personale (FromHR): un amministratore dell'azienda
+        ///  - approvazione / rifiuto: un approvatore della fase corrente (richiesta o revoca); con SigleAdmin anche un
+        ///    amministratore dell'azienda; con AllAdmin / AllAdminHierarchy solo se non ha ancora deciso e, in gerarchia,
+        ///    dopo l'approvatore precedente. Una fase gia' decisa non e' un errore: SetState non la cambia
+        /// </summary>
+        private string? VerificaPermesso(Dip_GG_Richiesta r, StatoRichiesta nuovo, bool fromHR, TipoApprovazione tipo, bool admin)
+        {
+            switch (nuovo)
+            {
+                case StatoRichiesta.Immessa:
+                case StatoRichiesta.Cancellata:
+                    return admin || Richiedente(r) == this.CurrentUserId ? null : AttendanceTrackingMessages.Get("RequestNotAllowedCancel");
+
+                case StatoRichiesta.Approvata:
+                case StatoRichiesta.Rifiutata:
+                    if (fromHR)
+                        return admin ? null : AttendanceTrackingMessages.Get("RequestNotAllowedHR");
+
+                    bool revoca = r.RevocaStato != null && StatiInApprovazione.Contains(r.RevocaStato.Value);
+                    if (!revoca && !StatiInApprovazione.Contains(r.RichiestaStato))
+                        return null;
+
+                    var lista = Approvatori(revoca ? r.RevocaApprovazioneData : r.RichiestaApprovazioneData);
+                    int idx = lista.FindIndex(x => x.IdAspNetUsers == this.CurrentUserId);
+                    var negato = AttendanceTrackingMessages.Get("RequestNotApprover");
+                    if (tipo == TipoApprovazione.SigleAdmin)
+                        return admin || idx >= 0 ? null : negato;
+                    if (idx < 0 || lista[idx].RichiestaStato != StatoRichiesta.Immessa)
+                        return negato;
+                    if (tipo == TipoApprovazione.AllAdminHierarchy && idx > 0 && lista[idx - 1].RichiestaStato != StatoRichiesta.Approvata)
+                        return negato;
+                    return null;
+
+                default:
+                    return null;
+            }
         }
 
         private void UpdateRetVal_SetStatus(Dip_GG_Richiesta_SetState_OutModel outModel,
@@ -1155,7 +1251,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 var dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(new Dip_GG_NotaSpesa
                 {
-                    IdDip_RapportoLavoro = dip_GG_Richiesta.IdDip_RapportoLavoro,
+                    IdDip_RapportoLavoro = dip_GG_Richiesta.IdDip_RapportoLavoro ?? 0,
                     IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
                     RichiestaStato = dip_GG_Richiesta.RichiestaStato,
                     Data = spesa.Data.Date,
@@ -1187,7 +1283,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 NumeroSpese = notaSpesa.Spese!.Count,
                 Spese = null
             });
-            return await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+            return await SalvaRichiestaAsync(dip_GG_Richiesta);
         }
 
         private async Task<Dip_GG_Giustificativi?> Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
@@ -1237,7 +1333,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             return dip_GG_Giustificativi;
         }
-        private async Task<List<Dip_GG_Richiesta>> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month)
+        // vistaApprovatore: con l'approvazione multipla (AllAdmin / AllAdminHierarchy) l'approvatore vede la fase corrente con il
+        // proprio stato e, in gerarchia, solo quando tocca a lui; la vista del richiedente (GetAll4User) mostra le richieste
+        // cosi' come sono, anche se il richiedente e' a sua volta un approvatore (RICH-AT.4); il cartellino di un altro
+        // dipendente (GetAll4User con IdAspNetUsers, amministratori) e' una vista da approvatore
+        private async Task<List<Dip_GG_Richiesta>> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month, bool vistaApprovatore)
         {
 
             var richiesta = new List<Dip_GG_Richiesta>();
@@ -1248,7 +1348,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null)
             {
-                richiesta = _dip_GG_RichiestaRepository.FindAll(x => idDipRappList.Contains(x.IdDip_RapportoLavoro)
+                // senza tracking: sotto lo stato della fase corrente viene portato a quello personale dell'approvatore e non deve
+                // finire salvato da un SetState successivo nella stessa richiesta HTTP (es. chat AI: elenco e poi approvazione).
+                // Year/Month non filtrano (filtro commentato qui sotto): pagine delle richieste, chat AI e hub delle richieste comuni
+                // (ANALISI_INFRASTRUCTURE_RICHIESTE.md) vogliono tutte le richieste ancora da decidere, di qualunque mese
+                richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.IdDip_RapportoLavoro != null && idDipRappList.Contains(x.IdDip_RapportoLavoro.Value)
                                                                                   // &&
                                                                                   //(
                                                                                   //    (x.Data.Year == Year && x.Data.Month == Month) ||
@@ -1256,11 +1360,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                                                   //    (x.Data.Year < Year || (x.Data.Year == Year && x.Data.Month < Month)) && (x.DataA.Year > Year || (x.DataA.Year == Year && x.DataA.Month > Month))
                                                                                   //)
                                                                                   )
+                                                                          .AsNoTracking()
                                                                           .ToList();
 
                 if (richiesta.Count > 0)
                 {
-                    if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy || resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin)
+                    if (vistaApprovatore && (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy || resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin))
                     {
                         var richiesta_tmp = new List<Dip_GG_Richiesta>();
 
@@ -1292,7 +1397,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                             {
                                                 case TipoApprovazione.AllAdminHierarchy:
-                                                    if (lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
+                                                    // il primo approvatore della gerarchia non ha un precedente (RICH-AT.4)
+                                                    if (idxReq == 0 || lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
                                                     {
                                                         showReq = true;
                                                         //forzatura 
@@ -1375,7 +1481,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
 
             // prima quelle da approvare, poi per data (piu' recenti prima)
-            richiesta = richiesta.OrderByDescending(x => InApprovazione(x)).ThenByDescending(x => x.Data).ToList();
+            // una richiesta con revoca passa da entrambe le fasi: una sola volta
+            richiesta = richiesta.GroupBy(x => x.Id).Select(g => g.First())
+                                 .OrderByDescending(x => InApprovazione(x)).ThenByDescending(x => x.Data).ToList();
 
             return richiesta;
         }
@@ -1400,7 +1508,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 if (idRapportoLavoroList.Count > 0)
                 {
                     var richieste = _dip_GG_RichiestaRepository
-                        .FindAll(x => idRapportoLavoroList.Contains(x.IdDip_RapportoLavoro) &&
+                        .FindAll(x => x.IdDip_RapportoLavoro != null && idRapportoLavoroList.Contains(x.IdDip_RapportoLavoro.Value) &&
                                       x.Data >= model.Data.Dal &&
                                       x.Data <= model.Data.Al)
                         .OrderBy(x => x.IdDip_RapportoLavoro)
@@ -1430,7 +1538,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     await _dip_GG_RichiestaRepository.DeleteAsync(entity);
 
                     if(!model.Data.ExcludeRicalc)
-                        await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
+                        await CalculateGiorno(IdDip_RapportoLavoro ?? 0, GiornoCompetenza);
                 }
                 return new Dip_GG_Richiesta_DeleteOutModel();
             }, isSubProcess);
@@ -1459,11 +1567,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
                 }
 
-                dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+                dip_GG_Richiesta = await SalvaRichiestaAsync(dip_GG_Richiesta);
                 retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta);
 
                 if(!model.Data.ExcludeRicalc)
-                    await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
+                    await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro ?? 0, dip_GG_Richiesta.Data);
 
 
                 await Task.Delay(DelayAsyncMethod);

@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Routes } from '@angular/router';
+import { Injectable, inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 import { RoleGuard4CompanyAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-admin';
 import { RoleGuard4CompanyList } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-list';
 import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-4-user';
@@ -33,7 +33,9 @@ export class RouteAttendanceTrackingService {
       { path: 'timeclockuser', loadChildren: () => import('../../pages/GestionePresenze/time-clock-user-page/time-clock-user-page.module').then(m => m.TimeClockUserPageModule), canActivate: [RoleGuard4User] },
       { path: 'requestjustificationuser', loadChildren: () => import('../../pages/GestionePresenze/request-justification-user-page/request-justification-user-page.module').then(m => m.RequestJustificationUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestclockinguser', loadChildren: () => import('../../pages/GestionePresenze/request-clocking-user-page/request-clocking-user-page.module').then(m => m.RequestClockingUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
-      { path: 'requestlistuser', loadChildren: () => import('../../pages/GestionePresenze/request-list-user-page/request-list-user-page.module').then(m => m.RequestListUserPageModule), canActivate: [RoleGuard4User] },
+      // richieste: pagine comuni di Infrastructure (ANALISI_INFRASTRUCTURE_RICHIESTE.md); i vecchi indirizzi (preferiti, link) ci rimandano.
+      // Rinvio con una guardia e non con redirectTo: RouteService aggiunge applicationGuard a tutte le rotte del ramo
+      { path: 'requestlistuser', children: [], canActivate: [() => inject(Router).createUrlTree(['/requests'])] },
       { path: 'timbraturaqr', loadChildren: () => import('../../pages/GestionePresenze/timbratura-qr-page/timbratura-qr-page.module').then(m => m.TimbraturaQrPageModule), canActivate: [RoleGuard4User] },
       { path: 'lavoroagile', loadChildren: () => import('../../pages/GestionePresenze/lavoro-agile-page/lavoro-agile-page.module').then(m => m.LavoroAgilePageModule), canActivate: [RoleGuard4User] },
       { path: 'mieiturni', loadChildren: () => import('../../pages/GestionePresenze/miei-turni-page/miei-turni-page.module').then(m => m.MieiTurniPageModule), canActivate: [RoleGuard4User] },
@@ -105,7 +107,7 @@ export class RouteAttendanceTrackingService {
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
-      { path: 'requestlistadmin', loadChildren: () => import('../../pages/GestionePresenze/request-list-admin-page/request-list-admin-page.module').then(m => m.RequestListAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'requestlistadmin', children: [], canActivate: [() => inject(Router).createUrlTree(['/requestsadmin'])] },
     ];
   }
 }

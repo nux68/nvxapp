@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.AttendanceTracking
 {
     [DbContext(typeof(AttendanceTrackingDbContext))]
-    [Migration("20261112054435_AttendanceTracking_Init")]
+    [Migration("20261112113353_AttendanceTracking_Init")]
     partial class AttendanceTracking_Init
     {
         /// <inheritdoc />
@@ -1147,7 +1147,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("IdDip_RapportoLavoro")
+                    b.Property<string>("IdAspNetUsers")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_RapportoLavoro")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1155,14 +1165,14 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Property<string>("RevocaApprovazioneData")
                         .IsRequired()
-                        .HasColumnType("jsonb");
+                        .HasColumnType("text");
 
                     b.Property<int?>("RevocaStato")
                         .HasColumnType("integer");
 
                     b.Property<string>("RichiestaApprovazioneData")
                         .IsRequired()
-                        .HasColumnType("jsonb");
+                        .HasColumnType("text");
 
                     b.Property<int>("RichiestaStato")
                         .HasColumnType("integer");
@@ -1172,9 +1182,16 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.HasIndex("IdDip_Anagrafica");
+
                     b.HasIndex("IdDip_RapportoLavoro");
 
-                    b.ToTable("Dip_GG_Richieste");
+                    b.ToTable("Dip_GG_Richiesta", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Timbratura", b =>
@@ -3473,11 +3490,25 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Richiesta", b =>
                 {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
                         .WithMany("Dip_GG_Richiesta")
                         .HasForeignKey("IdDip_RapportoLavoro")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.ClientNoAction);
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Dip_AnagraficaNavigation");
 
                     b.Navigation("Dip_RapportoLavoroNavigation");
                 });

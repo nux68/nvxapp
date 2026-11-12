@@ -29,7 +29,7 @@ Here you record entry and exit. At the top you always see the last recorded cloc
 
 The clocking is recorded with the current date and time. If you forgot a clocking or recorded a wrong one you cannot change it directly: use the **Clocking request**.
 
-@@ /requestlistuser
+@@ /requests
 The list of all your requests (justifications, clockings, corrections) with their status: **pending**, **approved** or **rejected**. Open a request to see its details.
 
 A pending request can be deleted. The counter next to the menu item shows how many requests are pending.
@@ -71,7 +71,7 @@ The list of your expense reports with the status of each one. Open a report to s
 
 Until a report is approved you can change it (it goes back to pending approval) or cancel it; if it is already approved you can ask for it to be revoked. Approving the report approves all its expenses.
 
-@@ /requestlistadmin
+@@ /requestsadmin
 The requests of the employees of the departments you approve, waiting for your review.
 1. Open a request to see its details.
 2. Press **Approve** or **Reject**.

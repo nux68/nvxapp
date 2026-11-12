@@ -1,3 +1,4 @@
+using nvxapp.server.data.Repositories.Tenant.Common;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -38,7 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
         private readonly IDip_TurnoScambioRepository _dip_TurnoScambioRepository;
         private readonly IPar_TurnoRepository _par_TurnoRepository;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
-        private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaRepository;
         private readonly IDip_TurnoScambioHandler _handler;
         private readonly INotificationSender _notificationSender;
 
@@ -54,7 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
                                        IDip_TurnoScambioRepository dip_TurnoScambioRepository,
                                        IPar_TurnoRepository par_TurnoRepository,
                                        IDip_GG_RichiestaService dip_GG_RichiestaService,
-                                       IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
+                                       IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository,
                                        IDip_TurnoScambioHandler handler,
                                        INotificationSender notificationSender) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {

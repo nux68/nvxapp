@@ -36,7 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
 
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
         private readonly IDip_GG_NotaSpesa_AllegatoRepository _dip_GG_NotaSpesa_AllegatoRepository;
-        private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
@@ -52,7 +52,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
 
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   IDip_GG_NotaSpesa_AllegatoRepository dip_GG_NotaSpesa_AllegatoRepository,
-                                  IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
+                                  IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository,
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
@@ -86,7 +86,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
 
                 var richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.Id == model.Data.IdDip_GG_Richiesta).FirstOrDefault()
                                 ?? throw new UserMessageException(AttendanceTrackingMessages.Get("RequestNotFound"));
-                await VerificaAccesso(richiesta.IdDip_RapportoLavoro);
+                await VerificaAccesso(richiesta.IdDip_RapportoLavoro ?? 0);
 
                 var spese = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == richiesta.Id).OrderBy(x => x.Data).ThenBy(x => x.Id).ToList();
                 retVal.Dip_GG_NotaSpesa = ToModels(spese, new List<Dip_GG_Richiesta> { richiesta });

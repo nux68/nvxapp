@@ -1905,15 +1905,6 @@
         "ofTotal": "su {{total}} dipendenti in servizio",
         "justified": "{{count}} assenti giustificati",
         "noEmployees": "Nessun dipendente in servizio oggi."
-      },
-      "requests": {
-        "title": "Richieste",
-        "description": "Richieste da approvare (amministratori) o in attesa (dipendenti) e richieste approvate nel mese.",
-        "toApprove": "Da approvare",
-        "pending": "In attesa",
-        "approvedMonth": "Approvate nel mese",
-        "ownPending": "Tue richieste in attesa: {{count}}",
-        "open": "Vai alle richieste"
       }
     }
   },
