@@ -563,6 +563,20 @@ Regole ora:
 - `/companystoragelist` mostra solo le aziende con il Documentale attivo (`CompanyApplication`) e, con il sistema licenze acceso, coperte da una licenza Documentale valida (11/11/2026: prima le non coperte comparivano con "senza licenza"); la scheda della singola azienda mostra ancora "senza licenza";
 - restano la soglia di avviso (predefinita in `/storagesettings`, voce di menu del SuperUser "Impostazioni spazio", e propria dell'azienda in `/companystorageedit`), gli avvisi email, il riallineamento notturno e lo storico mensile `CompanyStorageHistory` (che ora registra la descrizione della licenza, "Spazio illimitato" o "Senza licenza Documentale").
 
+### 15.8 Disdetta di una licenza (12/11/2026)
+
+Richiesta: poter **disdire un piano** per non avere nel menu voci di funzioni che non servono (ad esempio un Free sottoscritto per prova).
+
+- **Chi**: il PowerAdmin del soggetto (CompanyPowerAdmin per l'azienda, FinancialAdvisorPowerAdmin per lo studio), come sottoscrizione e rinnovo. Gli Admin vedono la licenza ma non il pulsante.
+- **Cosa**: pulsante **Disdici** accanto a ogni licenza sottoscritta nella pagina Gestione licenze (`/licensemanagement`), con conferma. API `LicenseCancel` (`LicenseService.LicenseCancel` → `LicenseSubscriptionManager.CancelAsync`).
+- **Effetto immediato**: l'abbonamento passa ad `Annullato` e il rinnovo automatico si spegne. Gli annullati non compaiono più nell'elenco e non coprono la funzione, quindi `UserLoad` non restituisce più l'applicativo e il client rilegge applicativi e licenza (`RefreshLicense`): le voci di menu della funzione spariscono subito (se non resta un'altra copertura: dello studio o cumulativa).
+- **Nessun rimborso** del periodo residuo (come il cambio piano, §15.3); la conferma lo dice per le licenze a pagamento attive.
+- **Licenza dello studio valida per le aziende** (`DisponibileSuCompany`): la disdetta toglie la copertura anche alle aziende dello studio che non hanno una licenza propria; la conferma lo avvisa.
+- Disdicibili gli abbonamenti in qualunque stato tranne `Annullato`: `Attivo`, `InAttesa` (pagamento rimasto in sospeso, che altrimenti blocca una nuova sottoscrizione), `Scaduto`, `Sospeso`.
+- **L'applicativo non viene disattivato** (`CompanyApplication` resta com'è): come alla scadenza (§15.6) è solo nascosto; una nuova sottoscrizione lo rende di nuovo visibile, con i dati intatti. Nessuna migration.
+- Lo storico dei pagamenti resta.
+- Testi: `LicenseCancelled`, `LicenseNotCancellable` (`InfrastructureMessages*.resx`), `pages.licenseManagement.cancel` / `confirmCancel*` (`assets/i18n/infrastructure/*.json`), manuale `infrastructure.*.md` (`/licensemanagement`).
+
 ---
 
 ### Riferimenti nel codice
@@ -573,3 +587,18 @@ Regole ora:
 - Registrazione: `register-page.component.ts`, `RegistrationService.cs`, `Entities/Public/CompanyRegistrationRequest.cs`.
 - Menu/auth: `main-menu-infrastructure.service.ts` (`Pages4Support`), `auth.service.ts` (`hasApplication`).
 - Soggetti: `Entities/Public/{Company,FinancialAdvisor,Dealer}.cs`, `ApplicationRole.cs` (`RoleCode`).
+
+---
+
+## Checklist
+
+### Disdetta di una licenza (§15.8)
+- [x] `LicenseSubscriptionManager.CancelAsync`: stato `Annullato`, rinnovo automatico spento
+- [x] `LicenseService.LicenseCancel` (solo PowerAdmin del soggetto, abbonamento del soggetto del token) + endpoint `LicenseController.LicenseCancel` + modelli
+- [x] Messaggi server `LicenseCancelled`, `LicenseNotCancellable` (it, en)
+- [x] Client: modello e servizio `LicenseCancel`, pulsante **Disdici** con conferma (no rimborso, avviso aziende coperte), `RefreshLicense` per aggiornare il menu
+- [x] Testi client (it, en) e manuale `/licensemanagement` (it, en)
+- [x] Build server e client
+- [x] Prova API su DB di prova (Infrastructure_Dev, listino Cumulativo): disdetta di un Free e di uno Standard in debug, copertura tolta, rinnovo automatico spento, annullato fuori elenco, pagamento nello storico, nuova sottoscrizione possibile; negata all'Admin, allo studio sull'abbonamento dell'azienda e su un abbonamento già disdetto
+- [ ] Verifica in AllFunction (moduli registrati): le voci di menu della funzione spariscono dopo la disdetta
+- [ ] Merge nella catena (Infrastructure → rami → AllFunction), su conferma

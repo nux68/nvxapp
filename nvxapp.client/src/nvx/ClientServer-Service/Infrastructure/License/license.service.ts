@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import {
-  LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel, LicenseCatalogDeleteInModel, LicenseCatalogDeleteOutModel,
+  LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel, LicenseCancelInModel, LicenseCancelOutModel, LicenseCatalogDeleteInModel, LicenseCatalogDeleteOutModel,
   LicenseCatalogGetInModel, LicenseCatalogGetOutModel, LicenseCatalogListInModel, LicenseCatalogListOutModel,
   LicenseCatalogPutInModel, LicenseCatalogPutOutModel, LicensePublicPriceListInModel, LicensePublicPriceListOutModel, LicenseRenewInModel, LicenseRenewOutModel,
   LicenseSettingsGetInModel, LicenseSettingsGetOutModel, LicenseSettingsPutInModel, LicenseSettingsPutOutModel,
@@ -36,4 +36,5 @@ export class LicenseService {
   LicenseSubscribe(model: GenericRequest<LicenseSubscribeInModel>) { return this.post<LicenseSubscribeInModel, LicenseSubscribeOutModel>('LicenseSubscribe', model); }
   LicenseRenew(model: GenericRequest<LicenseRenewInModel>) { return this.post<LicenseRenewInModel, LicenseRenewOutModel>('LicenseRenew', model); }
   LicenseAutoRenewPut(model: GenericRequest<LicenseAutoRenewPutInModel>) { return this.post<LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel>('LicenseAutoRenewPut', model); }
+  LicenseCancel(model: GenericRequest<LicenseCancelInModel>) { return this.post<LicenseCancelInModel, LicenseCancelOutModel>('LicenseCancel', model); }
 }
