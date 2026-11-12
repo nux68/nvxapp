@@ -14,6 +14,10 @@ const RUOLI_LISTINI_LICENZE = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin'];
 // riepiloghi periodici (INF-AI.3): amministratori dell'azienda e utenti dello studio
 const RUOLI_RIEPILOGHI = ['CompanyPowerAdmin', 'CompanyAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin'];
 
+// sezione dedicata di Pages4User (notifiche, scadenzario, calendario, prese visione): nel menu e' una sezione di primo
+// livello come Accesso (app.component), non una sottosezione di Amministrazione
+export const GRUPPO_SERVIZI = 9;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -85,15 +89,20 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
   public get Pages4CompanyAdmin(): MainMenuItem[] {
     return [
+      // "Generale" (gruppo 0): in Amministrazione non ha piu' voci (sparisce da sola), ma resta l'intestazione delle
+      // voci di gruppo 0 dei rami applicativi (es. la sezione Generale delle presenze)
       { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'menu.general'                                           , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.preferences'       , roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'options' },
-      { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.preferences'       , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'options' },
-      { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
       // Anagrafiche comuni (schema Common): visibili se l'azienda ha almeno un applicativo che usa i clienti
       { menuType: MenuType.MenuHeader, zorder: 5000,  group: 6, title: 'menu.registry'                                          , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem  , zorder: 5100,  group: 6, title: 'menu.customers'         , roles: ['CompanyPowerAdmin']  , component: "CustomerListPageComponent", url: '/customerlist', icon: 'business',
         anyApplication: [ApplicationType.AttendanceTracking, ApplicationType.Crm, ApplicationType.DocumentManagement] },
-      // nella sezione Parametri (gruppo 1, intestazione dichiarata dal menu presenze), dopo le altre voci
+      { menuType: MenuType.MenuItem  , zorder: 5200,  group: 6, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
+      // Parametri (gruppo 1): ultima sezione; l'intestazione e' anche qui (e prima di quella delle presenze, che resta per
+      // i rami senza questa) perche' le preferenze ci sono senza presenze e anche per il CompanyAdmin
+      { menuType: MenuType.MenuHeader, zorder: 900000, group: 1, title: 'menu.parameters', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem  , zorder: 201000, group: 1, title: 'menu.preferences'       , roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'options' },
+      { menuType: MenuType.MenuItem  , zorder: 201100, group: 1, title: 'menu.preferences'       , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'options' },
+      // dopo le voci delle presenze
       { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
   }
@@ -110,14 +119,16 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.preferences', component: "UserPageComponent", url: '/user', icon: 'options', nonConfigurabile: true },
-      // servizi comuni (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC): notifiche per tutti gli utenti collegati;
-      // scadenzario e prese visione per chi lavora in un'azienda (visibilita' e permessi li ricontrolla il server)
-      { menuType: MenuType.MenuItem,   zorder: 520, group: 0, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
+      // servizi comuni (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC) in una sezione dedicata del menu, subito dopo Accesso
+      // (gruppo GRUPPO_SERVIZI, vedi app.component): notifiche per tutti gli utenti collegati;
+      // scadenzario, calendario e prese visione per chi lavora in un'azienda (visibilita' e permessi li ricontrolla il server)
+      { menuType: MenuType.MenuHeader, zorder: 510, group: GRUPPO_SERVIZI, title: 'menu.services', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 520, group: GRUPPO_SERVIZI, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
         badge: this.notificationNotifierService.nonLette },
-      { menuType: MenuType.MenuItem,   zorder: 530, group: 0, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem,   zorder: 530, group: GRUPPO_SERVIZI, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number' },
       // calendario personale (INF-CAL.3): feed .ics da sottoscrivere in Google / Outlook / Apple
-      { menuType: MenuType.MenuItem,   zorder: 535, group: 0, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar' },
-      { menuType: MenuType.MenuItem,   zorder: 540, group: 0, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
+      { menuType: MenuType.MenuItem,   zorder: 535, group: GRUPPO_SERVIZI, title: 'menu.calendarFeed', roles: RUOLI_AZIENDA, component: "CalendarFeedPageComponent", url: '/calendarfeed', icon: 'calendar' },
+      { menuType: MenuType.MenuItem,   zorder: 540, group: GRUPPO_SERVIZI, title: 'menu.acknowledgements', roles: RUOLI_AZIENDA, component: "AcknowledgementListPageComponent", url: '/acknowledgements', icon: 'eye',
         badge: this.notificationNotifierService.daConfermare },
       // riepilogo AI periodico (INF-AI.3)
       { menuType: MenuType.MenuItem,   zorder: 545, group: 0, title: 'menu.digests', roles: RUOLI_RIEPILOGHI, component: "DigestListPageComponent", url: '/digests', icon: 'sparkles' },
