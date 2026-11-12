@@ -25,6 +25,11 @@ export class ShowcaseFeaturesPageComponent {
     return this.showcaseService.Contenuti.features;
   }
 
+  /** indice dei gruppi: porta al blocco del gruppo scelto */
+  public vaiAlGruppo(indice: number): void {
+    document.getElementById('nvx-sc-gruppo-' + indice)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   public vai(url: string): void {
     this.navCtrl.navigateRoot(url);
   }
