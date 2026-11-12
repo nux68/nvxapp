@@ -1,0 +1,20 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'hr.widgets.noData' | transloco }}</div>
+} @else if (!dati.dipendente) {
+  <div class="nvx-w-empty">{{ 'hr.widgets.myPayslips.notEmployee' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat primary cliccabile" (click)="apri()">
+      <div class="valore">{{ ultimo ? periodo(ultimo) : '—' }}</div>
+      <div class="etichetta">{{ 'hr.widgets.myPayslips.last' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="daConfermare > 0" [class.success]="daConfermare === 0" (click)="apri()">
+      <div class="valore">{{ daConfermare }}</div>
+      <div class="etichetta">{{ 'hr.widgets.myPayslips.toConfirm' | transloco }}</div>
+    </div>
+  </div>
+  <div class="nvx-w-muted nvx-hrw-info">{{ 'hr.widgets.myPayslips.total' | transloco: { n: dati.documenti.length } }}</div>
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'hr.widgets.myPayslips.open' | transloco }}</button>
+}

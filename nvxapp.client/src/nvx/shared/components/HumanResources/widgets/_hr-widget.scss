@@ -1,0 +1,62 @@
+// Stili dei widget di Risorse Umane (ANALISI_HUMANRESOURCES_WIDGET.md): stili comuni dei widget + elenco di righe
+// "data / testo / dettaglio" cliccabili, come il widget "In scadenza" di Infrastructure.
+@use '../../infrastructure/widgets/widget-common' as wc;
+
+@mixin hr-widget {
+  @include wc.widget-common;
+
+  .nvx-hrw-list {
+    list-style: none;
+    margin: 14px 0 0;
+    padding: 0;
+
+    li + li {
+      border-top: 1px solid var(--nvx-border);
+    }
+
+    button {
+      display: flex;
+      width: 100%;
+      gap: 10px;
+      align-items: baseline;
+      padding: 6px 0;
+      background: none;
+      border: 0;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+
+      &:hover .nvx-hrw-desc {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .nvx-hrw-date {
+    flex: none;
+    min-width: 80px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--nvx-text-muted);
+
+    &.warning { color: var(--ion-color-warning-shade); }
+    &.danger  { color: var(--ion-color-danger); }
+  }
+
+  .nvx-hrw-desc {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+
+    small {
+      color: var(--nvx-text-muted);
+    }
+  }
+
+  .nvx-hrw-info {
+    margin-top: 8px;
+  }
+}

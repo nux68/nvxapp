@@ -197,4 +197,18 @@ namespace nvxapp.server.Controllers.HumanResources
         [Authorize, HttpGet, Route("Hr_ChecklistVoceDocDownload")]
         public Task<IActionResult> Hr_ChecklistVoceDocDownload([FromQuery] int id) => HrFile.Download(this, () => _service.Hr_ChecklistVoceDocDownload(id));
     }
+
+    // dati dei widget della dashboard (ANALISI_HUMANRESOURCES_WIDGET.md)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class Hr_WidgetController : NvxControllerBase
+    {
+        private readonly IHr_WidgetService _service;
+        public Hr_WidgetController(IHttpContextAccessor httpContextAccessor, IHr_WidgetService service) : base(httpContextAccessor) { _service = service; }
+
+        [Authorize, HttpPost, Route("Hr_WidgetOnboardingGet")]
+        public async Task<GenericResult<Hr_WidgetOnboardingGetOutModel>> Hr_WidgetOnboardingGet(GenericRequest<Hr_EmptyInModel> inModel) => await _service.Hr_WidgetOnboardingGet(inModel, false);
+        [Authorize, HttpPost, Route("Hr_WidgetFormazioneGet")]
+        public async Task<GenericResult<Hr_WidgetFormazioneGetOutModel>> Hr_WidgetFormazioneGet(GenericRequest<Hr_EmptyInModel> inModel) => await _service.Hr_WidgetFormazioneGet(inModel, false);
+    }
 }
