@@ -316,4 +316,382 @@
     <value>Compliance: GDPR register and data breaches</value>
     <comment>categoria di notifica</comment>
   </data>
+  <data name="ChatCategorySafety" xml:space="preserve">
+    <value>Workplace safety</value>
+  </data>
+  <data name="ChatCategoryGdpr" xml:space="preserve">
+    <value>GDPR register</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>I couldn't read the Compliance data. {0}</value>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>… and {0} more</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>The date "{0}" is not valid.</value>
+  </data>
+  <data name="ChatPersonQuestion" xml:space="preserve">
+    <value>For which employee?</value>
+  </data>
+  <data name="ChatPersonLabel" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="ChatPersonNotFound" xml:space="preserve">
+    <value>I can't find the employee "{0}".</value>
+  </data>
+  <data name="ChatPersonAmbiguous" xml:space="preserve">
+    <value>There are {0} employees matching "{1}": {2}. Which one?</value>
+  </data>
+  <data name="ChatDaysQuestion" xml:space="preserve">
+    <value>Within how many days?</value>
+  </data>
+  <data name="ChatDaysLabel" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="ChatAreaQuestion" xml:space="preserve">
+    <value>Which topic: courses, medical examinations, appointments or documents?</value>
+  </data>
+  <data name="ChatAreaLabel" xml:space="preserve">
+    <value>Topic</value>
+  </data>
+  <data name="ChatCourseType_0" xml:space="preserve">
+    <value>General training</value>
+  </data>
+  <data name="ChatCourseType_1" xml:space="preserve">
+    <value>Specific training</value>
+  </data>
+  <data name="ChatCourseType_2" xml:space="preserve">
+    <value>Refresher</value>
+  </data>
+  <data name="ChatCourseType_3" xml:space="preserve">
+    <value>Fire prevention</value>
+  </data>
+  <data name="ChatCourseType_4" xml:space="preserve">
+    <value>First aid</value>
+  </data>
+  <data name="ChatCourseType_5" xml:space="preserve">
+    <value>Supervisors</value>
+  </data>
+  <data name="ChatCourseType_6" xml:space="preserve">
+    <value>Executives</value>
+  </data>
+  <data name="ChatCourseType_7" xml:space="preserve">
+    <value>Workers' representative</value>
+  </data>
+  <data name="ChatCourseType_8" xml:space="preserve">
+    <value>Safety manager / officer</value>
+  </data>
+  <data name="ChatCourseType_9" xml:space="preserve">
+    <value>Equipment</value>
+  </data>
+  <data name="ChatCourseType_10" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ChatDocType_0" xml:space="preserve">
+    <value>Risk assessment (DVR)</value>
+  </data>
+  <data name="ChatDocType_1" xml:space="preserve">
+    <value>Emergency plan</value>
+  </data>
+  <data name="ChatDocType_2" xml:space="preserve">
+    <value>Interference risk assessment (DUVRI)</value>
+  </data>
+  <data name="ChatDocType_3" xml:space="preserve">
+    <value>Procedure</value>
+  </data>
+  <data name="ChatDocType_4" xml:space="preserve">
+    <value>Document</value>
+  </data>
+  <data name="ChatSection_formazione" xml:space="preserve">
+    <value>courses attended</value>
+  </data>
+  <data name="ChatSection_stato" xml:space="preserve">
+    <value>training status</value>
+  </data>
+  <data name="ChatSection_visite" xml:space="preserve">
+    <value>medical examinations</value>
+  </data>
+  <data name="ChatSection_consegne" xml:space="preserve">
+    <value>PPE deliveries</value>
+  </data>
+  <data name="ChatSection_nomine" xml:space="preserve">
+    <value>appointments</value>
+  </data>
+  <data name="ChatSection_documenti" xml:space="preserve">
+    <value>documents (risk assessment)</value>
+  </data>
+  <data name="ChatSection_mansioni" xml:space="preserve">
+    <value>job roles</value>
+  </data>
+  <data name="ChatSection_dpi" xml:space="preserve">
+    <value>PPE catalogue</value>
+  </data>
+  <data name="ChatSection_trattamenti" xml:space="preserve">
+    <value>processing activities</value>
+  </data>
+  <data name="ChatSection_responsabili" xml:space="preserve">
+    <value>external processors</value>
+  </data>
+  <data name="ChatSection_violazioni" xml:space="preserve">
+    <value>data breaches</value>
+  </data>
+  <data name="ChatSafetyExpiriesDisplayName" xml:space="preserve">
+    <value>Safety deadlines</value>
+  </data>
+  <data name="ChatSafetyExpiriesDescription" xml:space="preserve">
+    <value>workplace safety deadlines, overdue or coming up: mandatory courses, medical examinations, appointments and documents (risk assessment, emergency plans)</value>
+  </data>
+  <data name="ChatSafetyExpiriesNone" xml:space="preserve">
+    <value>No safety deadlines overdue or in the next {0} days.</value>
+  </data>
+  <data name="ChatSafetyExpiriesOverdue" xml:space="preserve">
+    <value>Overdue ({0}):</value>
+  </data>
+  <data name="ChatSafetyExpiriesUpcoming" xml:space="preserve">
+    <value>Due in the next {1} days ({0}):</value>
+  </data>
+  <data name="ChatSafetyExpiriesMissingCourses" xml:space="preserve">
+    <value>Mandatory courses never attended: {0} (ask for the safety training status for the list).</value>
+  </data>
+  <data name="ChatExpiryCourse" xml:space="preserve">
+    <value>{0} course for {1}</value>
+  </data>
+  <data name="ChatExpiryVisit" xml:space="preserve">
+    <value>medical examination for {0}</value>
+  </data>
+  <data name="ChatExpiryAppointment" xml:space="preserve">
+    <value>{0} appointment of {1}</value>
+  </data>
+  <data name="ChatExpiryDocument" xml:space="preserve">
+    <value>{0} "{1}"</value>
+  </data>
+  <data name="ChatSafetyTrainingDisplayName" xml:space="preserve">
+    <value>Safety training</value>
+  </data>
+  <data name="ChatSafetyTrainingDescription" xml:space="preserve">
+    <value>status of the mandatory safety courses required by job roles, for everyone or one employee: valid, expiring, expired, missing</value>
+  </data>
+  <data name="ChatSafetyTrainingEmpty" xml:space="preserve">
+    <value>No mandatory courses required: assign job roles to employees and courses to job roles.</value>
+  </data>
+  <data name="ChatSafetyTrainingNonePerson" xml:space="preserve">
+    <value>No mandatory courses required for "{0}".</value>
+  </data>
+  <data name="ChatSafetyTrainingPersonTitle" xml:space="preserve">
+    <value>Mandatory courses for {0} ({1}):</value>
+  </data>
+  <data name="ChatSafetyTrainingSummary" xml:space="preserve">
+    <value>Mandatory training: {0} courses required for {1} employees. Valid {2}, expiring {3}, expired {4}, missing {5}.</value>
+  </data>
+  <data name="ChatSafetyTrainingProblems" xml:space="preserve">
+    <value>To be fixed ({0}):</value>
+  </data>
+  <data name="ChatTrainingMissing" xml:space="preserve">
+    <value>{0}: never attended</value>
+  </data>
+  <data name="ChatTrainingExpired" xml:space="preserve">
+    <value>{0}: expired on {1}</value>
+  </data>
+  <data name="ChatTrainingExpiring" xml:space="preserve">
+    <value>{0}: expires on {1}</value>
+  </data>
+  <data name="ChatTrainingValidUntil" xml:space="preserve">
+    <value>{0}: valid until {1}</value>
+  </data>
+  <data name="ChatTrainingValid" xml:space="preserve">
+    <value>{0}: valid</value>
+  </data>
+  <data name="ChatDataBreachesDisplayName" xml:space="preserve">
+    <value>Open data breaches</value>
+  </data>
+  <data name="ChatDataBreachesDescription" xml:space="preserve">
+    <value>personal data breaches to be notified to the supervisory authority and the 72-hour deadline from discovery</value>
+  </data>
+  <data name="ChatDataBreachesNone" xml:space="preserve">
+    <value>No data breaches to notify to the supervisory authority. Breaches recorded this year: {0}.</value>
+  </data>
+  <data name="ChatDataBreachesTitle" xml:space="preserve">
+    <value>Breaches to notify to the supervisory authority ({0}):</value>
+  </data>
+  <data name="ChatDataBreachOpen" xml:space="preserve">
+    <value>discovered on {0}, {1}: notify by {2} (about {3} hours left)</value>
+  </data>
+  <data name="ChatDataBreachLate" xml:space="preserve">
+    <value>discovered on {0}, {1}: the 72-hour deadline passed on {2}, state the reason for the delay in the notification</value>
+  </data>
+  <data name="ChatDataBreachesYear" xml:space="preserve">
+    <value>Breaches recorded this year: {0}.</value>
+  </data>
+  <data name="ChatGdprRegisterDisplayName" xml:space="preserve">
+    <value>GDPR register status</value>
+  </data>
+  <data name="ChatGdprRegisterDescription" xml:space="preserve">
+    <value>GDPR register status: recorded and incomplete processing activities, expired or expiring external processor contracts, data breaches</value>
+  </data>
+  <data name="ChatGdprRegisterTitle" xml:space="preserve">
+    <value>GDPR register:</value>
+  </data>
+  <data name="ChatGdprTreatments" xml:space="preserve">
+    <value>active processing activities: {0} (with special categories of data: {1})</value>
+  </data>
+  <data name="ChatGdprTreatmentsIncomplete" xml:space="preserve">
+    <value>processing activities to complete (missing purposes, data subjects, data, erasure time limits or security measures): {0} — {1}</value>
+  </data>
+  <data name="ChatGdprProcessors" xml:space="preserve">
+    <value>external processors: {0} (contracts expired: {1}, expiring: {2})</value>
+  </data>
+  <data name="ChatGdprProcessorExpired" xml:space="preserve">
+    <value>contract with {0} expired on {1}</value>
+  </data>
+  <data name="ChatGdprProcessorExpiring" xml:space="preserve">
+    <value>contract with {0} expiring on {1}</value>
+  </data>
+  <data name="ChatGdprBreaches" xml:space="preserve">
+    <value>data breaches this year: {0} (to notify: {1})</value>
+  </data>
+  <data name="ChatMyComplianceDisplayName" xml:space="preserve">
+    <value>My compliance</value>
+  </data>
+  <data name="ChatMyComplianceDescription" xml:space="preserve">
+    <value>my safety courses with their deadlines, my next medical examination, the PPE I received, my appointments and acknowledgements to confirm</value>
+  </data>
+  <data name="ChatMyComplianceTitle" xml:space="preserve">
+    <value>Your compliance:</value>
+  </data>
+  <data name="ChatMyComplianceNoEmployee" xml:space="preserve">
+    <value>Your user is not linked to an employee: there is nothing to show.</value>
+  </data>
+  <data name="ChatMyNoCourses" xml:space="preserve">
+    <value>no safety courses recorded</value>
+  </data>
+  <data name="ChatMyCourseNoExpiry" xml:space="preserve">
+    <value>{0}: attended on {1}, no expiry</value>
+  </data>
+  <data name="ChatMyVisitNext" xml:space="preserve">
+    <value>next medical examination by {0}</value>
+  </data>
+  <data name="ChatMyVisitExpired" xml:space="preserve">
+    <value>medical examination expired on {0}</value>
+  </data>
+  <data name="ChatMyPpe" xml:space="preserve">
+    <value>PPE received: {0} (latest: {1})</value>
+  </data>
+  <data name="ChatMyAppointment" xml:space="preserve">
+    <value>{0} appointment since {1}</value>
+  </data>
+  <data name="ChatMyToAcknowledge" xml:space="preserve">
+    <value>acknowledgements to confirm: {0} (Acknowledgements page)</value>
+  </data>
+  <data name="ChatRegisterTrainingDisplayName" xml:space="preserve">
+    <value>Record safety course</value>
+  </data>
+  <data name="ChatRegisterTrainingDescription" xml:space="preserve">
+    <value>record a safety course attended by an employee (fire prevention, first aid, general or specific training…); the expiry is calculated from job roles</value>
+  </data>
+  <data name="ChatRegisterTrainingSummary" xml:space="preserve">
+    <value>record the {courseType} course for {person} on {date}</value>
+  </data>
+  <data name="ChatCourseTypeQuestion" xml:space="preserve">
+    <value>Which course? ({0})</value>
+  </data>
+  <data name="ChatCourseTypeLabel" xml:space="preserve">
+    <value>Course</value>
+  </data>
+  <data name="ChatCourseTypeNotFound" xml:space="preserve">
+    <value>I don't recognise the course "{0}". Course types: {1}.</value>
+  </data>
+  <data name="ChatCourseDateQuestion" xml:space="preserve">
+    <value>On which day was the course held?</value>
+  </data>
+  <data name="ChatCourseDateLabel" xml:space="preserve">
+    <value>Course date</value>
+  </data>
+  <data name="ChatCourseDateFuture" xml:space="preserve">
+    <value>The course date can't be in the future: record the course once it has been held.</value>
+  </data>
+  <data name="ChatRegisterTrainingDone" xml:space="preserve">
+    <value>I recorded the {0} course for {1} on {2}, valid until {3}.</value>
+  </data>
+  <data name="ChatRegisterTrainingDoneNoExpiry" xml:space="preserve">
+    <value>I recorded the {0} course for {1} on {2} (no expiry: no job role requires this course with a validity).</value>
+  </data>
+  <data name="ChatPpeDeliveryDisplayName" xml:space="preserve">
+    <value>PPE delivery</value>
+  </data>
+  <data name="ChatPpeDeliveryDescription" xml:space="preserve">
+    <value>record the delivery of PPE to an employee (gloves, safety shoes, helmet…); the employee receives the request to acknowledge the delivery report</value>
+  </data>
+  <data name="ChatPpeDeliverySummary" xml:space="preserve">
+    <value>deliver {quantity} {ppe} to {person} on {date}</value>
+  </data>
+  <data name="ChatPpeQuestion" xml:space="preserve">
+    <value>Which PPE did you deliver?</value>
+  </data>
+  <data name="ChatPpeLabel" xml:space="preserve">
+    <value>PPE</value>
+  </data>
+  <data name="ChatPpeNotFound" xml:space="preserve">
+    <value>I can't find the PPE "{0}" in the catalogue. Available PPE: {1}.</value>
+  </data>
+  <data name="ChatPpeAmbiguous" xml:space="preserve">
+    <value>There are {0} PPE items matching "{1}": {2}. Which one?</value>
+  </data>
+  <data name="ChatQuantityQuestion" xml:space="preserve">
+    <value>How many did you deliver?</value>
+  </data>
+  <data name="ChatQuantityLabel" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="ChatSizeQuestion" xml:space="preserve">
+    <value>Which size?</value>
+  </data>
+  <data name="ChatSizeLabel" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="ChatDeliveryDateQuestion" xml:space="preserve">
+    <value>On which day was it delivered?</value>
+  </data>
+  <data name="ChatDeliveryDateLabel" xml:space="preserve">
+    <value>Delivery date</value>
+  </data>
+  <data name="ChatDeliveryDateFuture" xml:space="preserve">
+    <value>The delivery date can't be in the future.</value>
+  </data>
+  <data name="ChatPpeDeliveryDone" xml:space="preserve">
+    <value>I recorded the delivery of {0} × {1} to {2} on {3}.</value>
+  </data>
+  <data name="ChatPpeDeliveryAck" xml:space="preserve">
+    <value>The employee will receive the request to acknowledge the delivery report.</value>
+  </data>
+  <data name="ChatOpenDisplayName" xml:space="preserve">
+    <value>Open Compliance section</value>
+  </data>
+  <data name="ChatOpenDescription" xml:space="preserve">
+    <value>opens a workplace safety or GDPR register section (courses, medical examinations, PPE deliveries, appointments, risk assessment, job roles, processing activities, external processors, data breaches) or one of its items</value>
+  </data>
+  <data name="ChatOpenSectionQuestion" xml:space="preserve">
+    <value>Which section should I open? (courses, medical examinations, PPE deliveries, appointments, documents, job roles, PPE catalogue, processing activities, external processors, data breaches)</value>
+  </data>
+  <data name="ChatOpenSectionLabel" xml:space="preserve">
+    <value>Section</value>
+  </data>
+  <data name="ChatOpenNameQuestion" xml:space="preserve">
+    <value>Which item?</value>
+  </data>
+  <data name="ChatOpenNameLabel" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="ChatOpenOpeningSection" xml:space="preserve">
+    <value>Opening the {0} section.</value>
+  </data>
+  <data name="ChatOpenOpeningItem" xml:space="preserve">
+    <value>Opening {0}: {1}.</value>
+  </data>
+  <data name="ChatOpenNotFound" xml:space="preserve">
+    <value>I can't find "{0}".</value>
+  </data>
+  <data name="ChatOpenAmbiguous" xml:space="preserve">
+    <value>There are {0} items matching "{1}": {2}.</value>
+  </data>
 </root>
