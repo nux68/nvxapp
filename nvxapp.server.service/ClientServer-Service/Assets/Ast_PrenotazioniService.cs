@@ -174,15 +174,18 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 if ((al - dal).TotalDays > 62)
                     al = dal.AddDays(62);
                 var cfg = await _utility.CfgAsync(ctx);
-                // occupano la risorsa le confermate e quelle in attesa di approvazione; nelle proprie anche le rifiutate (con il motivo)
+                // occupano la risorsa le confermate e quelle in attesa di approvazione; delle proprie si vede tutto il ciclo della
+                // richiesta, come le richieste delle presenze e le note spese: anche rifiutate (con il motivo) e annullate
+                // (ritirate, scadute o revocate); le annullate senza richiesta (cancellate) non si mostrano
                 var q = _Ast_Prenotazione.FindAll(x => x.Ast_RisorsaNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Inizio < al && x.Fine > dal);
                 if (d.IdAst_Risorsa != null)
                     q = q.Where(x => x.IdAst_Risorsa == d.IdAst_Risorsa);
                 if (d.SoloMie)
-                    q = q.Where(x => x.IdAspNetUsers == ctx.IdUtente
-                                     && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa || x.Stato == AstStatoPrenotazione.Rifiutata));
-                else
-                    q = q.Where(x => x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa);
+                    q = q.Where(x => x.IdAspNetUsers == ctx.IdUtente);
+                q = q.Where(x => x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa
+                                 || (x.IdAspNetUsers == ctx.IdUtente
+                                     && (x.Stato == AstStatoPrenotazione.Rifiutata
+                                         || (x.Stato == AstStatoPrenotazione.Annullata && x.IdDip_GG_Richiesta != null))));
                 var righe = await q.Include(x => x.Ast_RisorsaNavigation).OrderBy(x => x.Inizio).Take(2000).ToListAsync();
                 var nomi = await _approvazioni.NomiAsync(ctx, righe.Select(x => x.IdAspNetUsers));
                 var motivi = await _approvazioni.MotiviAsync(righe);
@@ -192,9 +195,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 {
                     Permessi = new Ast_PermessiModel { PowerAdmin = ctx.PowerAdmin, Admin = ctx.Admin },
                     Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id),
-                                                                       revoche.TryGetValue(x.Id, out var rv) && RichiestaRegole.StatiInAttesa.Contains(rv),
-                                                                       daDecidere.TryGetValue(x.Id, out var idR) ? idR : null,
-                                                                       revoche.ContainsKey(x.Id) && !RichiestaRegole.StatiInAttesa.Contains(revoche[x.Id]))).ToList(),
+                                                                       revoche.TryGetValue(x.Id, out var rv) ? rv : null,
+                                                                       daDecidere.TryGetValue(x.Id, out var idR) ? idR : null)).ToList(),
                     Risorsa = await RisorseAsync(ctx, false),
                     DurataMaxOre = cfg.PrenotazioneDurataMaxOre,
                     AnticipoMaxGiorni = cfg.PrenotazioneAnticipoMaxGiorni,
@@ -303,30 +305,39 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                         ?? throw new UserMessageException(AssetsMessages.Get("NotFound"));
                 if (p.IdAspNetUsers != ctx.IdUtente && !ctx.Amministratore)
                     throw new UserMessageException(AssetsMessages.Get("NotAllowed"));
-                bool revocaRichiesta = false;
+                // stato della richiesta di annullamento dopo l'azione (per lo stato e i pulsanti della riga restituita)
+                StatoRichiesta? revoca = null;
                 if (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
                 {
-                    // prima la richiesta collegata (il motore ricontrolla i permessi): il richiedente ritira quella in attesa o, se
-                    // approvata, chiede l'annullamento (va approvato: la prenotazione resta confermata); un amministratore che annulla
-                    // la prenotazione in attesa di un altro la rifiuta (il richiedente riceve l'esito dal motore)
+                    // prima la richiesta collegata (il motore ricontrolla i permessi), con le regole delle presenze
+                    // (RichiestaRegole.PuoAnnullare): il richiedente ritira quella in attesa; se approvata chiede l'annullamento
+                    // (va approvato: la prenotazione resta confermata); se l'annullamento e' ancora in attesa lo ritira (resta
+                    // approvata). Un amministratore che annulla la prenotazione in attesa di un altro la rifiuta (il richiedente
+                    // riceve l'esito dal motore)
                     bool rifiutata = false;
+                    EsitoAnnullamento? esito = null;
                     var richiesta = await _approvazioni.RichiestaAsync(p.IdDip_GG_Richiesta);
-                    if (richiesta != null && p.IdAspNetUsers == ctx.IdUtente && AstApprovazioni.RevocaInAttesa(richiesta))
-                        throw new UserMessageException(AssetsMessages.Get("BookingCancelAlreadyRequested"));
                     // annullamento gia' deciso (rifiutato) o ritirato: la pratica e' conclusa, la prenotazione resta approvata
                     if (richiesta != null && p.IdAspNetUsers == ctx.IdUtente && !RichiestaRegole.PuoAnnullare(richiesta))
                         throw new UserMessageException(AssetsMessages.Get("BookingCancelClosed"));
                     if (richiesta != null)
                     {
                         if (p.IdAspNetUsers == ctx.IdUtente)
-                            revocaRichiesta = await _approvazioni.AnnullaRichiestaAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione) == EsitoAnnullamento.RevocaRichiesta;
-                        else if (ctx.Amministratore && RichiestaRegole.InAttesa(richiesta))
+                            esito = await _approvazioni.AnnullaRichiestaAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione);
+                        else if (ctx.Amministratore && p.Stato == AstStatoPrenotazione.InAttesa && RichiestaRegole.InAttesa(richiesta))
                         {
                             await _approvazioni.RifiutaRichiestaAsync(ctx, richiesta, p, p.Ast_RisorsaNavigation!.Descrizione, null);
                             rifiutata = true;
                         }
                     }
-                    if (!revocaRichiesta)
+                    revoca = esito switch
+                    {
+                        EsitoAnnullamento.RevocaRichiesta => StatoRichiesta.Immessa,
+                        EsitoAnnullamento.RevocaRitirata => StatoRichiesta.Cancellata,
+                        _ => null,
+                    };
+                    // richiesta (o ritiro) di annullamento: la prenotazione resta confermata
+                    if (revoca == null)
                     {
                         p.Stato = rifiutata ? AstStatoPrenotazione.Rifiutata : AstStatoPrenotazione.Annullata;
                         p.DataAnnullamento = DateTime.Now;
@@ -344,7 +355,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 }
                 var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
                 var motivi = await _approvazioni.MotiviAsync(new[] { p });
-                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi, motivi.GetValueOrDefault(p.Id), revocaRichiesta) };
+                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi, motivi.GetValueOrDefault(p.Id), revoca) };
             }, isSubProcess);
         }
 
@@ -371,19 +382,26 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                })
                .OrderBy(x => x.Tipo).ThenBy(x => x.Descrizione).ToList();
 
-        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null, bool annullamentoRichiesto = false,
-                                                               int? richiestaDaDecidere = null, bool annullamentoConcluso = false)
+        /// <param name="revoca">stato della richiesta di annullamento (revoca) della prenotazione approvata, null = mai chiesta</param>
+        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null,
+                                                               StatoRichiesta? revoca = null, int? richiestaDaDecidere = null)
         {
             bool mia = p.IdAspNetUsers == ctx.IdUtente;
-            // pulsanti della riga, come nella pagina di approvazione delle presenze:
+            // pulsanti della riga, come le richieste delle presenze e le note spese (RichiestaRegole.PuoAnnullare):
             //   - prenotazione con richiesta (risorsa che richiede approvazione):
             //       in attesa      -> richiedente: Annulla (ritira la richiesta)   | amministratore: Approva / Rifiuta
             //       rifiutata      -> nessuno                                      | nessuno
             //       approvata      -> richiedente: Cancella (richiesta di annullamento) | amministratore: nessuno
-            //       annullamento richiesto -> richiedente: nessuno               | amministratore: Approva / Rifiuta
+            //       annullamento richiesto -> richiedente: Annulla (ritira l'annullamento) | amministratore: Approva / Rifiuta
+            //       annullamento rifiutato o ritirato -> pratica conclusa, resta approvata: nessuno
+            //       annullata (ritirata, scaduta, revocata) -> nessuno
             //   - prenotazione senza richiesta: Modifica / Cancella per chi l'ha fatta e per gli amministratori
             bool conRichiesta = p.IdDip_GG_Richiesta != null;
             bool nonFinita = p.Fine > DateTime.Now;
+            bool confermata = p.Stato == AstStatoPrenotazione.Confermata;
+            bool annullamentoRichiesto = confermata && revoca != null && RichiestaRegole.StatiInAttesa.Contains(revoca.Value);
+            bool annullamentoConcluso = confermata && revoca != null && !annullamentoRichiesto;
+            bool vede = mia || ctx.Amministratore;
             return new Ast_PrenotazioneModel
             {
                 Id = p.Id,
@@ -400,14 +418,18 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 Utente = mia || ctx.Amministratore ? (nomi.TryGetValue(p.IdAspNetUsers, out var n) ? n : null) : null,
                 Modificabile = !conRichiesta && (mia || ctx.Amministratore) && nonFinita
                                && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa),
-                Ritirabile = conRichiesta && mia && nonFinita && p.Stato == AstStatoPrenotazione.InAttesa,
+                // il richiedente ritira la richiesta in attesa o l'annullamento in attesa (come la revoca delle presenze)
+                Ritirabile = conRichiesta && mia && nonFinita && (p.Stato == AstStatoPrenotazione.InAttesa || annullamentoRichiesto),
                 // l'annullamento si chiede una volta sola: rifiutato (o ritirato) la pratica e' conclusa, resta approvata (come le presenze)
-                AnnullamentoChiedibile = conRichiesta && mia && nonFinita && p.Stato == AstStatoPrenotazione.Confermata && !annullamentoRichiesto && !annullamentoConcluso,
-                AnnullamentoRifiutato = (mia || ctx.Amministratore) && annullamentoConcluso,
+                AnnullamentoChiedibile = conRichiesta && mia && nonFinita && confermata && revoca == null,
+                AnnullamentoRifiutato = vede && annullamentoConcluso && revoca == StatoRichiesta.Rifiutata,
+                AnnullamentoRitirato = vede && annullamentoConcluso && revoca == StatoRichiesta.Cancellata,
+                Revocata = vede && p.Stato == AstStatoPrenotazione.Annullata && revoca == StatoRichiesta.Approvata,
+                ConRichiesta = conRichiesta,
                 DaDecidere = richiestaDaDecidere != null,
                 IdRichiesta = richiestaDaDecidere,
-                MotivoRifiuto = mia || ctx.Amministratore ? motivoRifiuto : null,
-                AnnullamentoRichiesto = (mia || ctx.Amministratore) && annullamentoRichiesto,
+                MotivoRifiuto = vede ? motivoRifiuto : null,
+                AnnullamentoRichiesto = vede && annullamentoRichiesto,
             };
         }
     }

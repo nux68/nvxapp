@@ -40,12 +40,18 @@ export class AstPrenotazioneModel {
   public daDecidere = false;
   /** id della richiesta comune (pagine /requests) da approvare o rifiutare */
   public idRichiesta: number | null = null;
-  /** richiedente: ritira la richiesta ancora in attesa ("Annulla") */
+  /** richiedente: ritira la richiesta o l'annullamento ancora in attesa ("Annulla"), come la revoca delle presenze */
   public ritirabile = false;
   /** richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato) */
   public annullamentoChiedibile = false;
-  /** annullamento rifiutato (o ritirato): pratica conclusa, resta approvata */
+  /** annullamento rifiutato: pratica conclusa, resta approvata */
   public annullamentoRifiutato = false;
+  /** annullamento ritirato dal richiedente: pratica conclusa, resta approvata */
+  public annullamentoRitirato = false;
+  /** annullata perche' l'annullamento (revoca) e' stato approvato */
+  public revocata = false;
+  /** soggetta ad approvazione (richiesta comune): confermata = "Approvata" */
+  public conRichiesta = false;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;

@@ -115,6 +115,14 @@ Tutte le tabelle hanno `IdAz_Anagrafica` (FK verso `Az_Anagrafica` di Common) e 
 - **Client**: spunta "Richiede approvazione" nella risorsa, colonna stato nelle prenotazioni, avviso "richiesta inviata" dopo il salvataggio, la pagina di modifica carica da sola risorse e limiti (aperta da "Nuova prenotazione" nelle richieste comuni), widget "Le mie prenotazioni" con le in attesa indicate (le rifiutate no), `request-ui-assets.service.ts`.
 - **Comandi vocali**: "prenota..." risponde "richiesta inviata, in attesa di approvazione"; le mie prenotazioni indicano le in attesa; le risorse libere considerano occupate anche le in attesa.
 
+### 7.3 Fatto in `AST-RICH.CICLO` (12/11/2026, ramo `Assets_Dev_bookingstate`)
+
+Stato e pulsanti della pagina `/astbookings` allineati al ciclo delle richieste delle presenze (giustificativi, timbrature) e delle note spese (`RichiestaRegole.PuoAnnullare`, `Dip_GG_Richiesta_User_Can_Delete`):
+- **Ritiro dell'annullamento**: con la richiesta di annullamento (revoca) ancora in attesa il richiedente vede "Annulla richiesta" e la ritira (`EsitoAnnullamento.RevocaRitirata`, la prenotazione resta approvata); prima il servizio lo vietava (`BookingCancelAlreadyRequested`, ora non usato). Annullamento rifiutato o ritirato: pratica conclusa, nessun pulsante.
+- **Stato sempre visibile** (badge colorato come nelle note spese): Confermata (senza approvazione), In attesa, Approvata, Rifiutata con il motivo, Annullata, Revocata (annullamento approvato), Annullamento in attesa, Annullamento rifiutato. Modello: `AnnullamentoRitirato`, `Revocata`, `ConRichiesta`; `AnnullamentoRifiutato` ora solo per il rifiuto. `AstApprovazioni.RevocheAsync` considera anche le annullate.
+- **Elenco**: delle proprie si vede tutto il ciclo anche senza "Solo le mie": rifiutate e annullate con richiesta (ritirate, scadute, revocate); le cancellate senza richiesta no. Widget "Le mie prenotazioni" senza annullate.
+- Un amministratore che annulla la prenotazione di un altro rifiuta la richiesta solo se la prenotazione è in attesa (non più se in attesa è l'annullamento).
+
 ## 8. Decisioni aperte
 
 | # | Decisione | Note |
@@ -155,6 +163,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 
 #### `AST-RICH` – Approvazione delle prenotazioni (richieste comuni)
 - ✅ `AST-RICH` Risorse con approvazione, prenotazioni in attesa/rifiutate, richiesta collegata in `Dip_GG_Richiesta` (Common) con `AstRichiestaTipoHandler` e il motore `RichiestaCommonService`, scadenza, client e comandi vocali (§7.2; variante `RICH-AST.6`, `InitAssets` rigenerata) — fatta il 12/11/2026 su `Assets_Dev_richieste`, da mergiare
+- ✅ `AST-RICH.CICLO` Stato e pulsanti di `/astbookings` come il ciclo di giustificativi, timbrature e note spese: ritiro dell'annullamento in attesa, stato sempre visibile, proprie rifiutate/annullate nell'elenco (§7.3) — fatta il 12/11/2026 su `Assets_Dev_bookingstate`, compilata (server e client), da mergiare
 
 #### Decisioni
 - 🔍 `AST-D1`, `AST-D5`, `AST-D6` (§8)
