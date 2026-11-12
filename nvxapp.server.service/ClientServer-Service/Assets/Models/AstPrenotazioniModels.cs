@@ -42,6 +42,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         public bool Ritirabile { get; set; }
         // richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato)
         public bool AnnullamentoChiedibile { get; set; }
+        // annullamento gia' chiesto e rifiutato (o ritirato): pratica conclusa, resta approvata
+        public bool AnnullamentoRifiutato { get; set; }
         /// <summary>prenotazione dell'utente collegato</summary>
         public bool Mia { get; set; }
         /// <summary>chi ha prenotato: solo per le proprie e per gli amministratori</summary>
