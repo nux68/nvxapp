@@ -925,7 +925,8 @@
       "cancel": "Disdici",
       "confirmCancel": "Disdire la licenza {{piano}} per {{funzione}}? La disdetta è immediata: la funzione non sarà più disponibile e le sue voci spariranno dal menu.",
       "confirmCancelNoRefund": "Il periodo già pagato (fino al {{data}}) non viene rimborsato.",
-      "confirmCancelShared": "La licenza vale anche per le aziende dello studio: anche loro la perderanno, se non ne hanno una propria.",
+      "confirmCancelShared": "La licenza vale anche per le aziende dello studio: quelle senza una licenza propria non potranno più usare la funzione (i loro dati restano) e riceveranno una notifica.",
+      "confirmCancelDeleteData": "ATTENZIONE: se la funzione non è coperta da un'altra licenza (dello studio o cumulativa), tutti i suoi dati vengono eliminati subito e definitivamente e non si possono recuperare.",
       "usersOfLimit": "Utenti attivi: {{attivi}} su {{limite}}",
       "usersUnlimited": "Utenti attivi: {{attivi}} (illimitati)"
     },

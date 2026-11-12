@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Notification;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
@@ -49,6 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         private readonly IPaymentGatewayResolver _gatewayResolver;
         private readonly ICompanyApplicationService _companyApplicationService;
         private readonly IStorageQuotaService _storageQuotaService;
+        private readonly INotificationSender _notificationSender;
 
         public LicenseService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -69,7 +72,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                               ILicenseSubscriptionManager subscriptionManager,
                               IPaymentGatewayResolver gatewayResolver,
                               ICompanyApplicationService companyApplicationService,
-                              IStorageQuotaService storageQuotaService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                              IStorageQuotaService storageQuotaService,
+                              INotificationSender notificationSender) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _listinoRepository = listinoRepository;
             _pianoRepository = pianoRepository;
@@ -85,6 +89,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             _gatewayResolver = gatewayResolver;
             _companyApplicationService = companyApplicationService;
             _storageQuotaService = storageQuotaService;
+            _notificationSender = notificationSender;
         }
 
         // ---------------------------------------------------------------------------
@@ -635,9 +640,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         }
 
         /*
-         Disdetta (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8): solo il PowerAdmin del soggetto, effetto immediato.
-         L'applicativo non viene disattivato (CompanyApplication resta com'e'): senza copertura sparisce dal menu,
-         come alla scadenza, e torna visibile con una nuova sottoscrizione.
+         Disdetta (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8, §15.9): solo il PowerAdmin del soggetto, effetto immediato.
+            - azienda: per ogni applicativo della licenza rimasto senza copertura, applicativo disattivato e schema eliminato
+              con tutti i dati (con il sistema licenze acceso); tutto in una transazione con l'annullamento dell'abbonamento
+            - studio: nessuno schema (gli applicativi dello studio non ne hanno); le aziende che perdono la copertura
+              ricevono una notifica e conservano i dati
+            - notifica ai PowerAdmin del soggetto (categoria "licenze"), dopo la conferma; un errore non annulla la disdetta
         */
         public virtual async Task<GenericResult<LicenseCancelOutModel>> LicenseCancel(GenericRequest<LicenseCancelInModel> model, Boolean isSubProcess)
         {
@@ -649,11 +657,80 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
                 var abbonamento = await AbbonamentiSoggetto(soggetto).FirstOrDefaultAsync(x => x.Id == model.Data.IdAbbonamento)
                                   ?? throw new UserMessageException(InfrastructureMessages.Get("LicenseSubscriptionNotFound"));
-                abbonamento = await _subscriptionManager.CancelAsync(abbonamento);
+                bool azienda = soggetto.Tipo == TipoSoggettoLicenza.Company;
+                List<ApplicationType> eliminati;
+                await using (var transaction = await _abbonamentoRepository.BeginTransactionAsync())
+                {
+                    abbonamento = await _subscriptionManager.CancelAsync(abbonamento);
+                    eliminati = azienda ? await _companyApplicationService.RemoveForLicenseCancelAsync(soggetto.Id, abbonamento.Ambito)
+                                        : new List<ApplicationType>();
+                    await transaction.CommitAsync();
+                }
+
                 var retVal = new LicenseCancelOutModel { Abbonamento = SubscriptionModel(abbonamento, await _settingsProvider.GetAsync()) };
                 retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseCancelled", LicenseSubscriptionManager.NomeFunzione(abbonamento.Ambito)), MessageType.Information));
+                if (eliminati.Count > 0)
+                    retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseCancelDataDeleted", NomiApplicativi(eliminati)), MessageType.Warning));
+                await NotificaDisdettaAsync(soggetto, abbonamento, eliminati);
                 return retVal;
             }, isSubProcess);
+        }
+
+        private static string NomiApplicativi(IEnumerable<ApplicationType> applicativi)
+            => string.Join(", ", applicativi.Select(a => LicenseSubscriptionManager.NomeFunzione((AmbitoLicenza)(int)a)));
+
+        // notifiche della disdetta: PowerAdmin del soggetto e, per una licenza dello studio valida per le aziende,
+        // PowerAdmin delle aziende che restano senza copertura per applicativi attivi (dati conservati)
+        private async Task NotificaDisdettaAsync(LicenseSubject soggetto, Lic_Abbonamento abbonamento, List<ApplicationType> eliminati)
+        {
+            try
+            {
+                bool azienda = soggetto.Tipo == TipoSoggettoLicenza.Company;
+                var funzione = LicenseSubscriptionManager.NomeFunzione(abbonamento.Ambito);
+                var piano = string.IsNullOrWhiteSpace(abbonamento.DescrizionePiano) ? abbonamento.Livello.ToString() : abbonamento.DescrizionePiano;
+                var chi = (await _userManager.FindByIdAsync(UserIdFirstConnection))?.UserName ?? string.Empty;
+                var testo = InfrastructureMessages.Get("LicenseCancelNotifyText", chi, piano, funzione, soggetto.Descrizione) + " "
+                            + (eliminati.Count > 0 ? InfrastructureMessages.Get("LicenseCancelDataDeleted", NomiApplicativi(eliminati))
+                                                   : InfrastructureMessages.Get("LicenseCancelNoDataDeleted"));
+                await _notificationSender.SendAsync(new NotificationMessage
+                {
+                    UserIds = await _subscriptionManager.PowerAdminIdsAsync(azienda ? soggetto.Id : null, azienda ? null : soggetto.Id),
+                    IdCompany = azienda ? soggetto.Id : null,
+                    Categoria = NotificationCategory.Licenze.Code,
+                    Titolo = InfrastructureMessages.Get("LicenseCancelNotifyTitle", funzione),
+                    Messaggio = testo,
+                    Url = "/licensemanagement"
+                });
+
+                if (azienda || !abbonamento.DisponibileSuCompany || !await _licenseGuard.EnabledAsync())
+                    return;
+
+                var funzioni = abbonamento.Ambito == AmbitoLicenza.Cumulativo ? LicenseGuard.Funzioni.ToList() : new List<AmbitoLicenza> { abbonamento.Ambito };
+                var aziende = await _companyRepository.FindAll(x => x.IdFinancialAdvisor == soggetto.Id).Select(x => new { x.Id, x.Descrizione }).ToListAsync();
+                foreach (var a in aziende)
+                {
+                    var attivi = _companyApplicationService.Applications(a.Id).Where(x => x.Active).Select(x => (int)x.ApplicationType).ToHashSet();
+                    var perse = new List<ApplicationType>();
+                    foreach (var f in funzioni.Where(f => attivi.Contains((int)f)))
+                        if ((await _licenseGuard.CoverageAsync(a.Id, f, reale: true)).Livello == null)
+                            perse.Add((ApplicationType)(int)f);
+                    if (perse.Count == 0)
+                        continue;
+                    await _notificationSender.SendAsync(new NotificationMessage
+                    {
+                        UserIds = await _subscriptionManager.PowerAdminIdsAsync(a.Id, null),
+                        IdCompany = a.Id,
+                        Categoria = NotificationCategory.Licenze.Code,
+                        Titolo = InfrastructureMessages.Get("LicenseCancelNotifyStudioTitle", funzione),
+                        Messaggio = InfrastructureMessages.Get("LicenseCancelNotifyStudioText", soggetto.Descrizione, NomiApplicativi(perse)),
+                        Url = "/licensemanagement"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Warning(ex, "Notifiche della disdetta della licenza {Id} non inviate", abbonamento.Id);
+            }
         }
 
         // ---------------------------------------------------------------------------

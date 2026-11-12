@@ -925,7 +925,8 @@
       "cancel": "Cancel",
       "confirmCancel": "Cancel the {{piano}} licence for {{funzione}}? Cancellation is immediate: the function will no longer be available and its menu items will disappear.",
       "confirmCancelNoRefund": "The period already paid (until {{data}}) is not refunded.",
-      "confirmCancelShared": "The licence also covers the studio's companies: they will lose it too, unless they have their own.",
+      "confirmCancelShared": "The licence also covers the firm's companies: those without their own licence will no longer be able to use the function (their data is kept) and will be notified.",
+      "confirmCancelDeleteData": "WARNING: if the function is not covered by another licence (the firm's or a bundle), all its data is deleted immediately and permanently and cannot be recovered.",
       "usersOfLimit": "Active users: {{attivi}} of {{limite}}",
       "usersUnlimited": "Active users: {{attivi}} (unlimited)"
     },
