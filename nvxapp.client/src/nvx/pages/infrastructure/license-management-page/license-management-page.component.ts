@@ -139,7 +139,8 @@ export class LicenseManagementPageComponent {
     });
   }
 
-  // disdetta immediata (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8): la funzione esce dal menu, nessun rimborso
+  // disdetta immediata (ANALISI_INFRASTRUCTURE_LICENZE.md §15.8, §15.9): la funzione esce dal menu, nessun rimborso;
+  // per l'azienda, con il sistema licenze acceso, i dati delle funzioni rimaste senza copertura vengono eliminati
   async disdici(a: LicenseSubscriptionModel) {
     const t = (k: string, p?: any) => this.transloco.translate(k, p);
     const message = [
@@ -150,7 +151,8 @@ export class LicenseManagementPageComponent {
       a.prezzo > 0 && a.stato === StatoAbbonamento.Attivo
         ? t('pages.licenseManagement.confirmCancelNoRefund', { data: formatDate(a.dataScadenza, 'dd/MM/yyyy', 'en-US') })
         : '',
-      a.disponibileSuCompany ? t('pages.licenseManagement.confirmCancelShared') : ''
+      a.disponibileSuCompany ? t('pages.licenseManagement.confirmCancelShared') : '',
+      !this.isStudio && this.status?.attive ? t('pages.licenseManagement.confirmCancelDeleteData') : ''
     ].filter(x => x).join(' ');
     if (!await this.collectionDialogService.ConfirmCancelDialog(message))
       return;
@@ -158,7 +160,8 @@ export class LicenseManagementPageComponent {
     request.data.idAbbonamento = a.id;
     this.licenseService.LicenseCancel(request).subscribe(res => {
       if (res.success) {
-        this.messaggio = res.data?.messages?.[0]?.text ?? null;
+        // disdetta ed eventuali dati eliminati
+        this.messaggio = (res.data?.messages ?? []).map(m => m.text).filter(x => x).join(' ') || null;
         // rilegge applicativi e licenza: le voci di menu della funzione disdetta spariscono
         this.userNavigationService.RefreshLicense();
       }
