@@ -40,7 +40,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 Log.Warning(ex, "RichiestaNotifier: invio non riuscito, richieste {IdDip_GG_Richiesta}", data.IdDip_GG_Richiesta);
             }
 
-            await _requestNotifier.NotifyAsync(users, data.IdDip_GG_Richiesta.Count == 1 ? AtRequestProvider.Codice + ":" + data.IdDip_GG_Richiesta[0] : null);
+            await _requestNotifier.NotifyAsync(users, data.IdDip_GG_Richiesta.Count == 1 ? data.IdDip_GG_Richiesta[0].ToString() : null);
         }
     }
 

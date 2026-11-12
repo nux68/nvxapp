@@ -1,3 +1,4 @@
+using nvxapp.server.data.Repositories.Tenant.Common;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
-        private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaRepository;
 
         public Dip_WidgetService(IMapper mapper,
                                  UserManager<ApplicationUser> userManager,
@@ -59,7 +60,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                  IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                  IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
-                                 IDip_GG_RichiestaRepository dip_GG_RichiestaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                 IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _dip_GG_RichiestaService = dip_GG_RichiestaService;

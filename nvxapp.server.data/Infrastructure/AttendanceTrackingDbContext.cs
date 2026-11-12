@@ -301,6 +301,24 @@ namespace nvxapp.server.data.Infrastructure
                       .HasForeignKey(t => t.IdDip_Anagrafica)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            /*
+             Richiesta da approvare (ANALISI_INFRASTRUCTURE_RICHIESTE.md, RICH-AT.6): tabella comune di tutti gli applicativi,
+             creata da CommonDbContext; qui in sola lettura (scritture con Dip_GG_RichiestaCommonRepository). Il legame con il
+             rapporto di lavoro e con i dettagli (giustificativi, timbrature, note spese, scambi turno) e' in Gen_Init_GestionePresenze
+            */
+            modelBuilder.Entity<Dip_GG_Richiesta>(entity =>
+            {
+                entity.ToTable("Dip_GG_Richiesta", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdAz_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.Dip_AnagraficaNavigation)
+                      .WithMany()
+                      .HasForeignKey(t => t.IdDip_Anagrafica)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         private void Gen_Init_GestionePresenze(ModelBuilder modelBuilder)
@@ -362,20 +380,13 @@ namespace nvxapp.server.data.Infrastructure
 
 
 
-            /* Dip_GG_Richiesta */
+            /* Dip_GG_Richiesta (tabella comune, RICH-AT.6): il rapporto di lavoro e' solo un numero nella tabella comune (nessuna
+               FK nel DB, la tabella e' esclusa dalle migration delle presenze). Niente cascata: chi cancella un rapporto di
+               lavoro cancella le sue richieste con il repository comune (es. AttendanceTrackingDataDeleter) */
             modelBuilder.Entity<Dip_GG_Richiesta>().HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
                .WithMany(t_figlio => t_figlio.Dip_GG_Richiesta)
                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            EntityTypeBuilder<Dip_GG_Richiesta> richiestaEntity = modelBuilder.Entity<Dip_GG_Richiesta>();
-
-            // Configurazione per le liste di oggetti JSON (Npgsql le mappa a jsonb)
-            richiestaEntity.Property(e => e.RichiestaApprovazioneData)
-                .HasColumnType("jsonb");
-
-            richiestaEntity.Property(e => e.RevocaApprovazioneData)
-                .HasColumnType("jsonb");
+               .OnDelete(DeleteBehavior.ClientNoAction);
 
 
             /*Dip_GG_Giustificativi*/
