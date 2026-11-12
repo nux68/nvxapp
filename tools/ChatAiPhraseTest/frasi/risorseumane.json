@@ -1,0 +1,28 @@
+// Frasi di prova dei comandi di Risorse Umane (formato: vedi README.md; analisi: ANALISI_HUMANRESOURCES_VOCALI.md)
+[
+  { "frase": "scadenze hr dei prossimi 60 giorni", "intent": "HrExpiries", "slots": { "days": "60" } },
+  { "frase": "quali corsi sono in scadenza?", "intent": "HrExpiries" },
+  { "frase": "scadenze dei dipendenti di Rossi", "intent": "HrExpiries", "slots": { "employeeName": "Rossi" } },
+  { "frase": "which training courses are expiring?", "intent": "HrExpiries" },
+  { "frase": "che corsi deve ancora fare Rossi?", "intent": "HrTrainingToDo", "slots": { "employeeName": "Rossi" } },
+  { "frase": "chi deve fare il corso sicurezza?", "intent": "HrTrainingToDo", "slots": { "course": "sicurezza" } },
+  { "frase": "com'è il piano di formazione di quest'anno?", "intent": "HrTrainingToDo", "pagina": "/hrplanlist" },
+  { "frase": "come vanno gli onboarding?", "intent": "HrOnboarding" },
+  { "frase": "a che punto è la checklist di Bianchi?", "intent": "HrOnboarding", "slots": { "employeeName": "Bianchi" } },
+  { "frase": "scheda hr di Verdi", "intent": "HrEmployeeInfo", "slots": { "employeeName": "Verdi" } },
+  { "frase": "che matricola ha Rossi?", "intent": "HrEmployeeInfo", "slots": { "employeeName": "Rossi" }, "pagina": "/hremployeelist" },
+  { "frase": "ho cedolini da confermare?", "intent": "HrMyPayslips", "ruolo": "User" },
+  { "frase": "i miei cedolini del 2025", "intent": "HrMyPayslips", "ruolo": "User", "slots": { "year": "2025" } },
+  { "frase": "do I have new payslips?", "intent": "HrMyPayslips", "ruolo": "User" },
+  { "frase": "segna come fatta la voce consegna badge della checklist di Rossi", "intent": "HrCompleteChecklistItem",
+    "slots": { "employeeName": "Rossi", "item": "consegna badge" } },
+  { "messaggi": ["completa la voce visita medica", "di Bianchi"], "intent": "HrCompleteChecklistItem",
+    "slots": { "employeeName": "Bianchi", "item": "visita medica" } },
+  { "frase": "aggiungi al piano di formazione il corso primo soccorso per Verdi entro il 30 giugno", "intent": "HrAddPlanCourse",
+    "slots": { "course": "primo soccorso", "employeeName": "Verdi", "by": "=30 giugno" } },
+  { "frase": "apri la scheda hr di Rossi", "intent": "OpenEntity", "slots": { "entity": "dipendente hr" } },
+  { "frase": "apri il corso primo soccorso", "intent": "OpenEntity", "slots": { "entity": "corso" } },
+  { "frase": "portami ai piani di formazione", "intent": "Navigate" },
+  { "frase": "vai alla formazione", "intent": "Navigate", "slots": { "page": "formazione" } },
+  { "frase": "take me to my payslips", "intent": "Navigate", "ruolo": "User" }
+]
