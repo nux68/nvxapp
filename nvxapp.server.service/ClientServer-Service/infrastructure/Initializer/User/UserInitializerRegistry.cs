@@ -42,6 +42,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
             _logger = logger;
         }
 
+        // dimentica l'inizializzazione degli utenti dell'azienda per un applicativo (schema eliminato alla disdetta della licenza)
+        public static void Forget(int idCompany, ApplicationType application)
+        {
+            foreach (var key in _initialized.Keys.Where(k => k.IdCompany == idCompany && k.Application == application).ToList())
+                _initialized.TryRemove(key, out _);
+        }
+
         public async Task InitializeAllAsync(UserCompany userCompany)
         {
             var applications = new List<ApplicationType?> { null };
