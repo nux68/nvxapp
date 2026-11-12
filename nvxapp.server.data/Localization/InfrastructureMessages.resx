@@ -1354,4 +1354,44 @@ In allegato il rendiconto.</value>
     <value>Il dipendente indicato non esiste in questa azienda o ha già un account.</value>
     <comment>account dipendente esistente</comment>
   </data>
+  <data name="RequestStateDirect" xml:space="preserve">
+    <value>Inserimento diretto</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStatePending" xml:space="preserve">
+    <value>In attesa</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateInProgress" xml:space="preserve">
+    <value>Approvazione in corso</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateApproved" xml:space="preserve">
+    <value>Approvata</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRejected" xml:space="preserve">
+    <value>Rifiutata</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateCancelled" xml:space="preserve">
+    <value>Cancellata</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokePending" xml:space="preserve">
+    <value>Approvata (annullamento in attesa)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokeRejected" xml:space="preserve">
+    <value>Approvata (annullamento respinto)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevokeWithdrawn" xml:space="preserve">
+    <value>Approvata (annullamento ritirato)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
+  <data name="RequestStateRevoked" xml:space="preserve">
+    <value>Annullata (annullamento approvato)</value>
+    <comment>stato comune delle richieste</comment>
+  </data>
 </root>
