@@ -29,7 +29,7 @@ Da qui registri l'entrata e l'uscita. In alto vedi sempre l'ultima timbratura re
 
 La timbratura si registra con data e ora correnti. Se hai dimenticato una timbratura o ne hai registrata una sbagliata non puoi modificarla direttamente: usa la **Richiesta timbratura**.
 
-@@ /requestlistuser
+@@ /requests
 L'elenco di tutte le tue richieste (giustificativi, timbrature, correzioni) con il loro stato: **in attesa**, **approvata** o **rifiutata**. Apri una richiesta per vederne il dettaglio.
 
 Una richiesta ancora in attesa si può cancellare. Il contatore accanto alla voce di menu indica quante richieste sono in attesa.
@@ -71,7 +71,7 @@ L'elenco delle tue note spese con lo stato di ciascuna. Apri una nota per vedere
 
 Finché una nota non è approvata la puoi modificare (torna in attesa di approvazione) o annullare; se è già approvata puoi chiederne la revoca. L'approvazione della nota approva tutte le sue spese.
 
-@@ /requestlistadmin
+@@ /requestsadmin
 Le richieste dei dipendenti dei reparti che approvi, in attesa del tuo esame.
 1. Apri una richiesta per vederne il dettaglio.
 2. Premi **Approva** oppure **Rifiuta**.

@@ -39,7 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "richieste in attesa", "da approvare", "richieste aperte", "pending requests", "to approve" },
                 Examples = new() { "quali richieste devo approvare?", "ci sono richieste in attesa?", "richieste di Rossi da approvare", "any pending requests?" },
                 RequiresConfirmation = false,
-                Pages = new() { "/requestlistadmin" },
+                Pages = new() { "/requestsadmin" },
                 Slots = BuildSlots(Facoltativo(EmployeeNameSlot, string.Empty))
             };
         }

@@ -21,7 +21,5 @@ namespace nvxapp.server.Controllers.GestionePresenze
         [Authorize, HttpPost, Route("Widget_PresenzeOggiGet")]
         public async Task<GenericResult<Widget_PresenzeOggiGetOutModel>> Widget_PresenzeOggiGet(GenericRequest<Widget_PresenzeOggiGetInModel> inModel) => await _service.Widget_PresenzeOggiGet(inModel, false);
 
-        [Authorize, HttpPost, Route("Widget_RichiesteGet")]
-        public async Task<GenericResult<Widget_RichiesteGetOutModel>> Widget_RichiesteGet(GenericRequest<Widget_RichiesteGetInModel> inModel) => await _service.Widget_RichiesteGet(inModel, false);
     }
 }
