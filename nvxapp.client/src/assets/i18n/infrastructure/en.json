@@ -1169,6 +1169,7 @@
       "confirmDelete": "Delete the calendar address? The calendars where you added it will no longer receive the deadlines."
     },
     "requestList": {
+      "new": "New request",
       "title": "My requests",
       "titleAdmin": "Requests to approve",
       "filter": {
