@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { formatDate } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ActionSheetController, AlertController, NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { Subscription } from 'rxjs';
@@ -14,7 +14,7 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { RequestNotifierService } from '../../../Utility/infrastructure/request-notifier.service';
 import { RequestUiService } from '../../../Utility/infrastructure/request-ui.service';
-import { RequestNewItem } from '../../../Utility/infrastructure/request-ui.model';
+import { RequestNewItem, RequestRouteData } from '../../../Utility/infrastructure/request-ui.model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 /*
@@ -40,6 +40,8 @@ export class RequestListPageComponent {
   public applicativi: number[] = [];
   /** applicativo scelto nel filtro (null = tutti) */
   public applicativo: number | null = null;
+  /** pagina aperta dalla route di un modulo (RequestRouteData): solo le richieste di quell'applicativo, senza filtro */
+  public readonly applicativoFisso: number | null;
 
   public filtro: RequestFilter = RequestFilter.DaApprovare;
   public readonly filtri: { value: RequestFilter, key: string }[];
@@ -53,6 +55,7 @@ export class RequestListPageComponent {
   private changedSub: Subscription | null = null;
 
   constructor(router: Router,
+              route: ActivatedRoute,
               private navCtrl: NavController,
               private alertController: AlertController,
               private actionSheetCtrl: ActionSheetController,
@@ -65,7 +68,10 @@ export class RequestListPageComponent {
               private languageService: LanguageService,
               private transloco: TranslocoService) {
 
-    this.admin = router.url.split('?')[0].toLowerCase().startsWith('/requestsadmin');
+    const dati = route.snapshot.data as RequestRouteData;
+    this.admin = dati.requestAdmin ?? router.url.split('?')[0].toLowerCase().startsWith('/requestsadmin');
+    this.applicativoFisso = dati.requestApplication ?? null;
+    this.applicativo = this.applicativoFisso;
     this.title = this.transloco.translate(this.admin ? 'pages.requestList.titleAdmin' : 'pages.requestList.title');
     this.filtri = this.admin
       ? [
@@ -101,7 +107,7 @@ export class RequestListPageComponent {
     this.requestService.RequestList(request).subscribe(res => {
       this.richieste = res.success && res.data ? res.data.richieste : [];
       this.applicativi = res.success && res.data ? res.data.applicativi : [];
-      if (this.applicativo !== null && !this.applicativi.includes(this.applicativo))
+      if (this.applicativoFisso === null && this.applicativo !== null && !this.applicativi.includes(this.applicativo))
         this.applicativo = null;
       this.preparaColonne();
       if (res.success && res.data)
@@ -139,7 +145,7 @@ export class RequestListPageComponent {
   private preparaColonne() {
     const t = (k: string) => this.transloco.translate('pages.requestList.' + k);
     // con richieste di piu' applicativi il tipo dice anche da quale arriva
-    const conApplicativo = this.applicativi.length > 1;
+    const conApplicativo = this.applicativoFisso === null && this.applicativi.length > 1;
     this.columns = [
       ...(this.admin ? [{ key: 'richiedente', title: t('columnRequester'), mobile: 'title' } as NvxListColumn<RequestItemModel>] : []),
       { key: 'tipoTesto', title: t('columnType'), mobile: this.admin ? 'subtitle' : 'title',
@@ -193,7 +199,8 @@ export class RequestListPageComponent {
   // "+" del fab (solo nella pagina dell'utente): un solo pulsante "Nuova richiesta" che apre l'elenco delle pagine di invio dei
   // moduli attivi in un action sheet, come nelle altre pagine dell'applicazione; con una sola voce apre direttamente la pagina
   private preparaNuove() {
-    const nuove = this.admin ? [] : this.requestUiService.NewRequests;
+    const nuove = this.admin ? [] : this.requestUiService.NewRequests
+      .filter(n => this.applicativoFisso === null || n.application === this.applicativoFisso);
     this.fabMenuService.fabMenuItem = nuove.length === 0
       ? []
       : [new FabMenuItem(this.transloco.translate('pages.requestList.new'), 'add-circle-outline',
