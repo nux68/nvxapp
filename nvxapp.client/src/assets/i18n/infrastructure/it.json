@@ -1,5 +1,23 @@
 {
   "common": {
+    "requestState": {
+      "direct": "Inserimento diretto",
+      "pending": "In attesa",
+      "inProgress": "Approvazione in corso",
+      "approved": "Approvata",
+      "rejected": "Rifiutata",
+      "cancelled": "Cancellata",
+      "revokePending": "Approvata (annullamento in attesa)",
+      "revokeRejected": "Approvata (annullamento respinto)",
+      "revokeWithdrawn": "Approvata (annullamento ritirato)",
+      "revoked": "Annullata (annullamento approvato)"
+    },
+    "requestAction": {
+      "askCancellation": "Chiedi annullamento",
+      "withdrawCancellation": "Ritira annullamento",
+      "confirmAskCancellation": "La richiesta è approvata: chiederne l'annullamento? Va approvato e si può chiedere una sola volta.",
+      "confirmWithdrawCancellation": "Ritirare la richiesta di annullamento? La richiesta resta approvata e l'annullamento non si potrà più chiedere."
+    },
     "buttons": {
       "confirm": "Conferma",
       "cancel": "Annulla",
