@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -219,6 +219,15 @@
   </data>
   <data name="RequestStatePending" xml:space="preserve">
     <value>In attesa di approvazione</value>
+  </data>
+  <data name="RequestStateRevokePending" xml:space="preserve">
+    <value>Approvata, annullamento in attesa di approvazione</value>
+  </data>
+  <data name="RequestStateRevokeRejected" xml:space="preserve">
+    <value>Approvata (annullamento rifiutato)</value>
+  </data>
+  <data name="BookingCancelAlreadyRequested" xml:space="preserve">
+    <value>L'annullamento è già stato chiesto ed è in attesa di approvazione.</value>
   </data>
   <data name="RequestStateApproved" xml:space="preserve">
     <value>Approvata</value>
@@ -516,6 +525,9 @@
   </data>
   <data name="ChatCancelBookingDone" xml:space="preserve">
     <value>Prenotazione annullata: {0}, {1}.</value>
+  </data>
+  <data name="ChatCancelBookingRequested" xml:space="preserve">
+    <value>Ho chiesto l'annullamento della prenotazione di {0} ({1}): resta valida finché un amministratore non lo approva.</value>
   </data>
   <data name="ChatOpenVehicleLabel" xml:space="preserve">
     <value>Veicolo</value>
