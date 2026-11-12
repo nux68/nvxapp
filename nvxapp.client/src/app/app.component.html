@@ -74,6 +74,9 @@
             <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
               <ion-item slot="header">
                 <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
+                @if (gruppoBadge(group, sezione.mostra) > 0) {
+                  <ion-badge slot="end" color="danger">{{ gruppoBadge(group, sezione.mostra) }}</ion-badge>
+                }
               </ion-item>
               <div class="ion-padding" slot="content" style="padding:0px;">
                 <ion-list id="nvx-list">
