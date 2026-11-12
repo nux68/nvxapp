@@ -192,6 +192,8 @@ export class AstBookingPageComponent {
   public stato(x: P.AstPrenotazioneModel): string {
     if (x.annullamentoRichiesto)
       return this.transloco.translate('ast.pages.booking.cancelRequested');
+    if (x.annullamentoRifiutato)
+      return this.transloco.translate('ast.pages.booking.cancelRejected');
     if (x.stato === P.AstStatoPrenotazione.InAttesa)
       return this.transloco.translate('ast.enums.statoPrenotazione.2');
     if (x.stato === P.AstStatoPrenotazione.Rifiutata)
