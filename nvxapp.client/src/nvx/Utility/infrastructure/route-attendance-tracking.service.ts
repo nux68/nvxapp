@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
 import { RoleGuard4CompanyAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-admin';
+import { RoleGuard4CompanyUser } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-user';
+import { RequestRouteData } from './request-ui.model';
 import { RoleGuard4CompanyList } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-list';
 import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-4-user';
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
@@ -107,7 +109,12 @@ export class RouteAttendanceTrackingService {
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
-      { path: 'requestlistadmin', children: [], canActivate: [() => inject(Router).createUrlTree(['/requestsadmin'])] },
+      { path: 'requestlistadmin', children: [], canActivate: [() => inject(Router).createUrlTree(['/attendancerequestsadmin'])] },
+      // pagine comuni delle richieste con le sole richieste delle presenze (voci "Richieste" del menu Presenze, RICH-APP)
+      { path: 'attendancerequests', loadChildren: () => import('../../pages/infrastructure/request-list-page/request-list-page.module').then(m => m.RequestListPageModule),
+        canActivate: [RoleGuard4CompanyUser], data: { requestApplication: ApplicationType.AttendanceTracking } as RequestRouteData },
+      { path: 'attendancerequestsadmin', loadChildren: () => import('../../pages/infrastructure/request-list-page/request-list-page.module').then(m => m.RequestListPageModule),
+        canActivate: [RoleGuard4CompanyAdmin], data: { requestAdmin: true, requestApplication: ApplicationType.AttendanceTracking } as RequestRouteData },
     ];
   }
 }
