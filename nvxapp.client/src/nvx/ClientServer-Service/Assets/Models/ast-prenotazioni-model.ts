@@ -40,6 +40,10 @@ export class AstPrenotazioneModel {
   public daDecidere = false;
   /** id della richiesta comune (pagine /requests) da approvare o rifiutare */
   public idRichiesta: number | null = null;
+  /** richiedente: ritira la richiesta ancora in attesa ("Annulla") */
+  public ritirabile = false;
+  /** richiedente: chiede l'annullamento della prenotazione approvata ("Cancella", va approvato) */
+  public annullamentoChiedibile = false;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;
