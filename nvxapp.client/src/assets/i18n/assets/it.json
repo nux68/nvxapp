@@ -2,6 +2,7 @@
   "ast": {
     "menu": {
       "section": "Risorse aziendali",
+      "settingsSection": "Configurazione",
       "settings": "Impostazioni",
       "manual": "Manuale Risorse aziendali",
       "vehicles": "Veicoli",
