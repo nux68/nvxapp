@@ -129,6 +129,20 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
             return await _richieste.AnnullaAsync(r, await AvvisoAsync(ctx, p, risorsa), sostituita);
         }
 
+        /// <summary>
+        /// stato della prenotazione espresso con il ciclo unico delle richieste (RichiestaRegole.TestoStato, richiesta-stato.ts):
+        /// la prenotazione e' la fonte (es. annullata da un amministratore o scaduta) e la richiesta da' la fase dell'annullamento
+        /// </summary>
+        public static (StatoRichiesta Richiesta, StatoRichiesta? Revoca) StatoComeRichiesta(Ast_Prenotazione p, Dip_GG_Richiesta? r)
+            => p.Stato switch
+            {
+                AstStatoPrenotazione.InAttesa => (StatoRichiesta.Immessa, null),
+                AstStatoPrenotazione.Rifiutata => (StatoRichiesta.Rifiutata, null),
+                AstStatoPrenotazione.Annullata => r?.RevocaStato == StatoRichiesta.Approvata ? (StatoRichiesta.Approvata, StatoRichiesta.Approvata)
+                                                                                             : (StatoRichiesta.Cancellata, null),
+                _ => r == null ? (StatoRichiesta.Diretta, null) : (StatoRichiesta.Approvata, r.RevocaStato),
+            };
+
         /// <summary>la richiesta di annullamento della prenotazione (approvata) e' in attesa di decisione</summary>
         public static bool RevocaInAttesa(Dip_GG_Richiesta? r)
             => r?.RevocaStato != null && RichiestaRegole.StatiInAttesa.Contains(r.RevocaStato.Value);

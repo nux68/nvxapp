@@ -147,11 +147,6 @@
         "busy": "Occupato",
         "empty": "Nessuna prenotazione nella settimana",
         "confirmCancel": "Annullare la prenotazione di {{nome}}?",
-        "cancelRequested": "Annullamento richiesto: in attesa di approvazione",
-        "cancelRejected": "Annullamento rifiutato: resta approvata",
-        "approved": "Approvata",
-        "revoked": "Revocata (annullamento approvato)",
-        "confirmWithdrawCancel": "Ritirare la richiesta di annullamento? La prenotazione resta approvata.",
         "cancelRequestWithdrawn": "Richiesta di annullamento ritirata: la prenotazione resta approvata.",
         "cancelRequestSent": "Richiesta di annullamento inviata: la prenotazione resta valida finché un amministratore non la approva.",
         "note": "Le tue prenotazioni compaiono anche nel tuo calendario personale (pulsante Calendario)."

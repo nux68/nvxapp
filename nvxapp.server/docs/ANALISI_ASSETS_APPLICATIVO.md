@@ -122,6 +122,7 @@ Stato e pulsanti della pagina `/astbookings` allineati al ciclo delle richieste 
 - **Stato sempre visibile** (badge colorato come nelle note spese): Confermata (senza approvazione), In attesa, Approvata, Rifiutata con il motivo, Annullata, Revocata (annullamento approvato), Annullamento in attesa, Annullamento rifiutato. Modello: `AnnullamentoRitirato`, `Revocata`, `ConRichiesta`; `AnnullamentoRifiutato` ora solo per il rifiuto. `AstApprovazioni.RevocheAsync` considera anche le annullate.
 - **Elenco**: delle proprie si vede tutto il ciclo anche senza "Solo le mie": rifiutate e annullate con richiesta (ritirate, scadute, revocate); le cancellate senza richiesta no. Widget "Le mie prenotazioni" senza annullate.
 - Un amministratore che annulla la prenotazione di un altro rifiuta la richiesta solo se la prenotazione è in attesa (non più se in attesa è l'annullamento).
+- **Ciclo unico delle richieste** (12/11/2026, `ANALISI_INFRASTRUCTURE_RICHIESTE.md` §3ter): testi e colori comuni (`statoRichiestaUi`, `RichiestaRegole.TestoStato`) tramite `AstApprovazioni.StatoComeRichiesta`; pulsanti Annulla richiesta / Chiedi annullamento / Ritira annullamento come la pagina `/requests`; le prenotazioni senza approvazione risultano "Inserimento diretto".
 
 ## 8. Decisioni aperte
 
