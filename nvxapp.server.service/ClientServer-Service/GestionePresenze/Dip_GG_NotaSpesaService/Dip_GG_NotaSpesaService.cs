@@ -215,6 +215,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 AutovetturaDescrizione = autovetture.FirstOrDefault(a => a.Id == s.IdDip_RapportoAutovetture)?.Descrizione,
                 AutovetturaTarga = autovetture.FirstOrDefault(a => a.Id == s.IdDip_RapportoAutovetture)?.Targa,
                 RichiestaStato = s.RichiestaStato,
+                RevocaStato = richieste.FirstOrDefault(r => r.Id == s.IdDip_GG_Richiesta)?.RevocaStato,
                 Allegati = allegati.Where(a => a.IdDip_GG_NotaSpesa == s.Id)
                                    .Select(a => new Dip_GG_NotaSpesa_AllegatoModel { Id = a.Id, NomeFile = a.NomeFile, ContentType = a.ContentType, Dimensione = a.Dimensione })
                                    .ToList()
