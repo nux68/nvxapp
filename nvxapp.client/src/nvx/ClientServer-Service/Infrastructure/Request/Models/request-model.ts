@@ -19,6 +19,16 @@ export enum RequestState {
   Annullata = 4,
 }
 
+/** cosa fa "annulla" del richiedente (ciclo unico delle richieste, richiesta-stato.ts) */
+export enum RequestCancelKind {
+  /** ritira la richiesta ancora in attesa */
+  Ritira = 0,
+  /** chiede l'annullamento della richiesta approvata (va approvato, una volta sola) */
+  ChiediAnnullamento = 1,
+  /** ritira l'annullamento ancora in attesa: la pratica si chiude, resta approvata */
+  RitiraAnnullamento = 2,
+}
+
 export class RequestItemModel {
   /** "<prefisso>:<id>" */
   public key = '';
@@ -38,6 +48,7 @@ export class RequestItemModel {
   public canApprove = false;
   public canReject = false;
   public canCancel = false;
+  public cancelKind: RequestCancelKind = RequestCancelKind.Ritira;
   public url: string | null = null;
   public urlState: any = null;
   /** azione del client fornita dal ramo del modulo (iRequestUiProvider) */
