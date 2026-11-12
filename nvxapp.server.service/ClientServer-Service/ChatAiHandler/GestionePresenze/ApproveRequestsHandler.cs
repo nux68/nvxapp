@@ -67,7 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "richieste", "richiesta", "requests", "request" },
                 Examples = new() { "approva tutte le richieste di Rossi", "rifiuta la richiesta di Bianchi del 3 novembre", "approva la timbratura di Verdi", "approve Rossi's requests" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatApproveRequestsSummary"),
-                Pages = new() { "/requestsadmin" },
+                Pages = new() { "/attendancerequestsadmin", "/requestsadmin" },
                 // le richieste che verranno decise compaiono nel riepilogo (o, se non ce ne sono, lo si dice subito)
                 CrossValidator = ElencoDaDecidere,
                 Slots = BuildSlots(
