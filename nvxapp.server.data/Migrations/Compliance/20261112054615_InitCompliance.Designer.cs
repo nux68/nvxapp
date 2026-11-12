@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Compliance
 {
     [DbContext(typeof(ComplianceDbContext))]
-    [Migration("20261111183254_Cmp81Gdpr")]
-    partial class Cmp81Gdpr
+    [Migration("20261112054615_InitCompliance")]
+    partial class InitCompliance
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
