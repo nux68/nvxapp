@@ -2062,4 +2062,7 @@
   <data name="SwOltreLimite" xml:space="preserve">
     <value>Limite di {0} giorni di lavoro agile superato nella settimana dal {1:dd/MM/yyyy} (già richiesti o approvati: {2}).</value>
   </data>
+  <data name="RequestRevokeClosed" xml:space="preserve">
+    <value>L'annullamento si chiede solo su una richiesta approvata e una volta sola: già deciso o ritirato, la richiesta resta approvata.</value>
+  </data>
 </root>

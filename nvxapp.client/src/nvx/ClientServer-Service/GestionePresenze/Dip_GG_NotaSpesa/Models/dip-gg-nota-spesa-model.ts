@@ -25,6 +25,8 @@ export class Dip_GG_NotaSpesaModel {
   autovetturaDescrizione: string | null = null;
   autovetturaTarga: string | null = null;
   richiestaStato: StatoRichiesta = StatoRichiesta.Immessa;
+  /** fase dell'annullamento della nota (ciclo unico delle richieste) */
+  revocaStato: StatoRichiesta | null = null;
   allegati: Dip_GG_NotaSpesa_AllegatoModel[] = [];
 }
 
