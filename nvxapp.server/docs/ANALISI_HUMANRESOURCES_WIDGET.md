@@ -90,13 +90,13 @@ Calcolo:
 
 | # | Punto | Stato |
 |---|---|---|
-| HR-W.1 | Endpoint `Hr_Widget/Hr_WidgetOnboardingGet` e `Hr_WidgetFormazioneGet` (servizio, modelli, controller) | ✅ fatta, da mergiare |
-| HR-W.2 | Client: modelli e metodi in `hr.service.ts` | ✅ fatta, da mergiare |
-| HR-W.3 | Widget `hr.myPayslips` (riusa `Hr_MieiDocumenti`) | ✅ fatta, da mergiare |
-| HR-W.4 | Widget `hr.onboarding` | ✅ fatta, da mergiare |
-| HR-W.5 | Widget `hr.trainingExpiring` | ✅ fatta, da mergiare |
-| HR-W.6 | Registrazione nel catalogo `widget-human-resources.service.ts` | ✅ fatta, da mergiare |
-| HR-W.7 | Traduzioni `hr.widgets` (it, en) | ✅ fatta, da mergiare |
-| HR-W.8 | Build server (`dotnet build`) e client (`ng build`) | ✅ fatta, da mergiare |
+| HR-W.1 | Endpoint `Hr_Widget/Hr_WidgetOnboardingGet` e `Hr_WidgetFormazioneGet` (servizio, modelli, controller) | ✅ fatta, mergiata |
+| HR-W.2 | Client: modelli e metodi in `hr.service.ts` | ✅ fatta, mergiata |
+| HR-W.3 | Widget `hr.myPayslips` (riusa `Hr_MieiDocumenti`) | ✅ fatta, mergiata |
+| HR-W.4 | Widget `hr.onboarding` | ✅ fatta, mergiata |
+| HR-W.5 | Widget `hr.trainingExpiring` | ✅ fatta, mergiata |
+| HR-W.6 | Registrazione nel catalogo `widget-human-resources.service.ts` | ✅ fatta, mergiata |
+| HR-W.7 | Traduzioni `hr.widgets` (it, en) | ✅ fatta, mergiata |
+| HR-W.8 | Build server (`dotnet build`) e client (`ng build`) | ✅ fatta, mergiata |
 | HR-W.9 | Prova end-to-end su un'azienda con Risorse Umane attivo (dati di checklist e attestati) | ⏳ da fare |
-| HR-W.10 | Merge HumanResources_Dev → HumanResources → AllFunction_Dev → AllFunction | ⏳ da fare |
+| HR-W.10 | Merge HumanResources_Dev → HumanResources → AllFunction_Dev → AllFunction | ✅ fatta (12/11/2026) |
