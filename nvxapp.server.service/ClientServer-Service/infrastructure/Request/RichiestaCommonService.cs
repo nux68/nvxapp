@@ -26,7 +26,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
         - Approva / Rifiuta: solo un amministratore dell'azienda, con la richiesta ancora da decidere
         - Annulla: solo il richiedente. Richiesta da decidere: si ritira. Richiesta approvata: si apre la richiesta di annullamento
           (RevocaStato/RevocaApprovazioneData, come la revoca delle presenze) che gli amministratori approvano o rifiutano;
-          un annullamento ancora da decidere si puo' ritirare. Rifiutata: fine del ciclo
+          un annullamento ancora da decidere si puo' ritirare. Rifiutata, annullamento rifiutato o ritirato: fine del ciclo
         - Scadi: annullamento automatico (es. prenotazione non decisa all'ora di inizio), senza controllo dell'utente
      Avvisi: notifica (categoria "richieste") agli amministratori per una nuova richiesta e al richiedente per l'esito,
      se il modulo non le ha disattivate (RichiestaAvviso.Notifica); SignalR "RequestNotifier" sempre.
@@ -117,15 +117,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
                 r.RichiestaStato = StatoRichiesta.Cancellata;
                 esito = EsitoAnnullamento.Ritirata;
             }
-            else if (r.RichiestaStato == StatoRichiesta.Approvata && r.RevocaStato != StatoRichiesta.Approvata && sostituita)
+            else if (r.RichiestaStato == StatoRichiesta.Approvata && r.RevocaStato == null && sostituita)
             {
                 // la richiesta approvata e' sostituita da una nuova (es. prenotazione modificata): si chiude senza approvazione
                 r.RichiestaStato = StatoRichiesta.Cancellata;
                 esito = EsitoAnnullamento.Ritirata;
             }
-            else if (r.RichiestaStato == StatoRichiesta.Approvata && r.RevocaStato != StatoRichiesta.Approvata)
+            else if (r.RichiestaStato == StatoRichiesta.Approvata && r.RevocaStato == null)
             {
-                // richiesta approvata: l'annullamento va approvato dagli amministratori (come la revoca delle presenze)
+                // richiesta approvata: l'annullamento va approvato dagli amministratori (come la revoca delle presenze); si chiede
+                // una volta sola: se viene rifiutato (o ritirato) la pratica e' conclusa e la richiesta resta approvata
                 var admins = (await _companyRecipients.AdminsAsync(idCompany)).Where(x => x != this.CurrentUserId).ToList();
                 if (admins.Count == 0)
                     throw new UserMessageException(InfrastructureMessages.Get("RequestNoApprover"));
