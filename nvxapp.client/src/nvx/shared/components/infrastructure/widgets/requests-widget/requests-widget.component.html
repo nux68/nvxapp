@@ -1,0 +1,15 @@
+<div class="nvx-w-stats">
+  @if (admin) {
+    <div class="nvx-w-stat cliccabile" [class.warning]="requestNotifierService.daApprovare() > 0" (click)="apri(true)">
+      <div class="valore">{{ requestNotifierService.daApprovare() }}</div>
+      <div class="etichetta">{{ 'widgets.requests.toApprove' | transloco }}</div>
+    </div>
+  }
+  @if (!admin || requestNotifierService.inAttesa() > 0) {
+    <div class="nvx-w-stat cliccabile" [class.warning]="!admin && requestNotifierService.inAttesa() > 0" (click)="apri(false)">
+      <div class="valore">{{ requestNotifierService.inAttesa() }}</div>
+      <div class="etichetta">{{ 'widgets.requests.pending' | transloco }}</div>
+    </div>
+  }
+</div>
+<button type="button" class="nvx-w-link" (click)="apri(admin)">{{ (admin ? 'widgets.requests.openAdmin' : 'widgets.requests.open') | transloco }}</button>

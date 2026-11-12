@@ -91,7 +91,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "chiedo", "vorrei", "richiedo", "richiesta di ferie", "prendere ferie", "request leave", "i'd like" },
                 Examples = new() { "chiedo ferie dal 3 al 7 novembre", "vorrei 2 ore di permesso venerdì", "richiedo un giorno di ROL per lunedì", "I'd like to take holiday from 3 to 7 November" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRequestLeaveSummary"),
-                Pages = new() { "/requestjustificationuser", "/requestlistuser" },
+                Pages = new() { "/requestjustificationuser", "/requests" },
                 CrossValidator = slots =>
                     slots.TryGetValue("from", out var dal) && slots.TryGetValue("to", out var al) && ParseData(al) < ParseData(dal)
                         ? SlotValidationResult.Failed(SlotValidationError.BusinessRuleViolation, AttendanceTrackingMessages.Get("ChatPeriodInvalid"), "to")
@@ -182,7 +182,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "ho dimenticato di timbrare", "richiesta timbratura", "dimenticato", "forgot to clock" },
                 Examples = new() { "ho dimenticato di timbrare ieri alle 9", "chiedo una timbratura per stamattina alle 8:30", "I forgot to clock in yesterday at 9" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRequestClockingSummary"),
-                Pages = new() { "/requestclockinguser", "/requestlistuser" },
+                Pages = new() { "/requestclockinguser", "/requests" },
                 Slots = BuildSlots(
                     SlotOrario("time", true, AttendanceTrackingMessages.Get("ChatRegisterClockingTimeQuestion"), AttendanceTrackingMessages.Get("ChatTimeLabel")),
                     SlotData("date", false, "oggi", AttendanceTrackingMessages.Get("ChatDateQuestion"), AttendanceTrackingMessages.Get("ChatDateLabel")))

@@ -6,12 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.Assets;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.Assets;
 using nvxapp.server.service.ClientServer_Service.Assets._utility;
 using nvxapp.server.service.ClientServer_Service.Assets.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Request;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -23,7 +25,11 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
         - risorse prenotabili (postazioni, sale, auto in pool): le gestisce il CompanyPowerAdmin; tutti vedono quelle attive
         - prenotazioni: ogni utente dell'azienda prenota e gestisce le proprie; gli amministratori vedono (con il nome) e
           annullano tutte. Gli altri utenti vedono le prenotazioni degli altri solo come "occupato" (senza nome)
-     Senza approvazione (scelta provvisoria AST-D4), con i limiti di Ast_Cfg (durata massima, anticipo massimo).
+     Con i limiti di Ast_Cfg (durata massima, anticipo massimo). Approvazione facoltativa per risorsa (AST-D4,
+     ANALISI_INFRASTRUCTURE_RICHIESTE.md): sulle risorse con RichiedeApprovazione la prenotazione di un utente non
+     amministratore nasce InAttesa (anche quando la modifica) con una richiesta in Dip_GG_Richiesta (Common), che decide
+     un amministratore nelle richieste comuni (AstRichiestaTipoHandler, motore RichiestaCommonService); le InAttesa
+     occupano gia' la fascia. Richiesta, scadenza e motivo del rifiuto: AstApprovazioni.
      Conflitti: Ast_PrenotazioneRepository.SalvaSeLiberaAsync (transazione con lock sulla risorsa, vale anche per richieste concorrenti).
      Le prenotazioni dell'utente vanno nel suo calendario personale (feed .ics) con AstCalendarEventProvider (AST-PREN.3).
     */
@@ -34,9 +40,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
         private readonly IAst_RisorsaRepository _Ast_Risorsa;
         private readonly IAst_PrenotazioneRepository _Ast_Prenotazione;
         private readonly IAst_VeicoloRepository _Ast_Veicolo;
-        private readonly IAst_Dip_AnagraficaReadRepository _Dip_Anagrafica;
         private readonly IAst_Az_SediReadRepository _Az_Sedi;
         private readonly IAstUtility _utility;
+        private readonly IAstApprovazioni _approvazioni;
 
         public Ast_PrenotazioniService(IMapper mapper,
                                        UserManager<ApplicationUser> userManager,
@@ -47,16 +53,16 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                        IAst_RisorsaRepository ast_RisorsaRepository,
                                        IAst_PrenotazioneRepository ast_PrenotazioneRepository,
                                        IAst_VeicoloRepository ast_VeicoloRepository,
-                                       IAst_Dip_AnagraficaReadRepository dip_AnagraficaRepository,
                                        IAst_Az_SediReadRepository az_SediRepository,
-                                       IAstUtility utility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                       IAstUtility utility,
+                                       IAstApprovazioni approvazioni) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _Ast_Risorsa = ast_RisorsaRepository;
             _Ast_Prenotazione = ast_PrenotazioneRepository;
             _Ast_Veicolo = ast_VeicoloRepository;
-            _Dip_Anagrafica = dip_AnagraficaRepository;
             _Az_Sedi = az_SediRepository;
             _utility = utility;
+            _approvazioni = approvazioni;
         }
 
         // ------------------------------------------------------------------------------------------------ risorse (AST-PREN.1)
@@ -115,6 +121,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 r.Capienza = tipo == AstTipoRisorsa.Sala && d.Capienza is > 0 ? d.Capienza : null;
                 r.IdAst_Veicolo = veicolo;
                 r.Attiva = d.Attiva;
+                r.RichiedeApprovazione = d.RichiedeApprovazione;
                 r.Note = AstUtility.Testo(d.Note, 500);
                 if (r.Id == 0)
                     await _Ast_Risorsa.CreateAsync(r);
@@ -128,7 +135,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
             }, isSubProcess);
         }
 
-        // una risorsa con prenotazioni future confermate non si cancella (si disattiva)
+        // una risorsa con prenotazioni future confermate o in attesa non si cancella (si disattiva)
         public virtual async Task<GenericResult<Ast_DeleteOutModel>> Ast_RisorsaDelete(GenericRequest<Ast_IdInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -138,7 +145,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                     throw new UserMessageException(AssetsMessages.Get("NotAllowed"));
                 var id = model.Data.Id;
                 var ora = DateTime.Now;
-                if (await _Ast_Prenotazione.FindAll(x => x.IdAst_Risorsa == id && x.Stato == AstStatoPrenotazione.Confermata && x.Fine > ora).AnyAsync())
+                if (await _Ast_Prenotazione.FindAll(x => x.IdAst_Risorsa == id && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa) && x.Fine > ora).AnyAsync())
                     throw new UserMessageException(AssetsMessages.Get("ResourceHasBookings"));
                 int n = await _Ast_Risorsa.FindAll(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ExecuteDeleteAsync();
                 if (n == 0)
@@ -154,24 +161,29 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await _utility.ContestoAsync();
+                await _approvazioni.ScadiAsync(ctx);
                 var d = model.Data;
                 var dal = d.Dal == DateTime.MinValue ? DateTime.Today : d.Dal;
                 var al = d.Al <= dal ? dal.AddDays(7) : d.Al;
                 if ((al - dal).TotalDays > 62)
                     al = dal.AddDays(62);
                 var cfg = await _utility.CfgAsync(ctx);
-                var q = _Ast_Prenotazione.FindAll(x => x.Ast_RisorsaNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica
-                                                      && x.Stato == AstStatoPrenotazione.Confermata && x.Inizio < al && x.Fine > dal);
+                // occupano la risorsa le confermate e quelle in attesa di approvazione; nelle proprie anche le rifiutate (con il motivo)
+                var q = _Ast_Prenotazione.FindAll(x => x.Ast_RisorsaNavigation!.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Inizio < al && x.Fine > dal);
                 if (d.IdAst_Risorsa != null)
                     q = q.Where(x => x.IdAst_Risorsa == d.IdAst_Risorsa);
                 if (d.SoloMie)
-                    q = q.Where(x => x.IdAspNetUsers == ctx.IdUtente);
+                    q = q.Where(x => x.IdAspNetUsers == ctx.IdUtente
+                                     && (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa || x.Stato == AstStatoPrenotazione.Rifiutata));
+                else
+                    q = q.Where(x => x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.InAttesa);
                 var righe = await q.Include(x => x.Ast_RisorsaNavigation).OrderBy(x => x.Inizio).Take(2000).ToListAsync();
-                var nomi = await NomiAsync(ctx, righe.Select(x => x.IdAspNetUsers));
+                var nomi = await _approvazioni.NomiAsync(ctx, righe.Select(x => x.IdAspNetUsers));
+                var motivi = await _approvazioni.MotiviAsync(righe);
                 return new Ast_PrenotazioneListOutModel
                 {
                     Permessi = new Ast_PermessiModel { PowerAdmin = ctx.PowerAdmin, Admin = ctx.Admin },
-                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi)).ToList(),
+                    Prenotazione = righe.Select(x => PrenotazioneModel(ctx, x, nomi, motivi.GetValueOrDefault(x.Id))).ToList(),
                     Risorsa = await RisorseAsync(ctx, false),
                     DurataMaxOre = cfg.PrenotazioneDurataMaxOre,
                     AnticipoMaxGiorni = cfg.PrenotazioneAnticipoMaxGiorni,
@@ -184,6 +196,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
             return await ExecuteAction(model, async () =>
             {
                 var ctx = await _utility.ContestoAsync();
+                await _approvazioni.ScadiAsync(ctx);
                 var d = model.Data.Prenotazione;
                 var cfg = await _utility.CfgAsync(ctx);
                 var ora = DateTime.Now;
@@ -197,7 +210,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                         ?? throw new UserMessageException(AssetsMessages.Get("NotFound"));
                     if (p.IdAspNetUsers != ctx.IdUtente && !ctx.Amministratore)
                         throw new UserMessageException(AssetsMessages.Get("NotAllowed"));
-                    if (p.Stato != AstStatoPrenotazione.Confermata || p.Fine <= ora)
+                    if ((p.Stato != AstStatoPrenotazione.Confermata && p.Stato != AstStatoPrenotazione.InAttesa) || p.Fine <= ora)
                         throw new UserMessageException(AssetsMessages.Get("BookingNotEditable"));
                 }
                 var risorsa = await _Ast_Risorsa.FindAll(x => x.Id == d.IdAst_Risorsa && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.Attiva).FirstOrDefaultAsync()
@@ -213,16 +226,54 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 if (cfg.PrenotazioneAnticipoMaxGiorni > 0 && inizio > DateTime.Today.AddDays(cfg.PrenotazioneAnticipoMaxGiorni + 1))
                     throw new UserMessageException(AssetsMessages.Get("BookingTooFar", cfg.PrenotazioneAnticipoMaxGiorni));
 
+                // com'era prima della modifica: se la nuova richiesta non si crea, la prenotazione torna cosi'
+                var prima = new { p.IdAst_Risorsa, p.Inizio, p.Fine, p.Titolo, p.Note, p.Stato, p.IdDip_GG_Richiesta };
+
                 p.IdAst_Risorsa = risorsa.Id;
                 p.Inizio = inizio;
                 p.Fine = fine;
                 p.Titolo = AstUtility.Testo(d.Titolo, 200);
                 p.Note = AstUtility.Testo(d.Note, 500);
+                // risorsa con approvazione: la prenotazione (o la modifica) di chi non e' amministratore va approvata;
+                // quella di un amministratore e' confermata subito (se modifica una richiesta in attesa, la approva)
+                bool daApprovare = risorsa.RichiedeApprovazione && !ctx.Amministratore;
+                bool eraInAttesa = p.Stato == AstStatoPrenotazione.InAttesa;
+                var richiesta = p.Id == 0 ? null : await _approvazioni.RichiestaAsync(p.IdDip_GG_Richiesta);
+                // modifica di una prenotazione ancora in attesa da parte del richiedente: si aggiorna il periodo della stessa
+                // richiesta (gli amministratori la vedono gia', niente nuova notifica); se era confermata (o la richiesta non e'
+                // piu' aperta) se ne crea una nuova e la vecchia, approvata, si annulla
+                bool stessaRichiesta = daApprovare && eraInAttesa && richiesta != null && RichiestaRegole.InAttesa(richiesta);
+                bool nuovaRichiesta = daApprovare && !stessaRichiesta;
+                p.Stato = daApprovare ? AstStatoPrenotazione.InAttesa : AstStatoPrenotazione.Confermata;
+                if (nuovaRichiesta)
+                    p.IdDip_GG_Richiesta = null;
                 if (!await _Ast_Prenotazione.SalvaSeLiberaAsync(p))
                     throw new UserMessageException(AssetsMessages.Get("BookingConflict", risorsa.Descrizione));
-
                 p.Ast_RisorsaNavigation = risorsa;
-                var nomi = await NomiAsync(ctx, new[] { p.IdAspNetUsers });
+
+                if (stessaRichiesta)
+                    await _approvazioni.AggiornaPeriodoAsync(richiesta!, p);
+                else if (nuovaRichiesta)
+                {
+                    Func<Task>? compensa = d.Id == 0 ? null : async () =>
+                        await _Ast_Prenotazione.FindAll(x => x.Id == p.Id).ExecuteUpdateAsync(u => u
+                            .SetProperty(x => x.IdAst_Risorsa, prima.IdAst_Risorsa).SetProperty(x => x.Inizio, prima.Inizio)
+                            .SetProperty(x => x.Fine, prima.Fine).SetProperty(x => x.Titolo, prima.Titolo).SetProperty(x => x.Note, prima.Note)
+                            .SetProperty(x => x.Stato, prima.Stato).SetProperty(x => x.IdDip_GG_Richiesta, prima.IdDip_GG_Richiesta));
+                    await _approvazioni.CreaRichiestaAsync(ctx, p, risorsa.Descrizione, compensa);
+                    if (richiesta != null && richiesta.IdAspNetUsers == ctx.IdUtente && richiesta.RichiestaStato == StatoRichiesta.Approvata)
+                        await _approvazioni.AnnullaRichiestaAsync(ctx, new Ast_Prenotazione { IdDip_GG_Richiesta = richiesta.Id, Inizio = prima.Inizio, Fine = prima.Fine }, risorsa.Descrizione);
+                }
+                else if (eraInAttesa && richiesta != null && RichiestaRegole.InAttesa(richiesta))
+                {
+                    // confermata da un amministratore (approva la richiesta) o risorsa che non richiede piu' approvazione (si annulla)
+                    if (ctx.Amministratore)
+                        await _approvazioni.ApprovaRichiestaAsync(ctx, richiesta, p, risorsa.Descrizione);
+                    else
+                        await _approvazioni.AnnullaRichiestaAsync(ctx, p, risorsa.Descrizione);
+                }
+
+                var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
                 return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi) };
             }, isSubProcess);
         }
@@ -238,21 +289,36 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                         ?? throw new UserMessageException(AssetsMessages.Get("NotFound"));
                 if (p.IdAspNetUsers != ctx.IdUtente && !ctx.Amministratore)
                     throw new UserMessageException(AssetsMessages.Get("NotAllowed"));
-                if (p.Stato == AstStatoPrenotazione.Confermata)
+                if (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
                 {
-                    p.Stato = AstStatoPrenotazione.Annullata;
+                    // prima la richiesta collegata (il motore ricontrolla i permessi): il richiedente la annulla; un amministratore
+                    // che annulla la prenotazione in attesa di un altro la rifiuta (il richiedente riceve l'esito dal motore)
+                    bool rifiutata = false;
+                    var richiesta = await _approvazioni.RichiestaAsync(p.IdDip_GG_Richiesta);
+                    if (richiesta != null)
+                    {
+                        if (p.IdAspNetUsers == ctx.IdUtente)
+                            await _approvazioni.AnnullaRichiestaAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione);
+                        else if (ctx.Amministratore && RichiestaRegole.InAttesa(richiesta))
+                        {
+                            await _approvazioni.RifiutaRichiestaAsync(ctx, richiesta, p, p.Ast_RisorsaNavigation!.Descrizione, null);
+                            rifiutata = true;
+                        }
+                    }
+                    p.Stato = rifiutata ? AstStatoPrenotazione.Rifiutata : AstStatoPrenotazione.Annullata;
                     p.DataAnnullamento = DateTime.Now;
                     p.ModifiedDate = DateTime.Now;
                     p.ChangeUser = ctx.IdUtente;
                     await _Ast_Prenotazione.SaveChange();
-                    if (p.IdAspNetUsers != ctx.IdUtente)
+                    if (p.IdAspNetUsers != ctx.IdUtente && !rifiutata)
                         await _utility.NotificaAsync(ctx, AstNotificationCategoryProvider.Prenotazioni, new[] { p.IdAspNetUsers },
                                                      AssetsMessages.Get("BookingCancelledTitle", p.Ast_RisorsaNavigation!.Descrizione),
                                                      AssetsMessages.Get("BookingCancelledText", p.Ast_RisorsaNavigation.Descrizione, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")),
                                                      UrlPrenotazioni);
                 }
-                var nomi = await NomiAsync(ctx, new[] { p.IdAspNetUsers });
-                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi) };
+                var nomi = await _approvazioni.NomiAsync(ctx, new[] { p.IdAspNetUsers });
+                var motivi = await _approvazioni.MotiviAsync(new[] { p });
+                return new Ast_PrenotazionePutOutModel { Prenotazione = PrenotazioneModel(ctx, p, nomi, motivi.GetValueOrDefault(p.Id)) };
             }, isSubProcess);
         }
 
@@ -268,31 +334,18 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                                       x.Capienza, x.IdAst_Veicolo, Targa = x.Ast_VeicoloNavigation != null ? x.Ast_VeicoloNavigation.Targa : null,
                                       Marca = x.Ast_VeicoloNavigation != null ? x.Ast_VeicoloNavigation.Marca : null,
                                       Modello = x.Ast_VeicoloNavigation != null ? x.Ast_VeicoloNavigation.Modello : null, x.Attiva, x.Note,
+                                      x.RichiedeApprovazione,
                                   })
                                   .ToListAsync())
                .Select(x => new Ast_RisorsaModel
                {
                    Id = x.Id, Tipo = (int)x.Tipo, Descrizione = x.Descrizione, IdAz_Sedi = x.IdAz_Sedi, Sede = x.Sede, Capienza = x.Capienza,
                    IdAst_Veicolo = x.IdAst_Veicolo, Veicolo = x.Targa == null ? null : Ast_FlottaService.DescrizioneVeicolo(x.Marca, x.Modello, x.Targa),
-                   Attiva = x.Attiva, Note = x.Note,
+                   Attiva = x.Attiva, Note = x.Note, RichiedeApprovazione = x.RichiedeApprovazione,
                })
                .OrderBy(x => x.Tipo).ThenBy(x => x.Descrizione).ToList();
 
-        // nominativo (dipendente) o nome utente di chi ha prenotato
-        private async Task<Dictionary<string, string>> NomiAsync(AstContesto ctx, IEnumerable<string> utenti)
-        {
-            var ids = utenti.Distinct().ToList();
-            var nomi = (await _Dip_Anagrafica.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && x.IdAspNetUsers != null && ids.Contains(x.IdAspNetUsers))
-                                             .Select(x => new { x.IdAspNetUsers, x.Cognome, x.Nome }).ToListAsync())
-                       .GroupBy(x => x.IdAspNetUsers!).ToDictionary(g => g.Key, g => AstUtility.Nominativo(g.First().Cognome, g.First().Nome));
-            var mancanti = ids.Where(x => !nomi.ContainsKey(x)).ToList();
-            if (mancanti.Count > 0)
-                foreach (var u in await _aspNetUsersRepository.FindAll(x => mancanti.Contains(x.Id)).Select(x => new { x.Id, x.UserName }).ToListAsync())
-                    nomi[u.Id] = u.UserName ?? string.Empty;
-            return nomi;
-        }
-
-        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi)
+        private static Ast_PrenotazioneModel PrenotazioneModel(AstContesto ctx, Ast_Prenotazione p, Dictionary<string, string> nomi, string? motivoRifiuto = null)
         {
             bool mia = p.IdAspNetUsers == ctx.IdUtente;
             return new Ast_PrenotazioneModel
@@ -309,7 +362,9 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
                 Stato = (int)p.Stato,
                 Mia = mia,
                 Utente = mia || ctx.Amministratore ? (nomi.TryGetValue(p.IdAspNetUsers, out var n) ? n : null) : null,
-                Modificabile = (mia || ctx.Amministratore) && p.Stato == AstStatoPrenotazione.Confermata && p.Fine > DateTime.Now,
+                Modificabile = (mia || ctx.Amministratore) && (p.Stato == AstStatoPrenotazione.Confermata || p.Stato == AstStatoPrenotazione.InAttesa)
+                               && p.Fine > DateTime.Now,
+                MotivoRifiuto = mia || ctx.Amministratore ? motivoRifiuto : null,
             };
         }
     }

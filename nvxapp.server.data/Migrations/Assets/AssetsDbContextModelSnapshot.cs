@@ -431,6 +431,9 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<int>("IdAst_Risorsa")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdDip_GG_Richiesta")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("Inizio")
                         .HasColumnType("timestamp without time zone");
 
@@ -498,6 +501,9 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("RichiedeApprovazione")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");

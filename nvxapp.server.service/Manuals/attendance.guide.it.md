@@ -122,7 +122,7 @@ Il tuo orario è 08:30-12:30 e 13:30-17:30. Timbri alle 08:27, 12:31, 13:29 e 17
 
 => /requestclockinguser /usertimesheet
 
-@@ /requestlistuser
+@@ /requests
 ### Stati della richiesta
 | Stato | Significato |
 |---|---|
@@ -172,7 +172,7 @@ A metà mese il riepilogo mostra "in attesa di quadratura" accanto alle ore in p
 - Le ore in più oltre un'autorizzazione approvata risultano "non autorizzate" e non vengono riconosciute, se il tuo profilo lo prevede.
 - I giorni di un mese approvato sono bloccati: per correzioni rivolgiti all'HR.
 
-=> /requestjustificationuser /requestclockinguser /requestlistuser
+=> /requestjustificationuser /requestclockinguser /requests
 
 @@ /requestjustificationuser
 ### Campi
@@ -202,7 +202,7 @@ Chiedi ferie da lunedì 4 a domenica 10 con **Giorno intero**. Il programma cont
 - Non sono ammessi giorni fuori dal rapporto di lavoro né giorni di un mese già approvato.
 - Un'autorizzazione alle ore in più vale per ogni giorno del periodo, anche sabato, domenica e festivi, e viene sempre decisa da un approvatore: il calcolo non la approva mai in automatico.
 
-=> /requestlistuser /usertimesheet
+=> /requests /usertimesheet
 
 @@ /requestclockinguser
 ### Campi
@@ -225,7 +225,7 @@ Martedì sei uscito alle 17:30 senza timbrare. Il giorno risulta in errore per t
 - L'attività deve essere tra quelle delle sub commesse a cui sei collegato.
 - Non si possono chiedere timbrature in giorni fuori dal rapporto di lavoro o in un mese già approvato.
 
-=> /timeclockuser /requestlistuser /usertimesheet
+=> /timeclockuser /requests /usertimesheet
 
 @@ /notaspesarequestuser
 ### Campi
@@ -279,7 +279,7 @@ Con il pulsante **Nuova nota spese** apri direttamente la compilazione.
 
 => /notaspesarequestuser
 
-@@ /requestlistadmin
+@@ /requestsadmin
 ### Filtri
 | Filtro | Cosa mostra |
 |---|---|
@@ -366,7 +366,7 @@ Un dipendente ha dimenticato l'uscita di ieri e non ha fatto richiesta. Dal gior
 - Un giorno di un mese approvato non si modifica e non si ricalcola: usa **Riapri** nel riepilogo.
 - Le ore riconosciute non si cambiano su un cartellino approvato: va prima riaperto.
 
-=> /quadraturamensile /exportcausali /requestlistadmin
+=> /quadraturamensile /exportcausali /requestsadmin
 
 @@ /quadraturamensile
 ### Colonne
@@ -463,7 +463,7 @@ Filtra per **Reparto** e **Dipendenti**. Per ogni dipendente vedi un'icona di st
 ### Attenzione
 - Compaiono solo i giustificativi con **Visualizza nel piano ferie** attivo; quelli a importo non compaiono mai.
 
-=> /justificationlist /requestlistadmin
+=> /justificationlist /requestsadmin
 
 @@ /admintimesheet
 ### Cosa puoi fare
@@ -475,7 +475,7 @@ Filtra per **Reparto** e **Dipendenti**. Per ogni dipendente vedi un'icona di st
 - Vedi solo i dipendenti dei reparti che amministri.
 - Da qui non si modificano direttamente timbrature e giustificativi: le correzioni dirette si fanno nel **Calendario HR**.
 
-=> /requestlistadmin /notaspeseadmin /vacationplan
+=> /requestsadmin /notaspeseadmin /vacationplan
 
 @@ /userdepartmentlist
 ### Scheda del dipendente
@@ -594,7 +594,7 @@ Per un'autorizzazione allo straordinario crei il giustificativo AUTS con **Autor
 ### Esempio
 Un'azienda piccola sceglie **Singolo amministratore**: basta il sì del titolare o del responsabile. Un'azienda con più livelli sceglie la modalità gerarchica e imposta in ogni reparto l'**Ordine** degli approvatori.
 
-=> /departmentlist /requestlistadmin
+=> /departmentlist /requestsadmin
 
 @@ /orarilist
 ### Campi
@@ -778,7 +778,7 @@ Con **Duplica un export** copi un modello esistente con i suoi documenti e il su
 - Se nel reparto nessun amministratore ha **Approva richieste**, le richieste dei suoi dipendenti non possono essere inviate.
 - Togliendo un'attività, gli utenti che non hanno più attività compatibili vengono scollegati dal reparto.
 
-=> /azsedilist /companycfgedit /requestlistadmin
+=> /azsedilist /companycfgedit /requestsadmin
 
 @@ /azsedilist
 ### Campi

@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, map, of } from 'rxjs';
@@ -30,6 +30,7 @@ export class AstBookingEditPageComponent extends BasePageConfirmCancelComponent<
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private service: AstService,
+              private toastCtrl: ToastController,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
     const st = history.state ?? {};
@@ -38,6 +39,18 @@ export class AstBookingEditPageComponent extends BasePageConfirmCancelComponent<
     this.risorse = st.risorse ?? [];
     this.durataMaxOre = st.durataMaxOre ?? 0;
     this.anticipoMaxGiorni = st.anticipoMaxGiorni ?? 0;
+    // aperta senza l'elenco (es. "Nuova richiesta" nelle richieste comuni): risorse e limiti dal server
+    if (this.risorse.length === 0) {
+      const request = new GenericRequest<P.AstPrenotazioneListInModel>(P.AstPrenotazioneListInModel);
+      request.data.soloMie = true;
+      this.service.PrenotazioneList(request).subscribe(res => {
+        if (res.success && res.data) {
+          this.risorse = res.data.risorsa;
+          this.durataMaxOre = res.data.durataMaxOre;
+          this.anticipoMaxGiorni = res.data.anticipoMaxGiorni;
+        }
+      });
+    }
   }
 
   get Title(): string { return this.transloco.translate(this.item?.id ? 'ast.pages.bookingEdit.title' : 'ast.pages.bookingEdit.titleNew'); }
@@ -67,8 +80,20 @@ export class AstBookingEditPageComponent extends BasePageConfirmCancelComponent<
     const request = new GenericRequest<P.AstPrenotazionePutInModel>(P.AstPrenotazionePutInModel);
     request.data.prenotazione = { ...new P.AstPrenotazioneModel(), id: this.item?.id ?? 0, idAst_Risorsa: m.idAst_Risorsa,
                                   inizio: m.inizio, fine: m.fine, titolo: m.titolo, note: m.note };
-    return this.service.PrenotazionePut(request).pipe(map(res => res.success), catchError(() => of(false)));
+    return this.service.PrenotazionePut(request).pipe(
+      map(res => {
+        // risorsa con approvazione: la prenotazione resta in attesa della decisione di un amministratore
+        if (res.success && res.data?.prenotazione?.stato === P.AstStatoPrenotazione.InAttesa)
+          this.avvisoInAttesa();
+        return res.success;
+      }),
+      catchError(() => of(false)));
   };
+
+  private async avvisoInAttesa() {
+    const toast = await this.toastCtrl.create({ message: this.transloco.translate('ast.pages.bookingEdit.pending'), duration: 4000, position: 'top', color: 'warning' });
+    await toast.present();
+  }
 
   override AfterSave(saved: boolean): void {
     if (saved) this.navCtrl.back();

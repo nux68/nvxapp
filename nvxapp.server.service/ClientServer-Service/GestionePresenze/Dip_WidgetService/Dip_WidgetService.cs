@@ -1,3 +1,4 @@
+using nvxapp.server.data.Repositories.Tenant.Common;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,7 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
-        private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
+        private readonly IDip_GG_RichiestaCommonRepository _dip_GG_RichiestaRepository;
 
         public Dip_WidgetService(IMapper mapper,
                                  UserManager<ApplicationUser> userManager,
@@ -59,7 +60,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                  IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                  IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
-                                 IDip_GG_RichiestaRepository dip_GG_RichiestaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                 IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
@@ -132,49 +133,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
             }, isSubProcess);
         }
 
-        public virtual async Task<GenericResult<Widget_RichiesteGetOutModel>> Widget_RichiesteGet(GenericRequest<Widget_RichiesteGetInModel> model, Boolean isSubProcess)
-        {
-            return await ExecuteAction(model, async () =>
-            {
-                bool admin = await HaRuolo("CompanyPowerAdmin") || await HaRuolo("CompanyAdmin");
-                var retVal = new Widget_RichiesteGetOutModel { Admin = admin };
-
-                // da approvare e in attesa: stesse regole dei contatori del menu "Richieste"
-                var req = new GenericRequest<Dip_GG_Richiesta_Count_InModel>();
-                req.Data.Admin = admin;
-                var conteggi = await _dip_GG_RichiestaService.RichiestaCount(req, true);
-                if (conteggi.Success && conteggi.Data != null)
-                {
-                    retVal.DaApprovare = conteggi.Data.DaApprovare;
-                    retVal.InAttesa = conteggi.Data.InAttesa;
-                }
-
-                // approvate del mese corrente (giorno della richiesta nel mese)
-                List<int> idRapporti;
-                if (admin)
-                {
-                    var utenti = await DipendentiAzienda();
-                    var idAnagrafica = _dip_AnagraficaRepository.FindAll(a => a.IdAspNetUsers != null && utenti.Contains(a.IdAspNetUsers)).Select(a => a.Id).ToList();
-                    idRapporti = _dip_RapportoLavoroRepository.FindAll(r => idAnagrafica.Contains(r.IdDip_Anagrafica)).Select(r => r.Id).ToList();
-                }
-                else
-                {
-                    var propri = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, false);
-                    idRapporti = propri?.dip_RapportoLavoro != null ? new List<int> { propri.dip_RapportoLavoro.Id } : new List<int>();
-                }
-
-                DateTime inizioMese = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-                DateTime inizioMeseSucc = inizioMese.AddMonths(1);
-                retVal.ApprovateMese = _dip_GG_RichiestaRepository.FindAll(r => idRapporti.Contains(r.IdDip_RapportoLavoro)
-                                                                               && r.Data >= inizioMese && r.Data < inizioMeseSucc
-                                                                               && r.RevocaStato == null
-                                                                               && r.RichiestaStato == StatoRichiesta.Approvata)
-                                                                  .Count();
-
-                return retVal;
-            }, isSubProcess);
-        }
-
         // utenti con ruolo User dell'azienda corrente
         private async Task<List<string>> DipendentiAzienda()
         {
@@ -207,6 +165,5 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Widget
     public interface IDip_WidgetService : IServiceBase
     {
         Task<GenericResult<Widget_PresenzeOggiGetOutModel>> Widget_PresenzeOggiGet(GenericRequest<Widget_PresenzeOggiGetInModel> model, Boolean isSubProcess);
-        Task<GenericResult<Widget_RichiesteGetOutModel>> Widget_RichiesteGet(GenericRequest<Widget_RichiesteGetInModel> model, Boolean isSubProcess);
     }
 }

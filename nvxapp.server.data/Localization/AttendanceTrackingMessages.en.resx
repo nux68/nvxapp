@@ -943,6 +943,74 @@
     <value>{0}: {1} on {2}</value>
     <comment>{0} = dipendente, {1} = tipo, {2} = data</comment>
   </data>
+  <data name="RequestType_Timbratura" xml:space="preserve">
+    <value>Clocking</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestType_Giustificativo" xml:space="preserve">
+    <value>Absence justification</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestType_NotaSpesa" xml:space="preserve">
+    <value>Expense report</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestType_ApprovazioneStraordinario" xml:space="preserve">
+    <value>Overtime approval</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestType_ScambioTurno" xml:space="preserve">
+    <value>Shift swap</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_Diretta" xml:space="preserve">
+    <value>Direct</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_Immessa" xml:space="preserve">
+    <value>Submitted</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_Cancellata" xml:space="preserve">
+    <value>Cancelled</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_Rifiutata" xml:space="preserve">
+    <value>Rejected</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_ApprovazioneInCorso" xml:space="preserve">
+    <value>Approval in progress</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_ParzialmenteApprovata" xml:space="preserve">
+    <value>Partially approved</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestState_Approvata" xml:space="preserve">
+    <value>Approved</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestStateWithRevoke" xml:space="preserve">
+    <value>({0}) Revocation {1}</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestHours" xml:space="preserve">
+    <value>{0} hours</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestNotApprover" xml:space="preserve">
+    <value>You are not an enabled approver of this request, or it is not your turn yet.</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestNotAllowedHR" xml:space="preserve">
+    <value>Only a company administrator can decide a request on behalf of the HR office.</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
+  <data name="RequestNotAllowedCancel" xml:space="preserve">
+    <value>Only the requester or a company administrator can cancel or revoke the request.</value>
+    <comment>richieste comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md)</comment>
+  </data>
   <data name="ChatApproveRequestsDisplayName" xml:space="preserve">
     <value>Approve requests</value>
   </data>

@@ -932,6 +932,97 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
+                name: "Dip_GG_Giustificativi",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IdJustificationType = table.Column<int>(type: "integer", nullable: false),
+                    InputType = table.Column<int>(type: "integer", nullable: false),
+                    Hours = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    From = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
+                    IdPar_Giustificativi = table.Column<int>(type: "integer", nullable: false),
+                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
+                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_Giustificativi", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Giustificativi_Dip_GG_Richiesta_IdDip_GG_Richiesta",
+                        column: x => x.IdDip_GG_Richiesta,
+                        principalTable: "Dip_GG_Richiesta",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Giustificativi_Dip_RapportoLavoro_IdDip_RapportoLavo~",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Giustificativi_Par_Giustificativi_IdPar_Giustificati~",
+                        column: x => x.IdPar_Giustificativi,
+                        principalTable: "Par_Giustificativi",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dip_GG_NotaSpese",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
+                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
+                    IdPar_TipoSpesa = table.Column<int>(type: "integer", nullable: false),
+                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Km = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
+                    IdDip_RapportoAutovetture = table.Column<int>(type: "integer", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_NotaSpese", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_GG_Richiesta_IdDip_GG_Richiesta",
+                        column: x => x.IdDip_GG_Richiesta,
+                        principalTable: "Dip_GG_Richiesta",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoAutovetture_IdDip_RapportoAuto~",
+                        column: x => x.IdDip_RapportoAutovetture,
+                        principalTable: "Dip_RapportoAutovetture",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoLavoro_IdDip_RapportoLavoro",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Par_TipoSpesa_IdPar_TipoSpesa",
+                        column: x => x.IdPar_TipoSpesa,
+                        principalTable: "Par_TipoSpesa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Dip_GG_Result",
                 columns: table => new
                 {
@@ -979,29 +1070,41 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dip_GG_Richieste",
+                name: "Dip_GG_Timbrature",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    RichiestaTipo = table.Column<int>(type: "integer", nullable: false),
-                    Dati = table.Column<string>(type: "text", nullable: false),
+                    Timbratura = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TimbraturaOriginale = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TimbraturaArrotondata = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    GiornoCompetenza = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    TimbraturaTipo = table.Column<int>(type: "integer", nullable: false),
                     RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    RichiestaApprovazioneData = table.Column<string>(type: "jsonb", nullable: false),
-                    RevocaStato = table.Column<int>(type: "integer", nullable: true),
-                    RevocaApprovazioneData = table.Column<string>(type: "jsonb", nullable: false),
+                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
+                    IdAz_SubCommessaAttivita = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dip_GG_Richieste", x => x.Id);
+                    table.PrimaryKey("PK_Dip_GG_Timbrature", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Dip_GG_Richieste_Dip_RapportoLavoro_IdDip_RapportoLavoro",
+                        name: "FK_Dip_GG_Timbrature_Az_SubCommessaAttivita_IdAz_SubCommessaAt~",
+                        column: x => x.IdAz_SubCommessaAttivita,
+                        principalTable: "Az_SubCommessaAttivita",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Timbrature_Dip_GG_Richiesta_IdDip_GG_Richiesta",
+                        column: x => x.IdDip_GG_Richiesta,
+                        principalTable: "Dip_GG_Richiesta",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_Timbrature_Dip_RapportoLavoro_IdDip_RapportoLavoro",
                         column: x => x.IdDip_RapportoLavoro,
                         principalTable: "Dip_RapportoLavoro",
                         principalColumn: "Id",
@@ -1344,134 +1447,68 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dip_GG_Giustificativi",
+                name: "Dip_GG_NotaSpesa_Allegato",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    IdJustificationType = table.Column<int>(type: "integer", nullable: false),
-                    InputType = table.Column<int>(type: "integer", nullable: false),
-                    Hours = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    From = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
-                    IdPar_Giustificativi = table.Column<int>(type: "integer", nullable: false),
-                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
+                    IdDip_GG_NotaSpesa = table.Column<int>(type: "integer", nullable: false),
+                    NomeFile = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Dimensione = table.Column<int>(type: "integer", nullable: false),
+                    Contenuto = table.Column<byte[]>(type: "bytea", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dip_GG_Giustificativi", x => x.Id);
+                    table.PrimaryKey("PK_Dip_GG_NotaSpesa_Allegato", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Dip_GG_Giustificativi_Dip_GG_Richieste_IdDip_GG_Richiesta",
-                        column: x => x.IdDip_GG_Richiesta,
-                        principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_Giustificativi_Dip_RapportoLavoro_IdDip_RapportoLavo~",
-                        column: x => x.IdDip_RapportoLavoro,
-                        principalTable: "Dip_RapportoLavoro",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_Giustificativi_Par_Giustificativi_IdPar_Giustificati~",
-                        column: x => x.IdPar_Giustificativi,
-                        principalTable: "Par_Giustificativi",
+                        name: "FK_Dip_GG_NotaSpesa_Allegato_Dip_GG_NotaSpese_IdDip_GG_NotaSpe~",
+                        column: x => x.IdDip_GG_NotaSpesa,
+                        principalTable: "Dip_GG_NotaSpese",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dip_GG_NotaSpese",
+                name: "Dip_GG_TimbraturaInfo",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_GG_Timbratura = table.Column<int>(type: "integer", nullable: false),
                     IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
-                    IdPar_TipoSpesa = table.Column<int>(type: "integer", nullable: false),
-                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    Descrizione = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    Km = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
-                    IdDip_RapportoAutovetture = table.Column<int>(type: "integer", nullable: true),
+                    IdAz_Sedi = table.Column<int>(type: "integer", nullable: true),
+                    Origine = table.Column<int>(type: "integer", nullable: false),
+                    Differita = table.Column<bool>(type: "boolean", nullable: false),
+                    DataDispositivo = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataRicezione = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Latitudine = table.Column<double>(type: "double precision", nullable: true),
+                    Longitudine = table.Column<double>(type: "double precision", nullable: true),
+                    PrecisioneMetri = table.Column<double>(type: "double precision", nullable: true),
+                    DistanzaMetri = table.Column<double>(type: "double precision", nullable: true),
+                    EsitoGeofence = table.Column<int>(type: "integer", nullable: false),
+                    QrSlot = table.Column<long>(type: "bigint", nullable: true),
+                    IdAspNetUsers_Operatore = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dip_GG_NotaSpese", x => x.Id);
+                    table.PrimaryKey("PK_Dip_GG_TimbraturaInfo", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Dip_GG_Richieste_IdDip_GG_Richiesta",
-                        column: x => x.IdDip_GG_Richiesta,
-                        principalTable: "Dip_GG_Richieste",
+                        name: "FK_Dip_GG_TimbraturaInfo_Az_Sedi_IdAz_Sedi",
+                        column: x => x.IdAz_Sedi,
+                        principalTable: "Az_Sedi",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoAutovetture_IdDip_RapportoAuto~",
-                        column: x => x.IdDip_RapportoAutovetture,
-                        principalTable: "Dip_RapportoAutovetture",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoLavoro_IdDip_RapportoLavoro",
-                        column: x => x.IdDip_RapportoLavoro,
-                        principalTable: "Dip_RapportoLavoro",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Par_TipoSpesa_IdPar_TipoSpesa",
-                        column: x => x.IdPar_TipoSpesa,
-                        principalTable: "Par_TipoSpesa",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Dip_GG_Timbrature",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    Timbratura = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TimbraturaOriginale = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TimbraturaArrotondata = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    GiornoCompetenza = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    TimbraturaTipo = table.Column<int>(type: "integer", nullable: false),
-                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
-                    IdAz_SubCommessaAttivita = table.Column<int>(type: "integer", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dip_GG_Timbrature", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_Timbrature_Az_SubCommessaAttivita_IdAz_SubCommessaAt~",
-                        column: x => x.IdAz_SubCommessaAttivita,
-                        principalTable: "Az_SubCommessaAttivita",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_Timbrature_Dip_GG_Richieste_IdDip_GG_Richiesta",
-                        column: x => x.IdDip_GG_Richiesta,
-                        principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_Timbrature_Dip_RapportoLavoro_IdDip_RapportoLavoro",
-                        column: x => x.IdDip_RapportoLavoro,
-                        principalTable: "Dip_RapportoLavoro",
+                        name: "FK_Dip_GG_TimbraturaInfo_Dip_GG_Timbrature_IdDip_GG_Timbratura",
+                        column: x => x.IdDip_GG_Timbratura,
+                        principalTable: "Dip_GG_Timbrature",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1609,73 +1646,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dip_GG_NotaSpesa_Allegato",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdDip_GG_NotaSpesa = table.Column<int>(type: "integer", nullable: false),
-                    NomeFile = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Dimensione = table.Column<int>(type: "integer", nullable: false),
-                    Contenuto = table.Column<byte[]>(type: "bytea", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dip_GG_NotaSpesa_Allegato", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpesa_Allegato_Dip_GG_NotaSpese_IdDip_GG_NotaSpe~",
-                        column: x => x.IdDip_GG_NotaSpesa,
-                        principalTable: "Dip_GG_NotaSpese",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Dip_GG_TimbraturaInfo",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdDip_GG_Timbratura = table.Column<int>(type: "integer", nullable: false),
-                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    IdAz_Sedi = table.Column<int>(type: "integer", nullable: true),
-                    Origine = table.Column<int>(type: "integer", nullable: false),
-                    Differita = table.Column<bool>(type: "boolean", nullable: false),
-                    DataDispositivo = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    DataRicezione = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Latitudine = table.Column<double>(type: "double precision", nullable: true),
-                    Longitudine = table.Column<double>(type: "double precision", nullable: true),
-                    PrecisioneMetri = table.Column<double>(type: "double precision", nullable: true),
-                    DistanzaMetri = table.Column<double>(type: "double precision", nullable: true),
-                    EsitoGeofence = table.Column<int>(type: "integer", nullable: false),
-                    QrSlot = table.Column<long>(type: "bigint", nullable: true),
-                    IdAspNetUsers_Operatore = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dip_GG_TimbraturaInfo", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_TimbraturaInfo_Az_Sedi_IdAz_Sedi",
-                        column: x => x.IdAz_Sedi,
-                        principalTable: "Az_Sedi",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_TimbraturaInfo_Dip_GG_Timbrature_IdDip_GG_Timbratura",
-                        column: x => x.IdDip_GG_Timbratura,
-                        principalTable: "Dip_GG_Timbrature",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Par_OrarioPar_ProfiloOrarioGG",
                 columns: table => new
                 {
@@ -1721,9 +1691,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 {
                     table.PrimaryKey("PK_Dip_TurnoScambio", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Dip_TurnoScambio_Dip_GG_Richieste_IdDip_GG_Richiesta",
+                        name: "FK_Dip_TurnoScambio_Dip_GG_Richiesta_IdDip_GG_Richiesta",
                         column: x => x.IdDip_GG_Richiesta,
-                        principalTable: "Dip_GG_Richieste",
+                        principalTable: "Dip_GG_Richiesta",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
@@ -1938,11 +1908,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             migrationBuilder.CreateIndex(
                 name: "IX_Dip_GG_Result_IdDip_RapportoLavoro",
                 table: "Dip_GG_Result",
-                column: "IdDip_RapportoLavoro");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dip_GG_Richieste_IdDip_RapportoLavoro",
-                table: "Dip_GG_Richieste",
                 column: "IdDip_RapportoLavoro");
 
             migrationBuilder.CreateIndex(
@@ -2413,16 +2378,13 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Par_TipoSpesa");
 
             migrationBuilder.DropTable(
-                name: "Dip_GG_Richieste");
+                name: "Dip_RapportoLavoro");
 
             migrationBuilder.DropTable(
                 name: "Par_Turno");
 
             migrationBuilder.DropTable(
                 name: "Par_ProfiloOrario");
-
-            migrationBuilder.DropTable(
-                name: "Dip_RapportoLavoro");
 
             migrationBuilder.DropTable(
                 name: "Par_Giustificativi");

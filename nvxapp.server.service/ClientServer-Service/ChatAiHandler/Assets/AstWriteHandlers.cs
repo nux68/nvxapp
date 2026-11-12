@@ -107,7 +107,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
                     string.Join(", ", lista.Data.Risorsa.Where(r => r.Attiva).Take(10).Select(r => r.Descrizione))));
 
             var occupate = lista.Data.Prenotazione
-                .Where(p => p.Stato == (int)AstStatoPrenotazione.Confermata && p.Inizio < fine && p.Fine > inizio)
+                .Where(p => (p.Stato == (int)AstStatoPrenotazione.Confermata || p.Stato == (int)AstStatoPrenotazione.InAttesa) && p.Inizio < fine && p.Fine > inizio)
                 .Select(p => p.IdAst_Risorsa).ToHashSet();
 
             Ast_RisorsaModel risorsa;
@@ -139,6 +139,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
             }), false);
             if (!res.Success) return Fallito(res);
 
+            // risorsa con approvazione: la prenotazione resta in attesa della decisione di un amministratore
+            if (res.Data?.Prenotazione.Stato == (int)AstStatoPrenotazione.InAttesa)
+                return CommandResult.Ok(AssetsMessages.Get("ChatBookResourcePending", risorsa.Descrizione, Fascia(inizio, fine)));
             return CommandResult.Ok(AssetsMessages.Get("ChatBookResourceDone", risorsa.Descrizione, Fascia(inizio, fine)));
         }
     }
@@ -185,7 +188,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
                 new Ast_PrenotazioneListInModel { Dal = oggi, Al = oggi.AddDays(GiorniRicerca), SoloMie = true }), false);
             if (!res.Success || res.Data == null) return Fallito(res);
 
-            // solo le mie, confermate e non ancora finite
+            // solo le mie, confermate o in attesa di approvazione e non ancora finite
             var candidate = res.Data.Prenotazione.Where(p => p.Mia && p.Modificabile).ToList();
 
             var nome = slots.GetValueOrDefault("resource");

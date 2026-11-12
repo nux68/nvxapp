@@ -122,7 +122,7 @@ Your schedule is 08:30-12:30 and 13:30-17:30. You clock at 08:27, 12:31, 13:29 a
 
 => /requestclockinguser /usertimesheet
 
-@@ /requestlistuser
+@@ /requests
 ### Request statuses
 | Status | Meaning |
 |---|---|
@@ -172,7 +172,7 @@ In the middle of the month the summary shows "awaiting reconciliation" next to t
 - Extra hours beyond an approved authorisation are shown as "unauthorised" and are not recognised, if your profile requires authorisation.
 - The days of an approved month are locked: ask HR for corrections.
 
-=> /requestjustificationuser /requestclockinguser /requestlistuser
+=> /requestjustificationuser /requestclockinguser /requests
 
 @@ /requestjustificationuser
 ### Fields
@@ -202,7 +202,7 @@ You request holidays from Monday 4 to Sunday 10 with **Full day**. The program c
 - Days outside your employment and days of an already approved month are not allowed.
 - An authorisation of extra hours applies to every day of the period, including Saturdays, Sundays and holidays, and is always decided by an approver: the calculation never approves it automatically.
 
-=> /requestlistuser /usertimesheet
+=> /requests /usertimesheet
 
 @@ /requestclockinguser
 ### Fields
@@ -225,7 +225,7 @@ On Tuesday you left at 17:30 without clocking. The day is in error because of mi
 - The activity must be among those of the sub job orders you are linked to.
 - Clockings cannot be requested on days outside your employment or in an already approved month.
 
-=> /timeclockuser /requestlistuser /usertimesheet
+=> /timeclockuser /requests /usertimesheet
 
 @@ /notaspesarequestuser
 ### Fields
@@ -279,7 +279,7 @@ The **New expense report** button opens a new report directly.
 
 => /notaspesarequestuser
 
-@@ /requestlistadmin
+@@ /requestsadmin
 ### Filters
 | Filter | What it shows |
 |---|---|
@@ -366,7 +366,7 @@ An employee forgot yesterday's exit and made no request. From the day choose **C
 - A day of an approved month is not edited or recalculated: use **Reopen** in the summary.
 - Recognised hours cannot be changed on an approved time sheet: reopen it first.
 
-=> /quadraturamensile /exportcausali /requestlistadmin
+=> /quadraturamensile /exportcausali /requestsadmin
 
 @@ /quadraturamensile
 ### Columns
@@ -463,7 +463,7 @@ Filter by **Department** and **Employees**. For each employee you see a status i
 ### Watch out
 - Only absence justifications with **Show in holiday plan** on appear; amount-based ones never appear.
 
-=> /justificationlist /requestlistadmin
+=> /justificationlist /requestsadmin
 
 @@ /admintimesheet
 ### What you can do
@@ -475,7 +475,7 @@ Filter by **Department** and **Employees**. For each employee you see a status i
 - You only see the employees of the departments you manage.
 - Clockings and absence justifications cannot be edited directly from here: direct corrections are made in the **HR calendar**.
 
-=> /requestlistadmin /notaspeseadmin /vacationplan
+=> /requestsadmin /notaspeseadmin /vacationplan
 
 @@ /userdepartmentlist
 ### Employee record
@@ -594,7 +594,7 @@ For an overtime authorisation you create the AUTS justification with **Authorise
 ### Example
 A small company chooses **Single administrator**: the owner's or manager's yes is enough. A company with several levels chooses hierarchical mode and sets the **Order** of the approvers in each department.
 
-=> /departmentlist /requestlistadmin
+=> /departmentlist /requestsadmin
 
 @@ /orarilist
 ### Fields
@@ -778,7 +778,7 @@ With **Duplicate an export** you copy an existing template with its documents an
 - If no administrator of the department has **Approves requests**, its employees' requests cannot be sent.
 - When an activity is removed, users with no compatible activities left are unlinked from the department.
 
-=> /azsedilist /companycfgedit /requestlistadmin
+=> /azsedilist /companycfgedit /requestsadmin
 
 @@ /azsedilist
 ### Fields
