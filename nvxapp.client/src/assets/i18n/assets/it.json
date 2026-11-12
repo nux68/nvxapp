@@ -291,6 +291,47 @@
         "1": "Sala",
         "2": "Auto in pool"
       }
+    },
+    "widgets": {
+      "noData": "Dati non disponibili",
+      "myBookings": {
+        "title": "Le mie prenotazioni",
+        "description": "Le tue prossime prenotazioni di postazioni, sale e auto in pool",
+        "today": "Oggi",
+        "next": "Prossimi {{n}} giorni",
+        "none": "Nessuna prenotazione in programma",
+        "open": "Vai alle prenotazioni"
+      },
+      "mine": {
+        "title": "Le mie risorse",
+        "description": "Beni e veicolo che hai in carico, verbali da confermare e multe da pagare",
+        "goods": "Beni in carico",
+        "vehicles": "Veicoli assegnati",
+        "reportsToConfirm": "Verbali da confermare",
+        "fines": "Multe notificate da pagare: {{n}}",
+        "vehicle": "Veicolo",
+        "good": "Bene",
+        "none": "Nessun bene o veicolo in carico",
+        "open": "Le mie risorse"
+      },
+      "fleet": {
+        "title": "Scadenze della flotta",
+        "description": "Bollo, assicurazione, revisione, tagliandi e contratti dei veicoli scaduti o in scadenza; multe da notificare",
+        "expired": "Scadute",
+        "expiring": "Entro {{n}} giorni",
+        "fines": "Multe da notificare ai conducenti: {{n}}",
+        "none": "Nessuna scadenza in arrivo",
+        "noVehicles": "Nessun veicolo attivo",
+        "open": "Vai ai veicoli"
+      },
+      "toReturn": {
+        "title": "Da restituire",
+        "description": "Beni e veicoli ancora assegnati a dipendenti cessati",
+        "goods": "Beni",
+        "vehicles": "Veicoli",
+        "none": "Nessuna restituzione in sospeso",
+        "open": "Vai ai beni"
+      }
     }
   }
 }
