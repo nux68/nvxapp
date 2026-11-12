@@ -474,6 +474,77 @@ namespace nvxapp.server.data.Migrations.Common
                     b.ToTable("Dip_Competenza", (string)null);
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Richiesta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataA")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Dati")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("RevocaApprovazioneData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("RevocaStato")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RichiestaApprovazioneData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RichiestaStato")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RichiestaTipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdDip_Anagrafica");
+
+                    b.HasIndex("IdDip_RapportoLavoro");
+
+                    b.HasIndex("IdAz_Anagrafica", "RichiestaStato");
+
+                    b.ToTable("Dip_GG_Richiesta", (string)null);
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>
                 {
                     b.Property<int>("Id")
@@ -647,6 +718,24 @@ namespace nvxapp.server.data.Migrations.Common
                     b.Navigation("Dip_AnagraficaNavigation");
 
                     b.Navigation("Par_CompetenzaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_GG_Richiesta", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDip_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Az_AnagraficaNavigation");
+
+                    b.Navigation("Dip_AnagraficaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>

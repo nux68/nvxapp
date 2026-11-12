@@ -123,6 +123,8 @@
     "deadlines": "Deadlines",
     "calendarFeed": "Calendar",
     "acknowledgements": "Acknowledgements",
+    "requests": "My requests",
+    "requestsAdmin": "Requests to approve",
     "digests": "Summaries"
   },
   "showcase": {
@@ -1166,6 +1168,37 @@
       "confirmRegenerate": "Create a new address? The current one will stop working and must be replaced in the calendars where you added it.",
       "confirmDelete": "Delete the calendar address? The calendars where you added it will no longer receive the deadlines."
     },
+    "requestList": {
+      "title": "My requests",
+      "titleAdmin": "Requests to approve",
+      "filter": {
+        "pending": "Pending",
+        "toApprove": "To approve",
+        "all": "All",
+        "approved": "Approved"
+      },
+      "application": {
+        "label": "Application",
+        "all": "All",
+        "2": "Attendance",
+        "7": "Company assets"
+      },
+      "columnRequester": "Requester",
+      "columnType": "Type",
+      "columnPeriod": "Period",
+      "columnDetail": "Detail",
+      "columnState": "Status",
+      "empty": "No requests",
+      "emptyAdmin": "No requests to handle",
+      "cancel": "Cancel request",
+      "reject": "Reject",
+      "confirmApprove": "Approve the request?",
+      "confirmRejectTitle": "Reject the request",
+      "confirmReject": "You can give a reason: the requester will see it.",
+      "rejectReason": "Reason (optional)",
+      "confirmCancel": "Cancel the request?",
+      "confirmRevoke": "The request is already approved: cancel it? For some requests (e.g. attendance) the cancellation must be approved."
+    },
     "acknowledgementList": {
       "title": "Acknowledgements",
       "filter": {
@@ -1423,6 +1456,14 @@
     "askAssistant": {
       "title": "Ask the assistant",
       "description": "Field to ask the AI assistant a question."
+    },
+    "requests": {
+      "title": "Requests",
+      "description": "Requests to approve (administrators) and your own pending requests, from all applications.",
+      "toApprove": "To approve",
+      "pending": "My pending",
+      "open": "Open my requests",
+      "openAdmin": "Open requests to approve"
     },
     "deadlines": {
       "title": "Due soon",

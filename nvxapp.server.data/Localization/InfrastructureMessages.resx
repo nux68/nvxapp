@@ -1218,6 +1218,42 @@ In allegato il rendiconto.</value>
     <value>Riepilogo settimanale</value>
     <comment>riepilogo</comment>
   </data>
+  <data name="NotificationCategory_richieste" xml:space="preserve">
+    <value>Richieste da approvare</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotAllowed" xml:space="preserve">
+    <value>Operazione non consentita sulle richieste.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Richiesta non trovata.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNoApprover" xml:space="preserve">
+    <value>Nessun amministratore dell'azienda può approvare la richiesta.</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyNew" xml:space="preserve">
+    <value>Nuova richiesta da approvare</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyApproved" xml:space="preserve">
+    <value>Richiesta approvata</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyRejected" xml:space="preserve">
+    <value>Richiesta rifiutata</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyReason" xml:space="preserve">
+    <value>Motivo: {0}</value>
+    <comment>richieste</comment>
+  </data>
+  <data name="RequestNotifyExpired" xml:space="preserve">
+    <value>Richiesta annullata: non è stata decisa in tempo</value>
+    <comment>richieste</comment>
+  </data>
   <data name="DigestSectionDeadlines" xml:space="preserve">
     <value>Scadenzario</value>
     <comment>riepilogo</comment>

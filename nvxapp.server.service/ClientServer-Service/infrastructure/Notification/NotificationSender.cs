@@ -200,6 +200,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
         public static readonly NotificationCategory Riepilogo = new() { Code = "riepilogo", DefaultApp = true, DefaultEmail = true, Ordine = 30 };
         // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §15.9): disdetta, con l'eventuale eliminazione dei dati
         public static readonly NotificationCategory Licenze = new() { Code = "licenze", DefaultApp = true, DefaultEmail = true, Ordine = 40 };
+        // richieste da approvare comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md): nuova richiesta agli approvatori, esito al richiedente
+        public static readonly NotificationCategory Richieste = new() { Code = "richieste", DefaultApp = true, DefaultEmail = true, Ordine = 25 };
     }
 
     /// <summary>
@@ -216,7 +218,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Notification
     {
         public IEnumerable<NotificationCategory> Categories => new[]
         {
-            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione, NotificationCategory.Riepilogo,
+            NotificationCategory.Generale, NotificationCategory.Scadenze, NotificationCategory.PreseVisione, NotificationCategory.Riepilogo, NotificationCategory.Richieste,
             NotificationCategory.Licenze
         };
     }
