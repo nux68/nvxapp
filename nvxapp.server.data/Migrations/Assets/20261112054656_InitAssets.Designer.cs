@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Assets
 {
     [DbContext(typeof(AssetsDbContext))]
-    [Migration("20261111185440_AstPrenotazioni")]
-    partial class AstPrenotazioni
+    [Migration("20261112054656_InitAssets")]
+    partial class InitAssets
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
