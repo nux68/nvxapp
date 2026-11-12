@@ -2,26 +2,42 @@
   "allfunction": {
     "showcase": {
       "brand": {
-        "slogan": "Attendance, customers and documents of your company in a single app."
+        "slogan": "Attendance, customers, documents, staff, safety and company assets in a single app."
       },
       "home": {
         "etichetta": "Your whole company in the cloud",
-        "titolo": "Attendance, sales and documents: one app, one registry",
-        "sottotitolo": "Activate the applications you need: attendance, CRM and document management work together on the same customers and employees, with a single login.",
+        "titolo": "Your whole company in one app, with one registry",
+        "sottotitolo": "Activate the applications you need: attendance, CRM, documents, human resources, compliance and company assets work together on the same customers and employees, with a single login.",
         "ctaPrimaria": "Try it free",
         "ctaSecondaria": "Discover the features",
         "punti": {
           "presenze": {
             "title": "Attendance",
-            "text": "Clock-ins, holidays, leave, expense reports and timesheets ready for payroll."
+            "text": "Clock-ins, shifts, remote working, expenses and timesheets ready for payroll."
           },
           "crm": {
             "title": "CRM",
-            "text": "Leads, opportunities, agenda and PDF offers to follow every customer."
+            "text": "Leads, pipeline, agenda, PDF quotes and customer support."
           },
           "documentale": {
             "title": "Documents",
-            "text": "Company archive and personnel documents, with acknowledgement and retention."
+            "text": "Company archive and personnel documents, with acknowledgement and signature."
+          },
+          "risorseUmane": {
+            "title": "Human resources",
+            "text": "Payslips and tax forms split and published automatically, training, onboarding and offboarding."
+          },
+          "compliance": {
+            "title": "Compliance",
+            "text": "Workplace safety and the GDPR record, with every deadline."
+          },
+          "risorseAziendali": {
+            "title": "Company assets",
+            "text": "Fleet, assigned equipment and bookings of desks, rooms and cars."
+          },
+          "comuni": {
+            "title": "Shared features",
+            "text": "Single deadline schedule, notifications, weekly AI summary and voice assistant."
           },
           "insieme": {
             "title": "All connected",
@@ -36,7 +52,7 @@
           },
           "attiva": {
             "title": "Activate the applications",
-            "text": "Choose attendance, CRM, document management or all of them: no installation needed."
+            "text": "Choose only the ones you need, or all of them: no installation needed."
           },
           "lavora": {
             "title": "Work together",
@@ -48,91 +64,283 @@
       },
       "features": {
         "titolo": "All the features",
-        "sottotitolo": "Three integrated applications, one registry and one login.",
-        "sezioni": {
-          "timbrature": {
-            "title": "Clock-ins",
-            "text": "Clock in and out from smartphone or computer, also by voice with the assistant."
+        "sottotitolo": "Six integrated applications plus shared services, with one registry and a single login.",
+        "gruppi": {
+          "presenze": {
+            "titolo": "Attendance",
+            "sottotitolo": "Clock-ins, shifts and timesheets ready for payroll.",
+            "voci": {
+              "timbrature": {
+                "title": "Clock in anywhere",
+                "text": "From smartphone or computer, with the site QR code, at a shared kiosk with PIN or badge; location check and clock-ins even without a connection."
+              },
+              "turni": {
+                "title": "Shifts and planning",
+                "text": "Shifts per department with minimum coverage, conflicts with holidays and leave highlighted, shift swaps between colleagues with approval."
+              },
+              "smartWorking": {
+                "title": "Remote working",
+                "text": "Signed individual agreements, a remote-working calendar and a weekly day limit."
+              },
+              "richieste": {
+                "title": "Requests and approvals",
+                "text": "Holidays, leave, overtime and time bank: every request reaches the department approver."
+              },
+              "noteSpese": {
+                "title": "Expenses and mileage",
+                "text": "Expenses with receipts attached and mileage refunds calculated on the employee's vehicles."
+              },
+              "anomalie": {
+                "title": "Anomalies and days to fix",
+                "text": "Odd clock-ins, recurring delays and unbalanced days explained by AI, with an absence forecast."
+              },
+              "commesse": {
+                "title": "Job costing",
+                "text": "Timesheet hours at hourly cost plus expenses: costs and margin of every job, with a PDF report."
+              },
+              "paghe": {
+                "title": "Monthly check and payroll export",
+                "text": "Review the month's timesheets, approve them in bulk and export them in your payroll consultant's formats."
+              }
+            }
           },
-          "richieste": {
-            "title": "Requests and approvals",
-            "text": "Holidays, leave and justifications reach the right manager."
+          "crm": {
+            "titolo": "CRM",
+            "sottotitolo": "Customers, deals, quotes and support.",
+            "voci": {
+              "clienti": {
+                "title": "Customers, contacts and leads",
+                "text": "A single registry with contact people, sales owner and privacy consent; a lead becomes a customer in one click."
+              },
+              "pipeline": {
+                "title": "Opportunities and pipeline",
+                "text": "Drag-and-drop stages, value and probability, expected close date and the history of every move."
+              },
+              "agenda": {
+                "title": "Agenda and reminders",
+                "text": "Calls and meetings with their outcome, a reminder before they start and activities in your personal calendar."
+              },
+              "preventivi": {
+                "title": "Quotes and offers",
+                "text": "Price list of products and services, discounts and VAT, PDF sent by email; an accepted offer becomes a won opportunity."
+              },
+              "assistenza": {
+                "title": "Customer support",
+                "text": "Customer requests with priority, channel and assignee, response times and the history in the customer card."
+              },
+              "report": {
+                "title": "Reports and export",
+                "text": "Pipeline by stage and salesperson, won and lost by reason, lead conversion and lists in Excel."
+              },
+              "visibilita": {
+                "title": "Visibility and reassignment",
+                "text": "Each salesperson sees their own customers, or everyone sees everything; when someone leaves, their deals move to a colleague."
+              }
+            }
           },
-          "noteSpese": {
-            "title": "Expense reports",
-            "text": "Reimbursements with attached receipts, approved and ready for payroll."
+          "documentale": {
+            "titolo": "Documents",
+            "sottotitolo": "The company archive and personnel documents.",
+            "voci": {
+              "archivio": {
+                "title": "Organised archive",
+                "text": "Folders, document types with expiry and retention, versions of the same document and a recycle bin."
+              },
+              "ricerca": {
+                "title": "Search",
+                "text": "By title, type, employee, customer, year and the text inside the files."
+              },
+              "personale": {
+                "title": "Personnel documents",
+                "text": "Restricted to the employee concerned and authorised staff; the same document to several employees, each with their own copy."
+              },
+              "firma": {
+                "title": "Acknowledgement and signature",
+                "text": "Read confirmation or one-click electronic signature, with date, time and recorded evidence; see who has not read yet."
+              },
+              "verbali": {
+                "title": "Reports for the other applications",
+                "text": "Handover of goods and PPE, remote-working agreements: the report is generated as a PDF, signed and archived."
+              },
+              "riservatezza": {
+                "title": "Permissions and access log",
+                "text": "The company decides who sees personnel documents; every opening, download or deletion is logged."
+              },
+              "spazio": {
+                "title": "Expiry and storage",
+                "text": "Documents expiring or past their retention period are flagged; storage follows your plan, with a warning before it runs out."
+              }
+            }
           },
-          "paghe": {
-            "title": "Payroll export",
-            "text": "Reconciled timesheets exported in the consultant's formats."
+          "risorseUmane": {
+            "titolo": "Human resources",
+            "sottotitolo": "The employee file beyond attendance.",
+            "voci": {
+              "cedolini": {
+                "title": "Payslips and tax forms in one go",
+                "text": "The firm or the company uploads a single PDF: the system splits it by tax code or employee number and flags the pages to assign."
+              },
+              "portale": {
+                "title": "Employee area",
+                "text": "\"My payslips\": a notification for every new document, acknowledgement and a report of who has confirmed."
+              },
+              "formazione": {
+                "title": "Training and skills",
+                "text": "Course catalogue, certificates and acquired skills, with renewal dates in the deadline schedule."
+              },
+              "onboarding": {
+                "title": "Onboarding and offboarding",
+                "text": "Joining and leaving checklists generated from the employment dates, with the steps falling due."
+              },
+              "consegne": {
+                "title": "Documents to hand over or sign",
+                "text": "Checklist items with a file are closed when the employee confirms or signs."
+              },
+              "account": {
+                "title": "App account",
+                "text": "Access created on hiring and disabled on termination, straight from the checklist."
+              }
+            }
           },
-          "clienti": {
-            "title": "Customers and contacts",
-            "text": "A single registry with contact persons, status and sales owner."
+          "compliance": {
+            "titolo": "Compliance",
+            "sottotitolo": "Workplace safety and privacy under control.",
+            "voci": {
+              "corsi": {
+                "title": "Mandatory safety training",
+                "text": "Courses by job role, completed courses and renewals: the training status of every employee."
+              },
+              "visite": {
+                "title": "Medical checks and fitness",
+                "text": "Results and due dates for administrators, health data encrypted and visible only to authorised staff."
+              },
+              "dpi": {
+                "title": "PPE handover",
+                "text": "Protective equipment handed over with a report and the employee's acknowledgement."
+              },
+              "nomine": {
+                "title": "Appointments and risk assessment",
+                "text": "Safety officers, representatives, supervisors and emergency staff with the appointee's acknowledgement; risk assessment documents and their due dates."
+              },
+              "gdpr": {
+                "title": "Record of processing",
+                "text": "The GDPR record with Excel export, appointments and external processors with contract expiry."
+              },
+              "violazioni": {
+                "title": "Data breach register",
+                "text": "Every breach with its 72-hour deadline in the schedule and a notice to administrators."
+              },
+              "studio": {
+                "title": "Managed by your consultant",
+                "text": "The firm keeps the GDPR record and deadlines on behalf of its client companies."
+              }
+            }
           },
-          "pipeline": {
-            "title": "Pipeline",
-            "text": "Opportunities by phase, draggable, with weighted value and history."
+          "risorseAziendali": {
+            "titolo": "Company assets",
+            "sottotitolo": "Vehicles, equipment and spaces: who has them and when.",
+            "voci": {
+              "flotta": {
+                "title": "Fleet",
+                "text": "Vehicles, assignment to employees and fringe benefits, linked to the mileage refunds in Attendance."
+              },
+              "scadenzeVeicoli": {
+                "title": "Vehicle deadlines",
+                "text": "Road tax, insurance, inspection, servicing and rental or leasing contracts in the deadline schedule."
+              },
+              "multe": {
+                "title": "Fines and costs",
+                "text": "The driver is found from the assignment period and is notified of the fine."
+              },
+              "beni": {
+                "title": "Assigned equipment",
+                "text": "PCs, phones, badges and tools with categories and warranty expiry."
+              },
+              "consegne": {
+                "title": "Handover and return",
+                "text": "A signed report on handover and return; on termination, the list of what must be given back."
+              },
+              "prenotazioni": {
+                "title": "Bookings",
+                "text": "Desks, meeting rooms and pool cars without overlaps, also in your personal calendar."
+              }
+            }
           },
-          "agenda": {
-            "title": "Agenda and reminders",
-            "text": "Calls and meetings with a notice before they start."
-          },
-          "offerte": {
-            "title": "PDF offers",
-            "text": "Lines, discounts and VAT, automatic numbering and email sending."
-          },
-          "archivio": {
-            "title": "Document archive",
-            "text": "Folders, types, versions, full-text search and recycle bin."
-          },
-          "personale": {
-            "title": "Personnel documents",
-            "text": "Payslips and notices to employees, also to many people at once, with acknowledgement."
-          },
-          "permessi": {
-            "title": "Permissions and privacy",
-            "text": "Each role sees only what it is meant to; document access log."
-          },
-          "assistente": {
-            "title": "Assistant and manuals",
-            "text": "AI assistant, support tickets and PDF manuals for every application."
+          "comuni": {
+            "titolo": "Shared features",
+            "sottotitolo": "Services shared by all active applications.",
+            "voci": {
+              "scadenzario": {
+                "title": "Single deadline schedule",
+                "text": "Deadlines from every application on one page and in the \"Due soon\" widget."
+              },
+              "notifiche": {
+                "title": "Notifications and preferences",
+                "text": "In-app and email alerts, with preferences chosen by each user."
+              },
+              "preseVisione": {
+                "title": "Acknowledgements",
+                "text": "One read confirmation for payslips, reports and appointments; with Documents it becomes a signature with a report."
+              },
+              "calendario": {
+                "title": "Personal calendar",
+                "text": "Activities, bookings and deadlines in Google, Outlook or your phone calendar through an .ics feed."
+              },
+              "riepilogo": {
+                "title": "Weekly AI summary",
+                "text": "Every week a summary of what happened in the company and, for the firm, in all its client companies."
+              },
+              "assistente": {
+                "title": "AI assistant and voice commands",
+                "text": "Speak or type: clock in, request leave, open a customer or the page you need."
+              },
+              "ticket": {
+                "title": "Support and manuals",
+                "text": "Support tickets with answers suggested from the documentation and PDF manuals for every application."
+              }
+            }
           }
         }
       },
       "pricing": {
         "titolo": "Simple pricing",
-        "sottotitolo": "One plan for every function, or just the ones you need: start for free.",
+        "sottotitolo": "One plan with all six applications, or only the ones you need: start for free.",
         "inclusi": {
           "anagraficheComuni": "Shared customers and employees",
-          "documentiAiClienti": "Documents to clients and their employees",
-          "exportPaghe": "Payroll export",
-          "datiPronti": "Parameters and tables ready"
+          "scadenzario": "Single deadline schedule and notifications",
+          "preseVisione": "Acknowledgements and reports",
+          "assistente": "AI assistant and weekly summary",
+          "calendario": "Personal calendar feed",
+          "datiPronti": "Ready-made parameters and tables"
         },
-        "nota": "Prices excluding VAT. You can activate or deactivate an application at any time.",
+        "nota": "Prices exclude VAT. The bundle includes attendance, CRM, documents, human resources, compliance and company assets; you can activate or deactivate an application at any time.",
         "domande": {
           "scelta": {
             "domanda": "Do I have to activate all the applications?",
-            "risposta": "No: you activate only the ones you need and add the others whenever you want."
+            "risposta": "No: activate only the ones you need and add the others whenever you want. The bundle gives you all six."
           },
           "dati": {
-            "domanda": "Is data shared between applications?",
-            "risposta": "Yes: customers and employees are a single registry used by all active applications."
+            "domanda": "Is data shared between the applications?",
+            "risposta": "Yes: customers, employees, sites and vehicles are a single registry, used by all active applications."
+          },
+          "collegamenti": {
+            "domanda": "Do the applications work together?",
+            "risposta": "Yes: handover reports for equipment and PPE are signed in Documents, fleet vehicles are used for mileage refunds in Attendance and every deadline ends up in the same schedule."
           },
           "installare": {
             "domanda": "Do I need to install anything?",
-            "risposta": "No, it works from the browser and the smartphone."
+            "risposta": "No, it works from the browser and from your smartphone."
           },
           "consulente": {
             "domanda": "Can my consultant access it?",
-            "risposta": "Yes, the firm follows your companies with its own access."
+            "risposta": "Yes, the firm follows your companies with its own login: it uploads payslips, manages the GDPR record and receives the weekly summary."
           }
         }
       },
       "about": {
         "titolo": "About us",
         "sottotitolo": "Simple software for companies and for those who follow them.",
-        "paragrafo1": "We believe attendance, customers and documents should live in the same place, with no duplicate registries and no sheets to copy.",
+        "paragrafo1": "We believe attendance, customers, documents, staff, safety and company assets belong in the same place, without duplicate registries or spreadsheets to copy over.",
         "paragrafo2": "{{siteName}} is made for companies and firms that want clear tools, always up to date and accessible from anywhere.",
         "valori": {
           "semplice": {
@@ -151,7 +359,7 @@
       },
       "register": {
         "titolo": "Register your company",
-        "sottotitolo": "Try attendance, CRM and document management for free.",
+        "sottotitolo": "Try every application for free.",
         "vantaggi": {
           "gratis": "30 days free",
           "attiva": "Immediate activation",
