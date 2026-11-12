@@ -34,6 +34,18 @@ export interface RequestNewItem {
   application?: ApplicationType;
 }
 
+/**
+ dati della route (Route.data) per aprire le pagine comuni delle richieste su un solo applicativo, da una route del modulo
+ (es. /attendancerequests e /attendancerequestsadmin delle presenze): la pagina mostra solo le sue richieste, senza il
+ filtro per applicativo, e propone solo le sue "Nuova richiesta". Senza dati: /requests e /requestsadmin, tutti gli applicativi.
+*/
+export interface RequestRouteData {
+  /** true = "Richieste da approvare" (default: dall'url /requestsadmin) */
+  requestAdmin?: boolean;
+  /** applicativo delle richieste mostrate */
+  requestApplication?: ApplicationType;
+}
+
 export interface iRequestUiProvider {
   readonly Actions: RequestUiAction[];
   readonly NewRequests: RequestNewItem[];
