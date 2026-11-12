@@ -260,3 +260,10 @@ export class LicenseAutoRenewPutInModel {
 export class LicenseAutoRenewPutOutModel extends ModelResult {
   public abbonamento: LicenseSubscriptionModel = new LicenseSubscriptionModel();
 }
+
+export class LicenseCancelInModel {
+  public idAbbonamento: number = 0;
+}
+export class LicenseCancelOutModel extends ModelResult {
+  public abbonamento: LicenseSubscriptionModel = new LicenseSubscriptionModel();
+}

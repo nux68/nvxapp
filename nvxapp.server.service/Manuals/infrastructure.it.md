@@ -120,7 +120,7 @@ Le richieste di assistenza (ticket). Con **+** ne apri una nuova scegliendo il t
 I tipi di richiesta dei ticket, con i livelli di assistenza che li gestiscono.
 
 @@ /licensemanagement
-Le licenze della tua azienda (o del tuo studio) per Presenze, CRM e Documentale: per ogni funzione il livello (Free, Standard o Pro), se è tua o dello studio, la scadenza e il numero massimo di utenti. Il PowerAdmin sottoscrive, cambia piano, rinnova e attiva il rinnovo automatico; trovi anche lo storico dei pagamenti. Lo studio vede le aziende coperte dalle sue licenze.
+Le licenze della tua azienda (o del tuo studio) per Presenze, CRM e Documentale: per ogni funzione il livello (Free, Standard o Pro), se è tua o dello studio, la scadenza e il numero massimo di utenti. Il PowerAdmin sottoscrive, cambia piano, rinnova e attiva il rinnovo automatico; con **Disdici** chiude subito una licenza che non serve, così le voci di quella funzione spariscono dal menu (il periodo già pagato non viene rimborsato). Trovi anche lo storico dei pagamenti. Lo studio vede le aziende coperte dalle sue licenze.
 
 @@ /licensecataloglist
 I listini delle licenze: per ogni tipo di soggetto (azienda o studio) e funzione, i tre piani Free, Standard e Pro con prezzi mensile e annuale e utenti massimi. Il SuperUser gestisce i listini globali e le impostazioni; un centro abilitato può definire i propri listini.
