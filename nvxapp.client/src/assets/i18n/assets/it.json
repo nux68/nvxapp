@@ -147,6 +147,8 @@
         "busy": "Occupato",
         "empty": "Nessuna prenotazione nella settimana",
         "confirmCancel": "Annullare la prenotazione di {{nome}}?",
+        "cancelRequested": "Annullamento richiesto: in attesa di approvazione",
+        "cancelRequestSent": "Richiesta di annullamento inviata: la prenotazione resta valida finché un amministratore non la approva.",
         "note": "Le tue prenotazioni compaiono anche nel tuo calendario personale (pulsante Calendario)."
       },
       "bookingEdit": {
