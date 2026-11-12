@@ -1,0 +1,53 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-row>
+        <ion-col size-xs="12" [sizeMd]="applicativi.length > 1 ? '8' : '12'">
+          <ion-segment [value]="filtro" (ionChange)="onFiltroChange($event.detail.value)" [scrollable]="true">
+            @for (f of filtri; track f.value) {
+              <ion-segment-button [value]="f.value">
+                <ion-label>{{ f.key | transloco }}</ion-label>
+              </ion-segment-button>
+            }
+          </ion-segment>
+        </ion-col>
+        <!-- filtro per applicativo solo quando le richieste arrivano da piu' applicativi -->
+        @if (applicativi.length > 1) {
+          <ion-col size-xs="12" size-md="4">
+            <ion-item>
+              <ion-select [value]="applicativo ?? 'all'" (ionChange)="onApplicativoChange($event.detail.value)" interface="popover"
+                [label]="'pages.requestList.application.label' | transloco" labelPlacement="floating">
+                <ion-select-option value="all">{{ 'pages.requestList.application.all' | transloco }}</ion-select-option>
+                @for (a of applicativi; track a) {
+                  <ion-select-option [value]="a">{{ nomeApplicativo(a) }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        }
+      </ion-row>
+
+      <nvx-list
+        [items]="richiesteFiltrate"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="key"
+        [icon]="iconOf"
+        [highlight]="highlight"
+        [searchText]="searchText"
+        [sort]="sortByDal"
+        [emptyText]="(admin ? 'pages.requestList.emptyAdmin' : 'pages.requestList.empty') | transloco">
+      </nvx-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

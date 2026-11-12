@@ -113,6 +113,9 @@ export class RouteInfrastructureService {
       { path: 'deadlineedit', loadChildren: () => import('../../pages/infrastructure/deadline-edit-page/deadline-edit-page.module').then(m => m.DeadlineEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'notifications', loadChildren: () => import('../../pages/infrastructure/notification-list-page/notification-list-page.module').then(m => m.NotificationListPageModule), canActivate: [authenticatedGuard] },
       { path: 'notificationpreference', loadChildren: () => import('../../pages/infrastructure/notification-preference-page/notification-preference-page.module').then(m => m.NotificationPreferencePageModule), canActivate: [authenticatedGuard] },
+      // richieste da approvare comuni a tutti gli applicativi (ANALISI_INFRASTRUCTURE_RICHIESTE.md): stessa pagina, l'url sceglie la vista
+      { path: 'requests', loadChildren: () => import('../../pages/infrastructure/request-list-page/request-list-page.module').then(m => m.RequestListPageModule), canActivate: [RoleGuard4CompanyUser] },
+      { path: 'requestsadmin', loadChildren: () => import('../../pages/infrastructure/request-list-page/request-list-page.module').then(m => m.RequestListPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'acknowledgements', loadChildren: () => import('../../pages/infrastructure/acknowledgement-list-page/acknowledgement-list-page.module').then(m => m.AcknowledgementListPageModule), canActivate: [RoleGuard4CompanyUser] },
       // calendario personale (INF-CAL.3): feed iCalendar dell'utente nell'azienda corrente
       { path: 'calendarfeed', loadChildren: () => import('../../pages/infrastructure/calendar-feed-page/calendar-feed-page.module').then(m => m.CalendarFeedPageModule), canActivate: [RoleGuard4CompanyUser] },
