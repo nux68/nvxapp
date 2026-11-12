@@ -1196,7 +1196,7 @@
       "confirmReject": "Puoi indicare il motivo: lo vedra' il richiedente.",
       "rejectReason": "Motivo (facoltativo)",
       "confirmCancel": "Annullare la richiesta?",
-      "confirmRevoke": "La richiesta e' gia' approvata: chiederne la revoca?"
+      "confirmRevoke": "La richiesta e' gia' approvata: annullarla? Per alcune richieste (es. presenze) l'annullamento va approvato."
     },
     "acknowledgementList": {
       "title": "Prese visione",
