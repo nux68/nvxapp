@@ -163,11 +163,13 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
         }
 
         /// <summary>
-        /// stato dell'annullamento (revoca) delle prenotazioni confermate con richiesta: id prenotazione -> RevocaStato (assente = mai chiesto)
+        /// stato dell'annullamento (revoca) delle prenotazioni confermate (o annullate: revocate) con richiesta:
+        /// id prenotazione -> RevocaStato (assente = mai chiesto)
         /// </summary>
         public async Task<Dictionary<int, StatoRichiesta>> RevocheAsync(IEnumerable<Ast_Prenotazione> prenotazioni)
         {
-            var conRichiesta = prenotazioni.Where(x => x.Stato == AstStatoPrenotazione.Confermata && x.IdDip_GG_Richiesta != null).ToList();
+            var conRichiesta = prenotazioni.Where(x => (x.Stato == AstStatoPrenotazione.Confermata || x.Stato == AstStatoPrenotazione.Annullata)
+                                                       && x.IdDip_GG_Richiesta != null).ToList();
             if (conRichiesta.Count == 0)
                 return new Dictionary<int, StatoRichiesta>();
             var ids = conRichiesta.Select(x => x.IdDip_GG_Richiesta!.Value).Distinct().ToList();

@@ -23,7 +23,11 @@
         </ion-row>
       </ion-grid>
       <nvx-list [items]="dati?.prenotazione" [columns]="columns" [actions]="actions" [icon]="iconOf" [searchText]="searchText" [sort]="sort"
-        [highlight]="highlight" [rowDisabled]="passata" [emptyText]="'ast.pages.booking.empty' | transloco"></nvx-list>
+        [highlight]="highlight" [rowDisabled]="passata" [emptyText]="'ast.pages.booking.empty' | transloco">
+        <ng-template nvxCell="stato" let-item>
+          <ion-badge [color]="stato(item).colore">{{ stato(item).testo }}</ion-badge>
+        </ng-template>
+      </nvx-list>
       <ion-note class="nvx-nota-disabled">{{ 'ast.pages.booking.note' | transloco }}</ion-note>
     </ion-card-content>
   </ion-card>

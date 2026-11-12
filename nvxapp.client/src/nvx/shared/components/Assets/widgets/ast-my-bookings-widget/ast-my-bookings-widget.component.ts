@@ -37,7 +37,7 @@ export class AstMyBookingsWidgetComponent {
       next: res => {
         if (res.success && res.data) {
           // confermate e in attesa di approvazione (indicate); le rifiutate restano nella pagina delle prenotazioni
-          const mie = res.data.prenotazione.filter(p => p.mia && p.stato !== AstStatoPrenotazione.Rifiutata);
+          const mie = res.data.prenotazione.filter(p => p.mia && p.stato !== AstStatoPrenotazione.Rifiutata && p.stato !== AstStatoPrenotazione.Annullata);
           const oggi = astOggi();
           this.oggi = mie.filter(p => p.inizio?.substring(0, 10) === oggi).length;
           this.totale = mie.length;
