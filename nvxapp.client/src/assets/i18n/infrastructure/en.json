@@ -1,5 +1,23 @@
 {
   "common": {
+    "requestState": {
+      "direct": "Direct entry",
+      "pending": "Pending",
+      "inProgress": "Approval in progress",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "revokePending": "Approved (cancellation pending)",
+      "revokeRejected": "Approved (cancellation rejected)",
+      "revokeWithdrawn": "Approved (cancellation withdrawn)",
+      "revoked": "Cancelled (cancellation approved)"
+    },
+    "requestAction": {
+      "askCancellation": "Request cancellation",
+      "withdrawCancellation": "Withdraw cancellation",
+      "confirmAskCancellation": "The request is approved: request its cancellation? It must be approved and can be requested only once.",
+      "confirmWithdrawCancellation": "Withdraw the cancellation request? The request stays approved and cancellation cannot be requested again."
+    },
     "buttons": {
       "confirm": "Confirm",
       "cancel": "Cancel",
