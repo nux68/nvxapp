@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 import { NotificationNotifierService, RUOLI_AZIENDA } from './notification-notifier.service';
+import { RequestNotifierService } from './request-notifier.service';
+import { APPLICATIVI_RICHIESTE } from './request-ui.model';
 
 // ruoli che gestiscono (o leggono) documentazione e risposte AI: SuperUser, centro, studio, azienda (non il DEV)
 const RUOLI_DOCUMENTAZIONE_AI = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin',
@@ -29,7 +31,9 @@ const APPLICATIVI_MODULI = [ApplicationType.AttendanceTracking, ApplicationType.
 export class MainMenuInfrastructureService implements iMainMenuService{
 
   // badge delle voci "Notifiche" (non lette) e "Prese visione" (da confermare)
-  constructor(private notificationNotifierService: NotificationNotifierService) { }
+  // badge delle voci delle richieste (da approvare / in attesa)
+  constructor(private notificationNotifierService: NotificationNotifierService,
+              private requestNotifierService: RequestNotifierService) { }
 
   public GetMenuHeaderMenu(MainMenuItem: MainMenuItem[], group: number = 0): MainMenuItem | undefined {
 
@@ -131,6 +135,11 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder: 510, group: GRUPPO_SERVIZI, title: 'menu.services', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 520, group: GRUPPO_SERVIZI, title: 'menu.notifications', component: "NotificationListPageComponent", url: '/notifications', icon: 'notifications', nonConfigurabile: true,
         badge: this.notificationNotifierService.nonLette },
+      // richieste da approvare comuni (ANALISI_INFRASTRUCTURE_RICHIESTE.md): solo se l'azienda ha un applicativo che porta richieste
+      { menuType: MenuType.MenuItem,   zorder: 524, group: GRUPPO_SERVIZI, title: 'menu.requestsAdmin', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "RequestListPageComponent", url: '/requestsadmin', icon: 'checkmark-done',
+        badge: this.requestNotifierService.daApprovare, anyApplication: APPLICATIVI_RICHIESTE },
+      { menuType: MenuType.MenuItem,   zorder: 526, group: GRUPPO_SERVIZI, title: 'menu.requests', roles: RUOLI_AZIENDA, component: "RequestListPageComponent", url: '/requests', icon: 'paper-plane',
+        badge: this.requestNotifierService.inAttesa, anyApplication: APPLICATIVI_RICHIESTE },
       { menuType: MenuType.MenuItem,   zorder: 530, group: GRUPPO_SERVIZI, title: 'menu.deadlines', roles: RUOLI_AZIENDA, component: "DeadlineListPageComponent", url: '/deadlines', icon: 'calendar-number',
         anyApplication: APPLICATIVI_MODULI },
       // calendario personale (INF-CAL.3): feed .ics da sottoscrivere in Google / Outlook / Apple

@@ -4,7 +4,7 @@ Analisi del 12/11/2026, branch **Infrastructure_Dev** (lavoro su `Infrastructure
 Documenti collegati: `ANALISI_ASSETS_APPLICATIVO.md` (decisione `AST-D4`, prenotazioni senza approvazione),
 `ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md` (servizi comuni `INF-SVC`), `ANALISI_INFRASTRUCTURE_WIDGET.md` (stub per ramo).
 
-Stato: **analisi, in attesa di conferma delle decisioni del §7**.
+Stato: **decisioni confermate il 12/11/2026 (§7), lavori in corso**.
 
 ---
 
@@ -118,14 +118,14 @@ Le pagine sono di Infrastructure: visibili se l'azienda ha **almeno uno** tra Pr
 - Le funzioni Approva/Rifiuta usate dentro cartellino e piano ferie (`time-sheet-admin-page`, `vacation-plan-page`) restano su `Dip_GG_RichiestaService`: devono continuare a funzionare invariate.
 - Prestazioni: la pagina admin chiama tutti i provider; i provider devono filtrare lato server (Presenze oggi carica tutte le richieste, `RICH-AT.4`).
 
-## 7. Decisioni da confermare
+## 7. Decisioni (confermate il 12/11/2026)
 
-| # | Decisione | Proposta |
+| # | Decisione | Scelta |
 |---|---|---|
-| D1 | Chi approva le prenotazioni | Gli amministratori dell'azienda (CompanyAdmin/CompanyPowerAdmin), basta uno. Alternativa: con Presenze attivo usare gli approvatori dei reparti del dipendente (più complesso, e senza Presenze non c'è) |
-| D2 | Pagine di Presenze | Sostituite dalle pagine dell'hub (redirect delle vecchie rotte). Alternativa: tenerle e aggiungere l'hub accanto (due pagine "richieste") |
-| D3 | Correzioni di sicurezza/robustezza di `SetState` e `Get_Dip_GG_Richiesta` | Farle subito in `RICH-AT.4` |
-| D4 | Richiesta non decisa all'ora di inizio | Annullata automaticamente con notifica |
+| D1 | Chi approva le prenotazioni | ✅ Gli amministratori dell'azienda (CompanyAdmin/CompanyPowerAdmin), basta uno |
+| D2 | Pagine di Presenze | ✅ Sostituite dalle pagine dell'hub (redirect delle vecchie rotte) |
+| D3 | Correzioni di sicurezza/robustezza di `SetState` e `Get_Dip_GG_Richiesta` | ✅ Farle subito in `RICH-AT.4` |
+| D4 | Richiesta non decisa all'ora di inizio | ✅ Annullata automaticamente con notifica |
 
 ## 8. Checklist
 
@@ -133,14 +133,14 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 
 #### Analisi
 - ✅ `RICH-0` Studio del ciclo attuale di Presenze e dei provider di Infrastructure; analisi scritta
-- 🔍 `RICH-D` Decisioni D1–D4 (§7)
+- ✅ `RICH-D` Decisioni D1–D4 (§7) confermate il 12/11/2026
 
 #### `RICH-INF` – Infrastructure
-- ⏳ `RICH-INF.1` `IRequestProvider`, modelli, `RequestHubService`, `RequestController`, notifier SignalR generico
-- ⏳ `RICH-INF.2` Categoria di notifica `richieste` e testi (it/en)
-- ⏳ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`
-- ⏳ `RICH-INF.4` Widget `infrastructure.requests`
-- ⏳ `RICH-INF.5` Build server e client, merge in `Infrastructure`
+- ✅ `RICH-INF.1` `IRequestProvider`, modelli, `RequestHubService`, `RequestController`, notifier SignalR generico
+- ✅ `RICH-INF.2` Categoria di notifica `richieste` e testi (it/en)
+- ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`
+- ✅ `RICH-INF.4` Widget `infrastructure.requests`
+- 🔄 `RICH-INF.5` Build server e client ✅ (12/11/2026); merge in `Infrastructure` con la catena finale
 
 #### `RICH-AT` – Presenze
 - ⏳ `RICH-AT.1` `AtRequestProvider` su `Dip_GG_RichiestaService` (testi di tipo/stato/dettaglio lato server)
