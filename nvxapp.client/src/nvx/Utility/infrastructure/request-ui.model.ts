@@ -26,6 +26,8 @@ export interface RequestNewItem {
   /** chiave transloco del testo */
   title: string;
   url: string;
+  /** icona nell'action sheet "Nuova richiesta" (default add-circle-outline) */
+  icon?: string;
   /** ruoli che possono usare la pagina di invio (assente = tutti quelli della pagina) */
   roles?: string[];
   /** applicativo della pagina (lo imposta RequestUiService se assente) */
