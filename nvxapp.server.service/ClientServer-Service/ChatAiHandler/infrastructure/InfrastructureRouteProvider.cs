@@ -33,6 +33,16 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             ["azienda power admin"]  = "/companypoweradmin",
             ["azienda admin"]        = "/companyadmin",
             ["utenti azienda"]       = "/usercompanylist",
+            // richieste da approvare comuni a tutti gli applicativi (ANALISI_INFRASTRUCTURE_RICHIESTE.md): valgono anche senza Presenze
+            ["richieste"]             = "/requests",
+            ["le mie richieste"]      = "/requests",
+            ["mie richieste"]         = "/requests",
+            ["richieste da approvare"] = "/requestsadmin",
+            ["richieste admin"]       = "/requestsadmin",
+            ["requests"]              = "/requests",
+            ["my requests"]           = "/requests",
+            ["requests to approve"]   = "/requestsadmin",
+            ["admin requests"]        = "/requestsadmin",
 
             // nomi inglesi delle stesse pagine (l'utente puo' usare entrambe le lingue)
             ["users"]                        = "/userlist",
