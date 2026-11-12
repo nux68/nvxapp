@@ -96,7 +96,9 @@ storico migrazioni create
   Public: InitPublic (tutte le tabelle di public; contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs, richiamati a mano in fondo a Up)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto, Dip_Anagrafica, Az_Sedi, Az_SediReparto,
-          Par_Competenza, Dip_Competenza, Dip_RapportoAutovetture)
+          Par_Competenza, Dip_Competenza, Dip_RapportoAutovetture, Dip_GG_Richiesta)
+          12/11/2026 pomeriggio: InitCommon rigenerata con Dip_GG_Richiesta (richieste da approvare di tutti gli
+          applicativi, ANALISI_INFRASTRUCTURE_RICHIESTE.md §3bis; database ricreato)
   Moke:   InitMoke
   Applicativi (nei rispettivi rami): AttendanceTracking_Init, Crm_Init, DocumentManagement_Init, InitHumanResources,
           InitCompliance, InitAssets

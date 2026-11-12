@@ -123,6 +123,8 @@
     "deadlines": "Scadenzario",
     "calendarFeed": "Calendario",
     "acknowledgements": "Prese visione",
+    "requests": "Le mie richieste",
+    "requestsAdmin": "Richieste da approvare",
     "digests": "Riepiloghi"
   },
   "showcase": {
@@ -1165,6 +1167,37 @@
       "confirmRegenerate": "Creare un nuovo indirizzo? Quello attuale smetterà di funzionare e andrà sostituito nei calendari in cui l'hai aggiunto.",
       "confirmDelete": "Eliminare l'indirizzo del calendario? I calendari in cui l'hai aggiunto non riceveranno più le scadenze."
     },
+    "requestList": {
+      "title": "Le mie richieste",
+      "titleAdmin": "Richieste da approvare",
+      "filter": {
+        "pending": "In attesa",
+        "toApprove": "Da approvare",
+        "all": "Tutte",
+        "approved": "Approvate"
+      },
+      "application": {
+        "label": "Applicativo",
+        "all": "Tutti",
+        "2": "Presenze",
+        "7": "Risorse aziendali"
+      },
+      "columnRequester": "Richiedente",
+      "columnType": "Tipo",
+      "columnPeriod": "Periodo",
+      "columnDetail": "Dettaglio",
+      "columnState": "Stato",
+      "empty": "Nessuna richiesta",
+      "emptyAdmin": "Nessuna richiesta da gestire",
+      "cancel": "Annulla richiesta",
+      "reject": "Rifiuta",
+      "confirmApprove": "Approvare la richiesta?",
+      "confirmRejectTitle": "Rifiuta la richiesta",
+      "confirmReject": "Puoi indicare il motivo: lo vedra' il richiedente.",
+      "rejectReason": "Motivo (facoltativo)",
+      "confirmCancel": "Annullare la richiesta?",
+      "confirmRevoke": "La richiesta e' gia' approvata: annullarla? Per alcune richieste (es. presenze) l'annullamento va approvato."
+    },
     "acknowledgementList": {
       "title": "Prese visione",
       "filter": {
@@ -1422,6 +1455,14 @@
     "askAssistant": {
       "title": "Chiedi all'assistente",
       "description": "Campo per fare una domanda all'assistente AI."
+    },
+    "requests": {
+      "title": "Richieste",
+      "description": "Richieste da approvare (amministratori) e proprie richieste in attesa, di tutti gli applicativi.",
+      "toApprove": "Da approvare",
+      "pending": "Le mie in attesa",
+      "open": "Apri le mie richieste",
+      "openAdmin": "Apri le richieste da approvare"
     },
     "deadlines": {
       "title": "In scadenza",
