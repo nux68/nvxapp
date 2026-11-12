@@ -2,26 +2,42 @@
   "allfunction": {
     "showcase": {
       "brand": {
-        "slogan": "Presenze, clienti e documenti della tua azienda in un'unica app."
+        "slogan": "Presenze, clienti, documenti, personale, sicurezza e beni aziendali in un'unica app."
       },
       "home": {
         "etichetta": "Tutta l'azienda in cloud",
-        "titolo": "Presenze, vendite e documenti: un'unica app, un'unica anagrafica",
-        "sottotitolo": "Attiva gli applicativi che ti servono: gestione presenze, CRM e documentale lavorano insieme sugli stessi clienti e sugli stessi dipendenti, con un solo accesso.",
+        "titolo": "Tutta l'azienda in un'unica app, con un'unica anagrafica",
+        "sottotitolo": "Attiva gli applicativi che ti servono: presenze, CRM, documentale, risorse umane, compliance e risorse aziendali lavorano insieme sugli stessi clienti e sugli stessi dipendenti, con un solo accesso.",
         "ctaPrimaria": "Prova gratis",
         "ctaSecondaria": "Scopri le funzionalità",
         "punti": {
           "presenze": {
             "title": "Presenze",
-            "text": "Timbrature, ferie, permessi, note spese e cartellini pronti per le paghe."
+            "text": "Timbrature, turni, smart working, note spese e cartellini pronti per le paghe."
           },
           "crm": {
             "title": "CRM",
-            "text": "Lead, opportunità, agenda e offerte in PDF per seguire ogni cliente."
+            "text": "Lead, pipeline, agenda, preventivi in PDF e assistenza ai clienti."
           },
           "documentale": {
             "title": "Documentale",
-            "text": "Archivio dell'azienda e documenti del personale, con presa visione e conservazione."
+            "text": "Archivio dell'azienda e documenti del personale, con presa visione e firma."
+          },
+          "risorseUmane": {
+            "title": "Risorse Umane",
+            "text": "Cedolini e CU divisi e pubblicati da soli, formazione, assunzioni e cessazioni."
+          },
+          "compliance": {
+            "title": "Compliance",
+            "text": "Sicurezza sul lavoro (81/08) e registro GDPR, con tutte le scadenze."
+          },
+          "risorseAziendali": {
+            "title": "Risorse aziendali",
+            "text": "Flotta, beni assegnati e prenotazioni di postazioni, sale e auto."
+          },
+          "comuni": {
+            "title": "Funzioni comuni",
+            "text": "Scadenzario unico, notifiche, riepilogo AI settimanale e assistente vocale."
           },
           "insieme": {
             "title": "Tutto collegato",
@@ -36,7 +52,7 @@
           },
           "attiva": {
             "title": "Attiva gli applicativi",
-            "text": "Scegli presenze, CRM, documentale o tutti: si attivano senza installare nulla."
+            "text": "Scegli solo quelli che ti servono, o tutti: si attivano senza installare nulla."
           },
           "lavora": {
             "title": "Lavora insieme",
@@ -48,76 +64,268 @@
       },
       "features": {
         "titolo": "Tutte le funzionalità",
-        "sottotitolo": "Tre applicativi integrati, una sola anagrafica e un solo accesso.",
-        "sezioni": {
-          "timbrature": {
-            "title": "Timbrature",
-            "text": "Entrata e uscita da smartphone o computer, anche a voce con l'assistente."
+        "sottotitolo": "Sei applicativi integrati e i servizi comuni, con una sola anagrafica e un solo accesso.",
+        "gruppi": {
+          "presenze": {
+            "titolo": "Presenze",
+            "sottotitolo": "Timbrature, turni e cartellini pronti per le paghe.",
+            "voci": {
+              "timbrature": {
+                "title": "Timbrature ovunque",
+                "text": "Da smartphone o computer, con il QR della sede, dalla postazione condivisa con PIN o badge; controllo della posizione e timbrature anche senza rete."
+              },
+              "turni": {
+                "title": "Turni e pianificazione",
+                "text": "Turni per reparto con coperture minime, conflitti con ferie e permessi in evidenza, scambio tra colleghi con approvazione."
+              },
+              "smartWorking": {
+                "title": "Smart working",
+                "text": "Accordi individuali firmati, calendario del lavoro agile e limite di giorni a settimana."
+              },
+              "richieste": {
+                "title": "Richieste e approvazioni",
+                "text": "Ferie, permessi, straordinari e banca ore: ogni richiesta arriva all'approvatore del reparto."
+              },
+              "noteSpese": {
+                "title": "Note spese e rimborsi km",
+                "text": "Spese con scontrini allegati e rimborsi chilometrici calcolati sui veicoli del dipendente."
+              },
+              "anomalie": {
+                "title": "Anomalie e giornate da sistemare",
+                "text": "Timbrature dispari, ritardi ricorrenti e giornate non quadrate spiegate dall'AI, con la previsione delle assenze."
+              },
+              "commesse": {
+                "title": "Controllo di gestione",
+                "text": "Ore del timesheet per costo orario più le note spese: costi e margine di ogni commessa, con report PDF."
+              },
+              "paghe": {
+                "title": "Quadratura ed export paghe",
+                "text": "Controllo dei cartellini del mese, approvazione in blocco ed export nei formati del consulente."
+              }
+            }
           },
-          "richieste": {
-            "title": "Richieste e approvazioni",
-            "text": "Ferie, permessi e giustificativi arrivano al responsabile giusto."
+          "crm": {
+            "titolo": "CRM",
+            "sottotitolo": "Clienti, trattative, preventivi e assistenza.",
+            "voci": {
+              "clienti": {
+                "title": "Clienti, contatti e lead",
+                "text": "Anagrafica unica con persone di riferimento, responsabile commerciale e consenso privacy; il lead diventa cliente con un clic."
+              },
+              "pipeline": {
+                "title": "Opportunità e pipeline",
+                "text": "Fasi trascinabili, valore e probabilità, chiusura prevista e storico di ogni passaggio."
+              },
+              "agenda": {
+                "title": "Agenda e promemoria",
+                "text": "Chiamate e appuntamenti con l'esito, avviso prima dell'inizio e attività nel tuo calendario personale."
+              },
+              "preventivi": {
+                "title": "Preventivi e offerte",
+                "text": "Listino di articoli e servizi, sconti e IVA, PDF inviato per email; l'offerta accettata diventa un'opportunità vinta."
+              },
+              "assistenza": {
+                "title": "Assistenza ai clienti",
+                "text": "Richieste dei clienti con priorità, canale e assegnazione, tempi di presa in carico e storico nella scheda del cliente."
+              },
+              "report": {
+                "title": "Report ed export",
+                "text": "Pipeline per fase e commerciale, vinte e perse per motivo, conversione dei lead ed elenchi in Excel."
+              },
+              "visibilita": {
+                "title": "Visibilità e riassegnazione",
+                "text": "Ogni commerciale vede i suoi clienti, o tutti vedono tutto; quando qualcuno lascia, le sue trattative passano a un collega."
+              }
+            }
           },
-          "noteSpese": {
-            "title": "Note spese",
-            "text": "Rimborsi con scontrini allegati, approvati e pronti per le paghe."
+          "documentale": {
+            "titolo": "Documentale",
+            "sottotitolo": "L'archivio dell'azienda e i documenti del personale.",
+            "voci": {
+              "archivio": {
+                "title": "Archivio ordinato",
+                "text": "Cartelle, tipologie con scadenza e conservazione, versioni dello stesso documento e cestino."
+              },
+              "ricerca": {
+                "title": "Ricerca",
+                "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file."
+              },
+              "personale": {
+                "title": "Documenti del personale",
+                "text": "Riservati al dipendente e a chi è abilitato; lo stesso documento a più dipendenti, ognuno con la sua copia."
+              },
+              "firma": {
+                "title": "Presa visione e firma",
+                "text": "Conferma di lettura o firma elettronica con un clic, con data, ora e prove registrate; si vede chi non ha ancora letto."
+              },
+              "verbali": {
+                "title": "Verbali per gli altri applicativi",
+                "text": "Consegna di beni e DPI, accordi di smart working: il verbale si genera in PDF, si firma e resta in archivio."
+              },
+              "riservatezza": {
+                "title": "Abilitazioni e registro",
+                "text": "Chi vede i documenti del personale lo decide l'azienda; ogni apertura, download o cancellazione è registrata."
+              },
+              "spazio": {
+                "title": "Scadenze e spazio",
+                "text": "Documenti in scadenza od oltre la conservazione segnalati, spazio secondo il piano con avviso prima che finisca."
+              }
+            }
           },
-          "paghe": {
-            "title": "Export per le paghe",
-            "text": "Cartellini quadrati ed esportati nei formati del consulente."
+          "risorseUmane": {
+            "titolo": "Risorse Umane",
+            "sottotitolo": "Il fascicolo del dipendente oltre le presenze.",
+            "voci": {
+              "cedolini": {
+                "title": "Cedolini e CU in un passaggio",
+                "text": "Lo studio o l'azienda carica il PDF unico: il sistema lo divide per codice fiscale o matricola e segnala le pagine da assegnare."
+              },
+              "portale": {
+                "title": "Area del dipendente",
+                "text": "\"I miei cedolini\": notifica a ogni nuovo documento, presa visione e report di chi ha confermato."
+              },
+              "formazione": {
+                "title": "Formazione e competenze",
+                "text": "Catalogo dei corsi, attestati e competenze acquisite, con le scadenze dei rinnovi nello scadenzario."
+              },
+              "onboarding": {
+                "title": "Assunzioni e cessazioni",
+                "text": "Checklist di ingresso e uscita generate dalle date del rapporto, con i passi in scadenza."
+              },
+              "consegne": {
+                "title": "Documenti da consegnare o firmare",
+                "text": "Le voci della checklist con un file si chiudono quando il dipendente conferma o firma."
+              },
+              "account": {
+                "title": "Account dell'app",
+                "text": "Creazione dell'accesso all'assunzione e disattivazione alla cessazione, direttamente dalla checklist."
+              }
+            }
           },
-          "clienti": {
-            "title": "Clienti e contatti",
-            "text": "Un'anagrafica unica con persone di riferimento, stato e responsabile commerciale."
+          "compliance": {
+            "titolo": "Compliance",
+            "sottotitolo": "Sicurezza sul lavoro e privacy sotto controllo.",
+            "voci": {
+              "corsi": {
+                "title": "Formazione obbligatoria (81/08)",
+                "text": "Corsi per mansione, corsi svolti e rinnovi: la situazione della formazione di ogni dipendente."
+              },
+              "visite": {
+                "title": "Visite mediche e idoneità",
+                "text": "Esiti e scadenze per gli amministratori, dati sanitari cifrati e visibili solo agli abilitati."
+              },
+              "dpi": {
+                "title": "Consegna dei DPI",
+                "text": "Dispositivi consegnati con verbale e presa visione del dipendente."
+              },
+              "nomine": {
+                "title": "Nomine e DVR",
+                "text": "RSPP, RLS, preposti e addetti alle emergenze con presa visione del nominato; documenti di valutazione dei rischi e loro scadenze."
+              },
+              "gdpr": {
+                "title": "Registro dei trattamenti",
+                "text": "Il registro GDPR con export Excel, nomine e responsabili esterni con la scadenza dei contratti."
+              },
+              "violazioni": {
+                "title": "Registro delle violazioni",
+                "text": "Ogni violazione con il termine di 72 ore nello scadenzario e l'avviso agli amministratori."
+              },
+              "studio": {
+                "title": "Gestito dallo studio",
+                "text": "Il consulente segue registro GDPR e scadenze per conto delle sue aziende."
+              }
+            }
           },
-          "pipeline": {
-            "title": "Pipeline",
-            "text": "Opportunità per fase, trascinabili, con valore pesato e storico."
+          "risorseAziendali": {
+            "titolo": "Risorse aziendali",
+            "sottotitolo": "Veicoli, beni e spazi dell'azienda: chi li ha e quando.",
+            "voci": {
+              "flotta": {
+                "title": "Flotta",
+                "text": "Veicoli, assegnazione ai dipendenti e fringe benefit, collegati ai rimborsi chilometrici delle presenze."
+              },
+              "scadenzeVeicoli": {
+                "title": "Scadenze dei veicoli",
+                "text": "Bollo, assicurazione, revisione, tagliando e contratti di noleggio o leasing nello scadenzario."
+              },
+              "multe": {
+                "title": "Multe e costi",
+                "text": "Il conducente si ricava dal periodo di assegnazione e riceve l'avviso della multa."
+              },
+              "beni": {
+                "title": "Beni assegnati",
+                "text": "PC, telefoni, badge e attrezzature con categorie e garanzia in scadenza."
+              },
+              "consegne": {
+                "title": "Consegna e restituzione",
+                "text": "Verbale firmato alla consegna e alla restituzione; alla cessazione l'elenco di cosa va restituito."
+              },
+              "prenotazioni": {
+                "title": "Prenotazioni",
+                "text": "Postazioni, sale e auto in pool senza sovrapposizioni, anche nel calendario personale."
+              }
+            }
           },
-          "agenda": {
-            "title": "Agenda e promemoria",
-            "text": "Chiamate e appuntamenti con avviso prima dell'inizio."
-          },
-          "offerte": {
-            "title": "Offerte in PDF",
-            "text": "Righe, sconti e IVA, numerazione automatica e invio per email."
-          },
-          "archivio": {
-            "title": "Archivio dei documenti",
-            "text": "Cartelle, tipologie, versioni, ricerca nel testo e cestino."
-          },
-          "personale": {
-            "title": "Documenti del personale",
-            "text": "Cedolini e comunicazioni ai dipendenti, anche a più persone insieme, con presa visione."
-          },
-          "permessi": {
-            "title": "Permessi e riservatezza",
-            "text": "Ogni ruolo vede solo quello che gli compete; registro degli accessi ai documenti."
-          },
-          "assistente": {
-            "title": "Assistente e manuali",
-            "text": "Assistente AI, ticket di assistenza e manuali in PDF per ogni applicativo."
+          "comuni": {
+            "titolo": "Funzioni comuni",
+            "sottotitolo": "Servizi condivisi da tutti gli applicativi attivi.",
+            "voci": {
+              "scadenzario": {
+                "title": "Scadenzario unico",
+                "text": "Le scadenze di tutti gli applicativi in una sola pagina e nel widget \"In scadenza\"."
+              },
+              "notifiche": {
+                "title": "Notifiche e preferenze",
+                "text": "Avvisi nell'app e per email, con le preferenze scelte da ogni utente."
+              },
+              "preseVisione": {
+                "title": "Prese visione",
+                "text": "Un'unica conferma di lettura per cedolini, verbali e nomine; con il documentale diventa firma con verbale."
+              },
+              "calendario": {
+                "title": "Calendario personale",
+                "text": "Attività, prenotazioni e scadenze nel calendario di Google, Outlook o del telefono con un feed .ics."
+              },
+              "riepilogo": {
+                "title": "Riepilogo AI settimanale",
+                "text": "Ogni settimana una sintesi dei fatti dell'azienda e, per lo studio, di tutte le sue aziende."
+              },
+              "assistente": {
+                "title": "Assistente AI e comandi vocali",
+                "text": "Parla o scrivi: timbra, chiedi un permesso, apri un cliente o la pagina che ti serve."
+              },
+              "ticket": {
+                "title": "Assistenza e manuali",
+                "text": "Ticket di assistenza con risposte suggerite dalla documentazione e manuali in PDF per ogni applicativo."
+              }
+            }
           }
         }
       },
       "pricing": {
         "titolo": "Prezzi semplici",
-        "sottotitolo": "Un piano unico per tutte le funzioni, oppure solo quelle che ti servono: si parte gratis.",
+        "sottotitolo": "Un piano unico con tutti e sei gli applicativi, oppure solo quelli che ti servono: si parte gratis.",
         "inclusi": {
           "anagraficheComuni": "Clienti e dipendenti condivisi",
-          "documentiAiClienti": "Documenti ai clienti e ai loro dipendenti",
-          "exportPaghe": "Export per le paghe",
+          "scadenzario": "Scadenzario unico e notifiche",
+          "preseVisione": "Prese visione e verbali",
+          "assistente": "Assistente AI e riepilogo settimanale",
+          "calendario": "Feed per il calendario personale",
           "datiPronti": "Parametri e tabelle già pronti"
         },
-        "nota": "Prezzi IVA esclusa. Puoi attivare o disattivare un applicativo in qualunque momento.",
+        "nota": "Prezzi IVA esclusa. Il piano cumulativo comprende presenze, CRM, documentale, risorse umane, compliance e risorse aziendali; puoi attivare o disattivare un applicativo in qualunque momento.",
         "domande": {
           "scelta": {
             "domanda": "Devo attivare tutti gli applicativi?",
-            "risposta": "No: attivi solo quelli che ti servono e aggiungi gli altri quando vuoi."
+            "risposta": "No: attivi solo quelli che ti servono e aggiungi gli altri quando vuoi. Con il piano cumulativo li hai tutti e sei."
           },
           "dati": {
             "domanda": "I dati sono condivisi tra gli applicativi?",
-            "risposta": "Sì: clienti e dipendenti sono un'unica anagrafica, usata da tutti gli applicativi attivi."
+            "risposta": "Sì: clienti, dipendenti, sedi e veicoli sono un'unica anagrafica, usata da tutti gli applicativi attivi."
+          },
+          "collegamenti": {
+            "domanda": "Gli applicativi lavorano insieme?",
+            "risposta": "Sì: i verbali di consegna di beni e DPI si firmano nel documentale, i veicoli della flotta servono ai rimborsi km delle presenze e tutte le scadenze finiscono nello stesso scadenzario."
           },
           "installare": {
             "domanda": "Devo installare qualcosa?",
@@ -125,14 +333,14 @@
           },
           "consulente": {
             "domanda": "Il mio consulente può accedere?",
-            "risposta": "Sì, lo studio segue le tue aziende con il proprio accesso."
+            "risposta": "Sì, lo studio segue le tue aziende con il proprio accesso: carica i cedolini, gestisce il registro GDPR e riceve il riepilogo settimanale."
           }
         }
       },
       "about": {
         "titolo": "Chi siamo",
         "sottotitolo": "Software semplice per le aziende e per chi le segue.",
-        "paragrafo1": "Crediamo che presenze, clienti e documenti debbano stare nello stesso posto, senza doppie anagrafiche e senza fogli da riportare.",
+        "paragrafo1": "Crediamo che presenze, clienti, documenti, personale, sicurezza e beni aziendali debbano stare nello stesso posto, senza doppie anagrafiche e senza fogli da riportare.",
         "paragrafo2": "{{siteName}} nasce per aziende e studi che vogliono strumenti chiari, sempre aggiornati e accessibili da ovunque.",
         "valori": {
           "semplice": {
@@ -151,7 +359,7 @@
       },
       "register": {
         "titolo": "Registra la tua azienda",
-        "sottotitolo": "Prova gratis presenze, CRM e documentale.",
+        "sottotitolo": "Prova gratis tutti gli applicativi.",
         "vantaggi": {
           "gratis": "30 giorni gratis",
           "attiva": "Attivazione immediata",
