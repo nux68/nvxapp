@@ -109,6 +109,8 @@
     "companyStorage": "Document storage",
     "administration": "Administration",
     "registry": "Registry",
+    "parameters": "Parameters",
+    "services": "Notifications & deadlines",
     "customers": "Customers",
     "manualInfrastructure": "Basic functions manual",
     "manualVoiceCommands": "Voice commands",

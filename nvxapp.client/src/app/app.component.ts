@@ -7,7 +7,7 @@ import { UserNavigationService } from '../nvx/Utility/infrastructure/user-naviga
 import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
 import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
-import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
+import { GRUPPO_SERVIZI, MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 import { TicketNotifierService } from '../nvx/Utility/infrastructure/ticket-notifier.service';
@@ -233,7 +233,14 @@ export class AppComponent implements OnInit {
     const ruoli = this.vociRuoli();
 
     const [vociUtente, mostraUtente] = ruoli[0];
-    this.sezioniAccesso = [{ gruppi: this.groupMenu(vociUtente).filter(g => g.menuHeader.title === accesso), mostra: mostraUtente }];
+    // primo livello: Accesso e, subito dopo, la sezione dedicata a notifiche, scadenzario, calendario e prese visione
+    // (GRUPPO_SERVIZI), questa solo se ha voci visibili (prima del login no)
+    const primoLivello = (g: GroupMainMenuItem) => g.menuHeader.title === accesso || g.menuHeader.group === GRUPPO_SERVIZI;
+    this.sezioniAccesso = [{
+      gruppi: this.groupMenu(vociUtente).filter(g => g.menuHeader.title === accesso ||
+                (g.menuHeader.group === GRUPPO_SERVIZI && this.haVoci([g], mostraUtente))),
+      mostra: mostraUtente
+    }];
 
     // applicativi con voci, nell'ordine dell'enum (le voci lato studio contano per l'applicativo)
     const applicativi = [...new Set(ruoli.flatMap(([voci]) => voci.map(v => v.application)).filter((a): a is ApplicationType => a != null))]
@@ -246,7 +253,7 @@ export class AppComponent implements OnInit {
       const sezioni: SezioneMenu[] = ruoli
         .map(([voci, mostra]) => ({
           gruppi: this.groupMenu(voci.filter(v => (v.application ?? null) === app), voci)
-                      .filter(g => g.menuHeader.title !== accesso),
+                      .filter(g => !primoLivello(g)),
           mostra
         }))
         .filter(s => this.haVoci(s.gruppi, s.mostra));
