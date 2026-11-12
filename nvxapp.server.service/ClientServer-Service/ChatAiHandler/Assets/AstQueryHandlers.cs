@@ -65,15 +65,16 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
             // le prenotazioni già finite di oggi non interessano
             var ora = DateTime.Now;
             var mie = res.Data.Prenotazione
-                .Where(p => p.Mia && p.Stato == (int)AstStatoPrenotazione.Confermata && p.Fine > ora && p.Inizio.Date <= al)
+                .Where(p => p.Mia && (p.Stato == (int)AstStatoPrenotazione.Confermata || p.Stato == (int)AstStatoPrenotazione.InAttesa) && p.Fine > ora && p.Inizio.Date <= al)
                 .OrderBy(p => p.Inizio).ToList();
             if (mie.Count == 0)
                 return CommandResult.Ok(AssetsMessages.Get("ChatMyBookingsNone", testoPeriodo));
 
             return CommandResult.Ok(Elenco(AssetsMessages.Get("ChatMyBookingsTitle", mie.Count, testoPeriodo),
-                mie.Select(p => string.IsNullOrWhiteSpace(p.Titolo)
+                mie.Select(p => (string.IsNullOrWhiteSpace(p.Titolo)
                     ? $"{Fascia(p.Inizio, p.Fine)} {p.Risorsa}"
-                    : $"{Fascia(p.Inizio, p.Fine)} {p.Risorsa} — {p.Titolo}")));
+                    : $"{Fascia(p.Inizio, p.Fine)} {p.Risorsa} — {p.Titolo}")
+                    + (p.Stato == (int)AstStatoPrenotazione.InAttesa ? " " + AssetsMessages.Get("ChatBookingPendingSuffix") : string.Empty))));
         }
     }
 
@@ -140,7 +141,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
                 return CommandResult.Ok(AssetsMessages.Get("ChatNoResources", testoTipo));
 
             var occupate = res.Data.Prenotazione
-                .Where(p => p.Stato == (int)AstStatoPrenotazione.Confermata && p.Inizio < al && p.Fine > dal)
+                .Where(p => (p.Stato == (int)AstStatoPrenotazione.Confermata || p.Stato == (int)AstStatoPrenotazione.InAttesa) && p.Inizio < al && p.Fine > dal)
                 .GroupBy(p => p.IdAst_Risorsa).ToDictionary(g => g.Key, g => g.OrderBy(p => p.Inizio).ToList());
 
             if (start != null)

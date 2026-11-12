@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Assets
 {
     [DbContext(typeof(AssetsDbContext))]
-    [Migration("20261112054656_InitAssets")]
+    [Migration("20261112113059_InitAssets")]
     partial class InitAssets
     {
         /// <inheritdoc />
@@ -434,6 +434,9 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<int>("IdAst_Risorsa")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdDip_GG_Richiesta")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("Inizio")
                         .HasColumnType("timestamp without time zone");
 
@@ -501,6 +504,9 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
+
+                    b.Property<bool>("RichiedeApprovazione")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");

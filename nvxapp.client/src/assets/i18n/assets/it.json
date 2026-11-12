@@ -134,7 +134,8 @@
       "resourceEdit": {
         "title": "Risorsa prenotabile",
         "titleNew": "Nuova risorsa prenotabile",
-        "poolNote": "Si possono scegliere i veicoli della flotta con uso \"pool\"."
+        "poolNote": "Si possono scegliere i veicoli della flotta con uso \"pool\".",
+        "approvalNote": "Con l'approvazione le prenotazioni degli utenti restano in attesa finché un amministratore non le approva nelle Richieste da approvare; quelle degli amministratori sono confermate subito."
       },
       "booking": {
         "title": "Prenotazioni",
@@ -150,7 +151,8 @@
       "bookingEdit": {
         "title": "Prenotazione",
         "titleNew": "Nuova prenotazione",
-        "limits": "Durata massima {{ore}} ore, al massimo {{giorni}} giorni in anticipo. Una risorsa già prenotata nell'orario non si può prenotare."
+        "limits": "Durata massima {{ore}} ore, al massimo {{giorni}} giorni in anticipo. Una risorsa già prenotata nell'orario non si può prenotare.",
+        "pending": "Richiesta inviata: in attesa di approvazione di un amministratore."
       }
     },
     "common": {
@@ -224,6 +226,8 @@
       "dettaglio": "Dettaglio",
       "capienza": "Posti",
       "attiva": "Attiva",
+      "richiedeApprovazione": "Richiede approvazione",
+      "statoPrenotazione": "Stato",
       "quando": "Quando",
       "risorsa": "Risorsa",
       "prenotatoDa": "Prenotato da",
@@ -232,6 +236,12 @@
       "fine": "Fine"
     },
     "enums": {
+      "statoPrenotazione": {
+        "0": "Confermata",
+        "1": "Annullata",
+        "2": "In attesa di approvazione",
+        "3": "Rifiutata"
+      },
       "uso": {
         "0": "Assegnato",
         "1": "Pool (prenotabile)"
@@ -292,12 +302,16 @@
         "2": "Auto in pool"
       }
     },
+    "requests": {
+      "newBooking": "Nuova prenotazione"
+    },
     "widgets": {
       "noData": "Dati non disponibili",
       "myBookings": {
         "title": "Le mie prenotazioni",
         "description": "Le tue prossime prenotazioni di postazioni, sale e auto in pool",
         "today": "Oggi",
+        "pending": "in attesa di approvazione",
         "next": "Prossimi {{n}} giorni",
         "none": "Nessuna prenotazione in programma",
         "open": "Vai alle prenotazioni"

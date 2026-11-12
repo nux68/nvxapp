@@ -7,12 +7,15 @@ namespace nvxapp.server.data.Entities.Tenant.Assets
      Prenotazioni (ANALISI_ASSETS_APPLICATIVO.md, AST-PREN): risorse prenotabili (postazioni, sale, auto in pool) e prenotazioni.
      Conflitti: due prenotazioni confermate della stessa risorsa non si sovrappongono; il controllo sta nel repository
      (Ast_PrenotazioneRepository.SalvaSeLiberaAsync: transazione con lock della risorsa), cosi' vale anche con richieste concorrenti.
-     Senza approvazione (scelta provvisoria AST-D4), con i limiti di durata e anticipo in Ast_Cfg.
+     Con i limiti di durata e anticipo in Ast_Cfg. Approvazione facoltativa per risorsa (AST-D4, ANALISI_INFRASTRUCTURE_RICHIESTE.md):
+     sulle risorse con RichiedeApprovazione la prenotazione di un utente nasce InAttesa con una richiesta collegata in
+     Dip_GG_Richiesta (Common, tipo PrenotazioneRisorsa) e la decide un amministratore dell'azienda nelle richieste comuni
+     (/requestsadmin); le InAttesa occupano gia' la fascia oraria. Lo stato della prenotazione segue l'esito della richiesta.
     */
 
     public enum AstTipoRisorsa { Postazione = 0, Sala = 1, AutoPool = 2 }
 
-    public enum AstStatoPrenotazione { Confermata = 0, Annullata = 1 }
+    public enum AstStatoPrenotazione { Confermata = 0, Annullata = 1, InAttesa = 2, Rifiutata = 3 }
 
     public class Ast_Risorsa : BaseEntity
     {
@@ -37,6 +40,9 @@ namespace nvxapp.server.data.Entities.Tenant.Assets
         public Ast_Veicolo? Ast_VeicoloNavigation { get; set; }
 
         public bool Attiva { get; set; } = true;
+
+        // le prenotazioni degli utenti (non amministratori) vanno approvate da un amministratore dell'azienda
+        public bool RichiedeApprovazione { get; set; }
 
         [MaxLength(500)]
         public string? Note { get; set; }
@@ -68,5 +74,9 @@ namespace nvxapp.server.data.Entities.Tenant.Assets
         public AstStatoPrenotazione Stato { get; set; }
 
         public DateTime? DataAnnullamento { get; set; }
+
+        // richiesta di approvazione collegata (Dip_GG_Richiesta in Common, tipo PrenotazioneRisorsa): decisione, chi ha deciso
+        // e motivo del rifiuto stanno nella sua cronologia. Senza navigazione: la tabella e' di un altro schema
+        public int? IdDip_GG_Richiesta { get; set; }
     }
 }

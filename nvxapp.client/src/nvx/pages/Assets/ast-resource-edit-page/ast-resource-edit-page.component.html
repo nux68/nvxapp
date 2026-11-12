@@ -22,6 +22,8 @@
           <ion-note class="nvx-nota-disabled">{{ 'ast.pages.resourceEdit.poolNote' | transloco }}</ion-note>
         }
         <ion-item><ion-toggle formControlName="attiva">{{ 'ast.fields.attiva' | transloco }}</ion-toggle></ion-item>
+        <ion-item><ion-toggle formControlName="richiedeApprovazione">{{ 'ast.fields.richiedeApprovazione' | transloco }}</ion-toggle></ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'ast.pages.resourceEdit.approvalNote' | transloco }}</ion-note>
         <ion-item><ion-textarea formControlName="note" rows="3" maxlength="500" [autoGrow]="true" [label]="'ast.fields.note' | transloco" labelPlacement="floating"></ion-textarea></ion-item>
       </form>
     </ion-card-content>

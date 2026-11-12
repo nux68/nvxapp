@@ -55,6 +55,8 @@ export class AstBookingPageComponent {
       { key: 'risorsa', title: t('ast.fields.risorsa'), mobile: 'title' },
       { key: 'utente', title: t('ast.fields.prenotatoDa'), mobile: 'subtitle', value: x => x.utente ?? t('ast.pages.booking.busy') },
       { key: 'titolo', title: t('ast.fields.titolo'), mobile: 'hidden' },
+      // approvazione (risorse con RichiedeApprovazione): in attesa o rifiutata, con il motivo; vuoto se confermata
+      { key: 'stato', title: t('ast.fields.statoPrenotazione'), mobile: 'note', value: x => this.stato(x) },
     ];
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: P.AstPrenotazioneModel) => this.apri(x);
@@ -112,6 +114,14 @@ export class AstBookingPageComponent {
       state: { item: x ? { ...x } : null, risorse: this.dati?.risorsa ?? [], idRisorsa: this.idRisorsa,
                durataMaxOre: this.dati?.durataMaxOre ?? 0, anticipoMaxGiorni: this.dati?.anticipoMaxGiorni ?? 0 }
     });
+  }
+
+  public stato(x: P.AstPrenotazioneModel): string {
+    if (x.stato === P.AstStatoPrenotazione.InAttesa)
+      return this.transloco.translate('ast.enums.statoPrenotazione.2');
+    if (x.stato === P.AstStatoPrenotazione.Rifiutata)
+      return this.transloco.translate('ast.enums.statoPrenotazione.3') + (x.motivoRifiuto ? ': ' + x.motivoRifiuto : '');
+    return '';
   }
 
   private async annulla(x: P.AstPrenotazioneModel) {

@@ -48,6 +48,7 @@ export class AstResourceEditPageComponent extends BasePageConfirmCancelComponent
       capienza: [null],
       idAst_Veicolo: [null],
       attiva: [true],
+      richiedeApprovazione: [false],
       note: [null, [Validators.maxLength(500)]],
     });
   }
