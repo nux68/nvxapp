@@ -1,0 +1,35 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (errore) {
+  <div class="nvx-w-empty">{{ 'ast.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.primary]="oggi > 0" (click)="apri()">
+      <div class="valore">{{ oggi }}</div>
+      <div class="etichetta">{{ 'ast.widgets.myBookings.today' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" (click)="apri()">
+      <div class="valore">{{ totale }}</div>
+      <div class="etichetta">{{ 'ast.widgets.myBookings.next' | transloco: { n: giorni } }}</div>
+    </div>
+  </div>
+
+  @if (prossime.length === 0) {
+    <div class="nvx-w-empty">{{ 'ast.widgets.myBookings.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-ast-list">
+      @for (p of prossime; track p.id) {
+        <li>
+          <button type="button" (click)="apri()">
+            <span class="desc">
+              {{ p.risorsa }}{{ p.titolo ? ' · ' + p.titolo : '' }}
+              <div class="nvx-ast-sub">{{ periodo(p) }}</div>
+            </span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'ast.widgets.myBookings.open' | transloco }}</button>
+}

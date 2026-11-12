@@ -291,6 +291,47 @@
         "1": "Room",
         "2": "Pool car"
       }
+    },
+    "widgets": {
+      "noData": "Data not available",
+      "myBookings": {
+        "title": "My bookings",
+        "description": "Your upcoming bookings of desks, rooms and pool cars",
+        "today": "Today",
+        "next": "Next {{n}} days",
+        "none": "No bookings scheduled",
+        "open": "Go to bookings"
+      },
+      "mine": {
+        "title": "My resources",
+        "description": "Goods and vehicle assigned to you, reports to confirm and fines to pay",
+        "goods": "Goods assigned",
+        "vehicles": "Vehicles assigned",
+        "reportsToConfirm": "Reports to confirm",
+        "fines": "Notified fines to pay: {{n}}",
+        "vehicle": "Vehicle",
+        "good": "Good",
+        "none": "No goods or vehicles assigned",
+        "open": "My resources"
+      },
+      "fleet": {
+        "title": "Fleet deadlines",
+        "description": "Overdue or upcoming road tax, insurance, inspection, service and contract deadlines; fines to notify",
+        "expired": "Overdue",
+        "expiring": "Within {{n}} days",
+        "fines": "Fines to notify to drivers: {{n}}",
+        "none": "No upcoming deadlines",
+        "noVehicles": "No active vehicles",
+        "open": "Go to vehicles"
+      },
+      "toReturn": {
+        "title": "To be returned",
+        "description": "Goods and vehicles still assigned to employees who have left",
+        "goods": "Goods",
+        "vehicles": "Vehicles",
+        "none": "No pending returns",
+        "open": "Go to goods"
+      }
     }
   }
 }
