@@ -15,6 +15,8 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         public string? Veicolo { get; set; }
         public bool Attiva { get; set; } = true;
         public string? Note { get; set; }
+        /// <summary>le prenotazioni degli utenti vanno approvate da un amministratore</summary>
+        public bool RichiedeApprovazione { get; set; }
     }
 
     public class Ast_PrenotazioneModel
@@ -27,12 +29,15 @@ namespace nvxapp.server.service.ClientServer_Service.Assets.Models
         public DateTime Fine { get; set; }
         public string? Titolo { get; set; }
         public string? Note { get; set; }
+        /// <summary>AstStatoPrenotazione: 0 confermata, 1 annullata, 2 in attesa di approvazione, 3 rifiutata</summary>
         public int Stato { get; set; }
+        /// <summary>motivo del rifiuto (solo per le proprie e per gli amministratori)</summary>
+        public string? MotivoRifiuto { get; set; }
         /// <summary>prenotazione dell'utente collegato</summary>
         public bool Mia { get; set; }
         /// <summary>chi ha prenotato: solo per le proprie e per gli amministratori</summary>
         public string? Utente { get; set; }
-        /// <summary>l'utente la puo' modificare o annullare (sua o amministratore, non passata, confermata)</summary>
+        /// <summary>l'utente la puo' modificare o annullare (sua o amministratore, non passata, confermata o in attesa)</summary>
         public bool Modificabile { get; set; }
     }
 

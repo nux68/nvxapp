@@ -4,6 +4,8 @@ import { AstLookupModel } from './ast-flotta-model';
 
 // ---------------------------------------------------------------- prenotazioni (AST-PREN)
 export enum AstTipoRisorsa { Postazione = 0, Sala = 1, AutoPool = 2 }
+/** stato della prenotazione: InAttesa e Rifiutata solo sulle risorse con approvazione (ANALISI_INFRASTRUCTURE_RICHIESTE.md) */
+export enum AstStatoPrenotazione { Confermata = 0, Annullata = 1, InAttesa = 2, Rifiutata = 3 }
 
 export class AstRisorsaModel {
   public id = 0;
@@ -16,6 +18,8 @@ export class AstRisorsaModel {
   public veicolo: string | null = null;
   public attiva = true;
   public note: string | null = null;
+  /** le prenotazioni degli utenti vanno approvate da un amministratore */
+  public richiedeApprovazione = false;
 }
 
 export class AstPrenotazioneModel {
@@ -28,6 +32,8 @@ export class AstPrenotazioneModel {
   public titolo: string | null = null;
   public note: string | null = null;
   public stato = 0;
+  /** motivo del rifiuto (proprie e amministratori) */
+  public motivoRifiuto: string | null = null;
   public mia = false;
   public utente: string | null = null;
   public modificabile = false;

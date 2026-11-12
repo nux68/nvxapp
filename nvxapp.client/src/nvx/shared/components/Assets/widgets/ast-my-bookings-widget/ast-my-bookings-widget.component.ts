@@ -3,7 +3,7 @@ import { NavController, IonSpinner } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { GenericRequest } from '../../../../../ClientServer-Service/ModelsBase/generic-request';
 import { AstService } from '../../../../../ClientServer-Service/Assets/ast.service';
-import { AstPrenotazioneListInModel, AstPrenotazioneModel } from '../../../../../ClientServer-Service/Assets/Models/ast-prenotazioni-model';
+import { AstPrenotazioneListInModel, AstPrenotazioneModel, AstStatoPrenotazione } from '../../../../../ClientServer-Service/Assets/Models/ast-prenotazioni-model';
 import { AstFormatService, astDataOraLocale, astOggi } from '../../../../../Utility/Assets/ast-format.service';
 
 /*
@@ -36,7 +36,8 @@ export class AstMyBookingsWidgetComponent {
     this.astService.PrenotazioneList(request).subscribe({
       next: res => {
         if (res.success && res.data) {
-          const mie = res.data.prenotazione.filter(p => p.mia);
+          // confermate e in attesa di approvazione (indicate); le rifiutate restano nella pagina delle prenotazioni
+          const mie = res.data.prenotazione.filter(p => p.mia && p.stato !== AstStatoPrenotazione.Rifiutata);
           const oggi = astOggi();
           this.oggi = mie.filter(p => p.inizio?.substring(0, 10) === oggi).length;
           this.totale = mie.length;
@@ -54,6 +55,10 @@ export class AstMyBookingsWidgetComponent {
   public periodo(p: AstPrenotazioneModel): string {
     const stessoGiorno = p.inizio?.substring(0, 10) === p.fine?.substring(0, 10);
     return this.fmt.dataOra(p.inizio) + ' - ' + (stessoGiorno ? this.fmt.ora(p.fine) : this.fmt.dataOra(p.fine));
+  }
+
+  public inAttesa(p: AstPrenotazioneModel): boolean {
+    return p.stato === AstStatoPrenotazione.InAttesa;
   }
 
   public apri(): void {
