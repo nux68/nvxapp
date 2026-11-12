@@ -163,7 +163,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     var idDip_RapportoLavoro = new List<int>();
                     idDip_RapportoLavoro.Add(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
 
-                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month, vistaApprovatore: userId != this.CurrentUserId);
 
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
@@ -197,7 +197,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x => x.Id).ToList();
                     List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
 
-                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month, vistaApprovatore: true);
 
                     // filtro sulla fase corrente (revoca se presente, altrimenti richiesta); l'ordine resta quello di Get_Dip_GG_Richiesta
                     if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.DaApprovare)
@@ -1310,7 +1310,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             return dip_GG_Giustificativi;
         }
-        private async Task<List<Dip_GG_Richiesta>> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month)
+        // vistaApprovatore: con l'approvazione multipla (AllAdmin / AllAdminHierarchy) l'approvatore vede la fase corrente con il
+        // proprio stato e, in gerarchia, solo quando tocca a lui; la vista del richiedente (GetAll4User) mostra le richieste
+        // cosi' come sono, anche se il richiedente e' a sua volta un approvatore (RICH-AT.4); il cartellino di un altro
+        // dipendente (GetAll4User con IdAspNetUsers, amministratori) e' una vista da approvatore
+        private async Task<List<Dip_GG_Richiesta>> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month, bool vistaApprovatore)
         {
 
             var richiesta = new List<Dip_GG_Richiesta>();
@@ -1338,7 +1342,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 if (richiesta.Count > 0)
                 {
-                    if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy || resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin)
+                    if (vistaApprovatore && (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy || resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin))
                     {
                         var richiesta_tmp = new List<Dip_GG_Richiesta>();
 

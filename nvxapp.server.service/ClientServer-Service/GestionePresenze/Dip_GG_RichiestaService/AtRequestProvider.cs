@@ -161,6 +161,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, false);
             if (!res.Success)
                 throw new UserMessageException(string.Join(" ", res.Messages.Where(m => m.MsgType == MessageType.Exception).Select(m => m.Text)));
+            // SetState ignora le richieste inesistenti e le fasi gia' decise: per chi agisce dalla pagina e' "non trovata"
+            if (res.Data == null || !res.Data.Dip_GG_Richiesta.Any(x => x.Id == idRichiesta))
+                throw new UserMessageException(InfrastructureMessages.Get("RequestNotFound"));
         }
 
         private static bool InCorso(StatoRichiesta s)
