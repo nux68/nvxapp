@@ -1,0 +1,7 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+.nvx-ctw-info {
+  margin-top: 10px;
+}

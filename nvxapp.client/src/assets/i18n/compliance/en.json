@@ -175,6 +175,50 @@
       "fonte": "Area",
       "chiusa": "Closed"
     },
+    "widgets": {
+      "noData": "Data not available",
+      "deadlines": {
+        "title": "Compliance deadlines",
+        "description": "Workplace safety and GDPR deadlines expired or coming up, by type (courses, medical visits, appointments, documents, processors, breaches)",
+        "expired": "Expired",
+        "expiring": "Within {{n}} days",
+        "expiredN": "{{n}} expired",
+        "expiringN": "{{n}} expiring",
+        "none": "No deadlines to check",
+        "open": "Open workplace safety"
+      },
+      "training": {
+        "title": "Mandatory training",
+        "description": "Courses required by job roles that are missing, expired or expiring, and employees not compliant",
+        "missing": "Missing",
+        "expired": "Expired",
+        "expiring": "Expiring",
+        "employees": "{{n}} of {{tot}} employees not compliant",
+        "none": "No mandatory courses: assign job roles to employees and required courses to job roles",
+        "open": "Training status"
+      },
+      "gdpr": {
+        "title": "GDPR register",
+        "description": "Breaches to notify to the authority, processor contracts expiring, active processing activities",
+        "toNotify": "Breaches to notify",
+        "processors": "Processors to renew",
+        "overdue": "{{n}} past the 72-hour deadline",
+        "treatments": "{{n}} active processing activities ({{p}} with special categories)",
+        "breaches12": "{{n}} breaches in the last 12 months",
+        "open": "Open the GDPR register"
+      },
+      "mine": {
+        "title": "My compliance",
+        "description": "Your expiring courses, PPE to confirm and the date of your next medical visit",
+        "courses": "Courses to renew",
+        "ppeToConfirm": "PPE to confirm",
+        "nextVisit": "Next medical visit by {{data}}",
+        "noVisit": "No medical visit scheduled",
+        "appointments": "Current appointments: {{n}}",
+        "notEmployee": "Your user is not linked to an employee of the company",
+        "open": "Open my compliance"
+      }
+    },
     "enums": {
       "corso": {
         "0": "General training",

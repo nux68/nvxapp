@@ -175,6 +175,50 @@
       "fonte": "Area",
       "chiusa": "Chiusa"
     },
+    "widgets": {
+      "noData": "Dati non disponibili",
+      "deadlines": {
+        "title": "Scadenze Compliance",
+        "description": "Scadenze di sicurezza sul lavoro e GDPR scadute o in arrivo, per tipo (corsi, visite, nomine, documenti, responsabili esterni, violazioni)",
+        "expired": "Scadute",
+        "expiring": "Entro {{n}} giorni",
+        "expiredN": "{{n}} scadute",
+        "expiringN": "{{n}} in scadenza",
+        "none": "Nessuna scadenza da guardare",
+        "open": "Apri Sicurezza sul lavoro"
+      },
+      "training": {
+        "title": "Formazione obbligatoria",
+        "description": "Corsi richiesti dalle mansioni mancanti, scaduti o in scadenza e dipendenti non in regola",
+        "missing": "Mancanti",
+        "expired": "Scaduti",
+        "expiring": "In scadenza",
+        "employees": "{{n}} dipendenti non in regola su {{tot}}",
+        "none": "Nessun corso obbligatorio: assegna le mansioni ai dipendenti e i corsi richiesti alle mansioni",
+        "open": "Situazione della formazione"
+      },
+      "gdpr": {
+        "title": "Registro GDPR",
+        "description": "Violazioni da notificare al Garante, contratti dei responsabili esterni in scadenza, trattamenti attivi",
+        "toNotify": "Violazioni da notificare",
+        "processors": "Responsabili esterni da rinnovare",
+        "overdue": "{{n}} oltre il termine delle 72 ore",
+        "treatments": "{{n}} trattamenti attivi ({{p}} con dati particolari)",
+        "breaches12": "{{n}} violazioni negli ultimi 12 mesi",
+        "open": "Apri il registro GDPR"
+      },
+      "mine": {
+        "title": "I miei adempimenti",
+        "description": "I tuoi corsi in scadenza, i DPI da confermare e la data della prossima visita medica",
+        "courses": "Corsi da rinnovare",
+        "ppeToConfirm": "DPI da confermare",
+        "nextVisit": "Prossima visita medica entro il {{data}}",
+        "noVisit": "Nessuna visita medica in programma",
+        "appointments": "Nomine in corso: {{n}}",
+        "notEmployee": "Il tuo utente non e' collegato a un dipendente dell'azienda",
+        "open": "Apri i miei adempimenti"
+      }
+    },
     "enums": {
       "corso": {
         "0": "Formazione generale",
