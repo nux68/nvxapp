@@ -102,13 +102,13 @@ Il servizio si registra da solo (scansione dell'assembly dei servizi in `Install
 
 | # | Punto | Stato |
 |---|---|---|
-| AST-W.1 | Endpoint `Ast_Widget/Ast_WidgetFlottaGet` (servizio, modelli, controller, testo `WidgetContractDeadline` it/en) | ✅ fatta, da mergiare |
-| AST-W.2 | Widget `assets.myBookings` (Le mie prenotazioni) | ✅ fatta, da mergiare |
-| AST-W.3 | Widget `assets.mine` (Le mie risorse) | ✅ fatta, da mergiare |
-| AST-W.4 | Widget `assets.fleet` (Scadenze della flotta) | ✅ fatta, da mergiare |
-| AST-W.5 | Widget `assets.toReturn` (Da restituire) | ✅ fatta, da mergiare |
-| AST-W.6 | Registrazione nel catalogo `widget-assets.service.ts` (ruoli, predefiniti, zorder 700000) | ✅ fatta, da mergiare |
-| AST-W.7 | Traduzioni `ast.widgets` it/en | ✅ fatta, da mergiare |
-| AST-W.8 | Build server (`dotnet build`) e client (`ng build`) sul ramo Assets | ✅ fatta |
-| AST-W.9 | Merge nella catena (Assets_Dev → Assets → AllFunction_Dev → AllFunction) | ⏳ da fare (su richiesta) |
+| AST-W.1 | Endpoint `Ast_Widget/Ast_WidgetFlottaGet` (servizio, modelli, controller, testo `WidgetContractDeadline` it/en) | ✅ fatta, mergiata |
+| AST-W.2 | Widget `assets.myBookings` (Le mie prenotazioni) | ✅ fatta, mergiata |
+| AST-W.3 | Widget `assets.mine` (Le mie risorse) | ✅ fatta, mergiata |
+| AST-W.4 | Widget `assets.fleet` (Scadenze della flotta) | ✅ fatta, mergiata |
+| AST-W.5 | Widget `assets.toReturn` (Da restituire) | ✅ fatta, mergiata |
+| AST-W.6 | Registrazione nel catalogo `widget-assets.service.ts` (ruoli, predefiniti, zorder 700000) | ✅ fatta, mergiata |
+| AST-W.7 | Traduzioni `ast.widgets` it/en | ✅ fatta, mergiata |
+| AST-W.8 | Build server (`dotnet build`) e client (`ng build`) sul ramo Assets | ✅ fatta, mergiata |
+| AST-W.9 | Merge nella catena (Assets_Dev → Assets → AllFunction_Dev → AllFunction) | ✅ fatta (12/11/2026) |
 | AST-W.10 | Prova nell'applicativo con dati reali (azienda con Risorse aziendali attivo, utente e amministratore) | ⏳ da fare |
