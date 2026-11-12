@@ -420,9 +420,6 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<DateTime?>("DataAnnullamento")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime?>("DataDecisione")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<DateTime>("Fine")
                         .HasColumnType("timestamp without time zone");
 
@@ -431,11 +428,10 @@ namespace nvxapp.server.data.Migrations.Assets
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
-                    b.Property<string>("IdAspNetUsersDecisione")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)");
-
                     b.Property<int>("IdAst_Risorsa")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDip_GG_Richiesta")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Inizio")
@@ -444,16 +440,9 @@ namespace nvxapp.server.data.Migrations.Assets
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("MotivoRifiuto")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<bool>("RichiestaApprovazione")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("Stato")
                         .HasColumnType("integer");

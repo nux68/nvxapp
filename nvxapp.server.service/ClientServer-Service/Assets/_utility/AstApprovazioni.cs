@@ -1,49 +1,132 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.Assets;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.Assets;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.Notification;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Request;
 using Serilog;
 
 namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 {
     /*
-     Approvazione delle prenotazioni (AST-D4, ANALISI_INFRASTRUCTURE_RICHIESTE.md RICH-AST): parti comuni al servizio delle
-     prenotazioni e al provider delle richieste comuni (AstRequestProvider).
-        - approvano gli amministratori dell'azienda (CompanyPowerAdmin, CompanyAdmin): basta uno
-        - scadenza: una richiesta ancora InAttesa all'ora di inizio diventa Annullata, con notifica al richiedente.
-          Si applica in modo pigro (ScadiAsync) all'inizio di elenchi, contatori e salvataggi delle prenotazioni e delle
-          richieste: i contatori del menu (RequestCount) si ricalcolano a ogni login e a ogni evento delle richieste, quindi la
-          regola scatta appena qualcuno dell'azienda usa l'app, senza un servizio in background che apra gli schemi di tutte
-          le aziende ogni pochi minuti (quello giornaliero delle restituzioni sarebbe troppo lento per una fascia oraria)
-        - notifiche nella categoria comune "richieste" (rispettano Ast_Cfg.NotificheAttive); dopo ogni cambio l'avviso
-          SignalR "RequestNotifier" a richiedente e amministratori (contatori e pagine delle richieste)
+     Approvazione delle prenotazioni (AST-D4, AST-RICH; ANALISI_INFRASTRUCTURE_RICHIESTE.md §3bis): parti comuni al servizio
+     delle prenotazioni e al gestore delle richieste comuni (AstRichiestaTipoHandler).
+        - la richiesta sta in Dip_GG_Richiesta (Common, tipo PrenotazioneRisorsa, Dati = {"idAst_Prenotazione": n}) e il ciclo
+          (approvatori = amministratori dell'azienda, notifiche "richieste", SignalR "RequestNotifier") lo fa il motore comune
+          RichiestaCommonService; qui si tiene allineato lo stato della prenotazione (InAttesa / Confermata / Rifiutata / Annullata)
+        - scadenza: una richiesta ancora in attesa all'ora di inizio si annulla (motore: ScadiAsync, con notifica al richiedente)
+          e la prenotazione diventa Annullata. Si applica in modo pigro (ScadiAsync) all'inizio di elenchi, salvataggi e azioni
+          delle prenotazioni e, tramite AstRichiestaTipoHandler.StrategiaAsync, a ogni conteggio ed elenco delle richieste comuni
+          (i contatori del menu si ricalcolano a ogni login e a ogni evento delle richieste): niente servizio in background che
+          apra gli schemi di tutte le aziende ogni pochi minuti
     */
     public class AstApprovazioni : IAstApprovazioni
     {
-        public const string UrlRichieste = "/requests";
-        public const string UrlRichiesteAdmin = "/requestsadmin";
-
         private readonly IAst_PrenotazioneRepository _Ast_Prenotazione;
+        private readonly IDip_GG_RichiestaCommonRepository _Dip_GG_Richiesta;
+        private readonly IRichiestaCommonService _richieste;
         private readonly IAstUtility _utility;
-        private readonly ICompanyRecipients _companyRecipients;
-        private readonly IRequestNotifier _requestNotifier;
         private readonly IAst_Dip_AnagraficaReadRepository _Dip_Anagrafica;
         private readonly IAspNetUsersRepository _aspNetUsersRepository;
 
-        public AstApprovazioni(IAst_PrenotazioneRepository ast_PrenotazioneRepository, IAstUtility utility,
-                               ICompanyRecipients companyRecipients, IRequestNotifier requestNotifier,
+        public AstApprovazioni(IAst_PrenotazioneRepository ast_PrenotazioneRepository, IDip_GG_RichiestaCommonRepository dip_GG_RichiestaRepository,
+                               IRichiestaCommonService richieste, IAstUtility utility,
                                IAst_Dip_AnagraficaReadRepository dip_AnagraficaRepository, IAspNetUsersRepository aspNetUsersRepository)
         {
+            _Ast_Prenotazione = ast_PrenotazioneRepository;
+            _Dip_GG_Richiesta = dip_GG_RichiestaRepository;
+            _richieste = richieste;
+            _utility = utility;
             _Dip_Anagrafica = dip_AnagraficaRepository;
             _aspNetUsersRepository = aspNetUsersRepository;
-            _Ast_Prenotazione = ast_PrenotazioneRepository;
-            _utility = utility;
-            _companyRecipients = companyRecipients;
-            _requestNotifier = requestNotifier;
         }
+
+        // ------------------------------------------------------------------------------------------------ dati della richiesta
+
+        public static string Dati(int idAst_Prenotazione) => JsonSerializer.Serialize(new DatiRichiesta { idAst_Prenotazione = idAst_Prenotazione });
+
+        public static int? IdPrenotazione(Dip_GG_Richiesta r)
+        {
+            try
+            {
+                return string.IsNullOrWhiteSpace(r.Dati) ? null : JsonSerializer.Deserialize<DatiRichiesta>(r.Dati)?.idAst_Prenotazione;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
+        }
+
+        private sealed class DatiRichiesta
+        {
+            public int idAst_Prenotazione { get; set; }
+        }
+
+        /// <summary>descrizione della prenotazione negli avvisi del motore (risorsa e periodo)</summary>
+        public async Task<RichiestaAvviso> AvvisoAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa)
+            => new RichiestaAvviso
+            {
+                Descrizione = AssetsMessages.Get("RequestBookingDescription", risorsa, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")),
+                Notifica = (await _utility.CfgAsync(ctx)).NotificheAttive,
+            };
+
+        // ------------------------------------------------------------------------------------------------ ciclo
+
+        public async Task CreaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, Func<Task>? compensa = null)
+        {
+            // la prenotazione e' gia' salvata (InAttesa, fascia occupata): se la richiesta non si crea (es. nessun amministratore
+            // oltre al richiedente) si compensa: la nuova prenotazione si toglie, una modificata torna com'era (compensa)
+            try
+            {
+                var r = await _richieste.CreaAsync(new RichiestaNuova
+                {
+                    Tipo = TipoRichiesta.PrenotazioneRisorsa,
+                    IdDip_Anagrafica = await _utility.MioDipendenteAsync(ctx),
+                    Dal = p.Inizio,
+                    Al = p.Fine,
+                    Dati = Dati(p.Id),
+                    Avviso = await AvvisoAsync(ctx, p, risorsa),
+                });
+                p.IdDip_GG_Richiesta = r.Id;
+                await _Ast_Prenotazione.FindAll(x => x.Id == p.Id).ExecuteUpdateAsync(u => u.SetProperty(x => x.IdDip_GG_Richiesta, r.Id));
+            }
+            catch
+            {
+                if (compensa != null)
+                    await compensa();
+                else
+                    await _Ast_Prenotazione.FindAll(x => x.Id == p.Id).ExecuteDeleteAsync();
+                throw;
+            }
+        }
+
+        /// <summary>Modifica di una prenotazione ancora in attesa: la stessa richiesta segue il nuovo periodo.</summary>
+        public async Task AggiornaPeriodoAsync(Dip_GG_Richiesta r, Ast_Prenotazione p)
+        {
+            r.Data = p.Inizio;
+            r.DataA = p.Fine;
+            await _Dip_GG_Richiesta.UpdateAsync(r);
+        }
+
+        public async Task ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa)
+            => await _richieste.ApprovaAsync(r, await AvvisoAsync(ctx, p, risorsa));
+
+        public async Task RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo)
+            => await _richieste.RifiutaAsync(r, motivo, await AvvisoAsync(ctx, p, risorsa));
+
+        /// <summary>Annulla la richiesta aperta (o approvata) del richiedente collegata alla prenotazione, se c'e'.</summary>
+        public async Task AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa)
+        {
+            var r = await RichiestaAsync(p.IdDip_GG_Richiesta);
+            if (r != null && r.IdAspNetUsers == ctx.IdUtente && (RichiestaRegole.InAttesa(r) || r.RichiestaStato == StatoRichiesta.Approvata))
+                await _richieste.AnnullaAsync(r, await AvvisoAsync(ctx, p, risorsa));
+        }
+
+        public async Task<Dip_GG_Richiesta?> RichiestaAsync(int? idDip_GG_Richiesta)
+            => idDip_GG_Richiesta == null ? null : await _Dip_GG_Richiesta.FindAll(x => x.Id == idDip_GG_Richiesta).FirstOrDefaultAsync();
 
         public async Task ScadiAsync(AstContesto ctx)
         {
@@ -65,48 +148,41 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
 
             foreach (var p in scadute)
             {
-                var risorsa = p.Ast_RisorsaNavigation!.Descrizione;
-                await NotificaAsync(ctx, new[] { p.IdAspNetUsers }, AssetsMessages.Get("BookingExpiredTitle", risorsa),
-                                    AssetsMessages.Get("BookingExpiredText", risorsa, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")), UrlRichieste);
-            }
-            await AvvisaAsync(ctx, scadute.Select(x => x.IdAspNetUsers), null);
-        }
-
-        public async Task NuovaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, string richiedente)
-        {
-            var admin = await _companyRecipients.AdminsAsync(ctx.IdCompany);
-            await NotificaAsync(ctx, admin.Where(x => x != p.IdAspNetUsers), AssetsMessages.Get("BookingPendingNewTitle", risorsa),
-                                AssetsMessages.Get("BookingPendingNewText", richiedente, risorsa, p.Inizio.ToString("dd/MM/yyyy HH:mm"), p.Fine.ToString("HH:mm")),
-                                UrlRichiesteAdmin);
-            await AvvisaAsync(ctx, new[] { p.IdAspNetUsers }, p.Id, admin);
-        }
-
-        public async Task EsitoAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa)
-        {
-            string inizio = p.Inizio.ToString("dd/MM/yyyy HH:mm"), fine = p.Fine.ToString("HH:mm");
-            if (p.Stato == AstStatoPrenotazione.Confermata)
-                await NotificaAsync(ctx, new[] { p.IdAspNetUsers }, AssetsMessages.Get("BookingApprovedTitle", risorsa),
-                                    AssetsMessages.Get("BookingApprovedText", risorsa, inizio, fine), UrlRichieste);
-            else if (p.Stato == AstStatoPrenotazione.Rifiutata)
-                await NotificaAsync(ctx, new[] { p.IdAspNetUsers }, AssetsMessages.Get("BookingRejectedTitle", risorsa),
-                                    AssetsMessages.Get("BookingRejectedText", risorsa, inizio, fine)
-                                    + (string.IsNullOrEmpty(p.MotivoRifiuto) ? string.Empty : " " + AssetsMessages.Get("BookingRejectedReason", p.MotivoRifiuto)),
-                                    UrlRichieste);
-            await AvvisaAsync(ctx, new[] { p.IdAspNetUsers }, p.Id);
-        }
-
-        public async Task AvvisaAsync(AstContesto ctx, IEnumerable<string> utenti, int? idPrenotazione, List<string>? admin = null)
-        {
-            try
-            {
-                admin ??= await _companyRecipients.AdminsAsync(ctx.IdCompany);
-                await _requestNotifier.NotifyAsync(utenti.Concat(admin), idPrenotazione == null ? null : AstRequestProvider.PrefixAst + ":" + idPrenotazione);
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "Prenotazioni: avviso delle richieste non inviato");
+                try
+                {
+                    var r = await RichiestaAsync(p.IdDip_GG_Richiesta);
+                    if (r != null)
+                        await _richieste.ScadiAsync(r, await AvvisoAsync(ctx, p, p.Ast_RisorsaNavigation!.Descrizione), ctx.IdCompany);
+                }
+                catch (Exception ex)
+                {
+                    // la prenotazione e' gia' annullata: l'errore resta nel log, la richiesta si puo' annullare dalle pagine
+                    Log.Warning(ex, "Prenotazione {Id}: scadenza della richiesta non registrata", p.Id);
+                }
             }
         }
+
+        // ------------------------------------------------------------------------------------------------ letture
+
+        /// <summary>motivo del rifiuto (dalla cronologia della richiesta) per le prenotazioni rifiutate, per id di prenotazione</summary>
+        public async Task<Dictionary<int, string>> MotiviAsync(IEnumerable<Ast_Prenotazione> prenotazioni)
+        {
+            var rifiutate = prenotazioni.Where(x => x.Stato == AstStatoPrenotazione.Rifiutata && x.IdDip_GG_Richiesta != null).ToList();
+            if (rifiutate.Count == 0)
+                return new Dictionary<int, string>();
+            var ids = rifiutate.Select(x => x.IdDip_GG_Richiesta!.Value).Distinct().ToList();
+            var richieste = await _Dip_GG_Richiesta.FindAll(x => ids.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
+            var res = new Dictionary<int, string>();
+            foreach (var p in rifiutate)
+                if (richieste.TryGetValue(p.IdDip_GG_Richiesta!.Value, out var r) && Motivo(r) is string m)
+                    res[p.Id] = m;
+            return res;
+        }
+
+        public static string? Motivo(Dip_GG_Richiesta r)
+            => RichiestaRegole.Cronologia(r.RichiestaApprovazioneData)
+                              .Where(x => x.RichiestaStato == StatoRichiesta.Rifiutata && !string.IsNullOrWhiteSpace(x.Motivo))
+                              .OrderByDescending(x => x.Data).Select(x => x.Motivo).FirstOrDefault();
 
         // nominativo (dipendente) o nome utente di chi ha prenotato
         public async Task<Dictionary<string, string>> NomiAsync(AstContesto ctx, IEnumerable<string> utenti)
@@ -121,35 +197,30 @@ namespace nvxapp.server.service.ClientServer_Service.Assets._utility
                     nomi[u.Id] = u.UserName ?? string.Empty;
             return nomi;
         }
-
-        private async Task NotificaAsync(AstContesto ctx, IEnumerable<string> utenti, string titolo, string messaggio, string url)
-        {
-            try
-            {
-                await _utility.NotificaAsync(ctx, NotificationCategory.Richieste, utenti, titolo, messaggio, url);
-            }
-            catch (Exception ex)
-            {
-                // la notifica non annulla l'operazione gia' salvata
-                Log.Warning(ex, "Prenotazioni: notifica non inviata ({Titolo})", titolo);
-            }
-        }
     }
 
     public interface IAstApprovazioni
     {
-        /// <summary>Richieste ancora in attesa con inizio passato: annullate, con notifica al richiedente.</summary>
+        Task<RichiestaAvviso> AvvisoAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa);
+
+        /// <summary>Richiesta di approvazione per la prenotazione (gia' salvata InAttesa); se non si crea, la prenotazione si toglie.</summary>
+        Task CreaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, Func<Task>? compensa = null);
+
+        Task AggiornaPeriodoAsync(Dip_GG_Richiesta r, Ast_Prenotazione p);
+
+        Task ApprovaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa);
+
+        Task RifiutaRichiestaAsync(AstContesto ctx, Dip_GG_Richiesta r, Ast_Prenotazione p, string risorsa, string? motivo);
+
+        Task AnnullaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa);
+
+        Task<Dip_GG_Richiesta?> RichiestaAsync(int? idDip_GG_Richiesta);
+
+        /// <summary>Prenotazioni in attesa con inizio passato: annullate, con la scadenza della richiesta (notifica al richiedente).</summary>
         Task ScadiAsync(AstContesto ctx);
 
-        /// <summary>Nuova richiesta (o modifica che la riporta in attesa): notifica agli amministratori e avviso SignalR.</summary>
-        Task NuovaRichiestaAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa, string richiedente);
-
-        /// <summary>Esito (approvata / rifiutata) al richiedente e avviso SignalR.</summary>
-        Task EsitoAsync(AstContesto ctx, Ast_Prenotazione p, string risorsa);
+        Task<Dictionary<int, string>> MotiviAsync(IEnumerable<Ast_Prenotazione> prenotazioni);
 
         Task<Dictionary<string, string>> NomiAsync(AstContesto ctx, IEnumerable<string> utenti);
-
-        /// <summary>Solo avviso SignalR (contatori e pagine delle richieste) agli utenti indicati e agli amministratori.</summary>
-        Task AvvisaAsync(AstContesto ctx, IEnumerable<string> utenti, int? idPrenotazione, List<string>? admin = null);
     }
 }

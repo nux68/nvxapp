@@ -207,32 +207,9 @@
   <data name="BookingCancelledText" xml:space="preserve">
     <value>Un amministratore ha annullato la tua prenotazione di {0} del {1}-{2}.</value>
   </data>
-  <data name="BookingPendingNewTitle" xml:space="preserve">
-    <value>Richiesta di prenotazione: {0}</value>
-  </data>
-  <data name="BookingPendingNewText" xml:space="preserve">
-    <value>{0} chiede {1} il {2}-{3}: la richiesta è da approvare.</value>
-  </data>
-  <data name="BookingApprovedTitle" xml:space="preserve">
-    <value>Prenotazione approvata: {0}</value>
-  </data>
-  <data name="BookingApprovedText" xml:space="preserve">
-    <value>La tua richiesta di {0} del {1}-{2} è stata approvata.</value>
-  </data>
-  <data name="BookingRejectedTitle" xml:space="preserve">
-    <value>Prenotazione rifiutata: {0}</value>
-  </data>
-  <data name="BookingRejectedText" xml:space="preserve">
-    <value>La tua richiesta di {0} del {1}-{2} è stata rifiutata.</value>
-  </data>
-  <data name="BookingRejectedReason" xml:space="preserve">
-    <value>Motivo: {0}</value>
-  </data>
-  <data name="BookingExpiredTitle" xml:space="preserve">
-    <value>Richiesta scaduta: {0}</value>
-  </data>
-  <data name="BookingExpiredText" xml:space="preserve">
-    <value>La tua richiesta di {0} del {1}-{2} non è stata decisa prima dell'inizio ed è stata annullata.</value>
+  <data name="RequestBookingDescription" xml:space="preserve">
+    <value>{0}, {1}-{2}</value>
+    <comment>risorsa, inizio, ora di fine</comment>
   </data>
   <data name="BookingNotPending" xml:space="preserve">
     <value>La richiesta non è più in attesa di approvazione.</value>
