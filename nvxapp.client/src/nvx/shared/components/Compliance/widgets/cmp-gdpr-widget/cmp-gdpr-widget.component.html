@@ -1,0 +1,27 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" (click)="apri('violazioni')"
+         [class.danger]="dati.violazioniOltreTermine > 0"
+         [class.warning]="dati.violazioniOltreTermine === 0 && dati.violazioniDaNotificare > 0"
+         [class.success]="dati.violazioniDaNotificare === 0">
+      <div class="valore">{{ dati.violazioniDaNotificare }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.gdpr.toNotify' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" (click)="apri('responsabili')"
+         [class.danger]="dati.responsabiliScaduti > 0"
+         [class.warning]="dati.responsabiliScaduti === 0 && dati.responsabiliInScadenza > 0">
+      <div class="valore">{{ dati.responsabiliScaduti + dati.responsabiliInScadenza }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.gdpr.processors' | transloco }}</div>
+    </div>
+  </div>
+  @if (dati.violazioniOltreTermine > 0) {
+    <div class="nvx-w-muted nvx-cgw-alert">{{ 'cmp.widgets.gdpr.overdue' | transloco: { n: dati.violazioniOltreTermine } }}</div>
+  }
+  <div class="nvx-w-muted nvx-cgw-info">{{ 'cmp.widgets.gdpr.treatments' | transloco: { n: dati.trattamentiAttivi, p: dati.trattamentiDatiParticolari } }}</div>
+  <div class="nvx-w-muted">{{ 'cmp.widgets.gdpr.breaches12' | transloco: { n: dati.violazioni12Mesi } }}</div>
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'cmp.widgets.gdpr.open' | transloco }}</button>
+}

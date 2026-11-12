@@ -1,0 +1,32 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.noData' | transloco }}</div>
+} @else if (!dati.dipendente) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.mine.notEmployee' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" (click)="apri()"
+         [class.danger]="corsiScaduti > 0"
+         [class.warning]="corsiScaduti === 0 && corsiInScadenza > 0"
+         [class.success]="corsiScaduti === 0 && corsiInScadenza === 0">
+      <div class="valore">{{ corsiScaduti + corsiInScadenza }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.mine.courses' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dpiDaConfermare > 0" (click)="apri()">
+      <div class="valore">{{ dpiDaConfermare }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.mine.ppeToConfirm' | transloco }}</div>
+    </div>
+  </div>
+  <div class="nvx-w-muted nvx-cmw-info" [class.danger]="visita?.scaduta" [class.warning]="visita?.inScadenza">
+    @if (visita) {
+      {{ 'cmp.widgets.mine.nextVisit' | transloco: { data: (visita['dataScadenza'] | date: 'dd/MM/yyyy') } }}
+    } @else {
+      {{ 'cmp.widgets.mine.noVisit' | transloco }}
+    }
+  </div>
+  @if (nomineInCorso > 0) {
+    <div class="nvx-w-muted">{{ 'cmp.widgets.mine.appointments' | transloco: { n: nomineInCorso } }}</div>
+  }
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'cmp.widgets.mine.open' | transloco }}</button>
+}

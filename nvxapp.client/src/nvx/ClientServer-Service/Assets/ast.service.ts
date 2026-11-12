@@ -8,6 +8,7 @@ import { AstCfgGetOutModel, AstCfgPutInModel, AstCfgPutOutModel, AstEmptyInModel
 import * as F from './Models/ast-flotta-model';
 import * as B from './Models/ast-beni-model';
 import * as P from './Models/ast-prenotazioni-model';
+import { AstWidgetFlottaOutModel } from './Models/ast-widget-model';
 
 /*
  Risorse aziendali (ANALISI_ASSETS_APPLICATIVO.md): configurazione, flotta (AST-FLO), beni (AST-BENI), prenotazioni (AST-PREN).
@@ -66,4 +67,7 @@ export class AstService {
   PrenotazioneList(m: GenericRequest<P.AstPrenotazioneListInModel>) { return this.post<P.AstPrenotazioneListInModel, P.AstPrenotazioneListOutModel>('Ast_Prenotazioni', 'Ast_PrenotazioneList', m); }
   PrenotazionePut(m: GenericRequest<P.AstPrenotazionePutInModel>) { return this.post<P.AstPrenotazionePutInModel, P.AstPrenotazionePutOutModel>('Ast_Prenotazioni', 'Ast_PrenotazionePut', m); }
   PrenotazioneAnnulla(m: GenericRequest<F.AstIdInModel>) { return this.post<F.AstIdInModel, P.AstPrenotazionePutOutModel>('Ast_Prenotazioni', 'Ast_PrenotazioneAnnulla', m); }
+
+  // widget della dashboard (ANALISI_ASSETS_WIDGET.md)
+  WidgetFlottaGet(m: GenericRequest<AstEmptyInModel>) { return this.post<AstEmptyInModel, AstWidgetFlottaOutModel>('Ast_Widget', 'Ast_WidgetFlottaGet', m); }
 }

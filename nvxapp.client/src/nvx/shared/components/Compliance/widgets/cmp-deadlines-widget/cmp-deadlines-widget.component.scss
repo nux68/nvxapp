@@ -1,0 +1,62 @@
+@use '../../../infrastructure/widgets/widget-common' as wc;
+
+@include wc.widget-common;
+
+// tipi di scadenza con i conteggi, cliccabili
+.nvx-cdw-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+
+  li + li {
+    border-top: 1px solid var(--nvx-border);
+  }
+
+  button {
+    display: flex;
+    width: 100%;
+    gap: 8px;
+    align-items: center;
+    padding: 7px 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+
+    ion-icon {
+      flex: 0 0 auto;
+      font-size: 1.1rem;
+      color: var(--nvx-text-muted);
+    }
+
+    &:hover .nvx-cdw-desc {
+      text-decoration: underline;
+    }
+  }
+}
+
+.nvx-cdw-desc {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.nvx-cdw-badge {
+  flex: 0 0 auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+
+  &.danger {
+    color: var(--ion-color-danger);
+    background: rgba(var(--ion-color-danger-rgb), 0.12);
+  }
+
+  &.warning {
+    color: var(--ion-color-warning-shade);
+    background: rgba(var(--ion-color-warning-rgb), 0.15);
+  }
+}

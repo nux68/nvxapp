@@ -1,0 +1,33 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (errore) {
+  <div class="nvx-w-empty">{{ 'ast.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="beni > 0" [class.success]="beni === 0" (click)="apri()">
+      <div class="valore">{{ beni }}</div>
+      <div class="etichetta">{{ 'ast.widgets.toReturn.goods' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.danger]="veicoli > 0" [class.success]="veicoli === 0" (click)="apri()">
+      <div class="valore">{{ veicoli }}</div>
+      <div class="etichetta">{{ 'ast.widgets.toReturn.vehicles' | transloco }}</div>
+    </div>
+  </div>
+
+  @if (prime.length === 0) {
+    <div class="nvx-w-empty">{{ 'ast.widgets.toReturn.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-ast-list">
+      @for (x of prime; track x.chiave) {
+        <li>
+          <button type="button" (click)="apriOggetto(x)">
+            <span class="nvx-ast-date danger">{{ data(x) }}</span>
+            <span class="desc">{{ x.dipendente }} · {{ x.oggetto }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'ast.widgets.toReturn.open' | transloco }}</button>
+}

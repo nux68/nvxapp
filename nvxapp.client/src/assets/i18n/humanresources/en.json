@@ -13,6 +13,38 @@
       "templates": "Checklist templates",
       "studioPayslips": "Company payslips"
     },
+    "widgets": {
+      "noData": "Data not available",
+      "myPayslips": {
+        "title": "My payslips",
+        "description": "Latest published payslip and documents awaiting your acknowledgement",
+        "last": "Latest payslip",
+        "toConfirm": "To acknowledge",
+        "total": "Available documents: {{n}}",
+        "notEmployee": "Your user is not linked to an employee of the company",
+        "open": "Open my payslips"
+      },
+      "onboarding": {
+        "title": "Hiring and leaving",
+        "description": "Open checklists and items to complete, overdue and due in the next days",
+        "open": "Open checklists",
+        "overdue": "Overdue items",
+        "upcoming": "Next {{n}} days",
+        "byType": "Hiring: {{a}} · Leaving: {{c}}",
+        "none": "No items to complete",
+        "openAll": "Open checklists"
+      },
+      "trainingExpiring": {
+        "title": "Expiring certificates",
+        "description": "Course certificates expired or expiring in the next 60 days",
+        "expired": "Expired",
+        "within30": "Within 30 days",
+        "within60": "Within {{n}} days",
+        "mandatory": "mandatory",
+        "none": "No expiring certificates",
+        "openAll": "Open courses"
+      }
+    },
     "common": {
       "showDisabled": "Show disabled",
       "none": "None"

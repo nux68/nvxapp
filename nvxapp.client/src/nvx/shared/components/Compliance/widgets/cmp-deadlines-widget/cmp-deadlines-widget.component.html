@@ -1,0 +1,39 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (!dati) {
+  <div class="nvx-w-empty">{{ 'cmp.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" [class.danger]="dati.scadute > 0" [class.success]="dati.scadute === 0" (click)="sicurezza()">
+      <div class="valore">{{ dati.scadute }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.deadlines.expired' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" [class.warning]="dati.inScadenza > 0" (click)="sicurezza()">
+      <div class="valore">{{ dati.inScadenza }}</div>
+      <div class="etichetta">{{ 'cmp.widgets.deadlines.expiring' | transloco: { n: dati.giorniPreavviso } }}</div>
+    </div>
+  </div>
+
+  @if (aree.length === 0) {
+    <div class="nvx-w-empty">{{ 'cmp.widgets.deadlines.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-cdw-list">
+      @for (a of aree; track a.fonte) {
+        <li>
+          <button type="button" (click)="apri(a.fonte)">
+            <ion-icon [name]="icona(a.fonte)"></ion-icon>
+            <span class="nvx-cdw-desc">{{ 'cmp.enums.fonte.' + a.fonte | transloco }}</span>
+            @if (a.scadute > 0) {
+              <span class="nvx-cdw-badge danger">{{ 'cmp.widgets.deadlines.expiredN' | transloco: { n: a.scadute } }}</span>
+            }
+            @if (a.inScadenza > 0) {
+              <span class="nvx-cdw-badge warning">{{ 'cmp.widgets.deadlines.expiringN' | transloco: { n: a.inScadenza } }}</span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="sicurezza()">{{ 'cmp.widgets.deadlines.open' | transloco }}</button>
+}

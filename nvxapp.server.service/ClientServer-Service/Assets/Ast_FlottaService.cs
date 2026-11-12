@@ -641,7 +641,7 @@ namespace nvxapp.server.service.ClientServer_Service.Assets
             return mm.Length == 0 ? targa : mm + " (" + targa + ")";
         }
 
-        private static string DescrizioneScadenza(AstTipoScadenzaVeicolo tipo, string? descrizione)
+        public static string DescrizioneScadenza(AstTipoScadenzaVeicolo tipo, string? descrizione)
             => tipo == AstTipoScadenzaVeicolo.Altro && !string.IsNullOrWhiteSpace(descrizione) ? descrizione : AssetsMessages.Get("VehicleDeadlineType_" + (int)tipo);
 
         // percentuale del fringe benefit dalle emissioni (veicoli dal 2020): fino a 60 g/km 25%, fino a 160 30%, fino a 190 50%, oltre 60%

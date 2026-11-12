@@ -1,0 +1,43 @@
+@if (caricamento) {
+  <div class="nvx-w-loading"><ion-spinner></ion-spinner></div>
+} @else if (errore) {
+  <div class="nvx-w-empty">{{ 'ast.widgets.noData' | transloco }}</div>
+} @else {
+  <div class="nvx-w-stats">
+    <div class="nvx-w-stat cliccabile" (click)="apri()">
+      <div class="valore">{{ beni.length }}</div>
+      <div class="etichetta">{{ 'ast.widgets.mine.goods' | transloco }}</div>
+    </div>
+    <div class="nvx-w-stat cliccabile" (click)="apri()">
+      <div class="valore">{{ veicoli.length }}</div>
+      <div class="etichetta">{{ 'ast.widgets.mine.vehicles' | transloco }}</div>
+    </div>
+    @if (verbali > 0) {
+      <div class="nvx-w-stat cliccabile warning" (click)="prese()">
+        <div class="valore">{{ verbali }}</div>
+        <div class="etichetta">{{ 'ast.widgets.mine.reportsToConfirm' | transloco }}</div>
+      </div>
+    }
+  </div>
+
+  @if (multe > 0) {
+    <div class="nvx-w-muted nvx-ast-alert">{{ 'ast.widgets.mine.fines' | transloco: { n: multe } }}</div>
+  }
+
+  @if (elenco.length === 0) {
+    <div class="nvx-w-empty">{{ 'ast.widgets.mine.none' | transloco }}</div>
+  } @else {
+    <ul class="nvx-ast-list">
+      @for (x of elenco; track x.chiave) {
+        <li>
+          <button type="button" (click)="apri()">
+            <span class="nvx-ast-date">{{ (x.veicolo ? 'ast.widgets.mine.vehicle' : 'ast.widgets.mine.good') | transloco }}</span>
+            <span class="desc">{{ x.testo }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  <button type="button" class="nvx-w-link" (click)="apri()">{{ 'ast.widgets.mine.open' | transloco }}</button>
+}
