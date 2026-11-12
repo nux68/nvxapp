@@ -160,6 +160,12 @@
             {{ 'pages.licenseManagement.renew' | transloco }}
           </ion-button>
         }
+        @if (disdicibile(a)) {
+          <ion-button slot="end" size="small" fill="outline" shape="round" color="danger" (click)="disdici(a)">
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            {{ 'pages.licenseManagement.cancel' | transloco }}
+          </ion-button>
+        }
       </ion-item>
       @if (status?.canManage && a.stato === StatoAbbonamento.Attivo) {
         <ion-item lines="none">
