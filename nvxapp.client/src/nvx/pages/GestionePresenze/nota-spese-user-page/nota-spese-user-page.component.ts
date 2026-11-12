@@ -12,6 +12,7 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { annullamentoInAttesa, puoChiedereAnnullamento, statoRichiestaUi } from '../../../Utility/infrastructure/richiesta-stato';
 
 
 /*
@@ -116,18 +117,19 @@ export class NotaSpeseUserPageComponent {
     this.dipGGNotaSpesaService.ApriAllegato(allegato);
   }
 
-  /** stato della nota da mostrare, tenendo conto della revoca di una nota approvata */
-  public stato(nota: Dip_GG_RichiestaModel): { testo: string | null, colore: string } {
-    if (nota.revocaStato === StatoRichiesta.Approvata)
-      return { testo: this.transloco.translate('attendance.pages.notaSpeseUser.revocata'), colore: 'dark' };
-    if (nota.revocaStato === StatoRichiesta.Immessa || nota.revocaStato === StatoRichiesta.ApprovazioneInCorso)
-      return { testo: this.transloco.translate('attendance.pages.notaSpeseUser.revocaInAttesa'), colore: 'warning' };
-    switch (nota.richiestaStato) {
-      case StatoRichiesta.Approvata: return { testo: null, colore: 'success' };
-      case StatoRichiesta.Rifiutata: return { testo: null, colore: 'danger' };
-      case StatoRichiesta.Cancellata: return { testo: null, colore: 'dark' };
-      default: return { testo: null, colore: 'medium' };
-    }
+  /** stato della nota con il ciclo unico delle richieste (richiesta-stato.ts): la fase dell'annullamento prevale */
+  public stato(nota: Dip_GG_RichiestaModel): { testo: string, colore: string } {
+    const ui = statoRichiestaUi(nota.richiestaStato, nota.revocaStato);
+    return { testo: this.transloco.translate(ui.chiave), colore: ui.colore };
+  }
+
+  /** testo del pulsante: annulla la nota in attesa, chiede l'annullamento di una approvata o ritira quello in attesa */
+  public etichettaAnnulla(nota: Dip_GG_RichiestaModel): string {
+    if (puoChiedereAnnullamento(nota.richiestaStato, nota.revocaStato))
+      return this.transloco.translate('common.requestAction.askCancellation');
+    if (annullamentoInAttesa(nota.revocaStato))
+      return this.transloco.translate('common.requestAction.withdrawCancellation');
+    return this.transloco.translate('attendance.pages.notaSpeseUser.annullaNota');
   }
 
   /** finche' non e' approvata la nota si puo' modificare */
@@ -143,12 +145,13 @@ export class NotaSpeseUserPageComponent {
     return this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(nota);
   }
 
-  /** annulla una nota in attesa, oppure chiede la revoca di una nota gia' approvata */
+  /** annulla una nota in attesa, chiede l'annullamento di una approvata (una volta sola) o ritira l'annullamento in attesa */
   public async annulla(nota: Dip_GG_RichiestaModel): Promise<void> {
-    const revoca = nota.richiestaStato === StatoRichiesta.Approvata;
-    const conferma = await this.collectionDialogService.ConfirmCancelDialog(revoca
-      ? this.transloco.translate('attendance.pages.notaSpeseUser.confermaRevoca')
-      : this.transloco.translate('attendance.pages.notaSpeseUser.confermaAnnullamento'));
+    const revoca = puoChiedereAnnullamento(nota.richiestaStato, nota.revocaStato);
+    const chiave = revoca ? 'common.requestAction.confirmAskCancellation'
+                 : annullamentoInAttesa(nota.revocaStato) ? 'common.requestAction.confirmWithdrawCancellation'
+                 : 'attendance.pages.notaSpeseUser.confermaAnnullamento';
+    const conferma = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate(chiave));
     if (!conferma)
       return;
 

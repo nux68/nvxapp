@@ -69,9 +69,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 item.TipoTesto = AttendanceTrackingMessages.Get("RequestType_" + r.RichiestaTipo);
                 item.Dettaglio = Dettaglio(r, giustificativi);
-                item.StatoTesto = r.RevocaStato == null
-                    ? TestoStato(r.RichiestaStato)
-                    : AttendanceTrackingMessages.Get("RequestStateWithRevoke", TestoStato(r.RichiestaStato), TestoStato(r.RevocaStato.Value));
+                // testo comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)")
+                item.StatoTesto = RichiestaRegole.TestoStato(r);
                 item.SoloData = true;
                 if (item.Al != null && item.Al.Value <= item.Dal)
                     item.Al = null;
@@ -90,7 +89,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         {
             if (!PuoAnnullare(richiesta))
                 throw new UserMessageException(AttendanceTrackingMessages.Get("RequestNotAllowedCancel"));
-            bool revoca = richiesta.RichiestaStato == StatoRichiesta.Approvata && (richiesta.RevocaStato == null || richiesta.RevocaStato == StatoRichiesta.Cancellata);
+            bool revoca = RichiestaRegole.PuoChiedereAnnullamento(richiesta);
             await SetStateAsync(richiesta.Id, revoca ? StatoRichiesta.Immessa : StatoRichiesta.Cancellata);
         }
 
@@ -109,11 +108,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 throw new UserMessageException(InfrastructureMessages.Get("RequestNotFound"));
         }
 
-        // come Dip_GG_Richiesta_User_Can_Delete del client
-        private static bool PuoAnnullare(Dip_GG_Richiesta r)
-            => r.RevocaStato == null
-                ? r.RichiestaStato == StatoRichiesta.Immessa || r.RichiestaStato == StatoRichiesta.ApprovazioneInCorso || r.RichiestaStato == StatoRichiesta.Approvata
-                : r.RevocaStato == StatoRichiesta.Immessa || r.RevocaStato == StatoRichiesta.ApprovazioneInCorso;
+        // ciclo unico delle richieste (come Dip_GG_Richiesta_User_Can_Delete del client)
+        private static bool PuoAnnullare(Dip_GG_Richiesta r) => RichiestaRegole.PuoAnnullare(r);
 
         private static string TestoStato(StatoRichiesta s) => AttendanceTrackingMessages.Get("RequestState_" + s);
 

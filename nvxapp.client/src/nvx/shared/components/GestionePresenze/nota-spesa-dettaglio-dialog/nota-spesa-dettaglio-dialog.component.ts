@@ -1,4 +1,5 @@
 ﻿import { Component, ChangeDetectionStrategy, ElementRef, Input, OnInit } from '@angular/core';
+import { statoRichiestaUi } from '../../../../Utility/infrastructure/richiesta-stato';
 import { CommonModule } from '@angular/common';
 import { IonBadge, IonChip, IonContent, IonHeader, IonIcon, IonLabel, IonSpinner, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -137,16 +138,11 @@ export class NotaSpesaDettaglioDialogComponent implements OnInit {
 
   /** testo e colore dello stato della nota, tenendo conto della revoca */
   public get stato(): { testo: string | null, colore: string } {
-    if (this.richiesta?.revocaStato === StatoRichiesta.Approvata)
-      return { testo: this.t('revocata'), colore: 'dark' };
-    if (this.revoca)
-      return { testo: this.t('revocaRichiesta'), colore: 'warning' };
-    switch (this.richiesta?.richiestaStato) {
-      case StatoRichiesta.Approvata: return { testo: null, colore: 'success' };
-      case StatoRichiesta.Rifiutata: return { testo: null, colore: 'danger' };
-      case StatoRichiesta.Cancellata: return { testo: null, colore: 'dark' };
-      default: return { testo: null, colore: 'medium' };
-    }
+    // ciclo unico delle richieste (richiesta-stato.ts): la fase dell'annullamento prevale
+    if (this.richiesta == null)
+      return { testo: null, colore: 'medium' };
+    const ui = statoRichiestaUi(this.richiesta.richiestaStato, this.richiesta.revocaStato);
+    return { testo: this.transloco.translate(ui.chiave), colore: ui.colore };
   }
 
   public tipo(id: number): string {

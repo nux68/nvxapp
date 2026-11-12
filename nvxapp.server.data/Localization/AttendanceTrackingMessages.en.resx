@@ -2058,4 +2058,7 @@
   <data name="SwOltreLimite" xml:space="preserve">
     <value>Limit of {0} smart working days exceeded in the week from {1:dd/MM/yyyy} (already requested or approved: {2}).</value>
   </data>
+  <data name="RequestRevokeClosed" xml:space="preserve">
+    <value>Cancellation can be requested only for an approved request and only once: once decided or withdrawn, the request stays approved.</value>
+  </data>
 </root>
