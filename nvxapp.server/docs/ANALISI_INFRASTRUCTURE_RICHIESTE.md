@@ -178,6 +178,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-INF.3` Pagine `/requests` e `/requestsadmin`, `RequestNotifierService`, menu con badge, stub `request-ui-*`, comandi vocali
 - ✅ `RICH-INF.4` Widget `infrastructure.requests`
 - ✅ `RICH-INF.8` Badge sull'intestazione dei gruppi del menu (es. "Servizi"): somma dei contatori delle voci visibili, come per le sezioni degli applicativi; senza, a gruppo chiuso l'arrivo di una richiesta non si vedeva (prima le voci delle richieste stavano nella sezione Presenze, che il totale lo mostrava)
+- ✅ `RICH-INF.9` Ciclo completo delle richieste approvate dagli amministratori (`RichiestaCommonService`), come le presenze: richiesta → approvata / rifiutata (fine); approvata → il richiedente puo' chiedere l'annullamento (`RevocaStato`), che va approvato o rifiutato; l'annullamento in attesa si puo' ritirare. Provato sulle prenotazioni (19 controlli)
 - ✅ `RICH-INF.6` (variante, commit 4f232d79) `Dip_GG_Richiesta` in Common, `CommonDbContext`, repository, `InitCommon` rigenerata
 - ✅ `RICH-INF.7` (variante) `IRichiestaTipoHandler`, `RequestService` sulla tabella comune, `RichiestaCommonService`
 - 🔄 `RICH-INF.5` Build server e client ✅; merge in `Infrastructure` con la catena finale
@@ -190,6 +191,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso · 🔍 da decidere
 - ✅ `RICH-AT.5` Prova API su DB usa e getta (SigleAdmin, revoca, gerarchia)
 - ✅ `RICH-AT.6` (variante, branch `AttendanceTracking_Dev_richieste`, commit 78aea959) Tabella in Common: partial con le navigazioni, mapping `ExcludeFromMigrations`, scritture dal repository Common (`SalvaRichiestaAsync` valorizza azienda/dipendente/utente), `AtRichiestaTipoHandler`, `AttendanceTracking_Init` rigenerata; prova API ok (SigleAdmin, revoca, gerarchia, FK tra schemi)
 - 🔍 `RICH-AT.7` Deleter dei dati delle Presenze (`IApplicationDataDeleter`) assente: eliminando lo schema delle presenze le richieste in Common restano finché non si cancella il dipendente o l'azienda
+- ✅ `RICH-AT.8` Voci "Richieste" di nuovo anche nel menu Presenze (amministratori: da approvare; dipendenti: le mie), con i badge, verso le pagine comuni
 
 #### `RICH-AST` – Risorse aziendali
 - ✅ `RICH-AST.1`–`RICH-AST.5` (prima versione, ciclo proprio in `Ast_Prenotazione`): spunta "Richiede approvazione", conflitti con le in attesa, scadenza pigra, notifiche, client, comandi vocali, analisi del modulo; prova API 25/25
