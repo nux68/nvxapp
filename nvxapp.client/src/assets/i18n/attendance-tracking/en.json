@@ -147,6 +147,7 @@
         "codeRead": "Station QR code read: confirm the clock-in.",
         "stamp": "Clock in",
         "scan": "Read the station QR",
+        "choose": "Department and activity",
         "done": "Clock-in recorded.",
         "queued": "No network: the clock-in is queued and will be sent when back online.",
         "noCamera": "Camera not available: frame the QR with the phone camera app.",
@@ -167,6 +168,9 @@
         "register": "Register the device",
         "pinPrompt": "Enter your PIN",
         "badgePrompt": "or swipe your badge",
+        "choose": "{{ name }}: choose department and activity",
+        "chooseTimeout": "Without a choice, the highlighted one is used in {{ s }} seconds",
+        "noDepartment": "No department",
         "done": "{{ name }}: clock-in at {{ time }} recorded",
         "offline": "Server not reachable: try again."
       },

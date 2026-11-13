@@ -681,7 +681,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             var idSubCommessa = _az_SubCommessaUserRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers)
                                                              .Select(x => x.IdAz_SubCommessa)
                                                              .ToList();
-            var idAz_SediReparto = _az_SediRepartoUserRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers && x.UserInDepartment)
+            var idAz_SediReparto = _az_SediRepartoUserRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers && x.UserInDepartment &&
+                                                                                 (x.DataDal == null || x.DataDal <= DateTime.Today) && (x.DataAl == null || x.DataAl >= DateTime.Today))
                                                                 .Select(x => x.IdAz_SediReparto)
                                                                 .ToList();
             idSubCommessa.AddRange(_az_SubCommessaSediRepartoRepository.FindAll(x => idAz_SediReparto.Contains(x.IdAz_SediReparto))
