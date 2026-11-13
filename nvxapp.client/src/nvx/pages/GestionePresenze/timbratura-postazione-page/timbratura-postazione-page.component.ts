@@ -64,7 +64,7 @@ export class TimbraturaPostazionePageComponent {
     const request = new GenericRequest<TimbraturaEvoluta_QrCodeInModel>(TimbraturaEvoluta_QrCodeInModel);
     request.data.idAz_Sedi = this.idAz_Sedi;
     request.data.origine = window.location.origin;
-    this.timbraturaEvolutaService.QrCode(request).subscribe({
+    this.timbraturaEvolutaService.QrCode(request, true).subscribe({
       next: res => {
         this.qr = res.success ? res.data : null;
         this.ora = new Date();

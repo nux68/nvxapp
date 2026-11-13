@@ -132,6 +132,7 @@
         "exit": "Esci",
         "unlockTitle": "Uscita dal terminale",
         "unlockMessage": "Digita la password di un amministratore (CompanyPowerAdmin) dell'azienda.",
+        "wrongPassword": "Password non corretta.",
         "password": "Password"
       },
       "timbraturaPostazione": {
