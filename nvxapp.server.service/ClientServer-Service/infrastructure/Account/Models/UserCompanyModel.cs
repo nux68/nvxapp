@@ -20,7 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         
         public List<string> Roles { get; set; } = new List<string>();
 
-        // valorizzati dagli applicativi attivi (IUserCompanyListExtension), altrimenti null
+        // dall'anagrafica dipendente comune (CommonUserCompanyListExtension), null se l'utente non ne ha una
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
     }
