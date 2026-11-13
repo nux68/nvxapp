@@ -226,13 +226,16 @@
         "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
+        "viewAll": "All",
+        "viewWeek": "Week",
+        "viewMonth": "Month",
         "noCandidates": "No colleague available: the department colleagues already have this shift or have no shifts to swap.",
         "reportTitle": "My shifts report",
         "title": "My shifts",
         "toAnswer": "Swap proposals to review",
         "accept": "Accept",
         "refuse": "Refuse",
-        "myShifts": "Shifts of the next 4 weeks",
+        "myShifts": "Shifts in the period",
         "noShifts": "No planned shifts.",
         "propose": "Swap",
         "proposeHeader": "Swap shift {{ shift }} of {{ date }} with",
