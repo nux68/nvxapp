@@ -24,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
     {
         private readonly IPresaVisioneRepository _presaVisioneRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly IAcknowledgementNotifier _acknowledgementNotifier;
 
         public AcknowledgementUserService(IMapper mapper,
                                           UserManager<ApplicationUser> userManager,
@@ -33,10 +34,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
                                           IConfiguration configuration,
 
                                           IPresaVisioneRepository presaVisioneRepository,
-                                          ICompanyRepository companyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                          ICompanyRepository companyRepository,
+                                          IAcknowledgementNotifier acknowledgementNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _presaVisioneRepository = presaVisioneRepository;
             _companyRepository = companyRepository;
+            _acknowledgementNotifier = acknowledgementNotifier;
         }
 
         public virtual async Task<GenericResult<AcknowledgementListOutModel>> AcknowledgementList(GenericRequest<AcknowledgementListInModel> model, Boolean isSubProcess)
@@ -70,6 +73,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
                     riga.Ip = AcknowledgementService.Taglia(http?.Connection.RemoteIpAddress?.ToString(), 64);
                     riga.UserAgent = AcknowledgementService.Taglia(http?.Request.Headers.UserAgent.ToString(), 500);
                     await _presaVisioneRepository.UpdateAsync(riga);
+                    // avviso push agli amministratori dell'azienda (es. elenco degli accordi di lavoro agile)
+                    await _acknowledgementNotifier.ConfermataAsync(riga);
                 }
 
                 retVal.Acknowledgement = (await Modelli(Mie().Where(x => x.Id == riga.Id))).First();
