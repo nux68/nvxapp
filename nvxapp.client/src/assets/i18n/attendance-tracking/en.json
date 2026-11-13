@@ -92,6 +92,7 @@
         "agreement": "Agreement from {{ from }} to {{ to }}: at most {{ max }} days per week.",
         "notSigned": "To be signed: confirm it in the Acknowledgements page.",
         "week": "Week",
+        "confirmDetails": "Company: {{ company }}<br>User: {{ user }}",
         "confirm": "Request smart working on {{ date }}?",
         "legend": "Click a highlighted day to request it. Solid blue = approved, dashed = awaiting approval. The last column shows the days used and the weekly limit."
       },

@@ -77,6 +77,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
     }
     public class Dip_AccordoSW_CalendarioOutModel : ModelResult
     {
+        // azienda e nome utente del dipendente del calendario (corpo del dialog di richiesta del giorno)
+        public string Azienda { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public int IdPar_Giustificativi { get; set; }
         public List<Dip_AccordoSWModel> Accordi { get; set; } = new();
         public List<LavoroAgileGiornoModel> Giorni { get; set; } = new();

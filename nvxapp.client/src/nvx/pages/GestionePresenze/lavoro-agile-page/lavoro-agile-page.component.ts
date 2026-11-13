@@ -100,7 +100,11 @@ export class LavoroAgilePageComponent {
     if (!g || !this.dati || g.stato !== null || !g.consentito || !g.lavorativo)
       return;
     const data = `${g.data.substring(8, 10)}/${g.data.substring(5, 7)}/${g.data.substring(0, 4)}`;
-    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.lavoroAgile.confirm', { date: data })))
+    // azienda e utente nel corpo del messaggio (non nel titolo del dialog)
+    const messaggio = this.transloco.translate('attendance.pages.lavoroAgile.confirm', { date: data })
+      + '<br><br>' + this.transloco.translate('attendance.pages.lavoroAgile.confirmDetails',
+                                               { company: this.dati?.azienda ?? '', user: this.dati?.userName ?? '' });
+    if (!await this.collectionDialogService.ConfirmCancelDialog(messaggio))
       return;
     const request = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
     request.data.excludeRicalc = false;
