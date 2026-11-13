@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpContextToken, HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -9,6 +9,13 @@ import { UserNavigationService } from '../Utility/infrastructure/user-navigation
 import { GenericResult } from '../ClientServer-Service/ModelsBase/generic-result';
 import { LanguageService } from '../Utility/infrastructure/language.service';
 
+
+/**
+ * Chiamata che mostra da se' l'esito negativo (es. kiosk o terminali a schermo intero): una risposta con success=false non
+ * apre il dialog comune degli errori, che alla chiusura torna indietro di una pagina.
+ * Uso: this.http.post(url, model, { context: new HttpContext().set(NVX_SENZA_DIALOG_ERRORI, true) })
+ */
+export const NVX_SENZA_DIALOG_ERRORI = new HttpContextToken<boolean>(() => false);
 
 @Injectable()
 export class NvxHttpInterceptor implements HttpInterceptor {
@@ -46,7 +53,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
           const body = event.body;
 
           if (body && typeof body.success === 'boolean' && 'data' in body && Array.isArray(body.messages) && 'token' in body) {
-            if (body.success === false) {
+            if (body.success === false && !req.context.get(NVX_SENZA_DIALOG_ERRORI)) {
               this.nvxHttpInterceptorService.HttpError_Add(body);
             }
           }
