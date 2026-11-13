@@ -205,6 +205,7 @@
         "minPeople": "Minimum people"
       },
       "pianificazioneTurni": {
+        "reportNotStarted": "Report not started: {{ msg }}",
         "title": "Shift planning",
         "department": "Department",
         "week": "Week",
@@ -225,6 +226,7 @@
         "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
+        "reportTitle": "My shifts report",
         "title": "My shifts",
         "toAnswer": "Swap proposals to review",
         "accept": "Accept",
@@ -1327,6 +1329,11 @@
         "approvaRichiesteGiustificativo": "Approve absence justification requests",
         "generaTimbratureMancanti": "Generate missing clockings",
         "generaGiustificativiAssenza": "Generate absence justifications"
+      },
+      "seletionPeriodoDialog": {
+        "title": "Period",
+        "week": "Week",
+        "month": "Month"
       },
       "seletionParTurnoDialog": {
         "title": "Shifts of the day",

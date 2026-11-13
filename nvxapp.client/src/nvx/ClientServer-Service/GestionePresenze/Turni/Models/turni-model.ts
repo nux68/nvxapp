@@ -163,6 +163,20 @@ export class Dip_TurnoScambioModel {
   public annullabile: boolean = false;
 }
 
+/** report PDF dei turni (job): pianificazione del reparto (amministratori) o i miei turni */
+export enum TurniReportTipo { Reparto = 0, Miei = 1 }
+
+export class Dip_Turno_ReportInModel {
+  public tipo: TurniReportTipo = TurniReportTipo.Miei;
+  /** solo per il report del reparto */
+  public idAz_SediReparto: number = 0;
+  public dal: string = '';
+  public al: string = '';
+}
+export class Dip_Turno_ReportOutModel extends ModelResult {
+  public jobId: string = '';
+}
+
 export class Dip_Turno_GetAll4UserInModel {
   public dal: string = '';
   public al: string = '';

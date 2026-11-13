@@ -22,5 +22,8 @@ namespace nvxapp.server.Controllers.GestionePresenze
 
         [Authorize, HttpPost, Route("GetAll4User")]
         public async Task<GenericResult<Dip_Turno_GetAll4UserOutModel>> GetAll4User(GenericRequest<Dip_Turno_GetAll4UserInModel> inModel) => await _service.GetAll4User(inModel, false);
+
+        [Authorize, HttpPost, Route("ReportPdf")]
+        public async Task<GenericResult<Dip_Turno_ReportOutModel>> ReportPdf(GenericRequest<Dip_Turno_ReportInModel> inModel) => await _service.ReportPdf(inModel, false);
     }
 }

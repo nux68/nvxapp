@@ -1,17 +1,22 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, ModalController, ToastController } from '@ionic/angular';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { SeletionPeriodoDialogComponent, SeletionPeriodoDialogResult } from '../../../shared/components/GestionePresenze/seletion-periodo-dialog/seletion-periodo-dialog.component';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { TurniService } from '../../../ClientServer-Service/GestionePresenze/Turni/turni.service';
 import {
   Dip_TurnoScambioModel, Dip_TurnoScambio_AnnullaInModel, Dip_TurnoScambio_ProponiInModel, Dip_TurnoScambio_RispondiInModel,
-  Dip_TurnoUserModel, Dip_Turno_GetAll4UserInModel, Dip_Turno_GetAll4UserOutModel, TurnoScambioStato, dataLocale
+  Dip_TurnoUserModel, Dip_Turno_GetAll4UserInModel, Dip_Turno_GetAll4UserOutModel, TurnoScambioStato, dataLocale,
+  Dip_Turno_ReportInModel, TurniReportTipo
 } from '../../../ClientServer-Service/GestionePresenze/Turni/Models/turni-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 /*
  I miei turni (AT-TURNI.3): turni delle prossime 4 settimane, proposta di scambio con il turno di un collega dello stesso
  reparto (o cessione), risposta alle proposte ricevute; dopo l'accettazione lo scambio va in approvazione (pagina Richieste).
+ Report (FAB): settimana o mese scelti con il dialog standard del periodo, PDF con il job (il file si scarica dalla notifica).
 */
 @Component({
   selector: 'app-miei-turni-page',
@@ -29,12 +34,46 @@ export class MieiTurniPageComponent {
   constructor(private turniService: TurniService,
               private actionSheetCtrl: ActionSheetController,
               private collectionDialogService: CollectionDialogService,
+              private modalCtrl: ModalController,
+              private toastCtrl: ToastController,
+              private fabMenuService: FabMenuService,
+              private userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.mieiTurni.title');
   }
 
   ionViewWillEnter() {
     this.carica();
+    this.fabMenuService.fabMenuItem = [
+      new FabMenuItem(this.transloco.translate('attendance.services.report.titolo'), this.userInterfaceService.Btn_Pdf.image, () => this.report()),
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
+  }
+
+  /** report PDF dei miei turni: settimana o mese dal dialog standard, poi il job */
+  async report() {
+    const modal = await this.modalCtrl.create({
+      component: SeletionPeriodoDialogComponent,
+      componentProps: { title: this.transloco.translate('attendance.pages.mieiTurni.reportTitle') }
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<SeletionPeriodoDialogResult>();
+    if (role !== 'confirm' || !data)
+      return;
+    const request = new GenericRequest<Dip_Turno_ReportInModel>(Dip_Turno_ReportInModel);
+    request.data.tipo = TurniReportTipo.Miei;
+    request.data.dal = data.dal;
+    request.data.al = data.al;
+    this.turniService.ReportPdf(request).subscribe(async res => {
+      const messaggi = res.success ? (res.data?.messages ?? []) : [];
+      if (messaggi.length > 0) {
+        const toast = await this.toastCtrl.create({ message: messaggi.map(m => m.text).join(' '), duration: 4000, color: 'warning', position: 'top' });
+        await toast.present();
+      }
+    });
   }
 
   carica() {
