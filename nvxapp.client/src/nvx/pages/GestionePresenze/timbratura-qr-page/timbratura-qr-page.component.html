@@ -6,11 +6,29 @@
       @if (codice) {
         <ion-note class="nvx-blocco">{{ 'attendance.pages.timbraturaQr.codeRead' | transloco }}</ion-note>
       } @else {
-        <ion-select interface="popover" [(ngModel)]="idAz_Sedi" [label]="'attendance.pages.timbraturaQr.site' | transloco" labelPlacement="stacked">
+        <ion-select interface="popover" [(ngModel)]="idAz_Sedi" (ionChange)="caricaOpzioni()" [label]="'attendance.pages.timbraturaQr.site' | transloco" labelPlacement="stacked">
           @for (s of sedi; track s.idAz_Sedi) {
             <ion-select-option [value]="s.idAz_Sedi">{{ s.sede }}</ion-select-option>
           }
         </ion-select>
+      }
+
+      @if (opzioni.length > 1) {
+        <!-- reparto - attivita' della sede compatibili con il dipendente (AT-TIMB.7) -->
+        <ion-radio-group class="nvx-opzioni" [(ngModel)]="sceltaIndice">
+          <ion-item class="nvx-item-4-title" lines="none"><ion-label>{{ 'attendance.pages.timbraturaQr.choose' | transloco }}</ion-label></ion-item>
+          @for (o of opzioni; track $index) {
+            <ion-item>
+              <ion-radio [value]="$index" justify="start" labelPlacement="end">
+                <div class="nvx-opzione">
+                  <strong>{{ o.reparto || ('attendance.pages.timbraturaKiosk.noDepartment' | transloco) }}</strong>
+                  <span>{{ o.attivita }}</span>
+                  @if (o.commessa) { <small>{{ o.commessa }}</small> }
+                </div>
+              </ion-radio>
+            </ion-item>
+          }
+        </ion-radio-group>
       }
 
       <ion-button expand="block" size="large" class="nvx-timbra" [disabled]="inCorso" (click)="timbra()">
@@ -33,7 +51,7 @@
       @if (ultima) {
         <ion-item lines="none">
           <ion-label class="ion-text-wrap">
-            <h3>{{ ultima.timbratura | date: 'dd/MM HH:mm' }} {{ ultima.sede }}</h3>
+            <h3>{{ ultima.timbratura | date: 'dd/MM HH:mm' }} {{ ultima.sede }}@if (ultima.reparto) { · {{ ultima.reparto }}}</h3>
             <p>{{ esitoTesto(ultima.esitoGeofence) }}@if (ultima.distanzaMetri != null) { ({{ ultima.distanzaMetri | number: '1.0-0' }} m)}</p>
           </ion-label>
         </ion-item>

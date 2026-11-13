@@ -32,6 +32,12 @@ namespace nvxapp.server.Controllers.GestionePresenze
         [Authorize, HttpPost, Route("KioskRegistra")]
         public async Task<GenericResult<TimbraturaEvoluta_KioskRegistraOutModel>> KioskRegistra(GenericRequest<TimbraturaEvoluta_KioskRegistraInModel> inModel) => await _service.KioskRegistra(inModel, false);
 
+        [Authorize, HttpPost, Route("Opzioni")]
+        public async Task<GenericResult<TimbraturaEvoluta_OpzioniOutModel>> Opzioni(GenericRequest<TimbraturaEvoluta_OpzioniInModel> inModel) => await _service.Opzioni(inModel, false);
+
+        [Authorize, HttpPost, Route("KioskIdentifica")]
+        public async Task<GenericResult<TimbraturaEvoluta_KioskIdentificaOutModel>> KioskIdentifica(GenericRequest<TimbraturaEvoluta_KioskIdentificaInModel> inModel) => await _service.KioskIdentifica(inModel, false);
+
         [Authorize, HttpPost, Route("KioskStamp")]
         public async Task<GenericResult<TimbraturaEvoluta_KioskStampOutModel>> KioskStamp(GenericRequest<TimbraturaEvoluta_KioskStampInModel> inModel) => await _service.KioskStamp(inModel, false);
 

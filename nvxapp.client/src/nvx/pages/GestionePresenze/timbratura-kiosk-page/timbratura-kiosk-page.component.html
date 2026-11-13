@@ -29,6 +29,23 @@
     <div class="nvx-kiosk">
       <div class="nvx-sede">{{ sedeNome }}</div>
       <div class="nvx-ora">{{ ora | date: 'HH:mm:ss' }}</div>
+      @if (scelta) {
+        <!-- dipendente riconosciuto: reparto - attivita' della sede compatibili con lui (AT-TIMB.7) -->
+        <div class="nvx-scelta-titolo">{{ 'attendance.pages.timbraturaKiosk.choose' | transloco: { name: scelta.nominativo } }}</div>
+        <div class="nvx-scelta">
+          @for (o of scelta.opzioni; track $index) {
+            <ion-button expand="block" [fill]="$index === scelta.indiceDefault ? 'solid' : 'outline'" (click)="scegli(o)">
+              <div class="nvx-opzione">
+                <strong>{{ o.reparto || ('attendance.pages.timbraturaKiosk.noDepartment' | transloco) }}</strong>
+                <span>{{ o.attivita }}</span>
+                @if (o.commessa) { <small>{{ o.commessa }}</small> }
+              </div>
+            </ion-button>
+          }
+        </div>
+        <ion-note>{{ 'attendance.pages.timbraturaKiosk.chooseTimeout' | transloco: { s: secondi } }}</ion-note>
+        <ion-button fill="clear" color="medium" (click)="annullaScelta()">{{ 'common.buttons.cancel' | transloco }}</ion-button>
+      } @else {
       <div class="nvx-pin">{{ pin ? '•'.repeat(pin.length) : ('attendance.pages.timbraturaKiosk.pinPrompt' | transloco) }}</div>
       <div class="nvx-tastiera">
         @for (t of tasti; track t) {
@@ -36,6 +53,7 @@
         }
       </div>
       <ion-input class="nvx-badge" [(ngModel)]="badge" (keyup.enter)="invia()" [placeholder]="'attendance.pages.timbraturaKiosk.badgePrompt' | transloco"></ion-input>
+      }
       @if (esito) {
         <div class="nvx-esito" [class.nvx-ok]="esito.ok" [class.nvx-ko]="!esito.ok">{{ esito.testo }}</div>
       }

@@ -147,6 +147,7 @@
         "codeRead": "Codice QR della postazione letto: conferma la timbratura.",
         "stamp": "Timbra",
         "scan": "Leggi il QR della postazione",
+        "choose": "Reparto e attività",
         "done": "Timbratura registrata.",
         "queued": "Senza rete: la timbratura è in coda e partirà alla riconnessione.",
         "noCamera": "Fotocamera non disponibile: inquadra il QR con l'app fotocamera del telefono.",
@@ -167,6 +168,9 @@
         "register": "Registra il dispositivo",
         "pinPrompt": "Digita il PIN",
         "badgePrompt": "oppure passa il badge",
+        "choose": "{{ name }}: scegli reparto e attività",
+        "chooseTimeout": "Senza scelta, tra {{ s }} secondi si timbra con quella evidenziata",
+        "noDepartment": "Senza reparto",
         "done": "{{ name }}: timbratura delle {{ time }} registrata",
         "offline": "Server non raggiungibile: riprova."
       },
