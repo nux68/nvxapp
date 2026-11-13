@@ -12,7 +12,45 @@
         </ion-button>
       }
     </ion-buttons>
-    <ion-title>{{ title }}</ion-title>
+    <!-- titolo e, alla sua destra, i job in corso: un anello per job (avanzamento, fine, errore), testo nel popup al passaggio
+         del mouse; clic: file pronto -> download, job finito -> chiude la notifica -->
+    <ion-title>
+      <div class="nvx-title-row">
+        <span class="nvx-title-text">{{ title }}</span>
+        @if (showActiveJobs && (activeJobs$ | async); as jobs) {
+          @if (jobs.length > 0) {
+            <span class="nvx-jobs">
+              @for (job of jobs; track job.jobId) {
+                <span class="nvx-job nvx-job--{{ statoJob(job) }}" role="button" tabindex="0"
+                      [appHoverPopup]="popupJob(job)" [attr.aria-label]="job.message?.text"
+                      (click)="onJobClick(job)" (keyup.enter)="onJobClick(job)">
+                  <svg class="nvx-job-ring" viewBox="0 0 36 36" aria-hidden="true"
+                       [class.nvx-job-ring--gira]="!job.isFinished && !(job.progressPercentage > 0)">
+                    <circle class="nvx-job-ring__track" cx="18" cy="18" r="15.9155"></circle>
+                    <circle class="nvx-job-ring__bar" cx="18" cy="18" r="15.9155"
+                            [attr.stroke-dasharray]="trattoJob(job)"></circle>
+                  </svg>
+                  <span class="nvx-job-centro">
+                    @switch (statoJob(job)) {
+                      @case ('corso') {
+                        @if (job.progressPercentage > 0) { {{ job.progressPercentage | number: '1.0-0' }} }
+                      }
+                      @case ('file') { <ion-icon name="download-outline"></ion-icon> }
+                      @case ('errore') { <ion-icon name="alert-outline"></ion-icon> }
+                      @default { <ion-icon name="checkmark-outline"></ion-icon> }
+                    }
+                  </span>
+                  @if (job.isFinished && job.category === LongJobCategory.FileGeneration) {
+                    <button type="button" class="nvx-job-chiudi" (click)="$event.stopPropagation(); dismissJob(job.jobId)"
+                            [attr.aria-label]="'components.pageToolbar.jobDismiss' | transloco">×</button>
+                  }
+                </span>
+              }
+            </span>
+          }
+        }
+      </div>
+    </ion-title>
     <!-- utente collegato (quello del login); durante l'impersonificazione anche l'utente impersonato -->
     @if (showUser && loggedUserName) {
       <ion-buttons slot="end">
@@ -28,59 +66,12 @@
     }
   </ion-toolbar>
 
-  @if (showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1) || (showActiveJobs && ((activeJobs$ | async)?.length ?? 0) > 0)) {
+  @if (showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1)) {
     <ion-toolbar>
       @if (showBreadcrumbs) {
         <app-breadcrumbs-impersonate class="ion-hide-sm-down">
         </app-breadcrumbs-impersonate>
       }
-      <!-- Active Jobs List -->
-      @if (showActiveJobs && (activeJobs$ | async); as jobs) {
-        <div class="active-jobs-container">
-          @if (jobs.length > 0) {
-            <ion-grid class="ion-no-padding">
-              <ion-row>
-                <!-- Loop su ogni colonna -->
-                @for (job of jobs; track job) {
-                  <ion-col size="12" size-md="3">
-                    <!-- In progress: hourglass + progress bar -->
-                    @if (!job.isFinished) {
-                      <ion-item lines="none" class="job-item">
-                        <ion-icon name="hourglass-outline" slot="start" class="ion-margin-end"></ion-icon>
-                        <ion-label>
-                          <p class="job-message">{{ job.message?.text }}</p>
-                          <ion-progress-bar [value]="job.progressPercentage / 100"></ion-progress-bar>
-                        </ion-label>
-                      </ion-item>
-                    }
-                    <!-- FileGeneration finished: dismiss + download button -->
-                    @if (job.category === LongJobCategory.FileGeneration && job.isFinished) {
-                      <ion-item lines="none" class="job-item">
-                        <ion-button size="small" fill="clear" (click)="dismissJob(job.jobId)" color="medium" slot="start">
-                          <ion-icon name="close-circle-outline"></ion-icon>
-                        </ion-button>
-                        <ion-button size="small" fill="outline" shape="round" (click)="onJobLabelClick(job)" color="primary">
-                          &nbsp;{{ job.message?.text }}
-                        </ion-button>
-                      </ion-item>
-                    }
-                    <!-- Calculation finished: auto-removed, but show briefly -->
-                    @if (job.category === LongJobCategory.Calculation && job.isFinished) {
-                      <ion-item lines="none" class="job-item">
-                        <ion-icon name="checkmark-circle-outline" slot="start" class="ion-margin-end" color="success"></ion-icon>
-                        <ion-label>
-                          <p class="job-message">{{ job.message?.text }}</p>
-                        </ion-label>
-                      </ion-item>
-                    }
-                  </ion-col>
-                }
-              </ion-row>
-            </ion-grid>
-          }
-        </div>
-      }
-      <!-- End of Active Jobs List -->
       @if (showFilter) {
         <ion-searchbar
           [debounce]="250"
