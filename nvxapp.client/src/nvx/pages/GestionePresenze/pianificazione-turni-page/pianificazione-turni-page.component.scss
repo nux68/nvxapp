@@ -63,6 +63,48 @@
   .nvx-copertura {
     font-weight: 600;
   }
+
+  // Vista mese: griglia compatta per far stare tutto il mese a schermo
+  &.nvx-mese {
+    font-size: 0.72em;
+
+    th, td {
+      padding: 1px;
+      min-width: 26px;
+      line-height: 1.15;
+    }
+
+    thead th:not(.nvx-nome) {
+      white-space: normal;
+      word-spacing: 100vw; // giorno e numero su due righe
+    }
+
+    .nvx-nome {
+      min-width: 90px;
+      max-width: 130px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nvx-cella {
+      height: 28px;
+    }
+
+    .nvx-chip {
+      min-width: 0;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+
+    .nvx-assenza {
+      margin-top: 1px;
+      border-radius: 3px;
+    }
+
+    .nvx-consuntivo {
+      font-size: 0.9em;
+    }
+  }
 }
 
 .nvx-chip {
