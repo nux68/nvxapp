@@ -69,6 +69,9 @@ export class TimbraturaEvoluta_StampOutModel extends ModelResult { public info: 
 
 export class TimbraturaEvoluta_KioskRegistraInModel { public idAz_Sedi: number = 0; }
 export class TimbraturaEvoluta_KioskRegistraOutModel extends ModelResult { public kioskToken: string = ''; }
+// uscita dalla modalita' terminale con la password di un CompanyPowerAdmin dell'azienda
+export class TimbraturaEvoluta_TerminaleSbloccaInModel { public password: string | null = null; }
+export class TimbraturaEvoluta_TerminaleSbloccaOutModel extends ModelResult { public sbloccato: boolean = false; }
 export class TimbraturaEvoluta_KioskStampInModel {
   public idAz_Sedi: number = 0;
   public kioskToken: string | null = null;

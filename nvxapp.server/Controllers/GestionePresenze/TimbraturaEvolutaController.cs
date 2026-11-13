@@ -35,6 +35,9 @@ namespace nvxapp.server.Controllers.GestionePresenze
         [Authorize, HttpPost, Route("KioskStamp")]
         public async Task<GenericResult<TimbraturaEvoluta_KioskStampOutModel>> KioskStamp(GenericRequest<TimbraturaEvoluta_KioskStampInModel> inModel) => await _service.KioskStamp(inModel, false);
 
+        [Authorize, HttpPost, Route("TerminaleSblocca")]
+        public async Task<GenericResult<TimbraturaEvoluta_TerminaleSbloccaOutModel>> TerminaleSblocca(GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel> inModel) => await _service.TerminaleSblocca(inModel, false);
+
         [Authorize, HttpPost, Route("PinGetAll")]
         public async Task<GenericResult<TimbraturaEvoluta_PinGetAllOutModel>> PinGetAll(GenericRequest<TimbraturaEvoluta_PinGetAllInModel> inModel) => await _service.PinGetAll(inModel, false);
 
