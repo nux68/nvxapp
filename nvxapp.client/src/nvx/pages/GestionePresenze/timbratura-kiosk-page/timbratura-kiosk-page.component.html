@@ -1,4 +1,6 @@
-<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+@if (!terminale.attivo) {
+  <app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+}
 
 <ion-content [fullscreen]="true">
   @if (!token) {
@@ -17,6 +19,13 @@
       </ion-card-content>
     </ion-card>
   } @else {
+    @if (terminale.attivo) {
+      <div class="nvx-terminale">
+        <ion-button fill="clear" size="small" color="medium" (click)="esci()">
+          <ion-icon slot="start" name="lock-closed-outline"></ion-icon>{{ 'attendance.pages.terminale.exit' | transloco }}
+        </ion-button>
+      </div>
+    }
     <div class="nvx-kiosk">
       <div class="nvx-sede">{{ sedeNome }}</div>
       <div class="nvx-ora">{{ ora | date: 'HH:mm:ss' }}</div>
@@ -30,7 +39,11 @@
       @if (esito) {
         <div class="nvx-esito" [class.nvx-ok]="esito.ok" [class.nvx-ko]="!esito.ok">{{ esito.testo }}</div>
       }
-      <ion-button fill="clear" size="small" (click)="schermoIntero()">{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}</ion-button>
+      @if (!terminale.schermoIntero) {
+        <ion-button fill="clear" size="small" (click)="schermoIntero()">
+          <ion-icon slot="start" name="expand-outline"></ion-icon>{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}
+        </ion-button>
+      }
     </div>
   }
 </ion-content>

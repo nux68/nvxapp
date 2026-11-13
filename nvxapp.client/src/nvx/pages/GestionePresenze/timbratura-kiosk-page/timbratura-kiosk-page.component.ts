@@ -6,10 +6,13 @@ import { TimbraturaEvolutaService } from '../../../ClientServer-Service/Gestione
 import {
   Az_SediTimbraturaModel, TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_SediInModel
 } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/Models/timbratura-evoluta-model';
+import { TerminaleService } from '../../../Utility/GestionePresenze/terminale.service';
 
 /*
  Kiosk (AT-TIMB.3): dispositivo condiviso in sede, collegato con un amministratore dell'azienda e registrato sulla sede
  (token salvato nel dispositivo). Il dipendente digita il PIN o passa il badge (lettore che scrive come una tastiera).
+ La registrazione e "Schermo intero" avviano il terminale (TerminaleService): menu e barra nascosti, uscita solo con la
+ password di un CompanyPowerAdmin.
 */
 @Component({
   selector: 'app-timbratura-kiosk-page',
@@ -34,7 +37,8 @@ export class TimbraturaKioskPageComponent {
   private timerEsito: any;
 
   constructor(private timbraturaEvolutaService: TimbraturaEvolutaService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              public terminale: TerminaleService) {
     this.title = this.transloco.translate('attendance.pages.timbraturaKiosk.title');
   }
 
@@ -56,6 +60,8 @@ export class TimbraturaKioskPageComponent {
 
   ionViewWillLeave() {
     clearInterval(this.timer);
+    // pagina lasciata col terminale attivo solo a sessione finita (altrimenti terminaleGuard chiede la password)
+    this.terminale.disattiva();
   }
 
   get sedeNome(): string { return this.sedi.find(s => s.idAz_Sedi === this.idAz_Sedi)?.sede ?? ''; }
@@ -69,7 +75,7 @@ export class TimbraturaKioskPageComponent {
     if (res.success && res.data?.kioskToken) {
       this.token = res.data.kioskToken;
       try { localStorage.setItem(TimbraturaKioskPageComponent.Chiave, JSON.stringify({ idAz_Sedi: this.idAz_Sedi, token: this.token })); } catch { }
-      document.documentElement.requestFullscreen?.().catch(() => { });
+      await this.terminale.attiva();
     }
   }
 
@@ -103,6 +109,10 @@ export class TimbraturaKioskPageComponent {
   }
 
   schermoIntero() {
-    document.documentElement.requestFullscreen?.().catch(() => { });
+    this.terminale.attiva();
+  }
+
+  esci() {
+    this.terminale.esci();
   }
 }

@@ -5,11 +5,13 @@ import { TimbraturaEvolutaService } from '../../../ClientServer-Service/Gestione
 import {
   Az_SediTimbraturaModel, TimbraturaEvoluta_QrCodeInModel, TimbraturaEvoluta_QrCodeOutModel, TimbraturaEvoluta_SediInModel
 } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/Models/timbratura-evoluta-model';
+import { TerminaleService } from '../../../Utility/GestionePresenze/terminale.service';
 
 /*
  Postazione QR (AT-TIMB.1): mostra il QR firmato della sede e lo rinnova alla scadenza. Il dipendente lo inquadra con la
  fotocamera del telefono: si apre /timbraturaqr?c=<codice> e la timbratura parte con la posizione.
- La pagina resta su un dispositivo con un amministratore collegato; "Schermo intero" per l'uso in sede.
+ La pagina resta su un dispositivo con un amministratore collegato; "Schermo intero" avvia il terminale (TerminaleService):
+ menu e barra nascosti, scelta della sede bloccata, uscita solo con la password di un CompanyPowerAdmin.
 */
 @Component({
   selector: 'app-timbratura-postazione-page',
@@ -29,7 +31,8 @@ export class TimbraturaPostazionePageComponent {
   private timer: any;
 
   constructor(private timbraturaEvolutaService: TimbraturaEvolutaService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              public terminale: TerminaleService) {
     this.title = this.transloco.translate('attendance.pages.timbraturaPostazione.title');
   }
 
@@ -45,6 +48,8 @@ export class TimbraturaPostazionePageComponent {
 
   ionViewWillLeave() {
     clearTimeout(this.timer);
+    // pagina lasciata col terminale attivo solo a sessione finita (altrimenti terminaleGuard chiede la password)
+    this.terminale.disattiva();
   }
 
   cambiaSede() {
@@ -71,6 +76,10 @@ export class TimbraturaPostazionePageComponent {
   }
 
   schermoIntero() {
-    document.documentElement.requestFullscreen?.().catch(() => { });
+    this.terminale.attiva();
+  }
+
+  esci() {
+    this.terminale.esci();
   }
 }

@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActionSheetController, NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TranslocoService } from '@jsverse/transloco';
@@ -15,7 +15,7 @@ import {
 
 /*
  Timbratura della sede (AT-TIMB.1-3): QR della postazione, geofence (coordinate, raggio, regola), kiosk e limite delle
- timbrature differite (offline). Il "+" del fab apre postazione QR, kiosk e PIN dei dipendenti.
+ timbrature differite (offline). Il "+" del fab apre i PIN e i badge dei dipendenti (postazione QR e kiosk: menu Terminali).
 */
 @Component({
   selector: 'app-timbratura-sede-page',
@@ -36,7 +36,6 @@ export class TimbraturaSedePageComponent extends BasePageConfirmCancelComponent<
     protected override fb: FormBuilder,
     private timbraturaEvolutaService: TimbraturaEvolutaService,
     public fabMenuService: FabMenuService,
-    private actionSheetCtrl: ActionSheetController,
     private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
@@ -65,25 +64,12 @@ export class TimbraturaSedePageComponent extends BasePageConfirmCancelComponent<
   override ionViewWillEnter() {
     super.ionViewWillEnter();
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem(this.transloco.translate('attendance.pages.timbraturaSede.fabOther'), 'add-circle-outline', () => this.altro()),
+      new FabMenuItem(this.transloco.translate('attendance.menu.pinTimbratura'), 'keypad-outline', () => this.navCtrl.navigateForward('/timbraturapin')),
     ];
   }
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
-  }
-
-  async altro() {
-    const sheet = await this.actionSheetCtrl.create({
-      header: this.transloco.translate('attendance.pages.timbraturaSede.fabOther'),
-      buttons: [
-        { text: this.transloco.translate('attendance.menu.postazioneQr'), icon: 'qr-code-outline', handler: () => { this.navCtrl.navigateForward('/timbraturapostazione'); } },
-        { text: this.transloco.translate('attendance.menu.kiosk'), icon: 'tablet-landscape-outline', handler: () => { this.navCtrl.navigateForward('/timbraturakiosk'); } },
-        { text: this.transloco.translate('attendance.menu.pinTimbratura'), icon: 'keypad-outline', handler: () => { this.navCtrl.navigateForward('/timbraturapin'); } },
-        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' }
-      ]
-    });
-    await sheet.present();
   }
 
   LoadData = (): Observable<Az_SediTimbraturaModel | null> => {
