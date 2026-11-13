@@ -25,6 +25,23 @@
         <ion-item class="nvx-item-4-title">
           <ion-label>{{ 'attendance.pages.mieiTurni.myShifts' | transloco }}</ion-label>
         </ion-item>
+        <!-- turni mostrati: tutti i prossimi, una settimana o un mese -->
+        <div class="nvx-comandi">
+          <ion-segment [value]="vista" (ionChange)="cambiaVista($event.detail.value)">
+            <ion-segment-button value="tutti"><ion-label>{{ 'attendance.pages.mieiTurni.viewAll' | transloco }}</ion-label></ion-segment-button>
+            <ion-segment-button value="settimana"><ion-label>{{ 'attendance.pages.mieiTurni.viewWeek' | transloco }}</ion-label></ion-segment-button>
+            <ion-segment-button value="mese"><ion-label>{{ 'attendance.pages.mieiTurni.viewMonth' | transloco }}</ion-label></ion-segment-button>
+          </ion-segment>
+          @if (vista === 'tutti') {
+            <ion-note>{{ periodoTesto }}</ion-note>
+          } @else {
+            <div class="nvx-periodo">
+              <ion-button fill="clear" (click)="sposta(-1)"><ion-icon slot="icon-only" name="chevron-back"></ion-icon></ion-button>
+              <ion-button fill="clear" (click)="oggi()">{{ periodoTesto }}</ion-button>
+              <ion-button fill="clear" (click)="sposta(1)"><ion-icon slot="icon-only" name="chevron-forward"></ion-icon></ion-button>
+            </div>
+          }
+        </div>
         @if (dati.mieiTurni.length === 0) {
           <ion-note class="nvx-nota">{{ 'attendance.pages.mieiTurni.noShifts' | transloco }}</ion-note>
         }
@@ -35,10 +52,12 @@
               <h3>{{ t.data | date: 'EEEE dd/MM' }}</h3>
               <p>{{ t.descrizione }} {{ t.orarioTesto }} {{ t.reparto }}</p>
             </ion-label>
-            <ion-button slot="end" fill="outline" (click)="proponi(t)">
-              <ion-icon slot="start" name="swap-horizontal-outline"></ion-icon>
-              {{ 'attendance.pages.mieiTurni.propose' | transloco }}
-            </ion-button>
+            @if (puoScambiare(t)) {
+              <ion-button slot="end" fill="outline" (click)="proponi(t)">
+                <ion-icon slot="start" name="swap-horizontal-outline"></ion-icon>
+                {{ 'attendance.pages.mieiTurni.propose' | transloco }}
+              </ion-button>
+            }
           </ion-item>
         }
       </ion-card-content>
