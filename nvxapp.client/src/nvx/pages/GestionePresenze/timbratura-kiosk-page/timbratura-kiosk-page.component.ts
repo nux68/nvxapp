@@ -12,6 +12,8 @@ import { TerminaleService } from '../../../Utility/GestionePresenze/terminale.se
 /*
  Kiosk (AT-TIMB.3): dispositivo condiviso in sede, collegato con un amministratore dell'azienda e registrato sulla sede
  (token salvato nel dispositivo). Il dipendente digita il PIN o passa il badge (lettore che scrive come una tastiera).
+ Le chiamate del kiosk non aprono il dialog degli errori: PIN/badge errati, blocco e altri esiti negativi solo nella
+ segnalazione in rosso.
  Riconosciuto il dipendente (KioskIdentifica) si sceglie reparto - attivita' tra quelli della sede compatibili con lui
  (AT-TIMB.7): con una sola opzione non si chiede nulla, senza scelta entro 10 secondi si timbra quella di default.
  La registrazione e "Schermo intero" avviano il terminale (TerminaleService): menu e barra nascosti, uscita solo con la
@@ -56,7 +58,7 @@ export class TimbraturaKioskPageComponent {
       this.idAz_Sedi = salvato?.idAz_Sedi ?? null;
       this.token = salvato?.token ?? null;
     } catch { }
-    this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel)).subscribe(res => {
+    this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel), true).subscribe(res => {
       this.sedi = (res.data?.sedi ?? []).filter(s => s.kioskAttivo);
       if (!this.sedi.some(s => s.idAz_Sedi === this.idAz_Sedi)) {
         this.idAz_Sedi = this.sedi[0]?.idAz_Sedi ?? null;
@@ -107,7 +109,7 @@ export class TimbraturaKioskPageComponent {
     request.data.pin = pin;
     request.data.badge = badge;
     try {
-      const res = await firstValueFrom(this.timbraturaEvolutaService.KioskIdentifica(request));
+      const res = await firstValueFrom(this.timbraturaEvolutaService.KioskIdentifica(request, true));
       if (!res.success || !res.data) {
         this.mostraEsito({ ok: false, testo: res.messages?.map(m => m.text).join(' ') ?? '' });
         return;
@@ -153,7 +155,7 @@ export class TimbraturaKioskPageComponent {
     request.data.idAz_SubCommessaAttivita = opzione?.idAz_SubCommessaAttivita ?? 0;
     request.data.idAz_SediReparto = opzione?.idAz_SediReparto ?? null;
     try {
-      const res = await firstValueFrom(this.timbraturaEvolutaService.KioskStamp(request));
+      const res = await firstValueFrom(this.timbraturaEvolutaService.KioskStamp(request, true));
       this.esito = res.success
         ? { ok: true, testo: this.transloco.translate('attendance.pages.timbraturaKiosk.done', { name: res.data?.nominativo ?? '', time: (res.data?.ora ?? '').substring(11, 16) }) }
         : { ok: false, testo: res.messages?.map(m => m.text).join(' ') ?? '' };
