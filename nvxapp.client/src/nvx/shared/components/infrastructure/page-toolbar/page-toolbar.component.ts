@@ -6,6 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NavController, Platform } from '@ionic/angular';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
+import { TranslocoService } from '@jsverse/transloco';
+import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
+import { HoverPopupData } from '../hover-popup/hover-popup.component';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -36,7 +39,8 @@ export class PageToolbarComponent {
               private authService: AuthService,
               private navCtrl: NavController,
               private platform: Platform,
-              private http: HttpClient)
+              private http: HttpClient,
+              private transloco: TranslocoService)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
   }
@@ -75,6 +79,51 @@ export class PageToolbarComponent {
 
   dismissJob(jobId: string): void {
     this.longJobNotifierService.dismissJob(jobId);
+  }
+
+  /** Stato dell'anello: in corso, finito, file pronto da scaricare, finito con errore. */
+  statoJob(job: LongJobProgressUpdate): 'corso' | 'ok' | 'file' | 'errore' {
+    if (!job.isFinished)
+      return 'corso';
+    const tipo = job.message?.msgType;
+    if (tipo === MessageType.Error || tipo === MessageType.Exception)
+      return 'errore';
+    return job.category === LongJobCategory.FileGeneration && job.downloadUrl ? 'file' : 'ok';
+  }
+
+  /** stroke-dasharray dell'anello (circonferenza 100): avanzamento; finito: pieno; senza avanzamento: arco che gira */
+  trattoJob(job: LongJobProgressUpdate): string {
+    if (job.isFinished)
+      return '100 100';
+    const p = Math.max(0, Math.min(100, job.progressPercentage ?? 0));
+    return p > 0 ? `${p} 100` : '25 100';
+  }
+
+  popupJob(job: LongJobProgressUpdate): HoverPopupData {
+    const stato = this.statoJob(job);
+    const t = (k: string) => this.transloco.translate('components.pageToolbar.' + k);
+    const extraInfo: Record<string, string> = {};
+    if (stato === 'corso')
+      extraInfo[t('jobProgress')] = `${Math.round(job.progressPercentage ?? 0)}%`;
+    else if (stato === 'file')
+      extraInfo[t('jobAction')] = t('jobClickDownload');
+    else
+      extraInfo[t('jobAction')] = t('jobClickDismiss');
+    return {
+      title: t(stato === 'corso' ? 'jobRunning' : stato === 'file' ? 'jobFileReady' : stato === 'errore' ? 'jobError' : 'jobDone'),
+      content: job.message?.text ?? '',
+      extraInfo
+    };
+  }
+
+  /** Clic sull'anello: file pronto -> download; job finito -> chiude la notifica; in corso -> niente. */
+  onJobClick(job: LongJobProgressUpdate): void {
+    if (!job.isFinished)
+      return;
+    if (job.category === LongJobCategory.FileGeneration)
+      this.onJobLabelClick(job);
+    else
+      this.dismissJob(job.jobId);
   }
 
   onJobLabelClick(job: LongJobProgressUpdate): void {
