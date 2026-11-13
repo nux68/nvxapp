@@ -1,28 +1,115 @@
-// riquadri dei job in corso: come gli ion-card del progetto (bordo sottile, angoli arrotondati, niente ombra)
-.active-jobs-container {
-  padding: 4px 6px;
+// titolo e job in corso alla sua destra (un po' di spazio tra i due)
+.nvx-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
 }
 
-.job-item {
-  --background: var(--nvx-surface);
-  --min-height: 48px;
-  --padding-start: 12px;
-  --inner-padding-end: 10px;
-  margin: 4px;
-  border: 1px solid var(--nvx-border);
-  border-radius: var(--nvx-radius-md);
+.nvx-title-text {
+  min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .job-message {
-    margin: 0 0 6px 0;
-    color: var(--nvx-text-muted);
-    white-space: normal;
+.nvx-jobs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+// un job: anello di 26px con l'avanzamento, al centro percentuale o icona dello stato
+.nvx-job {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  cursor: default;
+  --nvx-job-colore: var(--ion-color-primary);
+
+  &.nvx-job--ok { --nvx-job-colore: var(--ion-color-success); cursor: pointer; }
+  &.nvx-job--file { --nvx-job-colore: var(--ion-color-primary); cursor: pointer; }
+  &.nvx-job--errore { --nvx-job-colore: var(--ion-color-danger); cursor: pointer; }
+
+  &:focus-visible {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+}
+
+.nvx-job-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+
+  circle {
+    fill: none;
+    stroke-width: 3.6;
   }
 
-  ion-progress-bar {
-    height: 6px;
-    border-radius: 999px;
+  .nvx-job-ring__track {
+    stroke: var(--nvx-border, rgba(127, 127, 127, 0.3));
   }
+
+  .nvx-job-ring__bar {
+    stroke: var(--nvx-job-colore);
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.4s ease;
+  }
+}
+
+// senza avanzamento comunicato: l'arco gira
+.nvx-job-ring--gira {
+  animation: nvx-job-gira 1.1s linear infinite;
+}
+
+@keyframes nvx-job-gira {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(270deg); }
+}
+
+.nvx-job-centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--nvx-job-colore);
+  pointer-events: none;
+
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+// file pronto: piccola x per chiudere senza scaricare, visibile al passaggio del mouse
+.nvx-job-chiudi {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--ion-color-medium);
+  color: #fff;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.nvx-job:hover .nvx-job-chiudi,
+.nvx-job:focus-within .nvx-job-chiudi {
+  opacity: 1;
 }
 
 // utente collegato, in alto a destra nella barra

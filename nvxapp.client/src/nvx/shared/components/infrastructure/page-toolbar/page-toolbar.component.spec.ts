@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonButton, IonButtons, IonCol, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonProgressBar, IonRow, IonSearchbar, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { PageToolbarComponent } from './page-toolbar.component';
 
 describe('PageToolbarComponent', () => {
@@ -11,7 +12,7 @@ describe('PageToolbarComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ PageToolbarComponent ],
       providers: [provideIonicAngular()],
-      imports: [IonButton, IonButtons, IonCol, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonProgressBar, IonRow, IonSearchbar, IonTitle, IonToolbar]
+      imports: [TranslocoTestingModule.forRoot({ langs: {} }), IonButton, IonButtons, IonCol, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonProgressBar, IonRow, IonSearchbar, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageToolbarComponent);
