@@ -14,8 +14,11 @@ import {
  Modalita' terminale delle pagine Postazione QR e Kiosk (menu "Terminali"):
    - con "Schermo intero" la pagina va a tutto schermo, il menu a sinistra sparisce (menu disattivato: lo split-pane non lo mostra)
      e la barra della pagina si nasconde; lo schermo resta acceso (Wake Lock, dove il browser lo consente)
-   - non si esce (pulsante Esci, indietro del browser o del telefono, altre navigazioni: terminaleGuard sulla route) senza la
-     password di un CompanyPowerAdmin dell'azienda, verificata dal server (TimbraturaEvoluta/TerminaleSblocca)
+   - si esce solo dal pulsante Esci, con la password di un CompanyPowerAdmin dell'azienda verificata dal server
+     (TimbraturaEvoluta/TerminaleSblocca; password errata: messaggio nella richiesta stessa, che si ripresenta);
+     indietro del browser o del telefono e altre navigazioni sono bloccati senza chiedere nulla (terminaleGuard sulla route)
+   - le chiamate dei terminali non aprono il dialog comune degli errori (alla chiusura tornerebbe indietro): l'esito lo
+     mostra la pagina
    - il token di sessione scade dopo ~20 minuti senza chiamate (ogni risposta del server lo rinnova): finche' il terminale e'
      attivo una chiamata leggera ogni 5 minuti, e al ritorno in primo piano, lo tiene vivo. Se la sessione scade comunque
      (es. dispositivo sospeso a lungo) l'interceptor porta al login: la guardia lascia passare, non c'e' piu' nulla da proteggere
@@ -59,8 +62,8 @@ export class TerminaleService {
   }
 
   /**
-   * Uscita dal terminale: chiede la password di un CompanyPowerAdmin; true se si puo' uscire (anche quando il terminale non e'
-   * attivo o la sessione e' gia' finita). Usata dal pulsante Esci e da terminaleGuard.
+   * Pulsante Esci: chiede la password di un CompanyPowerAdmin; true se si e' usciti (anche quando il terminale non e'
+   * attivo o la sessione e' gia' finita).
    */
   public esci(): Promise<boolean> {
     if (!this._attivo)
@@ -79,6 +82,18 @@ export class TerminaleService {
     return this.sbloccoInCorso;
   }
 
+  /** terminaleGuard: col terminale attivo la pagina non si lascia (nessuna richiesta: la password solo con Esci). */
+  public puoLasciarePagina(): boolean {
+    if (!this._attivo)
+      return true;
+    // sessione finita (l'interceptor porta al login): non c'e' piu' nulla da proteggere
+    if (this.authService.Token == null) {
+      this.disattiva();
+      return true;
+    }
+    return false;
+  }
+
   /** Spegne il terminale senza chiedere la password (pagina lasciata per fine sessione). */
   public disattiva(): void {
     if (!this._attivo)
@@ -95,31 +110,41 @@ export class TerminaleService {
       document.exitFullscreen?.().catch(() => { });
   }
 
+  // richiesta della password; errata (o troppi tentativi): si ripresenta con il messaggio del server, fino ad Annulla
   private async chiediPassword(): Promise<boolean> {
-    const alert = await this.alertCtrl.create({
-      header: this.transloco.translate('attendance.pages.terminale.unlockTitle'),
-      message: this.transloco.translate('attendance.pages.terminale.unlockMessage'),
-      backdropDismiss: false,
-      inputs: [{ name: 'password', type: 'password', placeholder: this.transloco.translate('attendance.pages.terminale.password'), attributes: { autocomplete: 'off' } }],
-      buttons: [
-        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
-        { text: 'OK', role: 'confirm' }
-      ]
-    });
-    await alert.present();
-    const { data, role } = await alert.onDidDismiss();
-    const password: string = data?.values?.password ?? '';
-    if (role !== 'confirm' || !password)
-      return false;
-    const request = new GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel>(TimbraturaEvoluta_TerminaleSbloccaInModel);
-    request.data.password = password;
-    try {
-      // password errata: il messaggio del server lo mostra il dialog degli errori comune
-      const res = await firstValueFrom(this.timbraturaEvolutaService.TerminaleSblocca(request));
-      return res.success && !!res.data?.sbloccato;
-    }
-    catch {
-      return false;
+    let errore: string | null = null;
+    for (;;) {
+      const alert = await this.alertCtrl.create({
+        header: this.transloco.translate('attendance.pages.terminale.unlockTitle'),
+        subHeader: errore ?? undefined,
+        message: this.transloco.translate('attendance.pages.terminale.unlockMessage'),
+        backdropDismiss: false,
+        inputs: [{ name: 'password', type: 'password', placeholder: this.transloco.translate('attendance.pages.terminale.password'), attributes: { autocomplete: 'off' } }],
+        buttons: [
+          { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+          { text: 'OK', role: 'confirm' }
+        ]
+      });
+      await alert.present();
+      const { data, role } = await alert.onDidDismiss();
+      const password: string = data?.values?.password ?? '';
+      if (role !== 'confirm')
+        return false;
+      if (!password) {
+        errore = this.transloco.translate('attendance.pages.terminale.wrongPassword');
+        continue;
+      }
+      const request = new GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel>(TimbraturaEvoluta_TerminaleSbloccaInModel);
+      request.data.password = password;
+      try {
+        const res = await firstValueFrom(this.timbraturaEvolutaService.TerminaleSblocca(request, true));
+        if (res.success && res.data?.sbloccato)
+          return true;
+        errore = res.messages?.map(m => m.text).join(' ') || this.transloco.translate('attendance.pages.terminale.wrongPassword');
+      }
+      catch {
+        errore = this.transloco.translate('attendance.pages.timbraturaKiosk.offline');
+      }
     }
   }
 
@@ -127,7 +152,7 @@ export class TerminaleService {
   private mantieniSessione(): void {
     if (!this._attivo || this.authService.Token == null)
       return;
-    this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel))
+    this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel), true)
       .subscribe({ error: () => { } });
   }
 
@@ -155,5 +180,5 @@ export class TerminaleService {
   };
 }
 
-/** Route dei terminali: lasciare la pagina col terminale attivo richiede la password di un CompanyPowerAdmin. */
-export const terminaleGuard: CanDeactivateFn<unknown> = () => inject(TerminaleService).esci();
+/** Route dei terminali: col terminale attivo la pagina non si lascia (si esce solo con Esci e la password). */
+export const terminaleGuard: CanDeactivateFn<unknown> = () => inject(TerminaleService).puoLasciarePagina();

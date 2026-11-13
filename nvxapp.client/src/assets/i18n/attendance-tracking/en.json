@@ -132,6 +132,7 @@
         "exit": "Exit",
         "unlockTitle": "Leave the terminal",
         "unlockMessage": "Type the password of a company administrator (CompanyPowerAdmin).",
+        "wrongPassword": "Wrong password.",
         "password": "Password"
       },
       "timbraturaPostazione": {
