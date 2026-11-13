@@ -164,7 +164,8 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasOne(t => t.Dip_RapportoLavoroNavigation).WithMany().HasForeignKey(t => t.IdDip_RapportoLavoro).OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(t => t.Par_TurnoNavigation).WithMany().HasForeignKey(t => t.IdPar_Turno).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(t => t.Az_SediRepartoNavigation).WithMany().HasForeignKey(t => t.IdAz_SediReparto).OnDelete(DeleteBehavior.SetNull);
-                entity.HasIndex(t => new { t.IdDip_RapportoLavoro, t.Data }).IsUnique();
+                // piu' turni nello stesso giorno (compatibili: TurniUtility.VerificaGiorno), ma non lo stesso turno due volte
+                entity.HasIndex(t => new { t.IdDip_RapportoLavoro, t.Data, t.IdPar_Turno }).IsUnique();
                 entity.HasIndex(t => new { t.IdAz_SediReparto, t.Data });
             });
 

@@ -225,28 +225,43 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
                         continue;
                     }
 
-                    var esistente = _dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == rapporto.Id && d.Data == giorno).FirstOrDefault();
-                    if (riga.IdPar_Turno <= 0)
-                    {
-                        if (esistente != null)
-                        {
-                            await ChiudiScambiAperti(esistente.Id);
-                            await _dip_TurnoRepository.DeleteAsync(esistente);
-                            retVal.Tolti++;
-                            toccati.Add((rapporto.Id, giorno));
-                        }
-                        continue;
-                    }
+                    // turni del giorno richiesti (piu' turni compatibili, oppure uno solo con IdPar_Turno; nessuno = giorno libero)
+                    var richiesti = riga.IdPar_Turni != null
+                                    ? riga.IdPar_Turni.Where(x => x > 0).ToList()
+                                    : (riga.IdPar_Turno > 0 ? new List<int> { riga.IdPar_Turno } : new List<int>());
+                    if (richiesti.Any(x => !idTurniAzienda.Contains(x)))
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("TurnoNonValido"));
+                    var incompatibili = _turniUtility.VerificaGiorno(richiesti);
+                    if (incompatibili != null)
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("TurniGiornoNonValido", TurniUtility.Nominativo(anagrafica), giorno, incompatibili));
+                    richiesti = richiesti.Distinct().ToList();
 
-                    var turno = esistente ?? new Dip_Turno { IdDip_RapportoLavoro = rapporto.Id, Data = giorno, IdPar_Turno = riga.IdPar_Turno };
-                    if (esistente != null && esistente.IdPar_Turno != riga.IdPar_Turno)
+                    var esistenti = _dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == rapporto.Id && d.Data == giorno).ToList();
+                    bool cambiato = false;
+                    // tolti: i turni del giorno non piu' richiesti (chiudono le proposte di scambio aperte)
+                    foreach (var esistente in esistenti.Where(e => !richiesti.Contains(e.IdPar_Turno)))
+                    {
                         await ChiudiScambiAperti(esistente.Id);
-                    turno.IdPar_Turno = riga.IdPar_Turno;
-                    turno.IdAz_SediReparto = reparto.Id;
-                    turno.Note = string.IsNullOrWhiteSpace(riga.Note) ? null : riga.Note.Trim();
-                    await _dip_TurnoRepository.UpsertAsync(turno);
-                    retVal.Salvati++;
-                    toccati.Add((rapporto.Id, giorno));
+                        await _dip_TurnoRepository.DeleteAsync(esistente);
+                        retVal.Tolti++;
+                        cambiato = true;
+                    }
+                    // nuovi o confermati: reparto e note della riga
+                    var note = string.IsNullOrWhiteSpace(riga.Note) ? null : riga.Note.Trim();
+                    foreach (var idTurno in richiesti)
+                    {
+                        var turno = esistenti.FirstOrDefault(e => e.IdPar_Turno == idTurno)
+                                    ?? new Dip_Turno { IdDip_RapportoLavoro = rapporto.Id, Data = giorno, IdPar_Turno = idTurno };
+                        if (turno.Id != 0 && turno.IdAz_SediReparto == reparto.Id && turno.Note == note)
+                            continue;
+                        turno.IdAz_SediReparto = reparto.Id;
+                        turno.Note = note;
+                        await _dip_TurnoRepository.UpsertAsync(turno);
+                        retVal.Salvati++;
+                        cambiato = true;
+                    }
+                    if (cambiato)
+                        toccati.Add((rapporto.Id, giorno));
                 }
 
                 await RicalcolaAsync(toccati);

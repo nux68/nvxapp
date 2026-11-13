@@ -21,6 +21,14 @@
           <ion-button fill="clear" (click)="oggi()">{{ periodoTesto }}</ion-button>
           <ion-button fill="clear" (click)="sposta(1)"><ion-icon slot="icon-only" name="chevron-forward"></ion-icon></ion-button>
         </div>
+
+        <!-- copia della settimana visualizzata in un'altra settimana, per i dipendenti scelti -->
+        @if (vista === 'settimana' && dati && dati.dipendenti.length > 0) {
+          <ion-button fill="outline" size="small" (click)="duplicaSettimana()">
+            <ion-icon slot="start" name="copy-outline"></ion-icon>
+            {{ 'attendance.pages.pianificazioneTurni.duplicate' | transloco }}
+          </ion-button>
+        }
       </div>
 
       @if (dati) {
@@ -48,8 +56,8 @@
                   @for (d of giorni; track d.getTime()) {
                     <td class="nvx-cella" [class.nvx-weekend]="festivo(d)" [class.nvx-conflitto]="conflittoGrave(dip, d)"
                       [title]="conflitto(dip, d) ?? ''" (click)="scegliTurno(dip, d)">
-                      @if (turno(dip, d); as t) {
-                        <span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span>
+                      @for (t of turni(dip, d); track t.id) {
+                        <span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'" [title]="t.orarioTesto ?? ''">{{ t.codice }}</span>
                       }
                       @for (a of assenze(dip, d); track $index) {
                         <span class="nvx-assenza" [class.nvx-attesa]="!a.approvata"

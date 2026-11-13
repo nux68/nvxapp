@@ -158,8 +158,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
     {
         public int IdDip_RapportoLavoro { get; set; }
         public DateTime Data { get; set; }
-        // 0 = togli il turno del giorno
+        // 0 = togli il turno del giorno (usato se IdPar_Turni e' null: un solo turno nel giorno)
         public int IdPar_Turno { get; set; }
+        // turni del giorno (piu' turni compatibili, TurniUtility.VerificaGiorno): sostituiscono quelli presenti; vuoto = nessun turno
+        public List<int>? IdPar_Turni { get; set; }
         public string? Note { get; set; }
     }
 
