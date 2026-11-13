@@ -226,12 +226,16 @@
         "legend": "Clic su una cella per scegliere i turni del giorno (anche più d'uno). Sotto il turno: assenze (tratteggiate se in attesa di approvazione) e ore lavorate/previste dei giorni calcolati. Bordo rosso = turno in un giorno di assenza approvata."
       },
       "mieiTurni": {
+        "viewAll": "Tutti",
+        "viewWeek": "Settimana",
+        "viewMonth": "Mese",
+        "noCandidates": "Nessun collega disponibile: i colleghi del reparto hanno già questo turno o non hanno turni da scambiare.",
         "reportTitle": "Report dei miei turni",
         "title": "I miei turni",
         "toAnswer": "Proposte di scambio da valutare",
         "accept": "Accetta",
         "refuse": "Rifiuta",
-        "myShifts": "Turni delle prossime 4 settimane",
+        "myShifts": "Turni del periodo",
         "noShifts": "Nessun turno pianificato.",
         "propose": "Scambia",
         "proposeHeader": "Scambia il turno {{ shift }} del {{ date }} con",
