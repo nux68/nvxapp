@@ -1,8 +1,22 @@
-<app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+@if (!terminale.attivo) {
+  <app-page-toolbar [title]="title" [showBreadcrumbs]="true"></app-page-toolbar>
+}
 
 <ion-content [fullscreen]="true">
   <ion-card>
     <ion-card-content class="nvx-postazione">
+      @if (terminale.attivo) {
+        <div class="nvx-terminale">
+          @if (!terminale.schermoIntero) {
+            <ion-button fill="clear" size="small" (click)="schermoIntero()">
+              <ion-icon slot="start" name="expand-outline"></ion-icon>{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}
+            </ion-button>
+          }
+          <ion-button fill="clear" size="small" color="medium" (click)="esci()">
+            <ion-icon slot="start" name="lock-closed-outline"></ion-icon>{{ 'attendance.pages.terminale.exit' | transloco }}
+          </ion-button>
+        </div>
+      } @else {
       <div class="nvx-comandi">
         <ion-select interface="popover" [(ngModel)]="idAz_Sedi" (ionChange)="cambiaSede()"
           [label]="'attendance.pages.timbraturaPostazione.site' | transloco" labelPlacement="stacked">
@@ -14,6 +28,7 @@
           <ion-icon slot="start" name="expand-outline"></ion-icon>{{ 'attendance.pages.timbraturaPostazione.fullscreen' | transloco }}
         </ion-button>
       </div>
+      }
 
       @if (sedi.length === 0) {
         <ion-note>{{ 'attendance.pages.timbraturaPostazione.noSites' | transloco }}</ion-note>

@@ -101,6 +101,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         public string KioskToken { get; set; } = string.Empty;
     }
 
+    // uscita dalla modalita' terminale con la password di un CompanyPowerAdmin dell'azienda
+    public class TimbraturaEvoluta_TerminaleSbloccaInModel { public string? Password { get; set; } }
+    public class TimbraturaEvoluta_TerminaleSbloccaOutModel : ModelResult
+    {
+        public bool Sbloccato { get; set; }
+    }
+
     public class TimbraturaEvoluta_KioskStampInModel
     {
         public int IdAz_Sedi { get; set; }
