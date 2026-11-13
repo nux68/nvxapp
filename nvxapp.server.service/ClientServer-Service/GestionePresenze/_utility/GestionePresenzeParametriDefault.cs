@@ -7,7 +7,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
     // Parametri presenze di partenza per una nuova azienda (ricavati dalla configurazione di tenant_1_2):
     // causali, giustificativi, orari DIURNO8H (09-13 / 14-18, pausa pranzo rilevata), CONTINUATO8H (08:30-17:30,
-    // pausa pranzo automatica) e RIPOSO, profilo settimanale DAY7H8
+    // pausa pranzo automatica) e RIPOSO, orari e turni di esempio per il lavoro a turni (TUR0511, TUR1117, TUR1723,
+    // RIPOSO: AT-TURNI), profilo settimanale DAY7H8
     // (lun-ven DIURNO8H, sab-dom RIPOSO, festivi RIPOSO, straordinario/supplementare giornaliero),
     // calendario delle festivita' nazionali, export.
     // Gli Id NON sono fissi: le chiavi esterne vengono collegate ai record appena creati,
@@ -29,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_TipoSpesaRepository _par_TipoSpesaRepository;
         private readonly IPar_ExportCau_CausaliRepository _par_ExportCau_CausaliRepository;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
+        private readonly IPar_TurnoRepository _par_TurnoRepository;
 
         public GestionePresenzeParametriDefault(IPar_CausaliRepository par_CausaliRepository,
                                                 IPar_GiustificativiRepository par_GiustificativiRepository,
@@ -40,7 +42,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                 IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository,
                                                 IPar_FestivitaRepository par_FestivitaRepository,
                                                 IPar_TipoSpesaRepository par_TipoSpesaRepository,
-                                                IPar_OrarioPausaRepository par_OrarioPausaRepository)
+                                                IPar_OrarioPausaRepository par_OrarioPausaRepository,
+                                                IPar_TurnoRepository par_TurnoRepository)
         {
             _par_CausaliRepository = par_CausaliRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
@@ -53,6 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_FestivitaRepository = par_FestivitaRepository;
             _par_TipoSpesaRepository = par_TipoSpesaRepository;
             _par_OrarioPausaRepository = par_OrarioPausaRepository;
+            _par_TurnoRepository = par_TurnoRepository;
         }
 
         public async Task InitParametri(int IdAz_Anagrafica)
@@ -227,6 +231,58 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 TimbratureTipo = OrarioTimbratureTipo.IntervalloOrario,
                 Hh_Teo_MonteOre = new TimeOnly(0, 0)
             });
+
+            // Esempio di lavoro a turni (AT-TURNI, ANALISI_ATTENDANCETRACKING_TURNI.md): tre orari da 6 ore a coppia unica
+            // (05-11, 11-17, 17-23; tolleranza +/-15 min, arrotondamento 15 min, nessuna pausa) e i turni con lo stesso
+            // codice, piu' il turno RIPOSO sull'orario RIPOSO (0 ore). I turni si assegnano dalla pianificazione e, nei
+            // giorni pianificati, sostituiscono l'orario del profilo
+            async Task<Par_Orario> OrarioTurno(string codice, string descrizione, int dalle, int alle)
+            {
+                var o = await _par_OrarioRepository.UpsertAsync(new Par_Orario
+                {
+                    IdAz_Anagrafica = IdAz_Anagrafica,
+                    Codice = codice,
+                    Descrizione = descrizione,
+                    NumeroCoppie = 1,
+                    TimbratureTipo = OrarioTimbratureTipo.IntervalloOrario,
+                    Hh_Teo_MonteOre = new TimeOnly(0, 0)
+                });
+                await _par_OrarioIntervalloHHRepository.UpsertAsync(new Par_OrarioIntervalloHH
+                {
+                    IdPar_Orario = o.Id,
+                    NumCoppia = 1,
+                    Dalle = new TimeOnly(dalle, 0),
+                    Dalle_Limite_SX = new TimeOnly(dalle - 1, 45),
+                    Dalle_Limite_DX = new TimeOnly(dalle, 15),
+                    Dalle_Arrotondamento = TimeRoundInterval.Min15,
+                    Dalle_Arrotondamento_Verso = RoundDirection.Up,
+                    Dalle_Use_4_Match = true,
+                    Alle = new TimeOnly(alle, 0),
+                    Alle_Limite_SX = new TimeOnly(alle - 1, 45),
+                    Alle_Limite_DX = new TimeOnly(alle, 15),
+                    Alle_Arrotondamento = TimeRoundInterval.Min15,
+                    Alle_Arrotondamento_Verso = RoundDirection.Up,
+                    Alle_Use_4_Match = true,
+                    IdCausale_HH_Lav = causali["ORD1"].Id
+                });
+                return o;
+            }
+            var turni = new (Par_Orario Orario, string Colore)[]
+            {
+                (await OrarioTurno("TUR0511", "Turno 05-11", 5, 11), "#2196f3"),
+                (await OrarioTurno("TUR1117", "Turno 11-17", 11, 17), "#4caf50"),
+                (await OrarioTurno("TUR1723", "Turno 17-23", 17, 23), "#ff9800"),
+                (orarioRiposo, "#9e9e9e"),
+            };
+            foreach (var (o, colore) in turni)
+                await _par_TurnoRepository.UpsertAsync(new Par_Turno
+                {
+                    IdAz_Anagrafica = IdAz_Anagrafica,
+                    Codice = o.Codice,
+                    Descrizione = o.Descrizione,
+                    IdPar_Orario = o.Id,
+                    Colore = colore
+                });
 
             // Profilo orario settimanale: DIURNO8H dal lunedi' al venerdi', RIPOSO sabato e domenica
             var profilo = await _par_ProfiloOrarioRepository.UpsertAsync(new Par_ProfiloOrario

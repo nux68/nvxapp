@@ -2061,4 +2061,22 @@
   <data name="RequestRevokeClosed" xml:space="preserve">
     <value>Cancellation can be requested only for an approved request and only once: once decided or withdrawn, the request stays approved.</value>
   </data>
+  <data name="TurniGiornoDoppio" xml:space="preserve">
+    <value>Shift {0} is already assigned on this day.</value>
+  </data>
+  <data name="TurniGiornoRiposo" xml:space="preserve">
+    <value>Shift {0} is a rest day: it cannot be assigned together with other shifts.</value>
+  </data>
+  <data name="TurniGiornoMonteOre" xml:space="preserve">
+    <value>Shift {0} has an hours-based schedule: it cannot be assigned together with other shifts.</value>
+  </data>
+  <data name="TurniGiornoSovrapposti" xml:space="preserve">
+    <value>Shifts {0} and {1} overlap.</value>
+  </data>
+  <data name="TurniGiornoNonValido" xml:space="preserve">
+    <value>{0}, {1:dd/MM/yyyy}: {2}</value>
+  </data>
+  <data name="ScambioTurnoIncompatibile" xml:space="preserve">
+    <value>The swap is not possible: on {0:dd/MM/yyyy} {1}</value>
+  </data>
 </root>

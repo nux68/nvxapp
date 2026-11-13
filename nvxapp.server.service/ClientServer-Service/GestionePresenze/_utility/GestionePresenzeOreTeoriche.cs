@@ -102,27 +102,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 if (parProfilo.IdPar_Orario_Festivo > 0 && GestionePresenzeFestivita.IsFestivita(festivita, giorno))
                     orario = orari.FirstOrDefault(o => o.Id == parProfilo.IdPar_Orario_Festivo);
 
-                var turno = turni.FirstOrDefault(t => t.Data.Date == giorno);
-                if (turno != null)
-                {
-                    var idOrarioTurno = parTurni.FirstOrDefault(p => p.Id == turno.IdPar_Turno)?.IdPar_Orario ?? parProfilo.IdPar_Orario_Festivo;
-                    orario = orari.FirstOrDefault(o => o.Id == idOrarioTurno);
-                }
+                // orari del giorno: quello del profilo oppure quelli dei turni pianificati (piu' turni: fasce e pause di tutti,
+                // come l'orario composto del motore)
+                var orariGiorno = orario != null ? new List<Par_Orario> { orario } : new List<Par_Orario>();
+                var turniGiorno = turni.Where(t => t.Data.Date == giorno).ToList();
+                if (turniGiorno.Count > 0)
+                    orariGiorno = turniGiorno.Select(t => parTurni.FirstOrDefault(p => p.Id == t.IdPar_Turno)?.IdPar_Orario ?? parProfilo.IdPar_Orario_Festivo)
+                                             .Distinct()
+                                             .Select(id => orari.FirstOrDefault(o => o.Id == id))
+                                             .Where(o => o != null).Select(o => o!).ToList();
+                orario = orariGiorno.FirstOrDefault();
 
                 var ore = TimeSpan.Zero;
-                if (orario?.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)
+                if (orario != null && orariGiorno.All(o => o.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario))
                 {
-                    foreach (var coppia in coppie.Where(c => c.IdPar_Orario == orario.Id && c.Dalle.HasValue && c.Alle.HasValue))
+                    var idOrariGiorno = orariGiorno.Select(o => o.Id).ToList();
+                    foreach (var coppia in coppie.Where(c => idOrariGiorno.Contains(c.IdPar_Orario) && c.Dalle.HasValue && c.Alle.HasValue))
                     {
                         var durata = coppia.Alle!.Value.ToTimeSpan() - coppia.Dalle!.Value.ToTimeSpan();
                         if (durata > TimeSpan.Zero)
                             ore += durata;
                     }
 
-                    var pauseOrario = pause.Where(p => p.IdPar_Orario == orario.Id).Select(ModelloPausa).ToList();
+                    var pauseOrario = pause.Where(p => idOrariGiorno.Contains(p.IdPar_Orario)).Select(ModelloPausa).ToList();
                     if (pauseOrario.Count > 0)
                     {
-                        var coppieOrario = coppie.Where(c => c.IdPar_Orario == orario.Id).Select(ModelloCoppia).ToList();
+                        var coppieOrario = coppie.Where(c => idOrariGiorno.Contains(c.IdPar_Orario))
+                                                 .OrderBy(c => c.Dalle ?? TimeOnly.MinValue).Select(ModelloCoppia).ToList();
                         ore += GestionePresenzePause.VariazioneTeorico(giorno, ore, coppieOrario, pauseOrario);
                         if (ore < TimeSpan.Zero)
                             ore = TimeSpan.Zero;

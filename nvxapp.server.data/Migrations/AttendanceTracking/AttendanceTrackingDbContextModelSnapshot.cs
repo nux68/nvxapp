@@ -1958,7 +1958,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_SediReparto", "Data");
 
-                    b.HasIndex("IdDip_RapportoLavoro", "Data")
+                    b.HasIndex("IdDip_RapportoLavoro", "Data", "IdPar_Turno")
                         .IsUnique();
 
                     b.ToTable("Dip_Turno");
