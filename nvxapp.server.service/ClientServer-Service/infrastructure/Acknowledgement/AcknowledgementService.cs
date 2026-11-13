@@ -25,14 +25,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
         private readonly IPresaVisioneRepository _presaVisioneRepository;
         private readonly IEnumerable<IAcknowledgementChannel> _channels;
         private readonly INotificationSender _notificationSender;
+        private readonly IAcknowledgementNotifier _acknowledgementNotifier;
 
         public AcknowledgementService(IPresaVisioneRepository presaVisioneRepository,
                                       IEnumerable<IAcknowledgementChannel> channels,
-                                      INotificationSender notificationSender)
+                                      INotificationSender notificationSender,
+                                      IAcknowledgementNotifier acknowledgementNotifier)
         {
             _presaVisioneRepository = presaVisioneRepository;
             _channels = channels;
             _notificationSender = notificationSender;
+            _acknowledgementNotifier = acknowledgementNotifier;
         }
 
         public async Task<List<PresaVisione>> RequestAsync(AcknowledgementRequest r)
@@ -136,6 +139,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Acknowledgem
             riga.Ip = Taglia(ip, 64);
             riga.UserAgent = Taglia(userAgent, 500);
             await _presaVisioneRepository.UpdateAsync(riga);
+            // avviso push: le pagine con lo stato delle prese visione di quella fonte si ricaricano
+            await _acknowledgementNotifier.ConfermataAsync(riga);
         }
 
         private async Task<IAcknowledgementChannel> ScegliCanaleAsync(int idCompany, string? richiesto)
