@@ -222,7 +222,6 @@
         "duplicateConfirm": "Copy the shifts of the week {{ dal }} to the week {{ al }} for {{ n }} employees? Their shifts in that week are replaced (days without a shift stay without a shift).",
         "duplicateDone": "Week duplicated: {{ salvati }} shifts copied, {{ tolti }} removed.",
         "duplicateEmpty": "The week has no shifts to duplicate.",
-        "shiftsOfDay": "Shifts of the day (one or more, not overlapping; rest day alone)",
         "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
@@ -1328,6 +1327,15 @@
         "approvaRichiesteGiustificativo": "Approve absence justification requests",
         "generaTimbratureMancanti": "Generate missing clockings",
         "generaGiustificativiAssenza": "Generate absence justifications"
+      },
+      "seletionParTurnoDialog": {
+        "title": "Shifts of the day",
+        "turno": "Shift",
+        "descrizione": "Description",
+        "orario": "Schedule",
+        "riposo": "Rest day (0 hours)",
+        "nessunTurno": "No shifts defined: create the shifts first.",
+        "nota": "You can choose one or more shifts, not overlapping; a rest day alone. With no selection the day has no shift."
       },
       "seletionParAttivitaDialog": {
         "title": "Select activities",

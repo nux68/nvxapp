@@ -11,6 +11,7 @@ import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePres
 import { Az_SediRepartoModel, Az_SediReparto_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { SeletionParTurnoDialogComponent, SeletionParTurnoDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-turno-dialog/seletion-par-turno-dialog.component';
 
 type Vista = 'settimana' | 'mese';
 
@@ -179,31 +180,27 @@ export class PianificazioneTurniPageComponent {
 
   // ── modifica ───────────────────────────────────────────────────────
 
-  /** turni del giorno: uno o piu' (caselle di spunta), nessuno = giorno senza turno; la compatibilita' la controlla il server */
+  /**
+   turni del giorno con il dialog standard di selezione (SeletionParTurnoDialogComponent): uno o piu', nessuno = giorno senza
+   turno; la compatibilita' la controlla il server
+  */
   async scegliTurno(dip: TurnoDipendenteModel, d: Date) {
     if (!this.dati)
       return;
     const attuali = new Set(this.turni(dip, d).map(t => t.id));
-    const turni = [...this.dati.turni].sort((a, b) => (a.orarioTesto ?? '').localeCompare(b.orarioTesto ?? ''));
-    const alert = await this.alertCtrl.create({
-      header: `${dip.nominativo} - ${d.toLocaleDateString(this.transloco.getActiveLang())}`,
-      subHeader: this.transloco.translate('attendance.pages.pianificazioneTurni.shiftsOfDay'),
-      inputs: turni.map(t => ({
-        type: 'checkbox' as const,
-        label: `${t.codice} - ${t.descrizione}${t.orarioTesto ? ' (' + t.orarioTesto + ')' : ''}`,
-        value: t.id,
-        checked: attuali.has(t.id),
-      })),
-      buttons: [
-        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
-        { text: this.transloco.translate('common.buttons.save'), role: 'confirm' },
-      ],
+    const modal = await this.modalCtrl.create({
+      component: SeletionParTurnoDialogComponent,
+      componentProps: {
+        turni: this.dati.turni,
+        selezionati: [...attuali],
+        sottotitolo: `${dip.nominativo} - ${d.toLocaleDateString(this.transloco.getActiveLang())}`,
+      }
     });
-    await alert.present();
-    const esito = await alert.onDidDismiss();
-    if (esito.role !== 'confirm')
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<SeletionParTurnoDialogResult>();
+    if (role !== 'confirm' || !data)
       return;
-    const scelti: number[] = (esito.data?.values ?? []).map((x: any) => Number(x));
+    const scelti = data.id;
     if (scelti.length === attuali.size && scelti.every(x => attuali.has(x)))
       return;
     this.salva(dip, d, scelti);

@@ -222,7 +222,6 @@
         "duplicateConfirm": "Copiare i turni della settimana {{ dal }} nella settimana {{ al }} per {{ n }} dipendenti? I loro turni di quella settimana vengono sostituiti (i giorni senza turno restano senza turno).",
         "duplicateDone": "Settimana duplicata: {{ salvati }} turni copiati, {{ tolti }} tolti.",
         "duplicateEmpty": "La settimana non ha turni da duplicare.",
-        "shiftsOfDay": "Turni del giorno (uno o più, senza sovrapposizioni; il riposo da solo)",
         "legend": "Clic su una cella per scegliere i turni del giorno (anche più d'uno). Sotto il turno: assenze (tratteggiate se in attesa di approvazione) e ore lavorate/previste dei giorni calcolati. Bordo rosso = turno in un giorno di assenza approvata."
       },
       "mieiTurni": {
@@ -1328,6 +1327,15 @@
         "approvaRichiesteGiustificativo": "Approva Richieste Giustificativo",
         "generaTimbratureMancanti": "Genera Timbrature Mancanti",
         "generaGiustificativiAssenza": "Genera Giustificativi Assenza"
+      },
+      "seletionParTurnoDialog": {
+        "title": "Turni del giorno",
+        "turno": "Turno",
+        "descrizione": "Descrizione",
+        "orario": "Orario",
+        "riposo": "Riposo (0 ore)",
+        "nessunTurno": "Nessun turno definito: crea prima i turni.",
+        "nota": "Si possono scegliere uno o più turni, senza sovrapposizioni; il riposo da solo. Senza selezione il giorno resta senza turno."
       },
       "seletionParAttivitaDialog": {
         "title": "Seleziona Attività",

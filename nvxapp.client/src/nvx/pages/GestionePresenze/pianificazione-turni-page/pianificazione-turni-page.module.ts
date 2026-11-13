@@ -5,6 +5,7 @@ import { IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLa
 import { RouterModule } from '@angular/router';
 import { PianificazioneTurniPageComponent } from './pianificazione-turni-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
     IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonNote, IonSegment, IonSegmentButton, IonSelect, IonSelectOption,
     RouterModule.forChild([{ path: '', component: PianificazioneTurniPageComponent }]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule,
   ],
   declarations: [PianificazioneTurniPageComponent]
 })
