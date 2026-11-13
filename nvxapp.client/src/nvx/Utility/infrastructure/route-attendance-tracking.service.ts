@@ -8,6 +8,7 @@ import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
 import { RoleGuard4JustClockRequest } from '../../pages/RoleGuard/infrastructure/role-guard-4-just-clock-request';
 import { licenseLevelGuard } from '../../pages/RoleGuard/infrastructure/license-level-guard';
+import { terminaleGuard } from '../GestionePresenze/terminale.service';
 import { ApplicationType, LivelloLicenza } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Injectable({
@@ -57,8 +58,8 @@ export class RouteAttendanceTrackingService {
       // timbratura evoluta (AT-TIMB)
       { path: 'timbraturasede', loadChildren: () => import('../../pages/GestionePresenze/timbratura-sede-page/timbratura-sede-page.module').then(m => m.TimbraturaSedePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'timbraturapin', loadChildren: () => import('../../pages/GestionePresenze/timbratura-pin-page/timbratura-pin-page.module').then(m => m.TimbraturaPinPageModule), canActivate: [RoleGuard4CompanyAdmin] },
-      { path: 'timbraturapostazione', loadChildren: () => import('../../pages/GestionePresenze/timbratura-postazione-page/timbratura-postazione-page.module').then(m => m.TimbraturaPostazionePageModule), canActivate: [RoleGuard4CompanyAdmin] },
-      { path: 'timbraturakiosk', loadChildren: () => import('../../pages/GestionePresenze/timbratura-kiosk-page/timbratura-kiosk-page.module').then(m => m.TimbraturaKioskPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'timbraturapostazione', loadChildren: () => import('../../pages/GestionePresenze/timbratura-postazione-page/timbratura-postazione-page.module').then(m => m.TimbraturaPostazionePageModule), canActivate: [RoleGuard4CompanyAdmin], canDeactivate: [terminaleGuard] },
+      { path: 'timbraturakiosk', loadChildren: () => import('../../pages/GestionePresenze/timbratura-kiosk-page/timbratura-kiosk-page.module').then(m => m.TimbraturaKioskPageModule), canActivate: [RoleGuard4CompanyAdmin], canDeactivate: [terminaleGuard] },
       { path: 'turnocoperture', loadChildren: () => import('../../pages/GestionePresenze/turno-coperture-page/turno-coperture-page.module').then(m => m.TurnoCoperturePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       { path: 'attendanceanomalies', loadChildren: () => import('../../pages/GestionePresenze/anomalie-page/anomalie-page.module').then(m => m.AnomaliePageModule), canActivate: [RoleGuard4CompanyAdmin] },

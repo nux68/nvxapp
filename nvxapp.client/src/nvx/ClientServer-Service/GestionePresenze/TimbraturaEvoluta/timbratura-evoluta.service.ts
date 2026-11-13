@@ -9,7 +9,7 @@ import {
   TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskRegistraOutModel, TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_KioskStampOutModel,
   TimbraturaEvoluta_PinGetAllInModel, TimbraturaEvoluta_PinGetAllOutModel, TimbraturaEvoluta_PinPutInModel, TimbraturaEvoluta_PinPutOutModel,
   TimbraturaEvoluta_QrCodeInModel, TimbraturaEvoluta_QrCodeOutModel, TimbraturaEvoluta_SediInModel, TimbraturaEvoluta_SediOutModel,
-  TimbraturaEvoluta_StampInModel, TimbraturaEvoluta_StampOutModel
+  TimbraturaEvoluta_StampInModel, TimbraturaEvoluta_StampOutModel, TimbraturaEvoluta_TerminaleSbloccaInModel, TimbraturaEvoluta_TerminaleSbloccaOutModel
 } from './Models/timbratura-evoluta-model';
 
 // Timbratura evoluta (AT-TIMB): configurazione delle sedi, QR della postazione, timbratura con QR/posizione/offline, kiosk, PIN
@@ -31,6 +31,7 @@ export class TimbraturaEvolutaService {
   Stamp(m: GenericRequest<TimbraturaEvoluta_StampInModel>) { return this.post<TimbraturaEvoluta_StampInModel, TimbraturaEvoluta_StampOutModel>('Stamp', m); }
   KioskRegistra(m: GenericRequest<TimbraturaEvoluta_KioskRegistraInModel>) { return this.post<TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskRegistraOutModel>('KioskRegistra', m); }
   KioskStamp(m: GenericRequest<TimbraturaEvoluta_KioskStampInModel>) { return this.post<TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_KioskStampOutModel>('KioskStamp', m); }
+  TerminaleSblocca(m: GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel>) { return this.post<TimbraturaEvoluta_TerminaleSbloccaInModel, TimbraturaEvoluta_TerminaleSbloccaOutModel>('TerminaleSblocca', m); }
   PinGetAll(m: GenericRequest<TimbraturaEvoluta_PinGetAllInModel>) { return this.post<TimbraturaEvoluta_PinGetAllInModel, TimbraturaEvoluta_PinGetAllOutModel>('PinGetAll', m); }
   PinPut(m: GenericRequest<TimbraturaEvoluta_PinPutInModel>) { return this.post<TimbraturaEvoluta_PinPutInModel, TimbraturaEvoluta_PinPutOutModel>('PinPut', m); }
 }

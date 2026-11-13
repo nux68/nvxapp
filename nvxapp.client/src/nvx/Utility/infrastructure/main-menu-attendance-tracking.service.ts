@@ -33,8 +33,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 2600, group: 0, title: 'attendance.menu.personalePresente', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "PresentStaffPageComponent", url: '/presentstaff', icon: 'people-circle' },
       { menuType: MenuType.MenuItem, zorder: 2700, group: 0, title: 'attendance.menu.pianoFerie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "VacationPlanPageComponent", url: '/vacationplan', icon: 'calendar-clear' },
       { menuType: MenuType.MenuItem, zorder: 2780, group: 0, title: 'attendance.menu.accordiSw', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AccordiSwListPageComponent", url: '/accordiswlist', icon: 'home' },
-      { menuType: MenuType.MenuItem, zorder: 2760, group: 0, title: 'attendance.menu.postazioneQr', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaPostazionePageComponent", url: '/timbraturapostazione', icon: 'qr-code' },
-      { menuType: MenuType.MenuItem, zorder: 2770, group: 0, title: 'attendance.menu.kiosk', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaKioskPageComponent", url: '/timbraturakiosk', icon: 'tablet-landscape' },
       { menuType: MenuType.MenuItem, zorder: 2750, group: 0, title: 'attendance.menu.pianificazioneTurni', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "PianificazioneTurniPageComponent", url: '/pianificazioneturni', icon: 'repeat' },
 
 
@@ -56,6 +54,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       // formule personalizzate del calcolo giornata: funzione del piano Pro (senza Pro le voci restano nel menu, disattivate)
       { menuType: MenuType.MenuItem, zorder: 207600, group: 1, title: 'attendance.menu.formule', roles: ['CompanyPowerAdmin'], component: "FormuleListPageComponent", url: '/formulelist', icon: 'code-slash', minLicense: LivelloLicenza.Pro },
       { menuType: MenuType.MenuItem, zorder: 207700, group: 1, title: 'attendance.menu.profiliFormule', roles: ['CompanyPowerAdmin'], component: "ProfiloFormuleListPageComponent", url: '/profiloformulelist', icon: 'layers', minLicense: LivelloLicenza.Pro },
+
+      // Terminali: pagine da lasciare a schermo intero su un dispositivo in sede (menu nascosto, uscita con la password di un
+      // CompanyPowerAdmin: TerminaleService); sezione tra Nota spese e Gestione commesse
+      { menuType: MenuType.MenuHeader, zorder: 150000, group: 4, title: 'attendance.menu.terminali', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 150100, group: 4, title: 'attendance.menu.postazioneQr', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaPostazionePageComponent", url: '/timbraturapostazione', icon: 'qr-code' },
+      { menuType: MenuType.MenuItem, zorder: 150200, group: 4, title: 'attendance.menu.kiosk', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TimbraturaKioskPageComponent", url: '/timbraturakiosk', icon: 'tablet-landscape' },
 
       // Nota spese: subito dopo la sezione Generale (le sezioni seguono lo zorder dell'intestazione)
       { menuType: MenuType.MenuHeader, zorder: 100000, group: 3, title: 'attendance.menu.notaSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },

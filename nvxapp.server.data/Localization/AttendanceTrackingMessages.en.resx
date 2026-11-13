@@ -1983,6 +1983,9 @@
   <data name="TimbKioskBloccato" xml:space="preserve">
     <value>Too many wrong attempts: try again in a minute.</value>
   </data>
+  <data name="TimbTerminalePasswordErrata" xml:space="preserve">
+    <value>Wrong password: the password of a company administrator (CompanyPowerAdmin) is required.</value>
+  </data>
   <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
     <value>PIN or badge not recognised.</value>
   </data>

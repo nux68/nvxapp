@@ -47,6 +47,13 @@ Solo CompanyAdmin/CompanyPowerAdmin: restituisce il codice corrente della sede, 
 ### 4.4 Offline
 Coda nel `localStorage` del client (`TimbraturaOfflineService`): se la chiamata fallisce per rete (o il browser è offline) la timbratura resta in coda con `dataDispositivo`; all'evento `online`, all'avvio della pagina e con "Invia ora" si inviano in ordine con `Offline = true`. Le risposte di rifiuto (oltre il limite) tolgono la timbratura dalla coda e restano visibili come scartate.
 
+### 4.5 Terminali (`AT-TIMB.6`)
+Postazione QR e Kiosk stanno nella sezione di menu **Terminali** (non più nel fab "+" di Timbratura della sede, che apre solo PIN e badge).
+- "Schermo intero" (e, nel kiosk, la registrazione del dispositivo) avvia la **modalità terminale** (`TerminaleService`, client): pagina a tutto schermo, menu a sinistra disattivato (lo split-pane non lo mostra), barra della pagina e scelta della sede nascoste, schermo tenuto acceso (Wake Lock, dove disponibile).
+- Si esce solo con la **password di un CompanyPowerAdmin** dell'azienda: pulsante Esci e `terminaleGuard` (`canDeactivate` sulle due route: indietro del browser o del telefono, altre navigazioni). La verifica è del server, `TimbraturaEvoluta/TerminaleSblocca`: la password si confronta con i CompanyPowerAdmin collegati all'azienda (`UserCompany` non disabilitati); 5 errori in un minuto bloccano lo sblocco per un minuto (per utente collegato). Ricarica o chiusura della scheda: conferma del browser.
+- **Sessione**: il token scade dopo `Jwt:ExpireMinutes` (1200, che `UtilToken` somma come secondi: ~20 minuti) senza chiamate; ogni risposta lo rinnova. Col terminale attivo una chiamata leggera (`Sedi`) ogni 5 minuti e al ritorno in primo piano lo tiene vivo. Se scade comunque (dispositivo sospeso a lungo) l'interceptor porta al login e la guardia lascia passare.
+- Limiti del browser: Esc esce dallo schermo intero ma non dal terminale (la pagina offre di tornarci); la barra degli indirizzi resta raggiungibile fuori dallo schermo intero, per un blocco completo serve la modalità kiosk del sistema operativo o del browser.
+
 ## 5. Impatti sul calcolo
 Nessuno: la timbratura evoluta crea una normale `Dip_GG_Timbratura` (stato Diretta). Le informazioni aggiuntive sono solo in `Dip_GG_TimbraturaInfo` e nell'elenco del giorno (`TimbraturaEvoluta/Info4Giorno`).
 
@@ -63,6 +70,7 @@ Nessuno: la timbratura evoluta crea una normale `Dip_GG_Timbratura` (stato Diret
 | B7 | PWA offline | **Scelta provvisoria**: coda in `localStorage` e invio alla riconnessione. Il caricamento dell'app senza rete richiede un service worker (`@angular/service-worker`, non installato): estensione |
 | B8 | Timbratura semplice esistente (`/timeclockuser`) | Invariata |
 | B9 | Geofence nei giorni di lavoro agile | Non si applica se il giorno ha un giustificativo di lavoro agile approvato (AT-SW) |
+| B10 | Uscita dalla modalità terminale | **Scelta provvisoria**: solo la password (senza utente), valida quella di qualsiasi CompanyPowerAdmin collegato all'azienda; sessione tenuta viva dal client invece di un token del dispositivo lato server |
 
 ## 7. Checklist
 
@@ -74,3 +82,5 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 - ✅ `AT-TIMB.3` Kiosk: registrazione del dispositivo, PIN/badge, `KioskStamp`, pagina `/timbraturakiosk` a schermo intero, limite dei tentativi
 - ✅ `AT-TIMB.4` Offline: coda locale, invio alla riconnessione, differite accettate entro il limite e marcate
 - ✅ `AT-TIMB.5` Prova su DB usa e getta (QR valido/riusato, fuori dal geofence, differita accettata/rifiutata, kiosk con PIN) — 41 controlli API: configurazione (permessi, coordinate obbligatorie con il geofence), QR con immagine, QR valido, riusato dallo stesso dipendente (rifiutato), usato da un collega (accettato), firma falsa e QR scaduto rifiutati, fuori area con "segnala" (accettata, esito e distanza registrati) e con "blocca" (rifiutata, anche senza posizione), tolleranza della precisione, QR obbligatorio, differita accettata con l'ora del dispositivo e marcata, oltre il limite / nel futuro / sede senza differite rifiutate, PIN solo dall'HR e salvato come hash, kiosk con token sbagliato, utente non amministratore, PIN errato (rifiutati), PIN e badge corretti, blocco dopo 5 errori, nuova registrazione che invalida il token
+- ✅ `AT-TIMB.6` Terminali: sezione di menu "Terminali" (Postazione QR, Kiosk), tolti dal fab di Timbratura della sede; modalità terminale a schermo intero senza menu, uscita con la password di un CompanyPowerAdmin (`TerminaleSblocca`, limite dei tentativi), sessione tenuta viva
+- ⏳ `AT-TIMB.6a` Prova sul dispositivo reale (tablet): uscita con indietro/Esc, password errata e blocco, sessione dopo più di 20 minuti di inattività

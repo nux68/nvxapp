@@ -25,3 +25,10 @@
   display: block;
   margin-top: 12px;
 }
+
+// terminale attivo: comandi discreti in alto a destra (Esci con la password, ritorno a schermo intero dopo un Esc)
+.nvx-terminale {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
