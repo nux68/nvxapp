@@ -123,6 +123,8 @@ export class Dip_Turno_PianificazioneOutModel extends ModelResult {
 }
 
 export class Dip_Turno_PutRiga {
+  /** turni del giorno (piu' turni compatibili): sostituiscono quelli presenti; vuoto = nessun turno. Se null vale idPar_Turno */
+  public idPar_Turni: number[] | null = null;
   public idDip_RapportoLavoro: number = 0;
   public data: string = '';
   public idPar_Turno: number = 0;   // 0 = togli il turno

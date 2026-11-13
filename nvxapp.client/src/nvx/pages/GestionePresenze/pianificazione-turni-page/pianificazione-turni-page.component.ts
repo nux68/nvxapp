@@ -16,7 +16,8 @@ type Vista = 'settimana' | 'mese';
 
 /*
  Pianificazione dei turni di un reparto (AT-TURNI.2, ANALISI_ATTENDANCETRACKING_TURNI.md §4):
- griglia dipendenti x giorni (settimana o mese), clic sulla cella = scelta del turno (salvato subito, il giorno si ricalcola),
+ griglia dipendenti x giorni (settimana o mese), clic sulla cella = scelta dei turni del giorno (uno o piu', compatibili:
+ niente sovrapposizioni, il riposo da solo; salvati subito, il giorno si ricalcola),
  righe delle coperture minime (rosse se insufficienti), assenze, conflitti e consuntivo dei giorni calcolati.
  Duplica settimana (vista settimana): la settimana visualizzata si copia in una delle settimane successive per i dipendenti
  scelti (dialog standard di selezione multipla); nella destinazione i loro turni diventano uguali a quelli di partenza.
@@ -125,9 +126,13 @@ export class PianificazioneTurniPageComponent {
 
   private chiave(d: Date): string { return dataLocale(d).substring(0, 10); }
 
-  turno(dip: TurnoDipendenteModel, d: Date): Par_TurnoModel | null {
-    const a = this.dati?.assegnazioni.find(x => x.idDip_RapportoLavoro === dip.idDip_RapportoLavoro && x.data.substring(0, 10) === this.chiave(d));
-    return a ? (this.dati?.turni.find(t => t.id === a.idPar_Turno) ?? null) : null;
+  /** turni del dipendente nel giorno, in ordine di orario */
+  turni(dip: TurnoDipendenteModel, d: Date): Par_TurnoModel[] {
+    const ids = (this.dati?.assegnazioni ?? [])
+      .filter(x => x.idDip_RapportoLavoro === dip.idDip_RapportoLavoro && x.data.substring(0, 10) === this.chiave(d))
+      .map(x => x.idPar_Turno);
+    return (this.dati?.turni ?? []).filter(t => ids.includes(t.id))
+      .sort((a, b) => (a.orarioTesto ?? '').localeCompare(b.orarioTesto ?? ''));
   }
 
   assenze(dip: TurnoDipendenteModel, d: Date): TurnoAssenzaModel[] {
@@ -174,24 +179,34 @@ export class PianificazioneTurniPageComponent {
 
   // ── modifica ───────────────────────────────────────────────────────
 
+  /** turni del giorno: uno o piu' (caselle di spunta), nessuno = giorno senza turno; la compatibilita' la controlla il server */
   async scegliTurno(dip: TurnoDipendenteModel, d: Date) {
     if (!this.dati)
       return;
-    const attuale = this.turno(dip, d);
-    const buttons: any[] = this.dati.turni.map(t => ({
-      text: `${t.codice} - ${t.descrizione}${t.idPar_Orario ? ' (' + (t.orarioTesto ?? '') + ')' : ''}`,
-      cssClass: attuale?.id === t.id ? 'nvx-selezionato' : undefined,
-      handler: () => { this.salva(dip, d, t.id); }
-    }));
-    if (attuale)
-      buttons.push({ text: this.transloco.translate('attendance.pages.pianificazioneTurni.noShift'), role: 'destructive', handler: () => { this.salva(dip, d, 0); } });
-    buttons.push({ text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' });
-
-    const sheet = await this.actionSheetCtrl.create({
+    const attuali = new Set(this.turni(dip, d).map(t => t.id));
+    const turni = [...this.dati.turni].sort((a, b) => (a.orarioTesto ?? '').localeCompare(b.orarioTesto ?? ''));
+    const alert = await this.alertCtrl.create({
       header: `${dip.nominativo} - ${d.toLocaleDateString(this.transloco.getActiveLang())}`,
-      buttons
+      subHeader: this.transloco.translate('attendance.pages.pianificazioneTurni.shiftsOfDay'),
+      inputs: turni.map(t => ({
+        type: 'checkbox' as const,
+        label: `${t.codice} - ${t.descrizione}${t.orarioTesto ? ' (' + t.orarioTesto + ')' : ''}`,
+        value: t.id,
+        checked: attuali.has(t.id),
+      })),
+      buttons: [
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+        { text: this.transloco.translate('common.buttons.save'), role: 'confirm' },
+      ],
     });
-    await sheet.present();
+    await alert.present();
+    const esito = await alert.onDidDismiss();
+    if (esito.role !== 'confirm')
+      return;
+    const scelti: number[] = (esito.data?.values ?? []).map((x: any) => Number(x));
+    if (scelti.length === attuali.size && scelti.every(x => attuali.has(x)))
+      return;
+    this.salva(dip, d, scelti);
   }
 
   // ── duplica settimana ──────────────────────────────────────────────
@@ -276,12 +291,13 @@ export class PianificazioneTurniPageComponent {
         giornoSorgente.setDate(giornoSorgente.getDate() + g);
         const giornoDestinazione = new Date(destinazione);
         giornoDestinazione.setDate(giornoDestinazione.getDate() + g);
-        const a = assegnazioni.find(x => x.idDip_RapportoLavoro === idRapporto && x.data.substring(0, 10) === this.chiave(giornoSorgente));
+        // tutti i turni del giorno di partenza (anche piu' d'uno); nessuno = la destinazione resta senza turni
+        const delGiorno = assegnazioni.filter(x => x.idDip_RapportoLavoro === idRapporto && x.data.substring(0, 10) === this.chiave(giornoSorgente));
         const riga = new Dip_Turno_PutRiga();
         riga.idDip_RapportoLavoro = idRapporto;
         riga.data = dataLocale(giornoDestinazione);
-        riga.idPar_Turno = a?.idPar_Turno ?? 0;
-        riga.note = a?.note ?? null;
+        riga.idPar_Turni = delGiorno.map(x => x.idPar_Turno);
+        riga.note = delGiorno.find(x => !!x.note)?.note ?? null;
         request.data.assegnazioni.push(riga);
       }
     }
@@ -295,13 +311,13 @@ export class PianificazioneTurniPageComponent {
     });
   }
 
-  private salva(dip: TurnoDipendenteModel, d: Date, idPar_Turno: number) {
+  private salva(dip: TurnoDipendenteModel, d: Date, idPar_Turni: number[]) {
     const request = new GenericRequest<Dip_Turno_PutInModel>(Dip_Turno_PutInModel);
     request.data.idAz_SediReparto = this.idAz_SediReparto ?? 0;
     const riga = new Dip_Turno_PutRiga();
     riga.idDip_RapportoLavoro = dip.idDip_RapportoLavoro;
     riga.data = dataLocale(d);
-    riga.idPar_Turno = idPar_Turno;
+    riga.idPar_Turni = idPar_Turni;
     request.data.assegnazioni = [riga];
     this.turniService.Put(request).subscribe(() => this.carica());
   }

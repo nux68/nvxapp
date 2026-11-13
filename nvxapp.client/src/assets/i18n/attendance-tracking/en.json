@@ -222,7 +222,8 @@
         "duplicateConfirm": "Copy the shifts of the week {{ dal }} to the week {{ al }} for {{ n }} employees? Their shifts in that week are replaced (days without a shift stay without a shift).",
         "duplicateDone": "Week duplicated: {{ salvati }} shifts copied, {{ tolti }} removed.",
         "duplicateEmpty": "The week has no shifts to duplicate.",
-        "legend": "Click a cell to choose the shift. Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
+        "shiftsOfDay": "Shifts of the day (one or more, not overlapping; rest day alone)",
+        "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
         "title": "My shifts",

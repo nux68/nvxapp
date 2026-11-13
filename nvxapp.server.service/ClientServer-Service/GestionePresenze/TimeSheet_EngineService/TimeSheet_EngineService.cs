@@ -629,23 +629,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             }
 
                             // turno pianificato: per quel giorno vale SOLO l'orario del turno (riposo = orario festivo
-                            // del profilo, 0 ore), anche nei festivi; tutti i passi del calcolo leggono l'orario dal DaySlot
-                            var turnoDelGiorno = turniPianificati.FirstOrDefault(t => t.IdDip_RapportoLavoro == rapporto.Id && t.Data.Date == giorno.Date);
-                            if (turnoDelGiorno != null)
-                            {
-                                var parTurno = parTurni.FirstOrDefault(p => p.Id == turnoDelGiorno.IdPar_Turno);
-                                int? idOrarioTurno = parTurno?.IdPar_Orario ?? (parProfilo.idPar_Orario_Festivo > 0 ? parProfilo.idPar_Orario_Festivo : null);
-                                if (idOrarioTurno != null)
-                                    orariDelGiorno = new List<Dip_ProfiloOrario_DaySlot_GG>
-                                    {
-                                        new Dip_ProfiloOrario_DaySlot_GG { ZOrder = 1, IdPar_Orario = idOrarioTurno.Value }
-                                    };
-                            }
+                            // del profilo, 0 ore), anche nei festivi; tutti i passi del calcolo leggono l'orario dal DaySlot.
+                            // Piu' turni nel giorno: qui gli orari dei turni (da caricare), poi l'orario composto (region "Orario composto")
+                            var turniDelGiorno = turniPianificati.Where(t => t.IdDip_RapportoLavoro == rapporto.Id && t.Data.Date == giorno.Date).ToList();
+                            var idOrariTurni = turniDelGiorno
+                                .Select(t => parTurni.FirstOrDefault(p => p.Id == t.IdPar_Turno)?.IdPar_Orario ?? (parProfilo.idPar_Orario_Festivo > 0 ? parProfilo.idPar_Orario_Festivo : (int?)null))
+                                .Where(id => id != null).Select(id => id!.Value).Distinct().ToList();
+                            if (idOrariTurni.Count > 0)
+                                orariDelGiorno = idOrariTurni.Select((id, i) => new Dip_ProfiloOrario_DaySlot_GG { ZOrder = i + 1, IdPar_Orario = id }).ToList();
+                            var turnoDelGiorno = turniDelGiorno.FirstOrDefault();
 
                             retVal.DaySlots.Add(new Dip_ProfiloOrario_DaySlot
                             {
                                 IdDip_Turno = turnoDelGiorno?.Id,
                                 IdPar_Turno = turnoDelGiorno?.IdPar_Turno,
+                                IdPar_Turni = turniDelGiorno.Select(t => t.IdPar_Turno).ToList(),
+                                OrarioComposto = idOrariTurni.Count > 1,
                                 Festivo = festivo,
                                 IdAspNetUsers = anagrafica.IdAspNetUsers,
                                 IdDip_RapportoLavoro = rapporto.Id,
@@ -685,6 +684,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             retVal.Par_OrarioIntervalloHH.AddRange(res.Data.Par_OrarioIntervalloHH);
                             retVal.Par_OrarioPausa.AddRange(res.Data.Par_OrarioPausa);
                         }
+                    }
+
+                    #endregion
+
+                    #region "Orario composto (piu' turni nel giorno)"
+
+                    // un orario solo in memoria (id negativo) per ogni combinazione di orari dei turni: fasce di tutti i turni
+                    // in ordine di inizio e pause di tutti; il resto del motore lo usa come un orario qualsiasi
+                    var orariComposti = new Dictionary<string, int>();
+                    foreach (var ds in retVal.DaySlots.Where(d => d.OrarioComposto))
+                    {
+                        var componenti = ds.Orari.Select(o => o.IdPar_Orario).ToList();
+                        var chiave = string.Join("+", componenti.OrderBy(x => x));
+                        if (!orariComposti.TryGetValue(chiave, out var idComposto))
+                        {
+                            idComposto = -(orariComposti.Count + 1);
+                            ComponiOrario(retVal, componenti, idComposto);
+                            orariComposti[chiave] = idComposto;
+                        }
+                        ds.Orari = new List<Dip_ProfiloOrario_DaySlot_GG> { new Dip_ProfiloOrario_DaySlot_GG { ZOrder = 1, IdPar_Orario = idComposto } };
                     }
 
                     #endregion
@@ -2422,6 +2441,45 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                               .ToList();
 
             return timbrature;
+        }
+            // orario composto dei turni di un giorno (AT-TURNI, piu' turni): copia degli orari dei turni con le fasce rinumerate
+        // in ordine di inizio e le pause di tutti; aggiunto agli elenchi dello schema con l'id indicato (negativo)
+        private static void ComponiOrario(OrariSchema_4User_OutModel schema, List<int> idOrari, int idComposto)
+        {
+            static T Copia<T>(T x) where T : class
+                => (T)typeof(object).GetMethod("MemberwiseClone", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!.Invoke(x, null)!;
+
+            var orari = idOrari.Select(id => schema.ParOrario.FirstOrDefault(o => o.Id == id)).Where(o => o != null).Select(o => o!).ToList();
+            if (orari.Count == 0)
+                return;
+            var coppie = schema.Par_OrarioIntervalloHH.Where(c => idOrari.Contains(c.IdPar_Orario))
+                                                      .OrderBy(c => c.Dalle ?? TimeOnly.MinValue).ToList();
+            var pause = schema.Par_OrarioPausa.Where(p => idOrari.Contains(p.IdPar_Orario)).ToList();
+
+            var composto = Copia(orari[0]);
+            composto.Id = idComposto;
+            composto.Codice = string.Join("+", orari.Select(o => o.Codice));
+            composto.Descrizione = string.Join(" + ", orari.Select(o => o.Descrizione));
+            composto.NumeroCoppie = coppie.Count;
+            composto.TimbratureTipo = OrarioTimbratureTipo.IntervalloOrario;
+            schema.ParOrario.Add(composto);
+
+            int n = 0;
+            foreach (var c in coppie)
+            {
+                var copia = Copia(c);
+                copia.IdPar_Orario = idComposto;
+                copia.NumCoppia = ++n;
+                schema.Par_OrarioIntervalloHH.Add(copia);
+            }
+            n = 0;
+            foreach (var p in pause)
+            {
+                var copia = Copia(p);
+                copia.IdPar_Orario = idComposto;
+                copia.NumPausa = ++n;
+                schema.Par_OrarioPausa.Add(copia);
+            }
         }
     }
 

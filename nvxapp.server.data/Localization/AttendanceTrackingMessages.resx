@@ -2065,4 +2065,22 @@
   <data name="RequestRevokeClosed" xml:space="preserve">
     <value>L'annullamento si chiede solo su una richiesta approvata e una volta sola: già deciso o ritirato, la richiesta resta approvata.</value>
   </data>
+  <data name="TurniGiornoDoppio" xml:space="preserve">
+    <value>Il turno {0} è già assegnato in questo giorno.</value>
+  </data>
+  <data name="TurniGiornoRiposo" xml:space="preserve">
+    <value>Il turno {0} è un riposo: non si può assegnare insieme ad altri turni.</value>
+  </data>
+  <data name="TurniGiornoMonteOre" xml:space="preserve">
+    <value>Il turno {0} ha un orario a monte ore: non si può assegnare insieme ad altri turni.</value>
+  </data>
+  <data name="TurniGiornoSovrapposti" xml:space="preserve">
+    <value>I turni {0} e {1} si sovrappongono.</value>
+  </data>
+  <data name="TurniGiornoNonValido" xml:space="preserve">
+    <value>{0}, {1:dd/MM/yyyy}: {2}</value>
+  </data>
+  <data name="ScambioTurnoIncompatibile" xml:space="preserve">
+    <value>Lo scambio non è possibile: il {0:dd/MM/yyyy} {1}</value>
+  </data>
 </root>

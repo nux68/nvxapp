@@ -26,7 +26,7 @@ Gestire il lavoro a turni nelle Presenze:
 |---|---|---|
 | `Par_Turno` | `IdAz_Anagrafica`, `Codice`(10), `Descrizione`(50), `IdPar_Orario`?, `Colore`(7)? | Modello di turno. `IdPar_Orario` null = **riposo** (vale l'orario festivo del profilo: 0 ore). FK su `Par_Orario` Restrict |
 | `Az_SediRepartoTurno` | `IdAz_SediReparto`, `IdPar_Turno`, `MinPersone`, `GiorniSettimana`(7) | Turno usato nel reparto e copertura minima. `GiorniSettimana` = maschera lun..dom (`1111100` = solo feriali) dei giorni in cui vale la copertura. Indice univoco reparto+turno. FK sul reparto comune (Cascade) |
-| `Dip_Turno` | `IdDip_RapportoLavoro`, `Data`(date), `IdPar_Turno`, `IdAz_SediReparto`?, `Note`(200)? | Turno pianificato. **Un turno per dipendente e giorno** (indice univoco rapporto+data) |
+| `Dip_Turno` | `IdDip_RapportoLavoro`, `Data`(date), `IdPar_Turno`, `IdAz_SediReparto`?, `Note`(200)? | Turno pianificato. **Più turni per dipendente e giorno** (13/11/2026, migration `AttendanceTracking_TurniMultipli`: indice univoco rapporto+data+turno), purché compatibili (§6) |
 | `Dip_TurnoScambio` | `IdDip_Turno`, `IdDip_Turno_Collega`?, `IdDip_RapportoLavoro`, `IdDip_RapportoLavoro_Collega`, `Stato`, `IdDip_GG_Richiesta`?, `Note`(200)?, `DataRisposta`? | Proposta di scambio. Senza `IdDip_Turno_Collega` è una **cessione** (il collega prende il turno) |
 
 `Dip_GG_Richiesta.TipoRichiesta` riceve il valore `ScambioTurno = 4` (nessuna modifica di schema: l'enum è un intero).
@@ -56,6 +56,13 @@ Integrazione **minima** in due punti, documentata nel codice:
 
 Senza turni pianificati nulla cambia (stesso `DaySlot`, stesse ore). Il turno vale solo nei giorni coperti da un profilo orario (senza profilo non c'è `DaySlot`).
 
+**Più turni nello stesso giorno** (13/11/2026):
+- compatibilità (`TurniUtility.VerificaGiorno`, usata da `Dip_Turno/Put`, dalla proposta di scambio e dalla sua approvazione): niente turno ripetuto; il riposo (turno senza orario o orario senza fasce) e i turni a monte ore stanno da soli; le fasce dei turni non si sovrappongono (contigue sì, es. 05-11 + 11-17);
+- motore: il `DaySlot` riceve gli orari dei turni (caricati come sempre), poi la region "Orario composto" li sostituisce con un **orario composto solo in memoria** (id negativo, codice `TUR0511+TUR1723`) con le fasce di tutti i turni in ordine di inizio e le pause di tutti; `IdPar_Turni` elenca i turni del giorno e `OrarioComposto` lo segnala. Il resto del motore lo usa come un orario qualsiasi;
+- `GestionePresenzeOreTeoriche` somma fasce e pause dei turni del giorno nello stesso modo;
+- `Dip_Turno/Put`: ogni riga può portare `IdPar_Turni` (insieme dei turni del giorno, sostituisce quelli presenti; vuoto = nessun turno), `IdPar_Turno` resta per un turno solo;
+- client: nella cella della pianificazione tutti i turni del giorno; il clic apre la scelta a caselle di spunta; Duplica settimana copia tutti i turni del giorno; in "I miei turni" la cessione si propone anche a chi ha già turni quel giorno (la compatibilità la controlla il server).
+
 ## 7. API e client
 
 Server (`Controllers/GestionePresenze`, servizi `ClientServer-Service/GestionePresenze`):
@@ -77,7 +84,7 @@ Client:
 | # | Decisione | Esito |
 |---|---|---|
 | T1 | Fascia della copertura minima | **Scelta provvisoria**: la fascia coincide con il **modello di turno** (mattina/pomeriggio/notte), non con fasce orarie libere |
-| T2 | Turni per dipendente e giorno | **Scelta provvisoria**: uno solo (indice univoco). Gli spezzati si fanno con un orario a più coppie |
+| T2 | Turni per dipendente e giorno | **Deciso il 13/11/2026**: più turni, purché compatibili (nessuna sovrapposizione, riposo e monte ore da soli); nel calcolo un orario composto del giorno |
 | T3 | Turno e festività | **Scelta provvisoria**: il turno pianificato prevale anche nei festivi (il giorno resta festivo per la qualifica dello straordinario) |
 | T4 | Turno di riposo | **Scelta provvisoria**: turno senza orario = orario festivo del profilo (0 ore) |
 | T5 | Scambio: chi approva | **Scelta provvisoria**: accettazione del collega + approvatori del reparto del richiedente (flusso delle richieste esistente, `TipoRichiesta.ScambioTurno`) |
@@ -95,5 +102,6 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 - ✅ `AT-TURNI.4` Turno pianificato nel calcolo della giornata (`Get_OrariSchema_4User`, `GestionePresenzeOreTeoriche`), senza cambiare i calcoli senza turni
 - ✅ `AT-TURNI.6` Configurazione iniziale con orari e turni di esempio (TUR0511, TUR1117, TUR1723, RIPOSO) — branch `AttendanceTracking_Dev_turniesempio`, compilata
 - ✅ `AT-TURNI.7` Duplica settimana nella pianificazione, con la scelta dei dipendenti — branch `AttendanceTracking_Dev_turniesempio`, compilata
+- ✅ `AT-TURNI.9` Più turni per dipendente e giorno: indice e migration, compatibilità, orario composto nel motore, ore teoriche, pianificazione e duplica, scambi — prova su DB usa e getta: 05-11 + 17-23 accettato (orario composto `TUR0511+TUR1723`, 720 minuti teorici, 360 togliendo un turno), contigui accettati, riposo + turno e turni sovrapposti rifiutati
 - ⏳ `AT-TURNI.8` Catena dei merge
 - ✅ `AT-TURNI.5` Prova su DB usa e getta (copertura insufficiente, scambio approvato, calcolo con turno, calcolo senza turni invariato) — 49 controlli API: modelli e coperture, griglia con coperture insufficienti e ferie approvata (conflitto), scambio fra giorni diversi approvato e poi revocato (turni ripristinati), scambio rifiutato dal collega, scambio nello stesso giorno, calcolo: riposo pianificato = 0 ore, sabato con turno = 8 ore teoriche e lavorate (ORD1), dipendente senza turni con il profilo invariato

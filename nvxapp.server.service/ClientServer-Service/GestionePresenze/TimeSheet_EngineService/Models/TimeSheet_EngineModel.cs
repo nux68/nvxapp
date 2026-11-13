@@ -72,8 +72,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public bool Festivo { get; set; }
 
         // turno pianificato del giorno (AT-TURNI.4): se c'e', Orari contiene solo l'orario del turno
+        // (con piu' turni il primo per ora di inizio; tutti in IdPar_Turni)
         public int? IdDip_Turno { get; set; }
         public int? IdPar_Turno { get; set; }
+        public List<int> IdPar_Turni { get; set; } = new List<int>();
+        // piu' turni nel giorno: Orari contiene l'orario composto (id negativo, solo in memoria) con le fasce di tutti i turni
+        public bool OrarioComposto { get; set; }
 
         // righe orario del giorno ordinate per ZOrder (1=base, 2+=override)
         public List<Dip_ProfiloOrario_DaySlot_GG> Orari { get; set; } = new List<Dip_ProfiloOrario_DaySlot_GG>();

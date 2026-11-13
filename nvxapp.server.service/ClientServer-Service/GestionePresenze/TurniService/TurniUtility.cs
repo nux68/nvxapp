@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -11,7 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
 {
     /*
      Funzioni comuni ai servizi dei turni (AT-TURNI): azienda corrente, ruoli, testo dell'orario del turno,
-     dipendenti di un reparto (Az_SediRepartoUser.UserInDepartment, come le approvazioni) con il rapporto di lavoro.
+     dipendenti di un reparto (Az_SediRepartoUser.UserInDepartment, come le approvazioni) con il rapporto di lavoro,
+     compatibilita' dei turni assegnati allo stesso dipendente nello stesso giorno (VerificaGiorno).
     */
     public class TurniUtility : ITurniUtility
     {
@@ -24,6 +26,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
         private readonly IAz_SediRepartoCommonRepository _az_SediRepartoRepository;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IPar_TurnoRepository _par_TurnoRepository;
 
         public TurniUtility(UserManager<ApplicationUser> userManager,
                             IGestionePresenzeUserUtility gestionePresenzeUserUtility,
@@ -33,7 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
                             IAz_SediCommonRepository az_SediRepository,
                             IAz_SediRepartoCommonRepository az_SediRepartoRepository,
                             IDip_AnagraficaRepository dip_AnagraficaRepository,
-                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository)
+                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                            IPar_TurnoRepository par_TurnoRepository)
         {
             _userManager = userManager;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
@@ -44,6 +48,51 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
             _az_SediRepartoRepository = az_SediRepartoRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _par_TurnoRepository = par_TurnoRepository;
+        }
+
+        /// <summary>
+        /// turni dello stesso dipendente nello stesso giorno (ANALISI_ATTENDANCETRACKING_TURNI.md §8, T2): null = possono stare
+        /// insieme, altrimenti il motivo. Regole: niente turno ripetuto; il riposo (turno senza orario o orario senza fasce)
+        /// e i turni a monte ore stanno da soli; le fasce dei turni non si sovrappongono (contigue si')
+        /// </summary>
+        public string? VerificaGiorno(IReadOnlyCollection<int> idParTurni)
+        {
+            if (idParTurni.Count <= 1)
+                return null;
+            var doppio = idParTurni.GroupBy(x => x).FirstOrDefault(g => g.Count() > 1);
+            var ids = idParTurni.Distinct().ToList();
+            var turni = _par_TurnoRepository.FindAll(t => ids.Contains(t.Id)).ToList();
+            string Codice(int id) => turni.FirstOrDefault(t => t.Id == id)?.Codice ?? id.ToString();
+            if (doppio != null)
+                return AttendanceTrackingMessages.Get("TurniGiornoDoppio", Codice(doppio.Key));
+
+            var idOrari = turni.Where(t => t.IdPar_Orario != null).Select(t => t.IdPar_Orario!.Value).Distinct().ToList();
+            var orari = _par_OrarioRepository.FindAll(o => idOrari.Contains(o.Id)).ToList();
+            var coppie = _par_OrarioIntervalloHHRepository.FindAll(c => idOrari.Contains(c.IdPar_Orario) && c.Dalle != null && c.Alle != null).ToList();
+
+            var fasce = new List<(string Codice, TimeSpan Dalle, TimeSpan Alle)>();
+            foreach (var t in turni)
+            {
+                var orario = t.IdPar_Orario != null ? orari.FirstOrDefault(o => o.Id == t.IdPar_Orario) : null;
+                if (orario != null && orario.TimbratureTipo != OrarioTimbratureTipo.IntervalloOrario)
+                    return AttendanceTrackingMessages.Get("TurniGiornoMonteOre", t.Codice);
+                var sue = orario == null ? new List<Par_OrarioIntervalloHH>() : coppie.Where(c => c.IdPar_Orario == orario.Id).ToList();
+                if (sue.Count == 0)
+                    return AttendanceTrackingMessages.Get("TurniGiornoRiposo", t.Codice);
+                foreach (var c in sue)
+                {
+                    var dalle = c.Dalle!.Value.ToTimeSpan();
+                    var alle = c.Alle!.Value.ToTimeSpan();
+                    if (alle <= dalle) alle += TimeSpan.FromDays(1);   // fascia a cavallo della mezzanotte
+                    fasce.Add((t.Codice ?? string.Empty, dalle, alle));
+                }
+            }
+            for (int i = 0; i < fasce.Count; i++)
+                for (int j = i + 1; j < fasce.Count; j++)
+                    if (fasce[i].Codice != fasce[j].Codice && fasce[i].Dalle < fasce[j].Alle && fasce[j].Dalle < fasce[i].Alle)
+                        return AttendanceTrackingMessages.Get("TurniGiornoSovrapposti", fasce[i].Codice, fasce[j].Codice);
+            return null;
         }
 
         public async Task<int> IdAziendaAsync(string currentCompany)
@@ -187,5 +236,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
         List<int> RepartiUtente(string idAspNetUsers);
         string RepartoDescrizione(int? idAz_SediReparto);
         (Dip_Anagrafica? Anagrafica, Dip_RapportoLavoro? Rapporto) DipendenteDelRapporto(int idDip_RapportoLavoro);
+        string? VerificaGiorno(IReadOnlyCollection<int> idParTurni);
     }
 }
