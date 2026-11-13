@@ -99,7 +99,6 @@
       "timbraturaSede": {
         "title": "Site clock-in",
         "site": "Site",
-        "fabOther": "Station, kiosk and PIN",
         "qrSection": "Station QR",
         "qrActive": "QR clock-in enabled",
         "qrRequired": "QR required (clock-ins without QR are refused)",
@@ -128,6 +127,12 @@
         "badge": "Badge",
         "set": "set",
         "hint": "PIN of 4-8 digits (empty = unchanged). Badge: personal badge code (empty = none)."
+      },
+      "terminale": {
+        "exit": "Exit",
+        "unlockTitle": "Leave the terminal",
+        "unlockMessage": "Type the password of a company administrator (CompanyPowerAdmin).",
+        "password": "Password"
       },
       "timbraturaPostazione": {
         "title": "QR station",
@@ -1587,6 +1592,7 @@
       "marginalitaCommesse": "Job margins",
       "accordiSw": "Smart working agreements",
       "lavoroAgile": "Smart working",
+      "terminali": "Terminals",
       "postazioneQr": "QR station",
       "kiosk": "Clock-in kiosk",
       "timbraturaSedi": "Site clock-in settings",

@@ -1987,6 +1987,9 @@
   <data name="TimbKioskBloccato" xml:space="preserve">
     <value>Troppi tentativi errati: riprova tra un minuto.</value>
   </data>
+  <data name="TimbTerminalePasswordErrata" xml:space="preserve">
+    <value>Password non corretta: serve la password di un amministratore (CompanyPowerAdmin) dell'azienda.</value>
+  </data>
   <data name="TimbKioskCredenzialiErrate" xml:space="preserve">
     <value>PIN o badge non riconosciuto.</value>
   </data>

@@ -40,6 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
     {
         private static readonly ConcurrentDictionary<string, (int Errori, DateTime Inizio, DateTime BloccatoFino)> _tentativiKiosk = new();
         private const int MaxErroriKiosk = 5;
+        // sblocco dei terminali (postazione QR e kiosk) con la password di un CompanyPowerAdmin: stesso limite del kiosk, per utente collegato
+        private static readonly ConcurrentDictionary<string, (int Errori, DateTime Inizio, DateTime BloccatoFino)> _tentativiSblocco = new();
         private const double MaxPrecisioneMetri = 100;
 
         private readonly ITurniUtility _turniUtility;
@@ -55,6 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly ILavoroAgileGiorno _lavoroAgileGiorno;
+        private readonly IUserCompanyRepository _userCompanyRepository;
 
         public TimbraturaEvolutaService(IMapper mapper,
                                         UserManager<ApplicationUser> userManager,
@@ -75,7 +78,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
                                         IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                         IDip_AnagraficaRepository dip_AnagraficaRepository,
                                         IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
-                                        ILavoroAgileGiorno lavoroAgileGiorno) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                        ILavoroAgileGiorno lavoroAgileGiorno,
+                                        IUserCompanyRepository userCompanyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _turniUtility = turniUtility;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
@@ -90,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _lavoroAgileGiorno = lavoroAgileGiorno;
+            _userCompanyRepository = userCompanyRepository;
         }
 
         private static string Msg(string key, params object?[] args) => AttendanceTrackingMessages.Get(key, args);
@@ -542,6 +547,58 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
             }, isSubProcess);
         }
 
+        // ── terminali (postazione QR e kiosk) ─────────────────────────────
+
+        /*
+         Uscita dalla modalita' terminale: la pagina a schermo intero si lascia solo con la password di un CompanyPowerAdmin
+         dell'azienda (uno qualsiasi tra gli utenti collegati e non disabilitati). Dopo 5 errori in un minuto lo sblocco
+         resta bloccato per un minuto (per utente collegato al dispositivo).
+        */
+        public virtual async Task<GenericResult<TimbraturaEvoluta_TerminaleSbloccaOutModel>> TerminaleSblocca(GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                await VerificaAdmin();
+                if (!int.TryParse(CurrentCompany, out var idCompany) || idCompany <= 0)
+                    throw new UserMessageException(Msg("TimbNonAutorizzato"));
+
+                var chiave = $"{idCompany}:{CurrentUserId}";
+                var adesso = DateTime.Now;
+                var stato = _tentativiSblocco.GetOrAdd(chiave, _ => (0, adesso, DateTime.MinValue));
+                if (stato.BloccatoFino > adesso)
+                    throw new UserMessageException(Msg("TimbKioskBloccato"));
+
+                var password = model.Data.Password ?? string.Empty;
+                bool ok = false;
+                if (password.Length > 0)
+                {
+                    var idUtenti = await _userCompanyRepository.FindAll(x => x.IdCompany == idCompany && !x.Disabled)
+                                                               .Select(x => x.IdAspNetUsers).Distinct().ToListAsync();
+                    foreach (var idUtente in idUtenti)
+                    {
+                        var utente = await _userManager.FindByIdAsync(idUtente);
+                        if (utente == null || !await _userManager.IsInRoleAsync(utente, "CompanyPowerAdmin"))
+                            continue;
+                        if (await _userManager.CheckPasswordAsync(utente, password))
+                        {
+                            ok = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!ok)
+                {
+                    var errori = adesso - stato.Inizio > TimeSpan.FromMinutes(1) ? 1 : stato.Errori + 1;
+                    var inizio = errori == 1 ? adesso : stato.Inizio;
+                    _tentativiSblocco[chiave] = (errori, inizio, errori >= MaxErroriKiosk ? adesso.AddMinutes(1) : DateTime.MinValue);
+                    throw new UserMessageException(Msg("TimbTerminalePasswordErrata"));
+                }
+                _tentativiSblocco.TryRemove(chiave, out _);
+                return new TimbraturaEvoluta_TerminaleSbloccaOutModel { Sbloccato = true };
+            }, isSubProcess);
+        }
+
         // ── PIN e badge ───────────────────────────────────────────────────
 
         public virtual async Task<GenericResult<TimbraturaEvoluta_PinGetAllOutModel>> PinGetAll(GenericRequest<TimbraturaEvoluta_PinGetAllInModel> model, bool isSubProcess)
@@ -643,6 +700,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         Task<GenericResult<TimbraturaEvoluta_StampOutModel>> Stamp(GenericRequest<TimbraturaEvoluta_StampInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_KioskRegistraOutModel>> KioskRegistra(GenericRequest<TimbraturaEvoluta_KioskRegistraInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_KioskStampOutModel>> KioskStamp(GenericRequest<TimbraturaEvoluta_KioskStampInModel> model, bool isSubProcess);
+        Task<GenericResult<TimbraturaEvoluta_TerminaleSbloccaOutModel>> TerminaleSblocca(GenericRequest<TimbraturaEvoluta_TerminaleSbloccaInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_PinGetAllOutModel>> PinGetAll(GenericRequest<TimbraturaEvoluta_PinGetAllInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_PinPutOutModel>> PinPut(GenericRequest<TimbraturaEvoluta_PinPutInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_Info4GiornoOutModel>> Info4Giorno(GenericRequest<TimbraturaEvoluta_Info4GiornoInModel> model, bool isSubProcess);

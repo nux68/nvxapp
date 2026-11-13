@@ -57,3 +57,10 @@
   background: var(--ion-color-danger, #eb445a);
   color: #fff;
 }
+
+// terminale attivo: Esci (con la password) discreto in alto a destra
+.nvx-terminale {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 8px 0;
+}

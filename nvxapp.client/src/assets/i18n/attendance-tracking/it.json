@@ -99,7 +99,6 @@
       "timbraturaSede": {
         "title": "Timbratura della sede",
         "site": "Sede",
-        "fabOther": "Postazione, kiosk e PIN",
         "qrSection": "QR della postazione",
         "qrActive": "Timbratura con QR attiva",
         "qrRequired": "QR obbligatorio (senza QR la timbratura è rifiutata)",
@@ -128,6 +127,12 @@
         "badge": "Badge",
         "set": "impostato",
         "hint": "PIN di 4-8 cifre (vuoto = non cambia). Badge: codice del badge personale (vuoto = nessuno)."
+      },
+      "terminale": {
+        "exit": "Esci",
+        "unlockTitle": "Uscita dal terminale",
+        "unlockMessage": "Digita la password di un amministratore (CompanyPowerAdmin) dell'azienda.",
+        "password": "Password"
       },
       "timbraturaPostazione": {
         "title": "Postazione QR",
@@ -1587,6 +1592,7 @@
       "marginalitaCommesse": "Marginalità commesse",
       "accordiSw": "Accordi lavoro agile",
       "lavoroAgile": "Lavoro agile",
+      "terminali": "Terminali",
       "postazioneQr": "Postazione QR",
       "kiosk": "Kiosk timbrature",
       "timbraturaSedi": "Timbratura delle sedi",
