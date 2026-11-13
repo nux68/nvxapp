@@ -63,9 +63,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
 
     public class TimbraturaEvoluta_StampInModel
     {
+        // reparto-attivita' scelti tra le opzioni della sede (0 = l'opzione di default)
         public int IdAz_SubCommessaAttivita { get; set; }
+        public int? IdAz_SediReparto { get; set; }
         // codice del QR letto (facoltativo)
         public string? Codice { get; set; }
+        // ticket restituito da Opzioni dopo la verifica del codice: sostituisce il codice (la scelta non fa scadere il QR)
+        public string? Ticket { get; set; }
         public int? IdAz_Sedi { get; set; }
         public double? Latitudine { get; set; }
         public double? Longitudine { get; set; }
@@ -81,6 +85,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         public DateTime Timbratura { get; set; }
         public int? IdAz_Sedi { get; set; }
         public string? Sede { get; set; }
+        public int? IdAz_SediReparto { get; set; }
+        public string? Reparto { get; set; }
         public OrigineTimbratura Origine { get; set; }
         public bool Differita { get; set; }
         public DateTime? DataDispositivo { get; set; }
@@ -93,6 +99,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
     public class TimbraturaEvoluta_StampOutModel : ModelResult
     {
         public Dip_GG_TimbraturaInfoModel? Info { get; set; }
+    }
+
+    // reparto - attivita' proposti al dipendente che timbra in una sede (AT-TIMB.7)
+    public class TimbraturaOpzioneModel
+    {
+        public int? IdAz_SediReparto { get; set; }
+        public string? Reparto { get; set; }
+        public int IdAz_SubCommessaAttivita { get; set; }
+        public string Attivita { get; set; } = string.Empty;
+        // cliente (se non quello di default) · commessa · sub commessa
+        public string? Commessa { get; set; }
+    }
+
+    // opzioni per la timbratura dell'utente collegato: dal codice del QR (verificato: torna il ticket) o dalla sede scelta
+    public class TimbraturaEvoluta_OpzioniInModel
+    {
+        public string? Codice { get; set; }
+        public int? IdAz_Sedi { get; set; }
+    }
+    public class TimbraturaEvoluta_OpzioniOutModel : ModelResult
+    {
+        public int? IdAz_Sedi { get; set; }
+        public string? Ticket { get; set; }
+        public List<TimbraturaOpzioneModel> Opzioni { get; set; } = new();
+        public int IndiceDefault { get; set; }
     }
 
     public class TimbraturaEvoluta_KioskRegistraInModel { public int IdAz_Sedi { get; set; } }
@@ -108,12 +139,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         public bool Sbloccato { get; set; }
     }
 
-    public class TimbraturaEvoluta_KioskStampInModel
+    // kiosk: PIN o badge -> dipendente e opzioni reparto-attivita' della sede del kiosk
+    public class TimbraturaEvoluta_KioskIdentificaInModel
     {
         public int IdAz_Sedi { get; set; }
         public string? KioskToken { get; set; }
         public string? Pin { get; set; }
         public string? Badge { get; set; }
+    }
+    public class TimbraturaEvoluta_KioskIdentificaOutModel : ModelResult
+    {
+        public string? Nominativo { get; set; }
+        public List<TimbraturaOpzioneModel> Opzioni { get; set; } = new();
+        public int IndiceDefault { get; set; }
+    }
+
+    public class TimbraturaEvoluta_KioskStampInModel : TimbraturaEvoluta_KioskIdentificaInModel
+    {
+        // reparto-attivita' scelti (0 = l'opzione di default)
+        public int IdAz_SubCommessaAttivita { get; set; }
+        public int? IdAz_SediReparto { get; set; }
     }
     public class TimbraturaEvoluta_KioskStampOutModel : ModelResult
     {

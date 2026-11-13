@@ -1834,6 +1834,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int?>("IdAz_Sedi")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdAz_SediReparto")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdDip_GG_Timbratura")
                         .HasColumnType("integer");
 
@@ -1859,6 +1862,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdAz_SediReparto");
 
                     b.HasIndex("IdDip_GG_Timbratura")
                         .IsUnique();
@@ -3719,6 +3724,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasForeignKey("IdAz_Sedi")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_SediReparto");
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_GG_Timbratura", "Dip_GG_TimbraturaNavigation")
                         .WithMany()
                         .HasForeignKey("IdDip_GG_Timbratura")
@@ -3726,6 +3735,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsRequired();
 
                     b.Navigation("Az_SediNavigation");
+
+                    b.Navigation("Az_SediRepartoNavigation");
 
                     b.Navigation("Dip_GG_TimbraturaNavigation");
                 });
