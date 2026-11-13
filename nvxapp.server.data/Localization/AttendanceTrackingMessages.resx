@@ -2083,4 +2083,58 @@
   <data name="ScambioTurnoIncompatibile" xml:space="preserve">
     <value>Lo scambio non è possibile: il {0:dd/MM/yyyy} {1}</value>
   </data>
+  <data name="TurniReport_TitoloReparto" xml:space="preserve">
+    <value>Pianificazione turni</value>
+  </data>
+  <data name="TurniReport_TitoloMiei" xml:space="preserve">
+    <value>I miei turni</value>
+  </data>
+  <data name="TurniReport_Reparto" xml:space="preserve">
+    <value>Reparto</value>
+  </data>
+  <data name="TurniReport_Periodo" xml:space="preserve">
+    <value>Periodo</value>
+  </data>
+  <data name="TurniReport_Dipendente" xml:space="preserve">
+    <value>Dipendente</value>
+  </data>
+  <data name="TurniReport_Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="TurniReport_Giorno" xml:space="preserve">
+    <value>Giorno</value>
+  </data>
+  <data name="TurniReport_Turni" xml:space="preserve">
+    <value>Turni</value>
+  </data>
+  <data name="TurniReport_Orario" xml:space="preserve">
+    <value>Orario</value>
+  </data>
+  <data name="TurniReport_Ore" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="TurniReport_Totale" xml:space="preserve">
+    <value>Totale</value>
+  </data>
+  <data name="TurniReport_Descrizione" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="TurniReport_Legenda" xml:space="preserve">
+    <value>Legenda dei turni</value>
+  </data>
+  <data name="TurniReport_Riposo" xml:space="preserve">
+    <value>Riposo</value>
+  </data>
+  <data name="TurniReport_Copertura" xml:space="preserve">
+    <value>Copertura {0}</value>
+  </data>
+  <data name="TurniReport_Nessuno" xml:space="preserve">
+    <value>Nessun turno pianificato nel periodo.</value>
+  </data>
+  <data name="TurniReport_CopertureInsufficienti" xml:space="preserve">
+    <value>Coperture insufficienti nel periodo: {0}.</value>
+  </data>
+  <data name="TurniReport_NessunRapporto" xml:space="preserve">
+    <value>Nessun rapporto di lavoro nel periodo scelto.</value>
+  </data>
 </root>

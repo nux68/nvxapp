@@ -8,6 +8,7 @@ import {
   Az_SediRepartoTurno_GetInModel, Az_SediRepartoTurno_GetOutModel, Az_SediRepartoTurno_PutInModel, Az_SediRepartoTurno_PutOutModel,
   Dip_TurnoScambio_AnnullaInModel, Dip_TurnoScambio_AnnullaOutModel, Dip_TurnoScambio_ProponiInModel, Dip_TurnoScambio_ProponiOutModel,
   Dip_TurnoScambio_RispondiInModel, Dip_TurnoScambio_RispondiOutModel, Dip_Turno_GetAll4UserInModel, Dip_Turno_GetAll4UserOutModel,
+  Dip_Turno_ReportInModel, Dip_Turno_ReportOutModel,
   Dip_Turno_PianificazioneInModel, Dip_Turno_PianificazioneOutModel, Dip_Turno_PutInModel, Dip_Turno_PutOutModel,
   Par_Turno_DeleteInModel, Par_Turno_DeleteOutModel, Par_Turno_GetAllInModel, Par_Turno_GetAllOutModel, Par_Turno_GetInModel,
   Par_Turno_GetOutModel, Par_Turno_PutInModel, Par_Turno_PutOutModel
@@ -35,6 +36,8 @@ export class TurniService {
   Pianificazione(model: GenericRequest<Dip_Turno_PianificazioneInModel>) { return this.post<Dip_Turno_PianificazioneInModel, Dip_Turno_PianificazioneOutModel>('Dip_Turno/Pianificazione', model); }
   Put(model: GenericRequest<Dip_Turno_PutInModel>) { return this.post<Dip_Turno_PutInModel, Dip_Turno_PutOutModel>('Dip_Turno/Put', model); }
   GetAll4User(model: GenericRequest<Dip_Turno_GetAll4UserInModel>) { return this.post<Dip_Turno_GetAll4UserInModel, Dip_Turno_GetAll4UserOutModel>('Dip_Turno/GetAll4User', model); }
+  /** report PDF dei turni: avvia il job, il file si scarica dalla notifica di fine job */
+  ReportPdf(model: GenericRequest<Dip_Turno_ReportInModel>) { return this.post<Dip_Turno_ReportInModel, Dip_Turno_ReportOutModel>('Dip_Turno/ReportPdf', model); }
 
   Proponi(model: GenericRequest<Dip_TurnoScambio_ProponiInModel>) { return this.post<Dip_TurnoScambio_ProponiInModel, Dip_TurnoScambio_ProponiOutModel>('Dip_TurnoScambio/Proponi', model); }
   Rispondi(model: GenericRequest<Dip_TurnoScambio_RispondiInModel>) { return this.post<Dip_TurnoScambio_RispondiInModel, Dip_TurnoScambio_RispondiOutModel>('Dip_TurnoScambio/Rispondi', model); }

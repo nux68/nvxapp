@@ -17,7 +17,7 @@ import { ParCompetenzaToLongTextPipe } from './pipe/GestionePresenze/par-compete
 import { AzCommessaToLongTextPipe } from './pipe/GestionePresenze/az-commessa-to-long-text.pipe';
 import { AzClienteToLongTextPipe } from './pipe/GestionePresenze/az-cliente-to-long-text.pipe';
 import { SediRepartoUserNavigationComponent } from './components/GestionePresenze/sedi-reparto-user-navigation/sedi-reparto-user-navigation.component';
-import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar } from '@ionic/angular';
+import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRadio, IonRadioGroup, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-long-text.pipe';
 import { SeletionSediRepartoDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
@@ -25,6 +25,8 @@ import { SeletionSediRepartoUserDialogComponent } from './components/GestionePre
 import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 import { SeletionParAttivitaDialogComponent } from './components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
 import { SeletionParCompetenzaDialogComponent } from './components/GestionePresenze/seletion-par-competenza-dialog/seletion-par-competenza-dialog.component';
+import { SeletionParTurnoDialogComponent } from './components/GestionePresenze/seletion-par-turno-dialog/seletion-par-turno-dialog.component';
+import { SeletionPeriodoDialogComponent } from './components/GestionePresenze/seletion-periodo-dialog/seletion-periodo-dialog.component';
 import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-short-text.pipe';
 import { EditDipProfiloOrarioDialogComponent } from './components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 import { EditParProfiloFormuleDettDialogComponent } from './components/GestionePresenze/edit-par-profilo-formule-dett-dialog/edit-par-profilo-formule-dett-dialog.component';
@@ -55,6 +57,8 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     SeletionSediRepartoUserDialogComponent,
     SeletionParAttivitaDialogComponent,
     SeletionParCompetenzaDialogComponent,
+    SeletionParTurnoDialogComponent,
+    SeletionPeriodoDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParProfiloFormuleDettDialogComponent, EditDipProfiloFormuleDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
@@ -66,7 +70,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
   imports: [
     SharedComponentInfrastructureModule,
     CommonModule,
-    IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar,
+    IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRadio, IonRadioGroup, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar,
     FormsModule,
     ReactiveFormsModule,
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,
@@ -84,7 +88,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, SeletionParCompetenzaDialogComponent, AzSediRepartoToLongTextPipe,
+    SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, SeletionParCompetenzaDialogComponent, SeletionParTurnoDialogComponent, SeletionPeriodoDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParProfiloFormuleDettDialogComponent, EditDipProfiloFormuleDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
