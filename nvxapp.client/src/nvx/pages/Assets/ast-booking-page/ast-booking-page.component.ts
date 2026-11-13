@@ -50,6 +50,9 @@ export class AstBookingPageComponent {
   public readonly highlight = (x: P.AstPrenotazioneModel) => x.daDecidere || this.mia(x);
   // richieste cambiate (SignalR "RequestNotifier"): la pagina si ricarica
   private changedSub: Subscription | null = null;
+  // comando dell'assistente (chat o voce) eseguito, es. "prenota la sala domani dalle 10": la pagina si ricarica.
+  // La propria prenotazione non manda la notifica SignalR (va solo a chi e' prenotato da un altro)
+  private commandExecutedSub: Subscription | null = null;
 
   constructor(private navCtrl: NavController,
               private toastCtrl: ToastController,
@@ -119,6 +122,8 @@ export class AstBookingPageComponent {
     this.load();
     this.changedSub?.unsubscribe();
     this.changedSub = this.requestNotifierService.changed$.subscribe(() => this.load());
+    this.commandExecutedSub?.unsubscribe();
+    this.commandExecutedSub = this.fabMenuService.commandExecuted$.subscribe(() => this.load());
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('ast.pages.booking.new'), 'add-circle-outline', () => this.apri(null)),
     ];
@@ -128,6 +133,8 @@ export class AstBookingPageComponent {
     this.fabMenuService.fabMenuItem = [];
     this.changedSub?.unsubscribe();
     this.changedSub = null;
+    this.commandExecutedSub?.unsubscribe();
+    this.commandExecutedSub = null;
   }
 
   private async approva(x: P.AstPrenotazioneModel) {
