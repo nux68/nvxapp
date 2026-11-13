@@ -5,6 +5,8 @@ import { GenericRequest } from '../../../../../ClientServer-Service/ModelsBase/g
 import { AstService } from '../../../../../ClientServer-Service/Assets/ast.service';
 import { AstPrenotazioneListInModel, AstPrenotazioneModel, AstStatoPrenotazione } from '../../../../../ClientServer-Service/Assets/Models/ast-prenotazioni-model';
 import { AstFormatService, astDataOraLocale, astOggi } from '../../../../../Utility/Assets/ast-format.service';
+import { FabMenuService } from '../../../../../Utility/infrastructure/fab-menu.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /*
  Widget "Le mie prenotazioni" (Risorse aziendali, ANALISI_ASSETS_WIDGET.md): prenotazioni confermate dell'utente da adesso
@@ -28,7 +30,14 @@ export class AstMyBookingsWidgetComponent {
   public totale = 0;
   public prossime: AstPrenotazioneModel[] = [];
 
-  constructor(private astService: AstService, private fmt: AstFormatService, private navCtrl: NavController) {
+  constructor(private astService: AstService, private fmt: AstFormatService, private navCtrl: NavController,
+              fabMenuService: FabMenuService) {
+    this.carica();
+    // comando dell'assistente (chat o voce) eseguito, es. una prenotazione dalla dashboard: il widget si rilegge
+    fabMenuService.commandExecuted$.pipe(takeUntilDestroyed()).subscribe(() => this.carica());
+  }
+
+  private carica(): void {
     const request = new GenericRequest<AstPrenotazioneListInModel>(AstPrenotazioneListInModel);
     request.data.dal = astDataOraLocale(new Date());
     request.data.al = astOggi(this.giorni + 1);
