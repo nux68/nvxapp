@@ -54,6 +54,11 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [ForeignKey("IdAz_Sedi")]
         public virtual Az_Sedi? Az_SediNavigation { get; set; }
 
+        // reparto scelto dal dipendente nel kiosk o nel QR insieme all'attivita' (AT-TIMB.7); null se non indicato
+        public int? IdAz_SediReparto { get; set; }
+        [ForeignKey("IdAz_SediReparto")]
+        public virtual Az_SediReparto? Az_SediRepartoNavigation { get; set; }
+
         public OrigineTimbratura Origine { get; set; } = OrigineTimbratura.App;
 
         // timbratura fatta senza rete e inviata dopo: vale l'ora del dispositivo

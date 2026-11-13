@@ -42,8 +42,12 @@ export class TimbraturaEvoluta_QrCodeOutModel extends ModelResult {
 }
 
 export class TimbraturaEvoluta_StampInModel {
+  // reparto-attivita' scelti tra le opzioni della sede (0 = l'opzione di default)
   public idAz_SubCommessaAttivita: number = 0;
+  public idAz_SediReparto: number | null = null;
   public codice: string | null = null;
+  // ticket di Opzioni (codice del QR gia' verificato): sostituisce il codice, la scelta non fa scadere il QR
+  public ticket: string | null = null;
   public idAz_Sedi: number | null = null;
   public latitudine: number | null = null;
   public longitudine: number | null = null;
@@ -57,6 +61,8 @@ export class Dip_GG_TimbraturaInfoModel {
   public timbratura: string = '';
   public idAz_Sedi: number | null = null;
   public sede: string | null = null;
+  public idAz_SediReparto: number | null = null;
+  public reparto: string | null = null;
   public origine: OrigineTimbratura = OrigineTimbratura.App;
   public differita: boolean = false;
   public dataDispositivo: string | null = null;
@@ -67,16 +73,46 @@ export class Dip_GG_TimbraturaInfoModel {
 }
 export class TimbraturaEvoluta_StampOutModel extends ModelResult { public info: Dip_GG_TimbraturaInfoModel | null = null; }
 
+// reparto - attivita' della sede compatibili con il dipendente (AT-TIMB.7)
+export class TimbraturaOpzioneModel {
+  public idAz_SediReparto: number | null = null;
+  public reparto: string | null = null;
+  public idAz_SubCommessaAttivita: number = 0;
+  public attivita: string = '';
+  public commessa: string | null = null;
+}
+export class TimbraturaEvoluta_OpzioniInModel {
+  public codice: string | null = null;
+  public idAz_Sedi: number | null = null;
+}
+export class TimbraturaEvoluta_OpzioniOutModel extends ModelResult {
+  public idAz_Sedi: number | null = null;
+  public ticket: string | null = null;
+  public opzioni: TimbraturaOpzioneModel[] = [];
+  public indiceDefault: number = 0;
+}
+
 export class TimbraturaEvoluta_KioskRegistraInModel { public idAz_Sedi: number = 0; }
 export class TimbraturaEvoluta_KioskRegistraOutModel extends ModelResult { public kioskToken: string = ''; }
 // uscita dalla modalita' terminale con la password di un CompanyPowerAdmin dell'azienda
 export class TimbraturaEvoluta_TerminaleSbloccaInModel { public password: string | null = null; }
 export class TimbraturaEvoluta_TerminaleSbloccaOutModel extends ModelResult { public sbloccato: boolean = false; }
-export class TimbraturaEvoluta_KioskStampInModel {
+// kiosk: PIN o badge -> dipendente e opzioni reparto-attivita' della sede del kiosk
+export class TimbraturaEvoluta_KioskIdentificaInModel {
   public idAz_Sedi: number = 0;
   public kioskToken: string | null = null;
   public pin: string | null = null;
   public badge: string | null = null;
+}
+export class TimbraturaEvoluta_KioskIdentificaOutModel extends ModelResult {
+  public nominativo: string | null = null;
+  public opzioni: TimbraturaOpzioneModel[] = [];
+  public indiceDefault: number = 0;
+}
+export class TimbraturaEvoluta_KioskStampInModel extends TimbraturaEvoluta_KioskIdentificaInModel {
+  // reparto-attivita' scelti (0 = l'opzione di default)
+  public idAz_SubCommessaAttivita: number = 0;
+  public idAz_SediReparto: number | null = null;
 }
 export class TimbraturaEvoluta_KioskStampOutModel extends ModelResult {
   public nominativo: string | null = null;

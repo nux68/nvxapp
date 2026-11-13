@@ -18,3 +18,20 @@
   max-height: 50vh;
   background: #000;
 }
+
+// scelta di reparto - attivita' (AT-TIMB.7)
+.nvx-opzioni {
+  display: block;
+  margin-top: 12px;
+}
+
+.nvx-opzione {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: normal;
+
+  small {
+    opacity: 0.75;
+  }
+}

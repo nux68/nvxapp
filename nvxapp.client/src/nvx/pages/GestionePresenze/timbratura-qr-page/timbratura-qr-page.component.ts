@@ -5,7 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { TimbraturaEvolutaService } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/timbratura-evoluta.service';
 import {
-  Az_SediTimbraturaModel, Dip_GG_TimbraturaInfoModel, EsitoGeofence, TimbraturaEvoluta_SediInModel, TimbraturaEvoluta_StampInModel
+  Az_SediTimbraturaModel, Dip_GG_TimbraturaInfoModel, EsitoGeofence, TimbraturaEvoluta_OpzioniInModel, TimbraturaEvoluta_SediInModel,
+  TimbraturaEvoluta_StampInModel, TimbraturaOpzioneModel
 } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/Models/timbratura-evoluta-model';
 import { TimbraturaInCoda, TimbraturaOfflineService } from '../../../Utility/GestionePresenze/timbratura-offline.service';
 
@@ -13,6 +14,9 @@ import { TimbraturaInCoda, TimbraturaOfflineService } from '../../../Utility/Ges
  Timbratura in sede (AT-TIMB.1/2/4): con il QR della postazione (aperto dalla fotocamera: /timbraturaqr?c=<codice>, oppure
  letto qui con BarcodeDetector dove il browser lo offre), con la posizione per il geofence e senza rete (coda locale).
  L'ora e' quella del server; senza rete quella del dispositivo, accettata entro il limite della sede.
+ Reparto - attivita' (AT-TIMB.7): letto il codice (o scelta la sede) si caricano le opzioni della sede compatibili con il
+ dipendente; con piu' opzioni si sceglie (preselezionata quella di default), con una sola non si chiede nulla. Il codice
+ verificato diventa un ticket (3 minuti) usato dallo Stamp: il tempo della scelta non fa scadere il QR.
 */
 @Component({
   selector: 'app-timbratura-qr-page',
@@ -35,6 +39,9 @@ export class TimbraturaQrPageComponent {
   public scansione = false;
   public readonly lettoreDisponibile = 'BarcodeDetector' in window;
   public coda: TimbraturaInCoda[] = [];
+  public opzioni: TimbraturaOpzioneModel[] = [];
+  public sceltaIndice = 0;
+  private ticket: string | null = null;
   private stream: MediaStream | null = null;
 
   constructor(private route: ActivatedRoute,
@@ -51,6 +58,7 @@ export class TimbraturaQrPageComponent {
     this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel)).subscribe(res => {
       this.sedi = res.data?.sedi ?? [];
       this.idAz_Sedi = res.data?.idAz_Sedi_Proposta ?? this.sedi[0]?.idAz_Sedi ?? null;
+      this.caricaOpzioni();
     });
   }
 
@@ -66,6 +74,31 @@ export class TimbraturaQrPageComponent {
     });
   }
 
+  /** Opzioni reparto - attivita' della sede del QR (verificandone il codice) o di quella scelta; senza rete nessuna lista. */
+  async caricaOpzioni() {
+    this.opzioni = [];
+    this.ticket = null;
+    if ((!this.codice && !this.idAz_Sedi) || !navigator.onLine)
+      return;
+    const request = new GenericRequest<TimbraturaEvoluta_OpzioniInModel>(TimbraturaEvoluta_OpzioniInModel);
+    request.data.codice = this.codice;
+    request.data.idAz_Sedi = this.codice ? null : this.idAz_Sedi;
+    try {
+      const res = await firstValueFrom(this.timbraturaEvolutaService.Opzioni(request));
+      if (res.success && res.data) {
+        this.opzioni = res.data.opzioni ?? [];
+        this.sceltaIndice = res.data.indiceDefault ?? 0;
+        this.ticket = res.data.ticket;
+      }
+      else if (this.codice) {
+        // codice non valido, scaduto o gia' usato: il messaggio lo mostra il dialog degli errori
+        this.codice = null;
+        this.caricaOpzioni();
+      }
+    }
+    catch { }
+  }
+
   async timbra() {
     if (this.inCorso)
       return;
@@ -73,8 +106,13 @@ export class TimbraturaQrPageComponent {
     this.messaggio = null;
     const pos = await this.posizione();
     const request = new GenericRequest<TimbraturaEvoluta_StampInModel>(TimbraturaEvoluta_StampInModel);
-    request.data.codice = this.codice;
-    request.data.idAz_Sedi = this.codice ? null : this.idAz_Sedi;
+    request.data.ticket = this.ticket;
+    request.data.codice = this.ticket ? null : this.codice;
+    request.data.idAz_Sedi = this.codice || this.ticket ? null : this.idAz_Sedi;
+    // scelta solo con piu' opzioni: altrimenti il server usa quella di default
+    const opzione = this.opzioni.length > 1 ? this.opzioni[this.sceltaIndice] : null;
+    request.data.idAz_SubCommessaAttivita = opzione?.idAz_SubCommessaAttivita ?? 0;
+    request.data.idAz_SediReparto = opzione?.idAz_SediReparto ?? null;
     request.data.latitudine = pos?.coords.latitude ?? null;
     request.data.longitudine = pos?.coords.longitude ?? null;
     request.data.precisioneMetri = pos?.coords.accuracy ?? null;
@@ -90,7 +128,11 @@ export class TimbraturaQrPageComponent {
       if (res.success) {
         this.ultima = res.data?.info ?? null;
         this.messaggio = res.messages?.map(m => m.text).join(' ') || this.transloco.translate('attendance.pages.timbraturaQr.done');
-        this.codice = null;   // il codice vale una volta
+        // il codice (e il suo ticket) vale una volta: si torna alle opzioni della sede scelta
+        if (this.codice || this.ticket) {
+          this.codice = null;
+          this.caricaOpzioni();
+        }
       }
     }
     catch {
@@ -133,7 +175,10 @@ export class TimbraturaQrPageComponent {
               const m = /[?&]c=([^&]+)/.exec(testo);
               this.codice = m ? decodeURIComponent(m[1]) : testo;
               this.fermaScansione();
-              this.timbra();
+              await this.caricaOpzioni();
+              // con una sola opzione (o senza rete) si timbra subito, altrimenti si sceglie
+              if (this.codice && this.opzioni.length <= 1)
+                this.timbra();
               return;
             }
           } catch { }
