@@ -96,20 +96,43 @@ export class MieiTurniPageComponent {
   async proponi(t: Dip_TurnoUserModel) {
     if (!this.dati)
       return;
-    const buttons: any[] = this.dati.turniColleghi.map(c => ({
-      text: `${c.nominativo}: ${c.data.substring(8, 10)}/${c.data.substring(5, 7)} ${c.codice}`,
-      icon: 'swap-horizontal-outline',
-      handler: () => { this.invia(t, c.id, null); }
-    }));
-    // cessione a un collega: con piu' turni nel giorno anche a chi ne ha gia' (indicati); la compatibilita' la controlla il server
-    const delGiorno = this.dati.turniColleghi.filter(c => c.data.substring(0, 10) === t.data.substring(0, 10));
-    this.dati.colleghi.forEach(c => buttons.push({
+    const giorno = (x: { data: string }) => x.data.substring(0, 10);
+    const colleghi = this.dati.turniColleghi;
+    // il collega ha gia' quel turno in quel giorno (esclusa la riga indicata)
+    const haTurno = (idAspNetUsers: string | null, data: string, idPar_Turno: number, esclusa?: number) =>
+      colleghi.some(x => x.idAspNetUsers === idAspNetUsers && giorno(x) === data && x.idPar_Turno === idPar_Turno && x.id !== esclusa);
+    // io ho gia' quel turno in quel giorno (esclusa la riga che cedo)
+    const hoTurno = (data: string, idPar_Turno: number) =>
+      this.dati!.mieiTurni.some(x => giorno(x) === data && x.idPar_Turno === idPar_Turno && x.id !== t.id);
+
+    // scambio: turni dei colleghi, tolti quelli inutili (stesso turno nello stesso giorno) o che creerebbero un turno doppio
+    // (il collega ha gia' il mio turno nel mio giorno, oppure io ho gia' il suo nel suo giorno); la compatibilita' degli
+    // orari la controlla il server
+    const buttons: any[] = colleghi
+      .filter(c => !(giorno(c) === giorno(t) && c.idPar_Turno === t.idPar_Turno))
+      .filter(c => !haTurno(c.idAspNetUsers, giorno(t), t.idPar_Turno, c.id))
+      .filter(c => !hoTurno(giorno(c), c.idPar_Turno))
+      .sort((a, b) => giorno(a).localeCompare(giorno(b)) || (a.nominativo ?? '').localeCompare(b.nominativo ?? ''))
+      .map(c => ({
+        text: `${c.nominativo}: ${c.data.substring(8, 10)}/${c.data.substring(5, 7)} ${c.codice}`,
+        icon: 'swap-horizontal-outline',
+        handler: () => { this.invia(t, c.id, null); }
+      }));
+    // cessione a un collega che quel giorno non ha gia' lo stesso turno (gli altri suoi turni del giorno sono indicati;
+    // la compatibilita' degli orari la controlla il server)
+    const delGiorno = colleghi.filter(c => giorno(c) === giorno(t));
+    this.dati.colleghi.filter(c => !haTurno(c.idAspNetUsers, giorno(t), t.idPar_Turno)).forEach(c => buttons.push({
       text: this.transloco.translate('attendance.pages.mieiTurni.giveTo', { name: c.nominativo })
             + (delGiorno.some(x => x.idAspNetUsers === c.idAspNetUsers)
                ? ' (' + delGiorno.filter(x => x.idAspNetUsers === c.idAspNetUsers).map(x => x.codice).join(', ') + ')' : ''),
       icon: 'arrow-forward-outline',
       handler: () => { this.invia(t, null, c.idAspNetUsers); }
     }));
+    if (buttons.length === 0) {
+      const toast = await this.toastCtrl.create({ message: this.transloco.translate('attendance.pages.mieiTurni.noCandidates'), duration: 4000, color: 'warning', position: 'top' });
+      await toast.present();
+      return;
+    }
     buttons.push({ text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' });
     const sheet = await this.actionSheetCtrl.create({
       header: this.transloco.translate('attendance.pages.mieiTurni.proposeHeader', { shift: t.codice, date: t.data.substring(8, 10) + '/' + t.data.substring(5, 7) }),

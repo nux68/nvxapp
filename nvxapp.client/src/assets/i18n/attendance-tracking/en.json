@@ -226,6 +226,7 @@
         "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
+        "noCandidates": "No colleague available: the department colleagues already have this shift or have no shifts to swap.",
         "reportTitle": "My shifts report",
         "title": "My shifts",
         "toAnswer": "Swap proposals to review",
