@@ -109,6 +109,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
                 if (collegaAna == null || collegaAna.IdAz_Anagrafica != idAzienda)
                     throw new UserMessageException(AttendanceTrackingMessages.Get("ScambioTurnoCollegaNonValido"));
 
+                // piu' turni nel giorno: chi riceve un turno deve poterlo tenere accanto ai suoi (si ricontrolla all'approvazione)
+                var incompatibile = suo == null
+                    ? Compatibili(idRapportoCollega, mio.Data, mio.Id, null, mio.IdPar_Turno)
+                    : suo.Data.Date == mio.Data.Date
+                        ? Compatibili(mio.IdDip_RapportoLavoro, mio.Data, mio.Id, suo.Id, suo.IdPar_Turno) ?? Compatibili(idRapportoCollega, suo.Data, mio.Id, suo.Id, mio.IdPar_Turno)
+                        : Compatibili(idRapportoCollega, mio.Data, mio.Id, suo.Id, mio.IdPar_Turno) ?? Compatibili(mio.IdDip_RapportoLavoro, suo.Data, mio.Id, suo.Id, suo.IdPar_Turno);
+                if (incompatibile != null)
+                    throw new UserMessageException(incompatibile);
+
                 // stesso reparto: il collega deve lavorare in uno dei reparti del richiedente
                 var mieiReparti = _turniUtility.RepartiUtente(CurrentUserId);
                 if (!_turniUtility.RepartiUtente(collegaAna.IdAspNetUsers!).Any(mieiReparti.Contains))
@@ -244,6 +253,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
             }
         }
 
+        // turni del dipendente nel giorno (escluse le righe dello scambio) piu' quello che riceve: null = compatibili
+        // (stessa regola della verifica all'approvazione, Dip_TurnoScambioHandler)
+        private string? Compatibili(int idRapporto, DateTime giorno, int idRigaA, int? idRigaB, int idParTurnoRicevuto)
+        {
+            var turni = _dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == idRapporto && d.Data == giorno.Date && d.Id != idRigaA && d.Id != idRigaB)
+                                            .Select(d => d.IdPar_Turno).ToList();
+            turni.Add(idParTurnoRicevuto);
+            var errore = _turniUtility.VerificaGiorno(turni);
+            return errore == null ? null : AttendanceTrackingMessages.Get("ScambioTurnoIncompatibile", giorno.Date, errore);
+        }
+
         // descrizione dello scambio vista dal rapporto indicato
         public static Dip_TurnoScambioModel Descrivi(Dip_TurnoScambio s, IDip_TurnoRepository turnoRepo, IPar_TurnoRepository parTurnoRepo, ITurniUtility util, int idRapportoVista)
         {
@@ -342,18 +362,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
                 // stesso giorno: le righe restano ai loro proprietari
                 if (a.IdDip_RapportoLavoro != s.IdDip_RapportoLavoro || b.IdDip_RapportoLavoro != s.IdDip_RapportoLavoro_Collega)
                     return AttendanceTrackingMessages.Get("ScambioTurnoTurniCambiati");
-                return null;
+                // con piu' turni nel giorno: ognuno riceve il turno dell'altro accanto agli altri suoi turni
+                return Compatibili(a.IdDip_RapportoLavoro, a.Data, a.Id, b.Id, b.IdPar_Turno)
+                       ?? Compatibili(b.IdDip_RapportoLavoro, b.Data, a.Id, b.Id, a.IdPar_Turno);
             }
 
             if (a.IdDip_RapportoLavoro != ownerA || (b != null && b.IdDip_RapportoLavoro != ownerB))
                 return AttendanceTrackingMessages.Get("ScambioTurnoTurniCambiati");
 
-            // chi riceve una riga non deve avere gia' un turno in quel giorno
-            if (_dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == ownerB && d.Data == a.Data && d.Id != a.Id && (b == null || d.Id != b.Id)).Any())
-                return AttendanceTrackingMessages.Get("ScambioTurnoGiornoOccupato", a.Data);
-            if (b != null && _dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == ownerA && d.Data == b.Data && d.Id != a.Id && d.Id != b.Id).Any())
-                return AttendanceTrackingMessages.Get("ScambioTurnoGiornoOccupato", b.Data);
-            return null;
+            // chi riceve una riga: il turno ricevuto deve essere compatibile con i turni che ha gia' in quel giorno
+            return Compatibili(ownerB, a.Data, a.Id, b?.Id, a.IdPar_Turno)
+                   ?? (b != null ? Compatibili(ownerA, b.Data, a.Id, b.Id, b.IdPar_Turno) : null);
+        }
+
+        // turni del dipendente nel giorno (escluse le righe dello scambio) piu' quello che riceve: null = compatibili
+        private string? Compatibili(int idRapporto, DateTime giorno, int idRigaA, int? idRigaB, int idParTurnoRicevuto)
+        {
+            var turni = _dip_TurnoRepository.FindAll(d => d.IdDip_RapportoLavoro == idRapporto && d.Data == giorno.Date && d.Id != idRigaA && d.Id != idRigaB)
+                                            .Select(d => d.IdPar_Turno).ToList();
+            turni.Add(idParTurnoRicevuto);
+            var errore = _turniUtility.VerificaGiorno(turni);
+            return errore == null ? null : AttendanceTrackingMessages.Get("ScambioTurnoIncompatibile", giorno.Date, errore);
         }
 
         private async Task<string?> Esegui(Dip_TurnoScambio s, bool avanti)

@@ -62,10 +62,12 @@ export class MieiTurniPageComponent {
       icon: 'swap-horizontal-outline',
       handler: () => { this.invia(t, c.id, null); }
     }));
-    // cessione: colleghi senza turno quel giorno
-    const occupati = new Set(this.dati.turniColleghi.filter(c => c.data.substring(0, 10) === t.data.substring(0, 10)).map(c => c.idAspNetUsers));
-    this.dati.colleghi.filter(c => !occupati.has(c.idAspNetUsers)).forEach(c => buttons.push({
-      text: this.transloco.translate('attendance.pages.mieiTurni.giveTo', { name: c.nominativo }),
+    // cessione a un collega: con piu' turni nel giorno anche a chi ne ha gia' (indicati); la compatibilita' la controlla il server
+    const delGiorno = this.dati.turniColleghi.filter(c => c.data.substring(0, 10) === t.data.substring(0, 10));
+    this.dati.colleghi.forEach(c => buttons.push({
+      text: this.transloco.translate('attendance.pages.mieiTurni.giveTo', { name: c.nominativo })
+            + (delGiorno.some(x => x.idAspNetUsers === c.idAspNetUsers)
+               ? ' (' + delGiorno.filter(x => x.idAspNetUsers === c.idAspNetUsers).map(x => x.codice).join(', ') + ')' : ''),
       icon: 'arrow-forward-outline',
       handler: () => { this.invia(t, null, c.idAspNetUsers); }
     }));
