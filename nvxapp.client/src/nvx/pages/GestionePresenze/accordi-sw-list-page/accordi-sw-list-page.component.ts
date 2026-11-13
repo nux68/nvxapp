@@ -1,4 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { AcknowledgementNotifierService } from '../../../Utility/infrastructure/acknowledgement-notifier.service';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -9,7 +11,8 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { SmartWorkingService } from '../../../ClientServer-Service/GestionePresenze/SmartWorking/smart-working.service';
 import { Dip_AccordoSWModel, Dip_AccordoSW_DeleteInModel, Dip_AccordoSW_GetAllInModel } from '../../../ClientServer-Service/GestionePresenze/SmartWorking/Models/smart-working-model';
 
-// Accordi individuali di lavoro agile (AT-SW.1): elenco con stato della firma/presa visione
+// Accordi individuali di lavoro agile (AT-SW.1): elenco con stato della firma/presa visione; si ricarica da solo quando un
+// dipendente conferma l'accordo (avviso push "AcknowledgementNotifier", fonte at.accordo-sw)
 @Component({
   selector: 'app-accordi-sw-list-page',
   templateUrl: './accordi-sw-list-page.component.html',
@@ -26,12 +29,16 @@ export class AccordiSwListPageComponent {
   public actions: NvxListAction<Dip_AccordoSWModel>[] = [];
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
+  /** fonte delle prese visione degli accordi (Dip_AccordoSWService) */
+  private static readonly FONTE = 'at.accordo-sw';
+  private presaVisioneSub: Subscription | null = null;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private smartWorkingService: SmartWorkingService,
               private userInterfaceService: UserInterfaceService,
               private collectionDialogService: CollectionDialogService,
+              private acknowledgementNotifierService: AcknowledgementNotifierService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.accordiSw.title');
     const data = (s: string) => s ? `${s.substring(8, 10)}/${s.substring(5, 7)}/${s.substring(0, 4)}` : '';
@@ -53,6 +60,12 @@ export class AccordiSwListPageComponent {
 
   ionViewWillEnter() {
     this.carica();
+    // accordo confermato (o firmato) dal dipendente: lo stato della firma si aggiorna senza ricaricare la pagina
+    this.presaVisioneSub?.unsubscribe();
+    this.presaVisioneSub = this.acknowledgementNotifierService.changed$.subscribe(d => {
+      if (d.fonte === AccordiSwListPageComponent.FONTE)
+        this.carica();
+    });
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('attendance.pages.accordiSw.add'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/accordoswedit', { state: { id: 0 } });
@@ -62,6 +75,8 @@ export class AccordiSwListPageComponent {
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+    this.presaVisioneSub?.unsubscribe();
+    this.presaVisioneSub = null;
   }
 
   private carica() {

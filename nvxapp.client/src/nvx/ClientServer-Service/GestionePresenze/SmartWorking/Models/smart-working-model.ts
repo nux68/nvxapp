@@ -52,6 +52,9 @@ export class Dip_AccordoSW_CalendarioInModel {
   public month: number = 0;
 }
 export class Dip_AccordoSW_CalendarioOutModel extends ModelResult {
+  /** azienda e nome utente del dipendente (corpo del dialog di richiesta del giorno) */
+  public azienda: string = '';
+  public userName: string = '';
   public idPar_Giustificativi: number = 0;
   public accordi: Dip_AccordoSWModel[] = [];
   public giorni: LavoroAgileGiornoModel[] = [];
