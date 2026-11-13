@@ -3,7 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { LanguageService } from './language.service';
 
 /*
- Risposte vocali dell'assistente (Web Speech API, speechSynthesis) nella lingua dell'interfaccia.
+ Risposte vocali dell'assistente (Web Speech API, speechSynthesis) nella lingua dell'interfaccia, con voce
+ femminile se il dispositivo ne ha una (voice()).
  - Il testo si pronuncia a frasi: Chrome interrompe le frasi molto lunghe.
  - Mentre parla il microfono resta acceso: quello che riconosce e' la sua stessa voce (eco) oppure
    l'utente che lo interrompe. isEcho() distingue i due casi confrontando le parole.
@@ -17,6 +18,13 @@ export class SpeechOutputService {
   private static readonly StorageKey = 'nvx-voice-reply';
   // dopo la fine della voce il riconoscimento puo' consegnare ancora la sua eco
   private static readonly EchoTailMs = 1500;
+  // nomi (minuscolo) delle voci femminili piu' diffuse, in ordine di preferenza: Windows/Edge (anche "Natural"),
+  // Chrome (Google), macOS/iOS. Italiano e inglese (lingue dell'interfaccia)
+  private static readonly FemaleVoices = [
+    'elsa', 'isabella', 'google italiano', 'federica', 'alice', 'paola',
+    'sonia', 'libby', 'maisie', 'hazel', 'susan', 'google uk english female', 'serena', 'kate', 'stephanie', 'martha',
+    'aria', 'jenny', 'michelle', 'zira', 'samantha', 'karen', 'moira', 'tessa', 'fiona',
+  ];
 
   private _Speaking$ = new BehaviorSubject<boolean>(false);
   public get Speaking$(): Observable<boolean> {
@@ -42,6 +50,9 @@ export class SpeechOutputService {
     let saved: string | null = null;
     try { saved = localStorage.getItem(SpeechOutputService.StorageKey); } catch { }
     this._enabled = saved !== 'off';
+    // Chrome carica l'elenco delle voci in modo asincrono (getVoices() vuoto alla prima chiamata): si chiede subito,
+    // cosi' alla prima risposta la voce femminile e' gia' disponibile
+    if (this.supported) window.speechSynthesis.getVoices();
   }
 
   /** il browser sa parlare */
@@ -133,11 +144,29 @@ export class SpeechOutputService {
     if (this.isSpeaking) this._Speaking$.next(false);
   }
 
-  // voce del browser per la lingua ("it-IT"), altrimenti una della stessa lingua ("it")
+  /*
+   voce del browser per la lingua ("it-IT", altrimenti una della stessa lingua "it"), di preferenza femminile.
+   Il browser non dice se una voce e' maschile o femminile: si riconosce dal nome (FemaleVoices, in ordine di
+   preferenza); tra le femminili prima le "Natural" (Edge, piu' realistiche) e la lingua esatta. Se sul dispositivo
+   non ce n'e' nessuna resta la prima voce della lingua.
+  */
   private voice(lang: string): SpeechSynthesisVoice | undefined {
-    const voices = window.speechSynthesis.getVoices();
-    const base = lang.split('-')[0];
-    return voices.find(v => v.lang === lang) ?? voices.find(v => v.lang.toLowerCase().startsWith(base));
+    const all = window.speechSynthesis.getVoices();
+    const base = lang.split('-')[0].toLowerCase();
+    const exact = all.filter(v => v.lang.replace('_', '-').toLowerCase() === lang.toLowerCase());
+    const sameBase = all.filter(v => v.lang.toLowerCase().startsWith(base));
+    const voices = exact.length > 0 ? [...exact, ...sameBase.filter(v => !exact.includes(v))] : sameBase;
+    // posizione nell'elenco delle femminili ("female" nel nome: in fondo), null se non e' femminile
+    const femaleRank = (v: SpeechSynthesisVoice): number | null => {
+      const name = v.name.toLowerCase();
+      let i = SpeechOutputService.FemaleVoices.findIndex(f => name.includes(f));
+      if (i < 0 && name.includes('female')) i = SpeechOutputService.FemaleVoices.length;
+      if (i < 0) return null;
+      return i + (name.includes('natural') ? 0 : 100) + (exact.includes(v) ? 0 : 1000);
+    };
+    const female = voices.filter(v => femaleRank(v) !== null)
+                         .sort((a, b) => femaleRank(a)! - femaleRank(b)!);
+    return female[0] ?? voices[0];
   }
 
   // via simboli e icone del testo mostrato (①, ℹ️, •), righe -> frasi
