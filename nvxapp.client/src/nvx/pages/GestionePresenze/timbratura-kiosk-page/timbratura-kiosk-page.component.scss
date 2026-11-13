@@ -64,3 +64,38 @@
   justify-content: flex-end;
   padding: 4px 8px 0;
 }
+
+// scelta di reparto - attivita' dopo PIN o badge (AT-TIMB.7)
+.nvx-scelta-titolo {
+  font-size: 1.4em;
+  text-align: center;
+}
+
+.nvx-scelta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(92vw, 520px);
+  max-height: 55vh;
+  overflow-y: auto;
+
+  ion-button {
+    height: auto;
+    min-height: 64px;
+    white-space: normal;
+    text-transform: none;
+  }
+}
+
+.nvx-opzione {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 6px 0;
+  gap: 2px;
+
+  small {
+    opacity: 0.8;
+  }
+}

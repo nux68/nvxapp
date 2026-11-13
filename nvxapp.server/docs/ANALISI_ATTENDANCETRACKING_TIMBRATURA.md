@@ -54,6 +54,20 @@ Postazione QR e Kiosk stanno nella sezione di menu **Terminali** (non più nel f
 - **Sessione**: il token scade dopo `Jwt:ExpireMinutes` (1200, che `UtilToken` somma come secondi: ~20 minuti) senza chiamate; ogni risposta lo rinnova. Col terminale attivo una chiamata leggera (`Sedi`) ogni 5 minuti e al ritorno in primo piano lo tiene vivo. Se scade comunque (dispositivo sospeso a lungo) l'interceptor porta al login e la guardia lascia passare.
 - Limiti del browser: Esc esce dallo schermo intero ma non dal terminale (la pagina offre di tornarci); la barra degli indirizzi resta raggiungibile fuori dallo schermo intero, per un blocco completo serve la modalità kiosk del sistema operativo o del browser.
 
+### 4.6 Reparto e attività nel kiosk e nel QR (`AT-TIMB.7`)
+Prima: con QR e kiosk l'attività non si chiedeva (proposta: quella dell'ultima timbratura) e il reparto non si registrava; un dipendente su più reparti o sedi riceveva l'attività dell'ultima timbratura anche in un'altra sede.
+
+Ora la timbratura è agganciata alla **sede** (del QR o del kiosk) e il dipendente è noto (sessione nel QR, PIN/badge nel kiosk): si mostra la lista **reparto – attività** della sede compatibili con il dipendente.
+- **Opzioni** (`TimbraturaEvolutaService.OpzioniAsync`), per ogni reparto della sede:
+  - le attività (sub commessa – attività) **consentite** al dipendente (`GetIdAz_SubCommessaAttivita_Consentite`, la stessa regola della timbratura semplice) e per cui ha le **competenze** (almeno una di quelle richieste dall'attività; senza competenze richieste va bene per tutti, come in `Az_SubCommessa/GetCompatibili`);
+  - che si **svolgono nel reparto** (`Az_SediRepartoAttivita`); un reparto senza attività configurate compare solo se il dipendente ne fa parte (`Az_SediRepartoUser.UserInDepartment`, nel periodo `DataDal`/`DataAl`), con tutte le sue attività compatibili.
+  - nessuna coppia: le attività compatibili senza reparto; ancora nessuna: l'attività proposta (la timbratura non si blocca mai).
+- **Default**: l'attività proposta (ultima timbratura, rapporto, prima consentita) se è tra le opzioni, altrimenti la prima.
+- **Una sola opzione: non si chiede nulla** (si timbra subito come prima).
+- **Kiosk**: PIN/badge → `KioskIdentifica` (stesso controllo del token e stesso limite dei tentativi di `KioskStamp`) restituisce nome e opzioni; il dipendente tocca la riga; senza scelta entro 10 secondi si timbra il default; `KioskStamp` ripete l'identificazione e registra la coppia scelta.
+- **QR**: letto il codice, `Opzioni` lo verifica (firma, scadenza, già usato) e restituisce le opzioni e un **ticket** firmato (3 minuti, legato a utente, sede e slot del QR) che sostituisce il codice nello `Stamp`: la scelta non fa scadere il QR (che vale 30-60 secondi); l'anti-replay resta sullo slot. Senza QR (sede scelta a mano) le opzioni seguono la sede scelta. Senza rete: niente lista, si timbra il default come prima.
+- La scelta è **verificata dal server** (deve essere una delle opzioni, altrimenti `ActivityNotAllowed`); il reparto si registra in `Dip_GG_TimbraturaInfo.IdAz_SediReparto` (nuova colonna, migrazione `AttendanceTracking_TimbraturaReparto`); l'attività resta su `Dip_GG_Timbratura.IdAz_SubCommessaAttivita`.
+
 ## 5. Impatti sul calcolo
 Nessuno: la timbratura evoluta crea una normale `Dip_GG_Timbratura` (stato Diretta). Le informazioni aggiuntive sono solo in `Dip_GG_TimbraturaInfo` e nell'elenco del giorno (`TimbraturaEvoluta/Info4Giorno`).
 
@@ -70,6 +84,7 @@ Nessuno: la timbratura evoluta crea una normale `Dip_GG_Timbratura` (stato Diret
 | B7 | PWA offline | **Scelta provvisoria**: coda in `localStorage` e invio alla riconnessione. Il caricamento dell'app senza rete richiede un service worker (`@angular/service-worker`, non installato): estensione |
 | B8 | Timbratura semplice esistente (`/timeclockuser`) | Invariata |
 | B9 | Geofence nei giorni di lavoro agile | Non si applica se il giorno ha un giustificativo di lavoro agile approvato (AT-SW) |
+| B11 | Reparti mostrati nel kiosk e nel QR | **Scelta provvisoria**: tutti i reparti della sede in cui si svolge un'attività compatibile col dipendente (anche se non ne fa parte); un reparto senza attività configurate solo se il dipendente ne fa parte |
 | B10 | Uscita dalla modalità terminale | **Scelta provvisoria**: solo la password (senza utente), valida quella di qualsiasi CompanyPowerAdmin collegato all'azienda; sessione tenuta viva dal client invece di un token del dispositivo lato server |
 
 ## 7. Checklist
@@ -84,3 +99,11 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 - ✅ `AT-TIMB.5` Prova su DB usa e getta (QR valido/riusato, fuori dal geofence, differita accettata/rifiutata, kiosk con PIN) — 41 controlli API: configurazione (permessi, coordinate obbligatorie con il geofence), QR con immagine, QR valido, riusato dallo stesso dipendente (rifiutato), usato da un collega (accettato), firma falsa e QR scaduto rifiutati, fuori area con "segnala" (accettata, esito e distanza registrati) e con "blocca" (rifiutata, anche senza posizione), tolleranza della precisione, QR obbligatorio, differita accettata con l'ora del dispositivo e marcata, oltre il limite / nel futuro / sede senza differite rifiutate, PIN solo dall'HR e salvato come hash, kiosk con token sbagliato, utente non amministratore, PIN errato (rifiutati), PIN e badge corretti, blocco dopo 5 errori, nuova registrazione che invalida il token
 - ✅ `AT-TIMB.6` Terminali: sezione di menu "Terminali" (Postazione QR, Kiosk), tolti dal fab di Timbratura della sede; modalità terminale a schermo intero senza menu, uscita con la password di un CompanyPowerAdmin (`TerminaleSblocca`, limite dei tentativi), sessione tenuta viva
 - ⏳ `AT-TIMB.6a` Prova sul dispositivo reale (tablet): uscita con indietro/Esc, password errata e blocco, sessione dopo più di 20 minuti di inattività
+- ✅ `AT-TIMB.7` Reparto e attività nel kiosk e nel QR (§4.6):
+  - ✅ server: opzioni reparto-attività della sede compatibili col dipendente, default, verifica della scelta
+  - ✅ server: `IdAz_SediReparto` su `Dip_GG_TimbraturaInfo` + migrazione
+  - ✅ server: `KioskIdentifica`, scelta in `KioskStamp`; `Opzioni` con ticket del QR, scelta in `Stamp`
+  - ✅ client kiosk: lista dopo PIN/badge, default in 10 secondi, nessuna domanda con una sola opzione
+  - ✅ client QR: lista dopo la lettura del codice o la scelta della sede, ticket
+  - ✅ prova sul DB usa e getta — 34 controlli API: migrazione; opzioni con una coppia, con più reparti, default; competenze (mancante/assegnata, una su due basta); reparto senza attività solo da membro (anche `DataAl` scaduta e `UserInDepartment` falso); QR → ticket → `Stamp` con reparto e attività registrati, ticket riusato / alterato / di un altro utente rifiutati; scelta fuori dalle opzioni rifiutata, senza scelta il default; kiosk `KioskIdentifica` + `KioskStamp` con reparto registrato, scelta non valida rifiutata, blocco dopo 5 PIN errati; `Stamp` senza sede invariato
+  - ✅ correzioni emerse dalla prova: periodo `DataDal`/`DataAl` dell'appartenenza al reparto rispettato anche nelle attività consentite (`GetIdAz_SubCommessaAttivita_Consentite`) e nella sede proposta (`SedeDelDipendente`); ticket in una timbratura differita: l'ora del dispositivo non può precedere l'emissione del ticket
