@@ -24,6 +24,8 @@ export class PageToolbarComponent {
 
   @Output() ev_Filter: EventEmitter<string> = new EventEmitter();
   @Input() title: string;
+  /** utente collegato a destra del titolo (false nei dialog: azienda e utente vanno nel corpo del messaggio) */
+  @Input() showUser: boolean = true;
   public queryText: string;
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
