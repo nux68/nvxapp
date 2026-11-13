@@ -11,3 +11,21 @@
   display: block;
   padding: 8px 16px;
 }
+
+/* scelta della vista (tutti, settimana, mese) e navigazione del periodo */
+.nvx-comandi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 8px;
+}
+
+.nvx-comandi ion-segment {
+  max-width: 360px;
+}
+
+.nvx-periodo {
+  display: flex;
+  align-items: center;
+}
