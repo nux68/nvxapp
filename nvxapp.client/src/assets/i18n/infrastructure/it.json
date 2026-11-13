@@ -1322,6 +1322,15 @@
       "actions": "Azioni"
     },
     "pageToolbar": {
+      "jobRunning": "Elaborazione in corso",
+      "jobDone": "Completato",
+      "jobFileReady": "File pronto",
+      "jobError": "Terminato con errori",
+      "jobProgress": "Avanzamento",
+      "jobAction": "Azione",
+      "jobClickDownload": "clic sull'icona per scaricare",
+      "jobClickDismiss": "clic sull'icona per chiudere",
+      "jobDismiss": "Chiudi la notifica",
       "searchPlaceholder": "Cerca",
       "dashboard": "Vai alla dashboard"
     },
