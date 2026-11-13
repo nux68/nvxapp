@@ -11,6 +11,10 @@ import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePres
 import { Az_SediRepartoModel, Az_SediReparto_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { SeletionParTurnoDialogComponent, SeletionParTurnoDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-turno-dialog/seletion-par-turno-dialog.component';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { Dip_Turno_ReportInModel, TurniReportTipo } from '../../../ClientServer-Service/GestionePresenze/Turni/Models/turni-model';
 
 type Vista = 'settimana' | 'mese';
 
@@ -19,6 +23,7 @@ type Vista = 'settimana' | 'mese';
  griglia dipendenti x giorni (settimana o mese), clic sulla cella = scelta dei turni del giorno (uno o piu', compatibili:
  niente sovrapposizioni, il riposo da solo; salvati subito, il giorno si ricalcola),
  righe delle coperture minime (rosse se insufficienti), assenze, conflitti e consuntivo dei giorni calcolati.
+ Report (FAB): PDF del periodo visualizzato (settimana o mese) con il job, il file si scarica dalla notifica.
  Duplica settimana (vista settimana): la settimana visualizzata si copia in una delle settimane successive per i dipendenti
  scelti (dialog standard di selezione multipla); nella destinazione i loro turni diventano uguali a quelli di partenza.
 */
@@ -46,11 +51,38 @@ export class PianificazioneTurniPageComponent {
               private modalCtrl: ModalController,
               private toastCtrl: ToastController,
               private collectionDialogService: CollectionDialogService,
+              private fabMenuService: FabMenuService,
+              private userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.pianificazioneTurni.title');
   }
 
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
+  }
+
+  /** report PDF della pianificazione del periodo visualizzato (settimana o mese) */
+  stampa() {
+    if (!this.idAz_SediReparto)
+      return;
+    const { dal, al } = this.periodo();
+    const request = new GenericRequest<Dip_Turno_ReportInModel>(Dip_Turno_ReportInModel);
+    request.data.tipo = TurniReportTipo.Reparto;
+    request.data.idAz_SediReparto = this.idAz_SediReparto;
+    request.data.dal = dataLocale(dal);
+    request.data.al = dataLocale(al);
+    this.turniService.ReportPdf(request).subscribe(async res => {
+      // job non avviato: avviso del server (il file arriva altrimenti nella notifica di fine job)
+      const messaggi = res.success ? (res.data?.messages ?? []) : [];
+      if (messaggi.length > 0)
+        await this.avviso('attendance.pages.pianificazioneTurni.reportNotStarted', { msg: messaggi.map(m => m.text).join(' ') });
+    });
+  }
+
   ionViewWillEnter() {
+    this.fabMenuService.fabMenuItem = [
+      new FabMenuItem(this.transloco.translate('attendance.services.report.titolo'), this.userInterfaceService.Btn_Pdf.image, () => this.stampa()),
+    ];
     this.azSediRepartoService.GetAll(new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel)).subscribe(res => {
       this.reparti = res.data?.az_SediReparto ?? [];
       if (!this.idAz_SediReparto && this.reparti.length > 0)
@@ -179,31 +211,27 @@ export class PianificazioneTurniPageComponent {
 
   // ── modifica ───────────────────────────────────────────────────────
 
-  /** turni del giorno: uno o piu' (caselle di spunta), nessuno = giorno senza turno; la compatibilita' la controlla il server */
+  /**
+   turni del giorno con il dialog standard di selezione (SeletionParTurnoDialogComponent): uno o piu', nessuno = giorno senza
+   turno; la compatibilita' la controlla il server
+  */
   async scegliTurno(dip: TurnoDipendenteModel, d: Date) {
     if (!this.dati)
       return;
     const attuali = new Set(this.turni(dip, d).map(t => t.id));
-    const turni = [...this.dati.turni].sort((a, b) => (a.orarioTesto ?? '').localeCompare(b.orarioTesto ?? ''));
-    const alert = await this.alertCtrl.create({
-      header: `${dip.nominativo} - ${d.toLocaleDateString(this.transloco.getActiveLang())}`,
-      subHeader: this.transloco.translate('attendance.pages.pianificazioneTurni.shiftsOfDay'),
-      inputs: turni.map(t => ({
-        type: 'checkbox' as const,
-        label: `${t.codice} - ${t.descrizione}${t.orarioTesto ? ' (' + t.orarioTesto + ')' : ''}`,
-        value: t.id,
-        checked: attuali.has(t.id),
-      })),
-      buttons: [
-        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
-        { text: this.transloco.translate('common.buttons.save'), role: 'confirm' },
-      ],
+    const modal = await this.modalCtrl.create({
+      component: SeletionParTurnoDialogComponent,
+      componentProps: {
+        turni: this.dati.turni,
+        selezionati: [...attuali],
+        sottotitolo: `${dip.nominativo} - ${d.toLocaleDateString(this.transloco.getActiveLang())}`,
+      }
     });
-    await alert.present();
-    const esito = await alert.onDidDismiss();
-    if (esito.role !== 'confirm')
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<SeletionParTurnoDialogResult>();
+    if (role !== 'confirm' || !data)
       return;
-    const scelti: number[] = (esito.data?.values ?? []).map((x: any) => Number(x));
+    const scelti = data.id;
     if (scelti.length === attuali.size && scelti.every(x => attuali.has(x)))
       return;
     this.salva(dip, d, scelti);

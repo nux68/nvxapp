@@ -208,6 +208,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
         public bool Annullabile { get; set; }
     }
 
+    // report PDF dei turni (job): pianificazione del reparto (amministratori) o i miei turni (dipendente)
+    public enum TurniReportTipo { Reparto = 0, Miei = 1 }
+
+    public class Dip_Turno_ReportInModel
+    {
+        public TurniReportTipo Tipo { get; set; }
+        // solo per il report del reparto
+        public int IdAz_SediReparto { get; set; }
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+    }
+    public class Dip_Turno_ReportOutModel : ModelResult
+    {
+        public string JobId { get; set; } = string.Empty;
+    }
+
     public class Dip_Turno_GetAll4UserInModel
     {
         public DateTime Dal { get; set; }

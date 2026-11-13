@@ -5,6 +5,7 @@ import { IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLa
 import { RouterModule } from '@angular/router';
 import { MieiTurniPageComponent } from './miei-turni-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
     IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonNote,
     RouterModule.forChild([{ path: '', component: MieiTurniPageComponent }]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule,
   ],
   declarations: [MieiTurniPageComponent]
 })

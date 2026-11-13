@@ -2079,4 +2079,58 @@
   <data name="ScambioTurnoIncompatibile" xml:space="preserve">
     <value>The swap is not possible: on {0:dd/MM/yyyy} {1}</value>
   </data>
+  <data name="TurniReport_TitoloReparto" xml:space="preserve">
+    <value>Shift planning</value>
+  </data>
+  <data name="TurniReport_TitoloMiei" xml:space="preserve">
+    <value>My shifts</value>
+  </data>
+  <data name="TurniReport_Reparto" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="TurniReport_Periodo" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="TurniReport_Dipendente" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="TurniReport_Data" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="TurniReport_Giorno" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="TurniReport_Turni" xml:space="preserve">
+    <value>Shifts</value>
+  </data>
+  <data name="TurniReport_Orario" xml:space="preserve">
+    <value>Schedule</value>
+  </data>
+  <data name="TurniReport_Ore" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="TurniReport_Totale" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="TurniReport_Descrizione" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="TurniReport_Legenda" xml:space="preserve">
+    <value>Shift legend</value>
+  </data>
+  <data name="TurniReport_Riposo" xml:space="preserve">
+    <value>Rest day</value>
+  </data>
+  <data name="TurniReport_Copertura" xml:space="preserve">
+    <value>Coverage {0}</value>
+  </data>
+  <data name="TurniReport_Nessuno" xml:space="preserve">
+    <value>No shifts planned in the period.</value>
+  </data>
+  <data name="TurniReport_CopertureInsufficienti" xml:space="preserve">
+    <value>Insufficient coverage in the period: {0}.</value>
+  </data>
+  <data name="TurniReport_NessunRapporto" xml:space="preserve">
+    <value>No employment in the chosen period.</value>
+  </data>
 </root>

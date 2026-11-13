@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -15,9 +16,13 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportService;
+using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using Serilog;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniService
 {
@@ -27,6 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
          (giustificativi con segno "-"), conflitti turno/assenza e consuntivo dei giorni calcolati (Dip_GG_Result)
        - Put: modifiche della griglia e ricalcolo dei giorni toccati (il turno prevale sul profilo, AT-TURNI.4)
        - GetAll4User: turni del dipendente, dei colleghi dei suoi reparti e scambi (AT-TURNI.3)
+       - ReportPdf: report PDF della pianificazione del reparto o dei miei turni (settimana o mese), come i report delle
+         pagine HR: i dati si leggono nella richiesta, il job in background scrive il PDF e il file si scarica dalla notifica
     */
     public class Dip_TurnoService : ServiceBase, IDip_TurnoService
     {
@@ -308,6 +315,107 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
             }
         }
 
+        public virtual async Task<GenericResult<Dip_Turno_ReportOutModel>> ReportPdf(GenericRequest<Dip_Turno_ReportInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_Turno_ReportOutModel();
+                var d = model.Data;
+                var dal = d.Dal.Date;
+                var al = d.Al.Date;
+                if (al < dal || (al - dal).TotalDays > MaxGiorni)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("TurnoPeriodoNonValido", MaxGiorni));
+
+                // dati del report, letti come le pagine (stessi permessi)
+                ReportPdf report;
+                string nome;
+                if (d.Tipo == TurniReportTipo.Reparto)
+                {
+                    var res = await Pianificazione(new GenericRequest<Dip_Turno_PianificazioneInModel>
+                    {
+                        Data = new Dip_Turno_PianificazioneInModel { IdAz_SediReparto = d.IdAz_SediReparto, Dal = dal, Al = al }
+                    }, true);
+                    if (!res.Success || res.Data == null)
+                        throw new UserMessageException(string.Join(" ", res.Messages.Select(m => m.Text)));
+                    report = TurniReportPdf.Reparto(res.Data, dal, al);
+                    nome = $"Turni_{dal:yyyyMMdd}_{al:yyyyMMdd}";
+                }
+                else
+                {
+                    var res = await GetAll4User(new GenericRequest<Dip_Turno_GetAll4UserInModel>
+                    {
+                        Data = new Dip_Turno_GetAll4UserInModel { Dal = dal, Al = al }
+                    }, true);
+                    if (!res.Success || res.Data == null)
+                        throw new UserMessageException(string.Join(" ", res.Messages.Select(m => m.Text)));
+                    int idAz = await _turniUtility.IdAziendaAsync(CurrentCompany);
+                    var io = _turniUtility.Dipendenti(new List<string> { CurrentUserId }, idAz, dal, al).FirstOrDefault();
+                    if (io == null)
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("TurniReport_NessunRapporto"));
+                    var modelli = _par_TurnoRepository.FindAll(t => t.IdAz_Anagrafica == idAz).ToList().Select(_turniUtility.Modello).ToList();
+                    report = TurniReportPdf.Miei(io.Nominativo, res.Data.MieiTurni, modelli, dal, al);
+                    nome = $"MieiTurni_{dal:yyyyMMdd}_{al:yyyyMMdd}";
+                }
+
+                var jobId = Guid.NewGuid();
+                retVal.JobId = jobId.ToString();
+                var userId = this.UserIdFirstConnection;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("JobUserNotIdentified"), MessageType.Error));
+                    return retVal;
+                }
+                int.TryParse(this.CurrentCompany, out int idCompany);
+                var payload = new { d.Tipo, Dal = dal, Al = al };
+
+                RunInBackground(async scope =>
+                {
+                    var longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
+
+                    Task Notifica(int progress, Message message, JobFile? file = null, bool isFinished = false) =>
+                        longJobNotifier.LongJobProgressAsync(userId,
+                                                             new LongJobProgressUpdate
+                                                             {
+                                                                 JobId = jobId.ToString(),
+                                                                 JobType = GestionePresenze_JobType.Turni_Report_Pdf,
+                                                                 Payload = payload,
+                                                                 Category = LongJobCategory.FileGeneration,
+                                                                 DownloadUrl = file?.DownloadUrl,
+                                                                 FileName = file?.FileName,
+                                                                 ProgressPercentage = progress,
+                                                                 Message = message,
+                                                                 IsFinished = isFinished
+                                                             });
+
+                    try
+                    {
+                        await Notifica(0, new Message { Text = AttendanceTrackingMessages.Get("Report_Avviato"), MsgType = MessageType.Information });
+
+                        var company = await scope.ServiceProvider.GetRequiredService<ICompanyRepository>().FindByIdAsync(idCompany);
+                        report.Intestazione.Insert(0, new KeyValuePair<string, string>(AttendanceTrackingMessages.Get("CartellinoPdf_Azienda"), company?.Descrizione ?? string.Empty));
+
+                        await Notifica(80, new Message { Text = AttendanceTrackingMessages.Get("ExportPdfWriting"), MsgType = MessageType.Information });
+                        var fileName = ReportPdfWriter.Write(report, nome, jobId.ToString(), NVXSystem.ExportFolder);
+                        Log.Information("Shift report PDF file created for job {JobId}: {FileName}", jobId, fileName);
+
+                        await Notifica(100,
+                                       new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information },
+                                       NVXSystem.RegistraFileJob(fileName, userId, nome),
+                                       isFinished: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Background task for job {JobId} failed.", jobId);
+                        await Notifica(100, new Message { Text = AttendanceTrackingMessages.Get("ExportFailed", ex.Message), MsgType = MessageType.Exception }, isFinished: true);
+                    }
+                });
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
         public virtual async Task<GenericResult<Dip_Turno_GetAll4UserOutModel>> GetAll4User(GenericRequest<Dip_Turno_GetAll4UserInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -378,5 +486,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TurniServi
         Task<GenericResult<Dip_Turno_PianificazioneOutModel>> Pianificazione(GenericRequest<Dip_Turno_PianificazioneInModel> model, bool isSubProcess);
         Task<GenericResult<Dip_Turno_PutOutModel>> Put(GenericRequest<Dip_Turno_PutInModel> model, bool isSubProcess);
         Task<GenericResult<Dip_Turno_GetAll4UserOutModel>> GetAll4User(GenericRequest<Dip_Turno_GetAll4UserInModel> model, bool isSubProcess);
+        Task<GenericResult<Dip_Turno_ReportOutModel>> ReportPdf(GenericRequest<Dip_Turno_ReportInModel> model, bool isSubProcess);
     }
 }
