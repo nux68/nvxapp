@@ -215,6 +215,13 @@
         "noEmployees": "Nessun dipendente nel reparto.",
         "noShift": "Nessun turno",
         "conflicts": "Conflitti con le assenze",
+        "duplicate": "Duplica settimana",
+        "duplicateTarget": "Copia nella settimana",
+        "duplicateFrom": "Turni della settimana {{ periodo }}",
+        "duplicateNext": "Scegli i dipendenti",
+        "duplicateConfirm": "Copiare i turni della settimana {{ dal }} nella settimana {{ al }} per {{ n }} dipendenti? I loro turni di quella settimana vengono sostituiti (i giorni senza turno restano senza turno).",
+        "duplicateDone": "Settimana duplicata: {{ salvati }} turni copiati, {{ tolti }} tolti.",
+        "duplicateEmpty": "La settimana non ha turni da duplicare.",
         "legend": "Clic su una cella per scegliere il turno. Sotto il turno: assenze (tratteggiate se in attesa di approvazione) e ore lavorate/previste dei giorni calcolati. Bordo rosso = turno in un giorno di assenza approvata."
       },
       "mieiTurni": {

@@ -21,6 +21,14 @@
           <ion-button fill="clear" (click)="oggi()">{{ periodoTesto }}</ion-button>
           <ion-button fill="clear" (click)="sposta(1)"><ion-icon slot="icon-only" name="chevron-forward"></ion-icon></ion-button>
         </div>
+
+        <!-- copia della settimana visualizzata in un'altra settimana, per i dipendenti scelti -->
+        @if (vista === 'settimana' && dati && dati.dipendenti.length > 0) {
+          <ion-button fill="outline" size="small" (click)="duplicaSettimana()">
+            <ion-icon slot="start" name="copy-outline"></ion-icon>
+            {{ 'attendance.pages.pianificazioneTurni.duplicate' | transloco }}
+          </ion-button>
+        }
       </div>
 
       @if (dati) {

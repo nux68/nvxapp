@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, AlertController, ModalController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { TurniService } from '../../../ClientServer-Service/GestionePresenze/Turni/turni.service';
@@ -9,6 +9,8 @@ import {
 } from '../../../ClientServer-Service/GestionePresenze/Turni/Models/turni-model';
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { Az_SediRepartoModel, Az_SediReparto_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 type Vista = 'settimana' | 'mese';
 
@@ -16,6 +18,8 @@ type Vista = 'settimana' | 'mese';
  Pianificazione dei turni di un reparto (AT-TURNI.2, ANALISI_ATTENDANCETRACKING_TURNI.md §4):
  griglia dipendenti x giorni (settimana o mese), clic sulla cella = scelta del turno (salvato subito, il giorno si ricalcola),
  righe delle coperture minime (rosse se insufficienti), assenze, conflitti e consuntivo dei giorni calcolati.
+ Duplica settimana (vista settimana): la settimana visualizzata si copia in una delle settimane successive per i dipendenti
+ scelti (dialog standard di selezione multipla); nella destinazione i loro turni diventano uguali a quelli di partenza.
 */
 @Component({
   selector: 'app-pianificazione-turni-page',
@@ -37,6 +41,10 @@ export class PianificazioneTurniPageComponent {
   constructor(private turniService: TurniService,
               private azSediRepartoService: AzSediRepartoService,
               private actionSheetCtrl: ActionSheetController,
+              private alertCtrl: AlertController,
+              private modalCtrl: ModalController,
+              private toastCtrl: ToastController,
+              private collectionDialogService: CollectionDialogService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.pianificazioneTurni.title');
   }
@@ -184,6 +192,107 @@ export class PianificazioneTurniPageComponent {
       buttons
     });
     await sheet.present();
+  }
+
+  // ── duplica settimana ──────────────────────────────────────────────
+
+  /** settimane in cui si puo' copiare quella visualizzata (le 8 successive) */
+  private static readonly SETTIMANE_DESTINAZIONE = 8;
+
+  private testoSettimana(lunedi: Date): string {
+    const al = new Date(lunedi);
+    al.setDate(al.getDate() + 6);
+    const f = (d: Date) => d.toLocaleDateString(this.transloco.getActiveLang(), { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return `${f(lunedi)} - ${f(al)}`;
+  }
+
+  private async avviso(chiave: string, params?: any) {
+    const toast = await this.toastCtrl.create({ message: this.transloco.translate(chiave, params), duration: 4000, position: 'top' });
+    await toast.present();
+  }
+
+  /**
+   copia la settimana visualizzata in un'altra: scelta della settimana, dei dipendenti (proposti quelli con turni nella
+   settimana di partenza), conferma; per ogni dipendente scelto i 7 giorni di destinazione prendono il turno del giorno
+   corrispondente (nessun turno = il turno della destinazione si toglie), con il ricalcolo dei giorni (Dip_Turno/Put)
+  */
+  async duplicaSettimana() {
+    if (!this.dati || this.vista !== 'settimana' || !this.idAz_SediReparto)
+      return;
+    const t = (k: string, p?: any) => this.transloco.translate('attendance.pages.pianificazioneTurni.' + k, p);
+    const sorgente = new Date(this.inizio);
+    const assegnazioni = this.dati.assegnazioni;
+    if (assegnazioni.length === 0) {
+      await this.avviso('attendance.pages.pianificazioneTurni.duplicateEmpty');
+      return;
+    }
+
+    // 1. settimana di destinazione
+    const settimane: Date[] = [];
+    for (let i = 1; i <= PianificazioneTurniPageComponent.SETTIMANE_DESTINAZIONE; i++) {
+      const d = new Date(sorgente);
+      d.setDate(d.getDate() + 7 * i);
+      settimane.push(d);
+    }
+    const alert = await this.alertCtrl.create({
+      header: t('duplicateTarget'),
+      subHeader: t('duplicateFrom', { periodo: this.testoSettimana(sorgente) }),
+      inputs: settimane.map((d, i) => ({ type: 'radio' as const, label: this.testoSettimana(d), value: i, checked: i === 0 })),
+      buttons: [
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+        { text: t('duplicateNext'), role: 'confirm' },
+      ],
+    });
+    await alert.present();
+    const sceltaSettimana = await alert.onDidDismiss();
+    if (sceltaSettimana.role !== 'confirm' || sceltaSettimana.data?.values == null)
+      return;
+    const destinazione = settimane[Number(sceltaSettimana.data.values)];
+
+    // 2. dipendenti (dialog standard a selezione multipla)
+    const conTurni = new Set(assegnazioni.map(a => a.idDip_RapportoLavoro));
+    const items: DipSelectorItem[] = this.dati.dipendenti.map(d => ({ id: d.idDip_RapportoLavoro, cognome: d.nominativo, nome: '' }));
+    const modal = await this.modalCtrl.create({
+      component: DipSelectorModalComponent,
+      componentProps: { mode: 'multi', items, preselected: [...conTurni] }
+    });
+    await modal.present();
+    const { data, role } = await modal.onWillDismiss<DipSelectorResult<number>>();
+    if (role !== 'confirm' || !data || data.selected.length === 0)
+      return;
+
+    // 3. conferma: nella destinazione i turni dei dipendenti scelti si sostituiscono
+    if (!await this.collectionDialogService.ConfirmCancelDialog(t('duplicateConfirm', {
+          dal: this.testoSettimana(sorgente), al: this.testoSettimana(destinazione), n: data.selected.length })))
+      return;
+
+    // 4. righe: 7 giorni per dipendente, stesso giorno della settimana
+    const request = new GenericRequest<Dip_Turno_PutInModel>(Dip_Turno_PutInModel);
+    request.data.idAz_SediReparto = this.idAz_SediReparto;
+    request.data.assegnazioni = [];
+    for (const idRapporto of data.selected) {
+      for (let g = 0; g < 7; g++) {
+        const giornoSorgente = new Date(sorgente);
+        giornoSorgente.setDate(giornoSorgente.getDate() + g);
+        const giornoDestinazione = new Date(destinazione);
+        giornoDestinazione.setDate(giornoDestinazione.getDate() + g);
+        const a = assegnazioni.find(x => x.idDip_RapportoLavoro === idRapporto && x.data.substring(0, 10) === this.chiave(giornoSorgente));
+        const riga = new Dip_Turno_PutRiga();
+        riga.idDip_RapportoLavoro = idRapporto;
+        riga.data = dataLocale(giornoDestinazione);
+        riga.idPar_Turno = a?.idPar_Turno ?? 0;
+        riga.note = a?.note ?? null;
+        request.data.assegnazioni.push(riga);
+      }
+    }
+    this.turniService.Put(request).subscribe(async res => {
+      if (!res.success)
+        return;
+      await this.avviso('attendance.pages.pianificazioneTurni.duplicateDone', { salvati: res.data?.salvati ?? 0, tolti: res.data?.tolti ?? 0 });
+      // si va alla settimana copiata
+      this.inizio = destinazione;
+      this.carica();
+    });
   }
 
   private salva(dip: TurnoDipendenteModel, d: Date, idPar_Turno: number) {

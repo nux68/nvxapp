@@ -67,6 +67,8 @@ Server (`Controllers/GestionePresenze`, servizi `ClientServer-Service/GestionePr
 Client:
 - `/turnolist`, `/turnoedit` (Parametri, CompanyPowerAdmin), `/turnocoperture` (turni e coperture del reparto).
 - `/pianificazioneturni` (CompanyAdmin e CompanyPowerAdmin): reparto, settimana/mese, griglia dipendenti × giorni, riga delle coperture evidenziata, assenze, consuntivo; clic sulla cella = scelta del turno.
+- **Duplica settimana** (vista settimana, 13/11/2026): la settimana visualizzata si copia in una delle 8 successive per i dipendenti scelti con il dialog standard a selezione multipla (`DipSelectorModalComponent`, proposti quelli con turni); nella destinazione i loro 7 giorni diventano uguali alla partenza (giorno senza turno = turno tolto), con `Dip_Turno/Put` (ricalcolo, chiusura degli scambi aperti sui turni cambiati).
+- **Configurazione iniziale** (`GestionePresenzeParametriDefault.InitParametri`, 13/11/2026): orari di esempio `TUR0511` (05-11), `TUR1117` (11-17), `TUR1723` (17-23) a coppia unica (±15 min, arrotondamento 15, causale ORD1, nessuna pausa) e i turni con lo stesso codice, più il turno `RIPOSO` sull'orario `RIPOSO` (0 ore).
 - `/mieiturni` (dipendente): turni dei prossimi giorni, proposte inviate e ricevute, "Proponi scambio", accetta/rifiuta.
 - `TipoRichiesta.ScambioTurno` nei testi delle richieste (pipe e dettaglio).
 
@@ -91,4 +93,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔄 in corso
 - ✅ `AT-TURNI.2` Pianificazione: API `Dip_Turno/Pianificazione` e `Dip_Turno/Put` (coperture, assenze approvate, conflitti, consuntivo, ricalcolo); client `/pianificazioneturni` (settimana/mese)
 - ✅ `AT-TURNI.3` Scambio turni: proposta, risposta del collega, richiesta `ScambioTurno` con gli approvatori esistenti, applicazione all'approvazione e annullamento alla revoca; client `/mieiturni` e testi delle richieste
 - ✅ `AT-TURNI.4` Turno pianificato nel calcolo della giornata (`Get_OrariSchema_4User`, `GestionePresenzeOreTeoriche`), senza cambiare i calcoli senza turni
+- ✅ `AT-TURNI.6` Configurazione iniziale con orari e turni di esempio (TUR0511, TUR1117, TUR1723, RIPOSO) — branch `AttendanceTracking_Dev_turniesempio`, compilata
+- ✅ `AT-TURNI.7` Duplica settimana nella pianificazione, con la scelta dei dipendenti — branch `AttendanceTracking_Dev_turniesempio`, compilata
+- ⏳ `AT-TURNI.8` Catena dei merge
 - ✅ `AT-TURNI.5` Prova su DB usa e getta (copertura insufficiente, scambio approvato, calcolo con turno, calcolo senza turni invariato) — 49 controlli API: modelli e coperture, griglia con coperture insufficienti e ferie approvata (conflitto), scambio fra giorni diversi approvato e poi revocato (turni ripristinati), scambio rifiutato dal collega, scambio nello stesso giorno, calcolo: riposo pianificato = 0 ore, sabato con turno = 8 ore teoriche e lavorate (ORD1), dipendente senza turni con il profilo invariato
