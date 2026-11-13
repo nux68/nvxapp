@@ -1322,6 +1322,15 @@
       "actions": "Actions"
     },
     "pageToolbar": {
+      "jobRunning": "Processing",
+      "jobDone": "Completed",
+      "jobFileReady": "File ready",
+      "jobError": "Finished with errors",
+      "jobProgress": "Progress",
+      "jobAction": "Action",
+      "jobClickDownload": "click the icon to download",
+      "jobClickDismiss": "click the icon to close",
+      "jobDismiss": "Close the notification",
       "searchPlaceholder": "Search",
       "dashboard": "Go to dashboard"
     },
