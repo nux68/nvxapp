@@ -38,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IAcknowledgementService _acknowledgementService;
         private readonly IGestionePresenzeOreTeoriche _gestionePresenzeOreTeoriche;
+        private readonly ICompanyRepository _companyRepository;
 
         public Dip_AccordoSWService(IMapper mapper,
                                     UserManager<ApplicationUser> userManager,
@@ -51,7 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
                                     IDip_AccordoSWRepository dip_AccordoSWRepository,
                                     IDip_AnagraficaRepository dip_AnagraficaRepository,
                                     IAcknowledgementService acknowledgementService,
-                                    IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                    IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche,
+                                    ICompanyRepository companyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _turniUtility = turniUtility;
             _lavoroAgileUtility = lavoroAgileUtility;
@@ -59,6 +61,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _acknowledgementService = acknowledgementService;
             _gestionePresenzeOreTeoriche = gestionePresenzeOreTeoriche;
+            _companyRepository = companyRepository;
         }
 
         private int IdCompany => int.TryParse(CurrentCompany, out var id) ? id : 0;
@@ -230,6 +233,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
                 var dal = new DateTime(model.Data.Year, model.Data.Month, 1);
                 var al = dal.AddMonths(1).AddDays(-1);
                 retVal.IdPar_Giustificativi = (await _lavoroAgileUtility.GetOrCreateGiustificativoAsync(idAzienda)).Id;
+                retVal.Azienda = _companyRepository.FindAll(c => c.Id == IdCompany).Select(c => c.Descrizione).FirstOrDefault() ?? string.Empty;
+                retVal.UserName = _aspNetUsersRepository.FindAll(u => u.Id == utente).Select(u => u.UserName).FirstOrDefault() ?? string.Empty;
 
                 var dip = _turniUtility.Dipendenti(new List<string> { utente }, idAzienda, dal, al).FirstOrDefault();
                 if (dip == null)
