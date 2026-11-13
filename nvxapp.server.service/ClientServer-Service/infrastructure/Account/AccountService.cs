@@ -1037,9 +1037,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                 }
 
-                // dati aggiuntivi degli applicativi attivi per l'azienda (es. Cognome e Nome)
+                // dati aggiuntivi: dell'anagrafica comune (Common, sempre: Cognome e Nome) e degli applicativi attivi per l'azienda
                 var activeApplications = _companyApplicationRepository.ActiveApplications(IdCompany);
-                foreach (var extension in _userCompanyListExtensions.Where(x => activeApplications.Contains(x.Application)))
+                foreach (var extension in _userCompanyListExtensions.Where(x => x.Application == ApplicationType.Common || activeApplications.Contains(x.Application)))
                     await extension.ExtendAsync(IdCompany, retVal.UserCompanyList);
 
                 //eliminare
