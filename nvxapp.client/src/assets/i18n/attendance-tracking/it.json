@@ -92,6 +92,7 @@
         "agreement": "Accordo dal {{ from }} al {{ to }}: al massimo {{ max }} giorni a settimana.",
         "notSigned": "Da firmare: conferma la presa visione nella pagina Prese visione.",
         "week": "Sett.",
+        "confirmDetails": "Azienda: {{ company }}<br>Utente: {{ user }}",
         "confirm": "Richiedere il lavoro agile il {{ date }}?",
         "legend": "Clic su un giorno evidenziato per richiederlo. Azzurro pieno = approvato, tratteggiato = in approvazione. L'ultima colonna mostra i giorni usati e il limite della settimana."
       },
