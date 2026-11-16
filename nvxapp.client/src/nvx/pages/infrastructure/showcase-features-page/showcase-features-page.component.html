@@ -33,11 +33,7 @@
           </div>
           <div class="nvx-sc-grid">
             @for (s of g.sezioni; track s.title) {
-              <div class="nvx-sc-card">
-                <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
-                <h3>{{ s.title }}</h3>
-                <p>{{ s.text }}</p>
-              </div>
+              <ng-container *ngTemplateOutlet="card; context: { $implicit: s }"></ng-container>
             }
           </div>
         </section>
@@ -46,11 +42,7 @@
       <section class="nvx-sc-section">
         <div class="nvx-sc-grid">
           @for (s of c.sezioni; track s.title) {
-            <div class="nvx-sc-card">
-              <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
-              <h3>{{ s.title }}</h3>
-              <p>{{ s.text }}</p>
-            </div>
+            <ng-container *ngTemplateOutlet="card; context: { $implicit: s }"></ng-container>
           }
         </div>
       </section>
@@ -68,3 +60,47 @@
   </div>
   <app-showcase-footer></app-showcase-footer>
 </ion-content>
+
+<!-- card di una funzionalita': con il dettaglio diventa un pulsante che apre il dialog -->
+<ng-template #card let-s>
+  @if (s.dettaglio) {
+    <button type="button" class="nvx-sc-card nvx-sc-card-link" (click)="apriDettaglio(s)"
+      [attr.aria-label]="s.title + ' - ' + ('showcase.featuresPage.details' | transloco)">
+      <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
+      <h3>{{ s.title }}</h3>
+      <p>{{ s.text }}</p>
+      <span class="nvx-sc-card-more">{{ 'showcase.featuresPage.details' | transloco }}<ion-icon name="arrow-forward-outline"></ion-icon></span>
+    </button>
+  } @else {
+    <div class="nvx-sc-card">
+      <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
+      <h3>{{ s.title }}</h3>
+      <p>{{ s.text }}</p>
+    </div>
+  }
+</ng-template>
+
+<!-- dialog di dettaglio minimale: niente pulsanti conferma/annulla, si chiude con la X, fuori dal riquadro o con Esc -->
+<ion-modal class="nvx-sc-detail-modal" [isOpen]="!!dettaglio" (didDismiss)="chiudiDettaglio()">
+  <ng-template>
+    @if (dettaglio) {
+      <div class="nvx-sc-detail" role="document">
+        <button type="button" class="nvx-sc-detail-close" (click)="chiudiDettaglio()"
+          [attr.aria-label]="'showcase.featuresPage.close' | transloco">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+        <div class="nvx-sc-card-icon"><ion-icon [name]="dettaglio.icon"></ion-icon></div>
+        <h2>{{ dettaglio.title }}</h2>
+        <p class="nvx-sc-detail-lead">{{ dettaglio.text }}</p>
+        @if (dettaglio.dettaglio?.intro) {
+          <p class="nvx-sc-detail-intro">{{ dettaglio.dettaglio?.intro }}</p>
+        }
+        <ul>
+          @for (p of dettaglio.dettaglio?.punti; track $index) {
+            <li><ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon><span>{{ p }}</span></li>
+          }
+        </ul>
+      </div>
+    }
+  </ng-template>
+</ion-modal>
