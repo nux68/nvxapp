@@ -313,7 +313,9 @@
       "contactUs": "Contact us"
     },
     "featuresPage": {
-      "seePrices": "See pricing"
+      "seePrices": "See pricing",
+      "details": "Learn more",
+      "close": "Close"
     },
     "pricingPage": {
       "faqTitle": "Frequently asked questions",
