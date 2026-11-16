@@ -1694,55 +1694,196 @@
         "sezioni": {
           "vocale": {
             "title": "Comandi vocali e chat",
-            "text": "Parla o scrivi all’assistente: timbra, chiedi un giustificativo o apri la pagina che ti serve, senza cercarla nel menu."
+            "text": "Parla o scrivi all’assistente: timbra, chiedi un giustificativo o apri la pagina che ti serve, senza cercarla nel menu.",
+            "dettaglio": {
+              "intro": "L’assistente esegue le operazioni più frequenti senza passare dal menu: si parla al microfono o si scrive in chat, con parole proprie.",
+              "punti": [
+                "Timbra entrata o uscita e chiedi ferie, permessi o correzioni di timbratura",
+                "Chiedi ore lavorate, saldo di ferie e permessi, richieste in attesa",
+                "Per chi gestisce: chi è presente, piano ferie, giornate da sistemare, approvazioni",
+                "Apre la pagina giusta o il Calendario HR di un dipendente",
+                "Prima di salvare mostra il riepilogo e chiede conferma, anche a voce",
+                "Risponde solo sui dati che l’utente può vedere con il suo ruolo"
+              ]
+            }
           },
           "timbrature": {
             "title": "Timbrature",
-            "text": "Timbratura di entrata e uscita e richiesta di correzione delle timbrature dimenticate o errate."
+            "text": "Timbratura di entrata e uscita e richiesta di correzione delle timbrature dimenticate o errate.",
+            "dettaglio": {
+              "intro": "Il dipendente registra entrata e uscita dal browser, senza installare nulla; se dimentica o sbaglia una timbratura ne chiede la correzione al responsabile.",
+              "punti": [
+                "Terminale di timbratura con l’ultima timbratura sempre in vista",
+                "Scelta dell’attività su cui si lavora, se l’azienda lo richiede",
+                "In sede anche con il QR della postazione o il kiosk con PIN e badge",
+                "Richiesta con giorno, ora, entrata o uscita, approvata dal responsabile",
+                "L’HR corregge dal Calendario HR conservando l’orario originale",
+                "Arrotondamenti e tolleranze applicati secondo l’orario del dipendente"
+              ]
+            }
           },
           "giustificativi": {
             "title": "Giustificativi",
-            "text": "Ferie, permessi, malattia e le altre causali, chieste dal dipendente e approvate dal responsabile."
+            "text": "Ferie, permessi, malattia e le altre causali, chieste dal dipendente e approvate dal responsabile.",
+            "dettaglio": {
+              "intro": "Ferie, permessi, malattia e le altre causali dell’azienda: il dipendente le chiede, gli approvatori del reparto decidono e il cartellino si aggiorna da solo.",
+              "punti": [
+                "Richiesta a giorni interi o a ore, con una nota",
+                "Contatori con maturato, goduto e saldo, anche per i mesi successivi",
+                "Avviso o blocco quando il saldo non copre la richiesta",
+                "Giustificativi a importo, in euro, che non toccano ore e contatori",
+                "Colori propri in calendario e nel piano ferie",
+                "Revoca delle richieste già approvate, con una nuova approvazione"
+              ]
+            }
           },
           "straordinari": {
             "title": "Straordinari e banca ore",
-            "text": "Straordinario autorizzato con giustificativo e ore in più accreditate in banca ore nei cartellini approvati."
+            "text": "Straordinario autorizzato con giustificativo e ore in più accreditate in banca ore nei cartellini approvati.",
+            "dettaglio": {
+              "intro": "Le ore oltre l’orario diventano straordinario, supplementare o banca ore secondo le regole del profilo orario e le autorizzazioni approvate.",
+              "punti": [
+                "Autorizzazione allo straordinario chiesta dal dipendente, giorno per giorno",
+                "Opzione per riconoscere solo le ore in più autorizzate",
+                "Franchigia giornaliera e riconoscimento a blocchi di minuti",
+                "Supplementare per i part-time, straordinario notturno e festivo distinti",
+                "Ore in più dei cartellini approvati accreditate in banca ore",
+                "L’HR può riconoscere o rifiutare le ore in più del mese"
+              ]
+            }
           },
           "reparti": {
             "title": "Reparti e approvatori",
-            "text": "Per ogni reparto chi amministra e chi approva le richieste, con la modalità di approvazione scelta dall’azienda."
+            "text": "Per ogni reparto chi amministra e chi approva le richieste, con la modalità di approvazione scelta dall’azienda.",
+            "dettaglio": {
+              "intro": "I reparti decidono a chi arrivano le richieste e chi vede i cartellini dei dipendenti. Ogni reparto appartiene a una sede.",
+              "punti": [
+                "Per ogni reparto gli amministratori e chi di loro approva le richieste",
+                "Approvazione da un solo amministratore, da tutti o in ordine gerarchico",
+                "Ordine degli approvatori per la catena gerarchica",
+                "Attività svolte nel reparto e dipendenti con le competenze adatte",
+                "L’amministratore di reparto vede solo i dipendenti dei propri reparti",
+                "Senza un approvatore abilitato le richieste del reparto non partono"
+              ]
+            }
           },
           "calendario": {
             "title": "Calendario e piano ferie",
-            "text": "Il calendario di ogni dipendente, il calendario HR e il piano ferie di tutta l’azienda."
+            "text": "Il calendario di ogni dipendente, il calendario HR e il piano ferie di tutta l’azienda.",
+            "dettaglio": {
+              "intro": "Lo stesso mese visto da tre punti: il calendario del dipendente, quello dei reparti per i responsabili e il Calendario HR per chi gestisce il personale.",
+              "punti": [
+                "Mese del dipendente con timbrature, giustificativi, note spese e ore calcolate",
+                "Approvazione delle richieste direttamente dal giorno",
+                "Calendario HR: timbrature, giustificativi e causali si aggiungono o correggono, con ricalcolo",
+                "Riapertura dei cartellini approvati e cartellini del mese in PDF",
+                "Piano ferie di tutta l’azienda filtrabile per reparti e dipendenti",
+                "Dal piano ferie si approvano le assenze in attesa e si stampa il PDF"
+              ]
+            }
           },
           "presenti": {
             "title": "Personale presente",
-            "text": "Chi è al lavoro, chi è assente e perché, in tempo reale."
+            "text": "Chi è al lavoro, chi è assente e perché, in tempo reale.",
+            "dettaglio": {
+              "intro": "Il quadro del personale nel momento in cui si apre la pagina, per i responsabili e per l’amministrazione.",
+              "punti": [
+                "Filtro per reparto e per dipendenti",
+                "Per ogni dipendente un’icona di stato e l’ultima timbratura del giorno, entrata o uscita",
+                "Widget Presenti oggi in dashboard: presenti, assenti e assenti giustificati",
+                "Basta chiedere all’assistente chi è presente"
+              ]
+            }
           },
           "profili": {
             "title": "Profili orari",
-            "text": "Orari, festività e sedi: il cartellino si calcola sulle regole di ciascuno."
+            "text": "Orari, festività e sedi: il cartellino si calcola sulle regole di ciascuno.",
+            "dettaglio": {
+              "intro": "Il cartellino si calcola sulle regole di ciascun dipendente: orari giornalieri, profilo orario e festività della sua sede.",
+              "punti": [
+                "Orari con fasce, tolleranze, arrotondamenti e pause da timbrare o automatiche",
+                "Profili settimanali o a turno, con ciclo da 1 a 15 giorni",
+                "Regole per le ore in più: periodo di conteggio, soglie, fascia notturna",
+                "Festività ricorrenti, in una sola data o calcolate, comuni o per sede",
+                "Duplicazione di un profilo per crearne uno simile",
+                "Formule personalizzate per regole di calcolo particolari"
+              ]
+            }
           },
           "quadratura": {
             "title": "Quadratura mensile",
-            "text": "Controllo dei cartellini del mese, anomalie in evidenza e approvazione in blocco."
+            "text": "Controllo dei cartellini del mese, anomalie in evidenza e approvazione in blocco.",
+            "dettaglio": {
+              "intro": "La chiusura del mese: in una sola pagina si controllano i cartellini di tutti i dipendenti e si approvano insieme.",
+              "punti": [
+                "Ore lavorate, in più, supplementari, straordinari, eccedenti e non riconosciute",
+                "Stato di ogni cartellino: non calcolato, provvisorio, da approvare, approvato",
+                "Avvisi per autorizzazioni da decidere e mesi da ricalcolare",
+                "Selezione automatica dei cartellini chiusi e approvazione in blocco",
+                "Dopo l’approvazione i giorni si bloccano e le ore in più vanno in banca ore",
+                "Stampa PDF della quadratura mensile"
+              ]
+            }
           },
           "export": {
             "title": "Export per le paghe",
-            "text": "Export delle causali con modelli configurabili, pronto per il programma paghe."
+            "text": "Export delle causali con modelli configurabili, pronto per il programma paghe.",
+            "dettaglio": {
+              "intro": "Produce il file per il programma paghe dai cartellini del mese, secondo un modello di export configurato una volta sola.",
+              "punti": [
+                "Per ogni causale il codice del programma paghe, in ore, giorni o importo",
+                "Elaborazione giornaliera o mensile, con righe da sommare o sottrarre",
+                "L’AI prepara il formato leggendo tracciato, manuale o file di esempio",
+                "Prova del formato sui dati reali di un dipendente prima dell’uso",
+                "Export per mese, reparti o dipendenti, preparato in background",
+                "Avvisi a fine export, ad esempio per le matricole mancanti"
+              ]
+            }
           },
           "noteSpese": {
             "title": "Note spese",
-            "text": "Rimborsi con più spese e allegati; l’approvazione della nota approva tutte le spese."
+            "text": "Rimborsi con più spese e allegati; l’approvazione della nota approva tutte le spese.",
+            "dettaglio": {
+              "intro": "Rimborsi spese senza carta: il dipendente compila la nota con le spese e gli allegati, il responsabile la esamina e la approva in blocco.",
+              "punti": [
+                "Più spese per nota, ognuna con data, tipo, importo e descrizione",
+                "Scontrini e fatture in PDF o come immagine, fino a 10 per spesa",
+                "Rimborso chilometrico calcolato su km e tariffa dell’auto del dipendente",
+                "Nota modificabile finché è in attesa; se approvata se ne chiede la revoca",
+                "Esame per dipendente o per tipo di spesa, con grafico",
+                "Note spese visibili anche nel calendario del dipendente"
+              ]
+            }
           },
           "commesse": {
             "title": "Commesse e attività",
-            "text": "Clienti, commesse e attività per sapere su cosa si lavora, con le statistiche."
+            "text": "Clienti, commesse e attività per sapere su cosa si lavora, con le statistiche.",
+            "dettaglio": {
+              "intro": "Per sapere su cosa lavorano i dipendenti: si timbra su attività collegate a commesse e clienti, e le ore si analizzano per periodo.",
+              "punti": [
+                "Commesse legate ai clienti dell’anagrafica comune, divise in sub commesse",
+                "Attività con le competenze richieste, abilitate per sede e reparto",
+                "Si timbra solo sulle attività delle sub commesse a cui si è collegati",
+                "Statistiche delle ore per attività, commessa, cliente e dipendente",
+                "Elenco delle giornate escluse dal conteggio, da sistemare",
+                "Report PDF dei totali per attività o per dipendente"
+              ]
+            }
           },
           "menu": {
             "title": "Menu su misura",
-            "text": "L’amministratore sceglie quali pagine vedono gli amministratori e i dipendenti."
+            "text": "L’amministratore sceglie quali pagine vedono gli amministratori e i dipendenti.",
+            "dettaglio": {
+              "intro": "Ogni azienda adatta il menu ai propri ruoli: l’amministratore sceglie quali voci nascondere agli amministratori di reparto e ai dipendenti.",
+              "punti": [
+                "Pagina Menu utenti con le voci raggruppate per sezione",
+                "Voci nascoste separatamente per amministratori e dipendenti",
+                "Si possono solo togliere voci, mai aggiungerne oltre a quelle del ruolo",
+                "Le pagine nascoste non si aprono neanche dall’indirizzo diretto",
+                "Dashboard, preferenze e manuali restano sempre disponibili",
+                "Vale anche per le voci degli altri applicativi attivi"
+              ]
+            }
           }
         }
       },
