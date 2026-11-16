@@ -7,6 +7,7 @@ import { Translation, TranslocoLoader, TranslocoService, provideTransloco } from
 import { firstValueFrom, forkJoin, map, Observable, of, catchError } from 'rxjs';
 import { DEFAULT_LANGUAGE, LanguageService, SUPPORTED_LANGUAGES } from './language.service';
 import { I18N_FOLDERS } from './i18n-folders';
+import { withBuildVersion } from './build-version';
 
 registerLocaleData(localeIt);
 registerLocaleData(localeEnGb);
@@ -16,6 +17,7 @@ registerLocaleData(localeEnGb);
  Per una lingua diversa dall'italiano si parte dai testi italiani e si sovrappongono quelli tradotti:
  una chiave non ancora tradotta mostra il testo italiano invece della chiave.
  Usa HttpBackend: le chiamate non passano dall'interceptor (niente token, niente spinner).
+ Gli URL hanno ?v=<versione della build> (build-version.ts): a ogni pubblicazione il browser scarica i testi nuovi.
 */
 @Injectable({ providedIn: 'root' })
 export class NvxTranslocoLoader implements TranslocoLoader {
@@ -24,7 +26,7 @@ export class NvxTranslocoLoader implements TranslocoLoader {
 
   getTranslation(lang: string): Observable<Translation> {
     const languages = lang === DEFAULT_LANGUAGE ? [lang] : [DEFAULT_LANGUAGE, lang];
-    const files = languages.flatMap(l => I18N_FOLDERS.map(folder => `assets/i18n/${folder}/${l}.json`));
+    const files = languages.flatMap(l => I18N_FOLDERS.map(folder => withBuildVersion(`assets/i18n/${folder}/${l}.json`)));
 
     return forkJoin(files.map(file => this.http.get<Translation>(file).pipe(
       catchError(() => of({} as Translation))   // un ramo puo' non avere ancora il file di una lingua
