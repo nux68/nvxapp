@@ -5,13 +5,42 @@
  (es. ShowcaseAttendanceTrackingService per la gestione presenze), vedi ShowcaseService.
 */
 
+import { TranslocoService } from '@jsverse/transloco';
 import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
+
+/** Approfondimento di una funzionalita': la pagina funzionalita' lo apre in un dialog cliccando la card. */
+export interface ShowcaseDettaglio {
+  /** una o due frasi: a cosa serve e per chi */
+  intro?: string;
+  /** caratteristiche concrete, una per riga */
+  punti: string[];
+}
 
 /** Voce generica: icona, titolo e testo (punti di forza, passi, funzionalita', valori). */
 export interface ShowcaseVoce {
   icon: string;
   title: string;
   text: string;
+  /** facoltativo (pagina funzionalita'): se presente la card si apre in un dialog di dettaglio */
+  dettaglio?: ShowcaseDettaglio;
+}
+
+/**
+ Voce tradotta letta da <chiave>.title, <chiave>.text e, se c'e', <chiave>.dettaglio
+ ({ "intro": "...", "punti": ["...", ...] }). transloco assente (servizio creato fuori dalla DI): restano le chiavi.
+*/
+export function voceShowcase(transloco: TranslocoService | undefined, icon: string, chiave: string): ShowcaseVoce {
+  const voce: ShowcaseVoce = {
+    icon,
+    title: transloco?.translate(chiave + '.title') ?? chiave + '.title',
+    text: transloco?.translate(chiave + '.text') ?? chiave + '.text'
+  };
+  const dettaglio = transloco?.translateObject<Partial<ShowcaseDettaglio>>(chiave + '.dettaglio');
+  const punti = Array.isArray(dettaglio?.punti) ? dettaglio.punti.filter(p => typeof p === 'string' && p.trim() !== '') : [];
+  if (punti.length) {
+    voce.dettaglio = { intro: typeof dettaglio?.intro === 'string' ? dettaglio.intro : undefined, punti };
+  }
+  return voce;
 }
 
 /** Gruppo di voci con intestazione propria (pagina funzionalita'). */
