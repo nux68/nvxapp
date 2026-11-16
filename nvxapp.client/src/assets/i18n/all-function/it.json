@@ -72,35 +72,123 @@
             "voci": {
               "timbrature": {
                 "title": "Timbrature ovunque",
-                "text": "Da smartphone o computer, con il QR della sede, dalla postazione condivisa con PIN o badge; controllo della posizione e timbrature anche senza rete."
+                "text": "Da smartphone o computer, con il QR della sede, dalla postazione condivisa con PIN o badge; controllo della posizione e timbrature anche senza rete.",
+                "dettaglio": {
+                  "intro": "Il dipendente timbra entrata e uscita dal browser dello smartphone o del computer, senza installare nulla. Ogni sede sceglie come accettare le timbrature.",
+                  "punti": [
+                    "Timbratura dal telefono leggendo il QR della postazione, che cambia ogni pochi secondi",
+                    "Kiosk su un dispositivo condiviso della sede, con PIN personale o badge",
+                    "Controllo della posizione per sede: nessun controllo, timbratura segnalata oppure rifiutata",
+                    "Senza rete la timbratura resta nel telefono e parte alla riconnessione",
+                    "Timbratura su reparto e attività, quando l'azienda lo richiede",
+                    "Richiesta di correzione per le timbrature dimenticate o sbagliate"
+                  ]
+                }
               },
               "turni": {
                 "title": "Turni e pianificazione",
-                "text": "Turni per reparto con coperture minime, conflitti con ferie e permessi in evidenza, scambio tra colleghi con approvazione."
+                "text": "Turni per reparto con coperture minime, conflitti con ferie e permessi in evidenza, scambio tra colleghi con approvazione.",
+                "dettaglio": {
+                  "intro": "Per chi organizza il lavoro a turni: si definiscono i turni, si pianificano per reparto e i dipendenti vedono e scambiano i propri.",
+                  "punti": [
+                    "Turni con orario e colore; nei giorni di turno vale l'orario del turno",
+                    "Coperture minime per turno e reparto, con le carenze segnalate in pianificazione",
+                    "Pianificazione per settimana o per mese, anche con più turni nello stesso giorno",
+                    "Duplicazione di una settimana sui dipendenti scelti",
+                    "Turni in giorni di ferie o permesso evidenziati come conflitto",
+                    "Scambio o cessione del turno a un collega, poi approvazione del responsabile"
+                  ]
+                }
               },
               "smartWorking": {
                 "title": "Smart working",
-                "text": "Accordi individuali firmati, calendario del lavoro agile e limite di giorni a settimana."
+                "text": "Accordi individuali firmati, calendario del lavoro agile e limite di giorni a settimana.",
+                "dettaglio": {
+                  "intro": "Gestisce il lavoro agile dall'accordo individuale ai singoli giorni: l'HR fissa le regole, il dipendente richiede i giorni dal calendario.",
+                  "punti": [
+                    "Accordo individuale con periodo, giorni consentiti e massimo di giorni a settimana",
+                    "Presa visione del dipendente; con il Documentale attivo, verbale di accordo da firmare",
+                    "Giorni richiedibili solo con l'accordo firmato e nei limiti previsti",
+                    "Calendario del mese con giorni approvati, in approvazione e conteggio settimanale",
+                    "Richieste decise dagli stessi approvatori delle altre richieste",
+                    "Nei giorni di lavoro agile approvati il controllo della posizione non si applica"
+                  ]
+                }
               },
               "richieste": {
                 "title": "Richieste e approvazioni",
-                "text": "Ferie, permessi, straordinari e banca ore: ogni richiesta arriva all'approvatore del reparto."
+                "text": "Ferie, permessi, straordinari e banca ore: ogni richiesta arriva all'approvatore del reparto.",
+                "dettaglio": {
+                  "intro": "Il dipendente chiede ferie, permessi, straordinari e correzioni dal telefono; la richiesta arriva agli approvatori del suo reparto, che la approvano o la rifiutano.",
+                  "punti": [
+                    "Giustificativi a giornata intera o a ore, con una nota facoltativa",
+                    "Saldo di ferie e permessi, con avviso o blocco se non basta",
+                    "Ore accreditate in banca ore, da recuperare con un giustificativo dedicato",
+                    "Approvazione da un responsabile, da tutti o in ordine gerarchico",
+                    "Le richieste già approvate si annullano con una revoca, anch'essa da approvare",
+                    "Richieste anche a voce o in chat con l'assistente"
+                  ]
+                }
               },
               "noteSpese": {
                 "title": "Note spese e rimborsi km",
-                "text": "Spese con scontrini allegati e rimborsi chilometrici calcolati sui veicoli del dipendente."
+                "text": "Spese con scontrini allegati e rimborsi chilometrici calcolati sui veicoli del dipendente.",
+                "dettaglio": {
+                  "intro": "Il dipendente raccoglie le spese di una trasferta in un'unica nota con gli scontrini; il responsabile la esamina e la approva in un solo passaggio.",
+                  "punti": [
+                    "Più spese per nota, ciascuna con data, tipo, importo e descrizione",
+                    "Scontrini e fatture allegati in PDF o come foto",
+                    "Rimborso chilometrico calcolato da km percorsi e tariffa dell'auto del dipendente",
+                    "Tipi di spesa definiti dall'azienda, generici o a rimborso chilometrico",
+                    "Esame delle spese per dipendente o per tipo, anche con grafico",
+                    "Nota modificabile finché è in attesa; dopo l'approvazione se ne chiede la revoca"
+                  ]
+                }
               },
               "anomalie": {
                 "title": "Anomalie e giornate da sistemare",
-                "text": "Timbrature dispari, ritardi ricorrenti e giornate non quadrate spiegate dall'AI, con la previsione delle assenze."
+                "text": "Timbrature dispari, ritardi ricorrenti e giornate non quadrate spiegate dall'AI, con la previsione delle assenze.",
+                "dettaglio": {
+                  "intro": "Per chi chiude il mese: mostra le giornate da sistemare prima dell'export paghe e stima le assenze dei prossimi giorni. Gli amministratori di reparto vedono solo i propri dipendenti.",
+                  "punti": [
+                    "In rosso ciò che blocca l'export: timbrature dispari, giornate senza timbrature, richieste in attesa",
+                    "In arancione gli avvisi da verificare, separati dalle giornate da sistemare",
+                    "Ritardi ricorrenti per dipendente, con numero e minuti medi",
+                    "Pulsante Spiega: l'AI riassume a parole le anomalie calcolate",
+                    "Previsione delle assenze dallo storico e dal piano ferie, con i giorni di picco",
+                    "In dashboard i widget delle giornate da sistemare e delle assenze previste"
+                  ]
+                }
               },
               "commesse": {
                 "title": "Controllo di gestione",
-                "text": "Ore del timesheet per costo orario più le note spese: costi e margine di ogni commessa, con report PDF."
+                "text": "Ore del timesheet per costo orario più le note spese: costi e margine di ogni commessa, con report PDF.",
+                "dettaglio": {
+                  "intro": "Per capire quanto costa e quanto rende ogni commessa: unisce le ore lavorate e le note spese dei dipendenti sui mesi scelti.",
+                  "punti": [
+                    "Costo del personale: ore del timesheet per il costo orario del dipendente",
+                    "Costo orario predefinito per chi non ne ha uno proprio",
+                    "Note spese approvate ripartite sulle sottocommesse in proporzione alle ore",
+                    "Ricavo, costo totale e margine per commessa e sottocommessa",
+                    "Segnalate le giornate non conteggiate e le spese senza commessa",
+                    "Report PDF e widget con le ore del mese sulle commesse"
+                  ]
+                }
               },
               "paghe": {
                 "title": "Quadratura ed export paghe",
-                "text": "Controllo dei cartellini del mese, approvazione in blocco ed export nei formati del consulente."
+                "text": "Controllo dei cartellini del mese, approvazione in blocco ed export nei formati del consulente.",
+                "dettaglio": {
+                  "intro": "La chiusura del mese in due passaggi: si controllano e approvano i cartellini, poi si prepara il file per il programma paghe del consulente.",
+                  "punti": [
+                    "Per ogni dipendente ore lavorate, in più, supplementari, straordinari e non riconosciute",
+                    "Cartellini provvisori finché il mese non è finito o restano autorizzazioni da decidere",
+                    "Selezione dei cartellini chiusi e approvazione in blocco",
+                    "Correzioni dal Calendario HR, con ricalcolo del giorno o del mese",
+                    "Modelli di export: l'AI prepara il formato dal tracciato del programma paghe",
+                    "File preparato in background, con avvisi come le matricole mancanti"
+                  ]
+                }
               }
             }
           },
@@ -110,31 +198,107 @@
             "voci": {
               "clienti": {
                 "title": "Clienti, contatti e lead",
-                "text": "Anagrafica unica con persone di riferimento, responsabile commerciale e consenso privacy; il lead diventa cliente con un clic."
+                "text": "Anagrafica unica con persone di riferimento, responsabile commerciale e consenso privacy; il lead diventa cliente con un clic.",
+                "dettaglio": {
+                  "intro": "Una sola anagrafica per clienti e potenziali clienti, con tutto quello che serve ai commerciali: dati, persone da contattare e storia del rapporto.",
+                  "punti": [
+                    "Scheda cliente con contatti, opportunità, attività, offerte, note e allegati",
+                    "Stato commerciale, responsabile, fonte ed etichette per ogni cliente",
+                    "Persone di riferimento con ruolo, telefono, email e contatto principale",
+                    "Consenso alle comunicazioni commerciali con la data, su clienti e lead",
+                    "Lead convertito in cliente nuovo o esistente, anche con l'opportunità",
+                    "Attività e note del lead passano al cliente dopo la conversione"
+                  ]
+                }
               },
               "pipeline": {
                 "title": "Opportunità e pipeline",
-                "text": "Fasi trascinabili, valore e probabilità, chiusura prevista e storico di ogni passaggio."
+                "text": "Fasi trascinabili, valore e probabilità, chiusura prevista e storico di ogni passaggio.",
+                "dettaglio": {
+                  "intro": "Le trattative in corso, divise per fase: i commerciali le fanno avanzare, i responsabili vedono a colpo d'occhio quanto vale ogni fase.",
+                  "punti": [
+                    "Vista a colonne con le schede trascinabili da una fase all'altra",
+                    "Vista a elenco in alternativa alle colonne",
+                    "Valore, probabilità e chiusura prevista per ogni opportunità",
+                    "Motivo della perdita richiesto quando l'opportunità si chiude persa",
+                    "Storico di ogni cambio di fase nella scheda dell'opportunità",
+                    "Fasi configurabili dall'azienda, con fasi di tipo aperta, vinta e persa"
+                  ]
+                }
               },
               "agenda": {
                 "title": "Agenda e promemoria",
-                "text": "Chiamate e appuntamenti con l'esito, avviso prima dell'inizio e attività nel tuo calendario personale."
+                "text": "Chiamate e appuntamenti con l'esito, avviso prima dell'inizio e attività nel tuo calendario personale.",
+                "dettaglio": {
+                  "intro": "Le attività di ogni commerciale in un'unica agenda: chiamate, email e appuntamenti legati a clienti, lead e opportunità.",
+                  "punti": [
+                    "Attività di oggi, scadute, prossime e già fatte o annullate",
+                    "Filtro sulle sole attività assegnate a te",
+                    "Esito registrato quando l'attività viene segnata come fatta",
+                    "Avviso a comparsa prima dell'inizio, con preavviso scelto dall'azienda",
+                    "Attività assegnate visibili nel calendario personale tramite feed .ics",
+                    "Tipi di attività configurabili nelle tabelle del CRM"
+                  ]
+                }
               },
               "preventivi": {
                 "title": "Preventivi e offerte",
-                "text": "Listino di articoli e servizi, sconti e IVA, PDF inviato per email; l'offerta accettata diventa un'opportunità vinta."
+                "text": "Listino di articoli e servizi, sconti e IVA, PDF inviato per email; l'offerta accettata diventa un'opportunità vinta.",
+                "dettaglio": {
+                  "intro": "Offerte preparate in pochi passi dai prodotti a listino, con totali calcolati e PDF pronto da inviare al cliente.",
+                  "punti": [
+                    "Righe con articoli e servizi a listino, quantità, prezzo e sconto",
+                    "Imponibile, IVA e totale calcolati in automatico",
+                    "Numerazione per anno con prefisso e validità predefinita",
+                    "PDF con le condizioni dell'azienda, inviato per email in allegato",
+                    "Offerta inviata nello scadenzario fino alla validità, poi scaduta se senza esito",
+                    "Offerta accettata: l'opportunità collegata passa alla fase vinta con il suo valore"
+                  ]
+                }
               },
               "assistenza": {
                 "title": "Assistenza ai clienti",
-                "text": "Richieste dei clienti con priorità, canale e assegnazione, tempi di presa in carico e storico nella scheda del cliente."
+                "text": "Richieste dei clienti con priorità, canale e assegnazione, tempi di presa in carico e storico nella scheda del cliente.",
+                "dettaglio": {
+                  "intro": "Le richieste che arrivano dai clienti dell'azienda, seguite fino alla soluzione da chi ne è incaricato.",
+                  "punti": [
+                    "Richiesta con oggetto, priorità, canale e utente assegnato",
+                    "Stati da nuova a chiusa, passando per in carico e in attesa del cliente",
+                    "Ore di presa in carico e di risoluzione calcolate per ogni richiesta",
+                    "Note interne con notifica all'assegnatario",
+                    "Elenco con le aperte, le assegnate a te e in evidenza le urgenti",
+                    "Storico delle richieste nella scheda del cliente"
+                  ]
+                }
               },
               "report": {
                 "title": "Report ed export",
-                "text": "Pipeline per fase e commerciale, vinte e perse per motivo, conversione dei lead ed elenchi in Excel."
+                "text": "Pipeline per fase e commerciale, vinte e perse per motivo, conversione dei lead ed elenchi in Excel.",
+                "dettaglio": {
+                  "intro": "I numeri delle vendite in un periodo scelto, per capire come va la pipeline e il lavoro dei commerciali.",
+                  "punti": [
+                    "Opportunità vinte e perse nel periodo e tasso di successo",
+                    "Pipeline aperta per fase e per responsabile, anche con il valore pesato",
+                    "Vinte per responsabile e perse per motivo",
+                    "Lead creati e convertiti nel periodo",
+                    "Attività fatte per utente",
+                    "Elenco dei clienti in Excel con i filtri della pagina"
+                  ]
+                }
               },
               "visibilita": {
                 "title": "Visibilità e riassegnazione",
-                "text": "Ogni commerciale vede i suoi clienti, o tutti vedono tutto; quando qualcuno lascia, le sue trattative passano a un collega."
+                "text": "Ogni commerciale vede i suoi clienti, o tutti vedono tutto; quando qualcuno lascia, le sue trattative passano a un collega.",
+                "dettaglio": {
+                  "intro": "L'azienda decide cosa vede ogni commerciale e, quando qualcuno cambia ruolo o lascia, sposta il suo lavoro a un collega.",
+                  "punti": [
+                    "Commerciali che vedono solo i propri clienti, oppure tutti i clienti",
+                    "Con solo i propri: anche i clienti senza responsabile e quelli in cui sono coinvolti",
+                    "Gli amministratori vedono sempre tutto",
+                    "Riassegnazione di clienti, opportunità, lead e attività da fare in un colpo solo",
+                    "Dati passati a un altro utente o lasciati senza responsabile"
+                  ]
+                }
               }
             }
           },
@@ -144,31 +308,104 @@
             "voci": {
               "archivio": {
                 "title": "Archivio ordinato",
-                "text": "Cartelle, tipologie con scadenza e conservazione, versioni dello stesso documento e cestino."
+                "text": "Cartelle, tipologie con scadenza e conservazione, versioni dello stesso documento e cestino.",
+                "dettaglio": {
+                  "intro": "Un archivio unico per i documenti dell'azienda, dei clienti e del personale, ordinato per cartelle e tipologie.",
+                  "punti": [
+                    "Albero di cartelle, anche visibili in sola lettura ai dipendenti",
+                    "Tipologie con competenza, scadenza, presa visione, firma e anni di conservazione",
+                    "Nuove versioni dello stesso documento senza perdere le precedenti",
+                    "Stato bozza, pubblicato o archiviato: in bozza il dipendente non lo vede",
+                    "Cestino con ripristino ed eliminazione dopo i giorni scelti",
+                    "Tipologie e cartelle predefinite già pronte all'attivazione"
+                  ]
+                }
               },
               "ricerca": {
                 "title": "Ricerca",
-                "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file."
+                "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file.",
+                "dettaglio": {
+                  "intro": "Per ritrovare un documento bastano pochi filtri, anche quando si ricorda solo una parola contenuta nel file.",
+                  "punti": [
+                    "Filtri per cartella, tipologia, dipendente e anno",
+                    "Ricerca nel titolo, nella descrizione e nel testo estratto dal file",
+                    "Riferimento in elenco: dipendente, cliente o cartella del documento",
+                    "Elenco del cestino separato dall'archivio",
+                    "Il testo dei file non viene inviato all'AI"
+                  ]
+                }
               },
               "personale": {
                 "title": "Documenti del personale",
-                "text": "Riservati al dipendente e a chi è abilitato; lo stesso documento a più dipendenti, ognuno con la sua copia."
+                "text": "Riservati al dipendente e a chi è abilitato; lo stesso documento a più dipendenti, ognuno con la sua copia.",
+                "dettaglio": {
+                  "intro": "Cedolini, CU, contratti e gli altri documenti del singolo dipendente, consegnati in modo riservato.",
+                  "punti": [
+                    "Visibili solo al dipendente interessato e a chi è abilitato",
+                    "Pagina I miei documenti con quelli da confermare e da firmare",
+                    "Lo stesso file a più dipendenti, con un documento per ciascuno",
+                    "Avviso email al dipendente quando riceve un nuovo documento",
+                    "Anagrafica dei dipendenti anche senza accesso all'app"
+                  ]
+                }
               },
               "firma": {
                 "title": "Presa visione e firma",
-                "text": "Conferma di lettura o firma elettronica con un clic, con data, ora e prove registrate; si vede chi non ha ancora letto."
+                "text": "Conferma di lettura o firma elettronica con un clic, con data, ora e prove registrate; si vede chi non ha ancora letto.",
+                "dettaglio": {
+                  "intro": "Quando un documento va letto o accettato, il dipendente lo conferma con un clic e l'azienda sa chi lo ha fatto e quando.",
+                  "punti": [
+                    "Presa visione e firma proposte dalla tipologia, modificabili per ogni documento",
+                    "Firma elettronica semplice con un clic dopo aver scaricato il documento",
+                    "Registrati data e ora, indirizzo IP e impronta del file",
+                    "Per ogni destinatario si vede se ha aperto, scaricato, letto o firmato",
+                    "Una nuova versione va firmata di nuovo"
+                  ]
+                }
               },
               "verbali": {
                 "title": "Verbali per gli altri applicativi",
-                "text": "Consegna di beni e DPI, accordi di smart working: il verbale si genera in PDF, si firma e resta in archivio."
+                "text": "Consegna di beni e DPI, accordi di smart working: il verbale si genera in PDF, si firma e resta in archivio.",
+                "dettaglio": {
+                  "intro": "Gli altri applicativi chiedono al dipendente una presa visione; con il documentale attivo diventa un documento da firmare, conservato in archivio.",
+                  "punti": [
+                    "Verbali di consegna e restituzione dei beni aziendali",
+                    "Verbali di consegna dei DPI",
+                    "Accordi di smart working da accettare",
+                    "PDF generato con azienda, data, destinatario e dichiarazione del modello",
+                    "Il documento arriva tra i documenti del dipendente, con firma se richiesta",
+                    "Firma o presa visione confermano la richiesta nell'applicativo di origine"
+                  ]
+                }
               },
               "riservatezza": {
                 "title": "Abilitazioni e registro",
-                "text": "Chi vede i documenti del personale lo decide l'azienda; ogni apertura, download o cancellazione è registrata."
+                "text": "Chi vede i documenti del personale lo decide l'azienda; ogni apertura, download o cancellazione è registrata.",
+                "dettaglio": {
+                  "intro": "I documenti del personale sono riservati: l'azienda sceglie chi li gestisce e ogni operazione resta registrata.",
+                  "punti": [
+                    "Il CompanyPowerAdmin vede e carica sempre i documenti del personale",
+                    "Gli altri amministratori solo se abilitati a vedere o a caricare",
+                    "Registro di caricamenti, versioni, modifiche e visualizzazioni",
+                    "Registrati anche download, prese visione, firme, cestino ed eliminazioni",
+                    "Per ogni operazione utente, data e dettaglio"
+                  ]
+                }
               },
               "spazio": {
                 "title": "Scadenze e spazio",
-                "text": "Documenti in scadenza od oltre la conservazione segnalati, spazio secondo il piano con avviso prima che finisca."
+                "text": "Documenti in scadenza od oltre la conservazione segnalati, spazio secondo il piano con avviso prima che finisca.",
+                "dettaglio": {
+                  "intro": "Scadenze dei documenti e spazio occupato sempre sotto controllo, senza eliminazioni automatiche a sorpresa.",
+                  "punti": [
+                    "Documenti con scadenza segnalati negli elenchi",
+                    "Oltre gli anni di conservazione il documento è solo segnalato, mai eliminato in automatico",
+                    "Spazio secondo il piano della licenza, con la percentuale usata",
+                    "Avviso alla soglia di spazio e al 100%",
+                    "Widget con lo spazio occupato e il grafico per tipologia",
+                    "Numero di versioni da conservare scelto dall'azienda"
+                  ]
+                }
               }
             }
           },
@@ -178,27 +415,91 @@
             "voci": {
               "cedolini": {
                 "title": "Cedolini e CU in un passaggio",
-                "text": "Lo studio o l'azienda carica il PDF unico: il sistema lo divide per codice fiscale o matricola e segnala le pagine da assegnare."
+                "text": "Lo studio o l'azienda carica il PDF unico: il sistema lo divide per codice fiscale o matricola e segnala le pagine da assegnare.",
+                "dettaglio": {
+                  "intro": "Per l'ufficio del personale e per lo studio paghe: si carica un solo PDF con i cedolini o le CU e il sistema prepara il documento di ogni dipendente.",
+                  "punti": [
+                    "Caricamento del PDF unico da parte dell'azienda o dello studio per le sue aziende",
+                    "Divisione in background per codice fiscale, poi per matricola, con l'avanzamento nella barra dei lavori",
+                    "Pagine non riconosciute da verificare, con il dipendente proposto da cognome e nome",
+                    "Ogni pagina da verificare si assegna al dipendente giusto oppure si ignora",
+                    "Pubblicazione anche con pagine ancora da verificare: quelle assegnate dopo escono subito",
+                    "Cedolini per mese, tredicesima compresa, e CU dell'anno"
+                  ]
+                }
               },
               "portale": {
                 "title": "Area del dipendente",
-                "text": "\"I miei cedolini\": notifica a ogni nuovo documento, presa visione e report di chi ha confermato."
+                "text": "\"I miei cedolini\": notifica a ogni nuovo documento, presa visione e report di chi ha confermato.",
+                "dettaglio": {
+                  "intro": "Lo spazio del dipendente con il proprio account: trova i cedolini e le CU pubblicati e conferma di averli visti, mentre l'azienda sa chi l'ha fatto.",
+                  "punti": [
+                    "Pagina \"I miei cedolini\" con i documenti pubblicati dall'ufficio del personale o dallo studio",
+                    "Notifica a ogni nuovo documento, nel canale scelto da ogni utente",
+                    "Download del PDF e conferma della presa visione",
+                    "Widget con l'ultimo cedolino e i documenti da confermare",
+                    "Report per caricamento: confermati, in attesa e dipendenti senza account"
+                  ]
+                }
               },
               "formazione": {
                 "title": "Formazione e competenze",
-                "text": "Catalogo dei corsi, attestati e competenze acquisite, con le scadenze dei rinnovi nello scadenzario."
+                "text": "Catalogo dei corsi, attestati e competenze acquisite, con le scadenze dei rinnovi nello scadenzario.",
+                "dettaglio": {
+                  "intro": "Per chi organizza la formazione aziendale: catalogo dei corsi, edizioni con i partecipanti e attestati, con le scadenze dei rinnovi sotto controllo.",
+                  "punti": [
+                    "Catalogo dei corsi con durata, ente, corsi obbligatori e validità in mesi",
+                    "Edizioni con date, luogo, docente, partecipanti ed esito",
+                    "Attestati caricati per ogni partecipante",
+                    "Competenza acquisita dal dipendente quando supera il corso",
+                    "Scadenza dell'attestato calcolata dalla validità e registrata nello scadenzario",
+                    "Piani di formazione annuali con l'avanzamento per dipendente"
+                  ]
+                }
               },
               "onboarding": {
                 "title": "Assunzioni e cessazioni",
-                "text": "Checklist di ingresso e uscita generate dalle date del rapporto, con i passi in scadenza."
+                "text": "Checklist di ingresso e uscita generate dalle date del rapporto, con i passi in scadenza.",
+                "dettaglio": {
+                  "intro": "Per l'ufficio del personale: ingressi e uscite seguono una checklist che parte da sola dalle date del rapporto di lavoro, così nessun passo resta indietro.",
+                  "punti": [
+                    "Modelli di checklist di assunzione e di cessazione con le loro voci",
+                    "Il modello predefinito genera la checklist dalla data di assunzione o cessazione",
+                    "Ogni voce ha un responsabile e una data, anche prima del giorno di ingresso",
+                    "Le scadenze delle voci finiscono nello scadenzario comune",
+                    "Checklist creata anche a mano scegliendo il modello",
+                    "Widget con le checklist aperte e le voci scadute o in arrivo"
+                  ]
+                }
               },
               "consegne": {
                 "title": "Documenti da consegnare o firmare",
-                "text": "Le voci della checklist con un file si chiudono quando il dipendente conferma o firma."
+                "text": "Le voci della checklist con un file si chiudono quando il dipendente conferma o firma.",
+                "dettaglio": {
+                  "intro": "I documenti da dare al dipendente all'ingresso o all'uscita fanno parte della checklist: si allega il file e la voce si chiude con la sua conferma.",
+                  "punti": [
+                    "Voci della checklist con il documento da consegnare",
+                    "Caricamento del file e richiesta di presa visione al dipendente",
+                    "La voce si completa quando il dipendente conferma",
+                    "Con il Documentale attivo il dipendente firma il documento",
+                    "Richiesta ripetibile se serve una nuova conferma"
+                  ]
+                }
               },
               "account": {
                 "title": "Account dell'app",
-                "text": "Creazione dell'accesso all'assunzione e disattivazione alla cessazione, direttamente dalla checklist."
+                "text": "Creazione dell'accesso all'assunzione e disattivazione alla cessazione, direttamente dalla checklist.",
+                "dettaglio": {
+                  "intro": "L'accesso del dipendente all'app si gestisce dalla stessa checklist di assunzione o cessazione, senza passare da altre pagine.",
+                  "punti": [
+                    "Voce della checklist con l'azione \"Crea account\" o \"Disattiva account\"",
+                    "Nome utente, email e password chiesti al momento della creazione",
+                    "Account con ruolo User, collegato all'anagrafica del dipendente già presente",
+                    "L'account conta nel limite utenti della licenza",
+                    "Alla cessazione l'account si disattiva e il dipendente non accede più",
+                    "La voce si completa quando l'azione è fatta"
+                  ]
+                }
               }
             }
           },
@@ -208,31 +509,104 @@
             "voci": {
               "corsi": {
                 "title": "Formazione obbligatoria (81/08)",
-                "text": "Corsi per mansione, corsi svolti e rinnovi: la situazione della formazione di ogni dipendente."
+                "text": "Corsi per mansione, corsi svolti e rinnovi: la situazione della formazione di ogni dipendente.",
+                "dettaglio": {
+                  "intro": "Per chi segue la sicurezza sul lavoro: dalle mansioni dei dipendenti si ricavano i corsi richiesti e si vede subito chi è in regola.",
+                  "punti": [
+                    "Mansioni con livello di rischio e corsi obbligatori con validità in mesi",
+                    "Mansioni assegnate ai dipendenti, con le date",
+                    "Corsi svolti con tipo, data, ente, ore e attestato",
+                    "Il corso più recente rinnova i precedenti e porta la scadenza nello scadenzario",
+                    "Situazione per dipendente: corsi mancanti, validi, in scadenza o scaduti",
+                    "Il dipendente vede i suoi corsi in \"I miei adempimenti\""
+                  ]
+                }
               },
               "visite": {
                 "title": "Visite mediche e idoneità",
-                "text": "Esiti e scadenze per gli amministratori, dati sanitari cifrati e visibili solo agli abilitati."
+                "text": "Esiti e scadenze per gli amministratori, dati sanitari cifrati e visibili solo agli abilitati.",
+                "dettaglio": {
+                  "intro": "Le visite mediche dei dipendenti con esito e prossima scadenza; i dati sanitari restano riservati al medico competente o a chi è abilitato.",
+                  "punti": [
+                    "Visite preventive, periodiche, al cambio mansione, al rientro e alla cessazione",
+                    "Esito di idoneità, con prescrizioni o limitazioni utili a organizzare il lavoro",
+                    "Scadenza della prossima visita nello scadenzario",
+                    "Dati sanitari cifrati, visibili solo agli utenti abilitati nelle impostazioni",
+                    "Dati sanitari mai nella chat AI né negli export",
+                    "Il dipendente vede esito e prossima visita nei suoi adempimenti"
+                  ]
+                }
               },
               "dpi": {
                 "title": "Consegna dei DPI",
-                "text": "Dispositivi consegnati con verbale e presa visione del dipendente."
+                "text": "Dispositivi consegnati con verbale e presa visione del dipendente.",
+                "dettaglio": {
+                  "intro": "Per registrare i dispositivi di protezione individuale dati ai dipendenti e avere la loro conferma di ricevimento.",
+                  "punti": [
+                    "Catalogo dei DPI con la categoria",
+                    "Consegna con data, quantità e taglia",
+                    "Il dipendente con un utente conferma la consegna nelle prese visione",
+                    "Con il Documentale attivo il verbale DPI si firma",
+                    "Il dipendente vede i DPI ricevuti e quelli da confermare"
+                  ]
+                }
               },
               "nomine": {
                 "title": "Nomine e DVR",
-                "text": "RSPP, RLS, preposti e addetti alle emergenze con presa visione del nominato; documenti di valutazione dei rischi e loro scadenze."
+                "text": "RSPP, RLS, preposti e addetti alle emergenze con presa visione del nominato; documenti di valutazione dei rischi e loro scadenze.",
+                "dettaglio": {
+                  "intro": "Gli incarichi per la sicurezza e i documenti di valutazione dei rischi in un unico posto, con le date di fine e di revisione sotto controllo.",
+                  "punti": [
+                    "RSPP, ASPP, RLS, preposti, addetti alle emergenze e al primo soccorso, medico competente",
+                    "Nomina di un dipendente con presa visione, o di una persona esterna",
+                    "Incarico per sede, con la fine nello scadenzario",
+                    "DVR, piani di emergenza, DUVRI e procedure con versione, revisione e scadenza",
+                    "Riferimento al documento in archivio o nel documentale"
+                  ]
+                }
               },
               "gdpr": {
                 "title": "Registro dei trattamenti",
-                "text": "Il registro GDPR con export Excel, nomine e responsabili esterni con la scadenza dei contratti."
+                "text": "Il registro GDPR con export Excel, nomine e responsabili esterni con la scadenza dei contratti.",
+                "dettaglio": {
+                  "intro": "Il registro delle attività di trattamento dell'azienda, con i responsabili esterni e i loro contratti, sempre aggiornato ed esportabile.",
+                  "punti": [
+                    "Trattamenti con finalità, base giuridica, categorie di interessati e di dati",
+                    "Destinatari, trasferimenti extra UE, termini di cancellazione e misure di sicurezza",
+                    "Responsabili esterni, sub-responsabili, DPO e contitolari con i trattamenti affidati",
+                    "Scadenza del contratto dei responsabili nello scadenzario",
+                    "Export Excel del registro, pronto nella barra dei lavori"
+                  ]
+                }
               },
               "violazioni": {
                 "title": "Registro delle violazioni",
-                "text": "Ogni violazione con il termine di 72 ore nello scadenzario e l'avviso agli amministratori."
+                "text": "Ogni violazione con il termine di 72 ore nello scadenzario e l'avviso agli amministratori.",
+                "dettaglio": {
+                  "intro": "Per registrare le violazioni dei dati personali e non perdere il termine di 72 ore per la notifica al Garante.",
+                  "punti": [
+                    "Data della violazione e della scoperta, da cui decorrono le 72 ore",
+                    "Termine della notifica nello scadenzario finché non è registrata",
+                    "Avviso agli amministratori a ogni nuova violazione",
+                    "Livello di rischio: con rischio improbabile nessuna notifica dovuta",
+                    "Interessati, conseguenze, misure adottate e motivi dell'eventuale ritardo",
+                    "Comunicazione agli interessati quando il rischio è elevato"
+                  ]
+                }
               },
               "studio": {
                 "title": "Gestito dallo studio",
-                "text": "Il consulente segue registro GDPR e scadenze per conto delle sue aziende."
+                "text": "Il consulente segue registro GDPR e scadenze per conto delle sue aziende.",
+                "dettaglio": {
+                  "intro": "Per il consulente o lo studio che segue più aziende: dal proprio accesso lavora sul registro GDPR di ognuna.",
+                  "punti": [
+                    "Elenco delle aziende dello studio con Compliance attivo",
+                    "Scadenze aperte e scadute di ogni azienda a colpo d'occhio",
+                    "Registro GDPR completo gestito per conto dell'azienda scelta",
+                    "Scadenze di Compliance dell'azienda in sola lettura",
+                    "Nessun accesso ai dati della sicurezza sul lavoro dei dipendenti"
+                  ]
+                }
               }
             }
           },
@@ -242,27 +616,91 @@
             "voci": {
               "flotta": {
                 "title": "Flotta",
-                "text": "Veicoli, assegnazione ai dipendenti e fringe benefit, collegati ai rimborsi chilometrici delle presenze."
+                "text": "Veicoli, assegnazione ai dipendenti e fringe benefit, collegati ai rimborsi chilometrici delle presenze.",
+                "dettaglio": {
+                  "intro": "Per chi gestisce i veicoli aziendali: anagrafica, assegnazioni e fringe benefit, collegati alle note spese delle Presenze.",
+                  "punti": [
+                    "Veicoli con targa, marca, modello, alimentazione e possesso: proprietà, noleggio o leasing",
+                    "Uso assegnato a un dipendente o in pool prenotabile",
+                    "Ogni assegnazione aggiorna l'auto del dipendente usata per i rimborsi chilometrici",
+                    "Fringe benefit calcolato dal costo chilometrico ACI e dalle emissioni",
+                    "Il dipendente vede il veicolo assegnato e il fringe dell'anno",
+                    "Veicoli dismessi nascosti dall'elenco ma conservati"
+                  ]
+                }
               },
               "scadenzeVeicoli": {
                 "title": "Scadenze dei veicoli",
-                "text": "Bollo, assicurazione, revisione, tagliando e contratti di noleggio o leasing nello scadenzario."
+                "text": "Bollo, assicurazione, revisione, tagliando e contratti di noleggio o leasing nello scadenzario.",
+                "dettaglio": {
+                  "intro": "Le scadenze di ogni veicolo finiscono nello scadenzario comune, con il preavviso scelto nelle impostazioni.",
+                  "punti": [
+                    "Bollo, assicurazione, revisione, tagliando e altre scadenze",
+                    "La scadenza si chiude indicando la data di esecuzione",
+                    "Contratto di noleggio o leasing con fornitore, canone e km inclusi",
+                    "Scadenza del contratto nello scadenzario",
+                    "Widget con le scadenze della flotta scadute o in arrivo"
+                  ]
+                }
               },
               "multe": {
                 "title": "Multe e costi",
-                "text": "Il conducente si ricava dal periodo di assegnazione e riceve l'avviso della multa."
+                "text": "Il conducente si ricava dal periodo di assegnazione e riceve l'avviso della multa.",
+                "dettaglio": {
+                  "intro": "Per registrare multe e spese di ogni veicolo e sapere chi era alla guida il giorno dell'infrazione.",
+                  "punti": [
+                    "Multa con data e ora, numero del verbale, luogo e importo",
+                    "Conducente proposto da chi aveva il veicolo il giorno dell'infrazione",
+                    "Notifica della multa al conducente dall'elenco",
+                    "Stato: da notificare, notificata, pagata o contestata",
+                    "Costi per tipo, dal carburante ai pedaggi, con il totale dell'anno",
+                    "Il dipendente vede le sue multe in \"Le mie risorse\""
+                  ]
+                }
               },
               "beni": {
                 "title": "Beni assegnati",
-                "text": "PC, telefoni, badge e attrezzature con categorie e garanzia in scadenza."
+                "text": "PC, telefoni, badge e attrezzature con categorie e garanzia in scadenza.",
+                "dettaglio": {
+                  "intro": "L'inventario dei beni dati in uso ai dipendenti, per sapere sempre cosa c'è, dove si trova e quando scade la garanzia.",
+                  "punti": [
+                    "Categorie dei beni definite dall'azienda",
+                    "Codice inventario, marca e modello, numero di serie, acquisto e valore",
+                    "Stato: disponibile, consegnato, in riparazione o dismesso",
+                    "Fine della garanzia nello scadenzario comune",
+                    "Storico delle consegne di ogni bene"
+                  ]
+                }
               },
               "consegne": {
                 "title": "Consegna e restituzione",
-                "text": "Verbale firmato alla consegna e alla restituzione; alla cessazione l'elenco di cosa va restituito."
+                "text": "Verbale firmato alla consegna e alla restituzione; alla cessazione l'elenco di cosa va restituito.",
+                "dettaglio": {
+                  "intro": "Ogni consegna e restituzione di beni ha il suo verbale confermato dal dipendente; alla cessazione si sa cosa deve rientrare.",
+                  "punti": [
+                    "Verbale di consegna e di restituzione da confermare nelle prese visione",
+                    "Con il Documentale attivo il verbale si firma",
+                    "Stato del bene annotato al rientro",
+                    "Elenco di beni e veicoli ancora in mano a dipendenti in cessazione",
+                    "Controllo notturno con avviso agli amministratori e restituzione nello scadenzario",
+                    "Il dipendente vede i beni in carico e i verbali da confermare"
+                  ]
+                }
               },
               "prenotazioni": {
                 "title": "Prenotazioni",
-                "text": "Postazioni, sale e auto in pool senza sovrapposizioni, anche nel calendario personale."
+                "text": "Postazioni, sale e auto in pool senza sovrapposizioni, anche nel calendario personale.",
+                "dettaglio": {
+                  "intro": "Per prenotare postazioni, sale e auto in pool in autonomia, senza doppie prenotazioni sulla stessa risorsa.",
+                  "punti": [
+                    "Risorse prenotabili per tipo, con il numero di posti",
+                    "Vista settimanale, filtrabile per risorsa o sulle sole proprie prenotazioni",
+                    "Una risorsa già prenotata nell'orario non si può prenotare",
+                    "Durata massima e anticipo massimo scelti nelle impostazioni",
+                    "Approvazione dell'amministratore facoltativa per singola risorsa",
+                    "Prenotazioni anche nel calendario personale e nel widget"
+                  ]
+                }
               }
             }
           },
@@ -272,31 +710,105 @@
             "voci": {
               "scadenzario": {
                 "title": "Scadenzario unico",
-                "text": "Le scadenze di tutti gli applicativi in una sola pagina e nel widget \"In scadenza\"."
+                "text": "Le scadenze di tutti gli applicativi in una sola pagina e nel widget \"In scadenza\".",
+                "dettaglio": {
+                  "intro": "Un'unica pagina per le scadenze di tutti gli applicativi attivi, con promemoria a chi ne è responsabile.",
+                  "punti": [
+                    "Scadenze di corsi, visite, nomine, beni, veicoli e offerte in un solo elenco",
+                    "Scadenze inserite a mano con preavviso e responsabile",
+                    "Filtri per aperte o chiuse, entro quanti giorni e solo le mie",
+                    "Promemoria al preavviso e alla scadenza, al responsabile o agli amministratori",
+                    "Widget In scadenza con scadute e prossimi 30 giorni",
+                    "Gli amministratori vedono tutto, gli altri solo le proprie"
+                  ]
+                }
               },
               "notifiche": {
                 "title": "Notifiche e preferenze",
-                "text": "Avvisi nell'app e per email, con le preferenze scelte da ogni utente."
+                "text": "Avvisi nell'app e per email, con le preferenze scelte da ogni utente.",
+                "dettaglio": {
+                  "intro": "Gli avvisi di tutti gli applicativi arrivano allo stesso modo, e ogni utente sceglie come riceverli.",
+                  "punti": [
+                    "Avviso a comparsa nell'app e contatore sempre aggiornato",
+                    "Pagina delle notifiche per ritrovare quelle arrivate mentre eri scollegato",
+                    "Preferenze per ogni tipo di notifica: app, email o entrambe",
+                    "Tipi di notifica degli applicativi attivi per l'azienda",
+                    "Notifiche di tutte le aziende in cui lavori"
+                  ]
+                }
               },
               "preseVisione": {
                 "title": "Prese visione",
-                "text": "Un'unica conferma di lettura per cedolini, verbali e nomine; con il documentale diventa firma con verbale."
+                "text": "Un'unica conferma di lettura per cedolini, verbali e nomine; con il documentale diventa firma con verbale.",
+                "dettaglio": {
+                  "intro": "Quando un applicativo chiede di confermare la lettura di qualcosa, il dipendente trova tutto in un'unica pagina.",
+                  "punti": [
+                    "Prese visione di cedolini, consegne di beni e DPI, nomine e accordi",
+                    "Notifica al destinatario a ogni nuova richiesta",
+                    "Pagina Prese visione con quelle da confermare e lo storico",
+                    "Conferma con un clic, con data registrata",
+                    "Con il documentale attivo diventa un documento con firma elettronica"
+                  ]
+                }
               },
               "calendario": {
                 "title": "Calendario personale",
-                "text": "Attività, prenotazioni e scadenze nel calendario di Google, Outlook o del telefono con un feed .ics."
+                "text": "Attività, prenotazioni e scadenze nel calendario di Google, Outlook o del telefono con un feed .ics.",
+                "dettaglio": {
+                  "intro": "I tuoi impegni dell'applicativo nel calendario che usi già, senza doverli ricopiare.",
+                  "punti": [
+                    "Indirizzo personale da sottoscrivere in Google Calendar, Outlook o Apple Calendar",
+                    "Scadenze dello scadenzario come eventi di tutto il giorno",
+                    "Attività del CRM assegnate a te, con il link alla scheda",
+                    "Prenotazioni confermate di postazioni, sale e auto",
+                    "Calendario in sola lettura che si aggiorna da solo",
+                    "Nuovo indirizzo in un clic se quello attuale è stato condiviso"
+                  ]
+                }
               },
               "riepilogo": {
                 "title": "Riepilogo AI settimanale",
-                "text": "Ogni settimana una sintesi dei fatti dell'azienda e, per lo studio, di tutte le sue aziende."
+                "text": "Ogni settimana una sintesi dei fatti dell'azienda e, per lo studio, di tutte le sue aziende.",
+                "dettaglio": {
+                  "intro": "Ogni settimana gli amministratori ricevono una sintesi di quello che è successo in azienda; lo studio quella delle aziende da seguire.",
+                  "punti": [
+                    "Riepilogo degli ultimi 7 giorni per ogni amministratore dell'azienda",
+                    "Testo scritto dall'AI partendo solo dai dati dell'applicazione",
+                    "Fatti del periodo e punti da gestire subito sempre consultabili",
+                    "Per lo studio, l'elenco delle aziende con criticità",
+                    "Arriva come notifica, disattivabile dalle preferenze",
+                    "Pulsante Genera ora per averne uno in qualsiasi momento"
+                  ]
+                }
               },
               "assistente": {
                 "title": "Assistente AI e comandi vocali",
-                "text": "Parla o scrivi: timbra, chiedi un permesso, apri un cliente o la pagina che ti serve."
+                "text": "Parla o scrivi: timbra, chiedi un permesso, apri un cliente o la pagina che ti serve.",
+                "dettaglio": {
+                  "intro": "Un assistente a cui chiedere a voce o per iscritto di fare un'operazione o aprire una pagina, nei soli applicativi attivi.",
+                  "punti": [
+                    "Comandi a voce dal microfono o scritti nella chat",
+                    "Timbrature, richieste di permesso e altre operazioni delle presenze",
+                    "Apertura di clienti, pagine e schede per nome",
+                    "Domande sui valori mancanti e conferma prima di eseguire",
+                    "Risposte anche a voce, attivabili o disattivabili",
+                    "Manuale in PDF con i comandi disponibili per i tuoi ruoli"
+                  ]
+                }
               },
               "ticket": {
                 "title": "Assistenza e manuali",
-                "text": "Ticket di assistenza con risposte suggerite dalla documentazione e manuali in PDF per ogni applicativo."
+                "text": "Ticket di assistenza con risposte suggerite dalla documentazione e manuali in PDF per ogni applicativo.",
+                "dettaglio": {
+                  "intro": "Le richieste di assistenza passano da un livello all'altro fino a chi può rispondere, con l'aiuto dell'AI e dei manuali.",
+                  "punti": [
+                    "Ticket per tipo di richiesta, con allegati e cronologia",
+                    "Il ticket sale dal dipendente all'azienda, allo studio o al centro, secondo il tipo",
+                    "Risposta automatica dell'AI dalla documentazione caricata per il livello",
+                    "Se l'AI non risolve, il ticket passa all'operatore",
+                    "Manuali in PDF per ogni applicativo, composti dalle funzioni del tuo menu"
+                  ]
+                }
               }
             }
           }

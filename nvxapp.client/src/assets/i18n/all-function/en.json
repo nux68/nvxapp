@@ -72,35 +72,123 @@
             "voci": {
               "timbrature": {
                 "title": "Clock in anywhere",
-                "text": "From smartphone or computer, with the site QR code, at a shared kiosk with PIN or badge; location check and clock-ins even without a connection."
+                "text": "From smartphone or computer, with the site QR code, at a shared kiosk with PIN or badge; location check and clock-ins even without a connection.",
+                "dettaglio": {
+                  "intro": "Employees clock in and out from their smartphone or computer browser, with nothing to install. Each site chooses how clock-ins are accepted.",
+                  "punti": [
+                    "Clock in from the phone by scanning the QR station code, which changes every few seconds",
+                    "Kiosk on a shared device at the site, with personal PIN or badge",
+                    "Location check per site: no check, flag the clock-in or reject it",
+                    "Without a connection the clock-in stays on the phone and is sent on reconnect",
+                    "Clock in on a department and activity, when the company requires it",
+                    "Correction requests for forgotten or wrong clock-ins"
+                  ]
+                }
               },
               "turni": {
                 "title": "Shifts and planning",
-                "text": "Shifts per department with minimum coverage, conflicts with holidays and leave highlighted, shift swaps between colleagues with approval."
+                "text": "Shifts per department with minimum coverage, conflicts with holidays and leave highlighted, shift swaps between colleagues with approval.",
+                "dettaglio": {
+                  "intro": "For shift-based work: define the shifts, plan them by department, and let employees see and swap their own.",
+                  "punti": [
+                    "Shifts with hours and colour; on shift days the shift's hours apply",
+                    "Minimum coverage per shift and department, with shortfalls flagged in the plan",
+                    "Weekly or monthly planning, even with more than one shift on the same day",
+                    "Copy a week to the selected employees",
+                    "Shifts on holiday or leave days highlighted as conflicts",
+                    "Swap or hand over a shift to a colleague, then manager approval"
+                  ]
+                }
               },
               "smartWorking": {
                 "title": "Remote working",
-                "text": "Signed individual agreements, a remote-working calendar and a weekly day limit."
+                "text": "Signed individual agreements, a remote-working calendar and a weekly day limit.",
+                "dettaglio": {
+                  "intro": "Manages remote working from the individual agreement to single days: HR sets the rules, employees request days from the calendar.",
+                  "punti": [
+                    "Individual agreement with period, allowed days and maximum days per week",
+                    "Employee acknowledgement; with Document Management active, an agreement record to sign",
+                    "Days can be requested only with a signed agreement and within its limits",
+                    "Monthly calendar with approved and pending days and the weekly count",
+                    "Requests decided by the same approvers as other requests",
+                    "On approved remote-working days the location check does not apply"
+                  ]
+                }
               },
               "richieste": {
                 "title": "Requests and approvals",
-                "text": "Holidays, leave, overtime and time bank: every request reaches the department approver."
+                "text": "Holidays, leave, overtime and time bank: every request reaches the department approver.",
+                "dettaglio": {
+                  "intro": "Employees request holidays, leave, overtime and corrections from their phone; the request reaches their department approvers, who approve or reject it.",
+                  "punti": [
+                    "Absences for full days or by the hour, with an optional note",
+                    "Holiday and leave balances, with a warning or block when insufficient",
+                    "Hours credited to the time bank, recovered with a dedicated absence type",
+                    "Approval by one manager, by all, or in hierarchical order",
+                    "Approved requests are withdrawn with a revocation, which also needs approval",
+                    "Requests also by voice or chat with the assistant"
+                  ]
+                }
               },
               "noteSpese": {
                 "title": "Expenses and mileage",
-                "text": "Expenses with receipts attached and mileage refunds calculated on the employee's vehicles."
+                "text": "Expenses with receipts attached and mileage refunds calculated on the employee's vehicles.",
+                "dettaglio": {
+                  "intro": "Employees collect a trip's expenses in a single report with receipts; the manager reviews it and approves it in one step.",
+                  "punti": [
+                    "Several expenses per report, each with date, type, amount and description",
+                    "Receipts and invoices attached as PDF or photos",
+                    "Mileage refund calculated from kilometres driven and the rate of the employee's car",
+                    "Expense types defined by the company, generic or mileage-based",
+                    "Expense review by employee or by type, with a chart too",
+                    "Editable while pending; once approved, a revocation is requested"
+                  ]
+                }
               },
               "anomalie": {
                 "title": "Anomalies and days to fix",
-                "text": "Odd clock-ins, recurring delays and unbalanced days explained by AI, with an absence forecast."
+                "text": "Odd clock-ins, recurring delays and unbalanced days explained by AI, with an absence forecast.",
+                "dettaglio": {
+                  "intro": "For whoever closes the month: shows the days to fix before the payroll export and estimates absences in the coming days. Department admins see only their own employees.",
+                  "punti": [
+                    "In red what blocks the export: odd clock-ins, days without clock-ins, pending requests",
+                    "In orange the warnings to check, kept apart from the days to fix",
+                    "Recurring delays per employee, with count and average minutes",
+                    "Explain button: AI summarises the calculated anomalies in plain words",
+                    "Absence forecast from history and the holiday plan, with peak days",
+                    "Days-to-fix and expected-absences widgets on the dashboard"
+                  ]
+                }
               },
               "commesse": {
                 "title": "Job costing",
-                "text": "Timesheet hours at hourly cost plus expenses: costs and margin of every job, with a PDF report."
+                "text": "Timesheet hours at hourly cost plus expenses: costs and margin of every job, with a PDF report.",
+                "dettaglio": {
+                  "intro": "To see what each job costs and earns: combines employees' worked hours and expenses over the months you choose.",
+                  "punti": [
+                    "Staff cost: timesheet hours multiplied by the employee's hourly cost",
+                    "Default hourly cost for those without their own",
+                    "Approved expenses split across sub-jobs in proportion to hours",
+                    "Revenue, total cost and margin per job and sub-job",
+                    "Days not counted and expenses without a job are flagged",
+                    "PDF report and a widget with the month's hours on jobs"
+                  ]
+                }
               },
               "paghe": {
                 "title": "Monthly check and payroll export",
-                "text": "Review the month's timesheets, approve them in bulk and export them in your payroll consultant's formats."
+                "text": "Review the month's timesheets, approve them in bulk and export them in your payroll consultant's formats.",
+                "dettaglio": {
+                  "intro": "Closing the month in two steps: review and approve the timesheets, then prepare the file for your payroll consultant's software.",
+                  "punti": [
+                    "For each employee hours worked, extra, additional, overtime and not recognised",
+                    "Timesheets stay provisional until the month ends and authorisations are decided",
+                    "Select the closed timesheets and approve them in bulk",
+                    "Corrections from the HR calendar, recalculating the day or the month",
+                    "Export templates: AI builds the format from the payroll software's file layout",
+                    "File prepared in the background, with warnings such as missing employee numbers"
+                  ]
+                }
               }
             }
           },
@@ -110,31 +198,107 @@
             "voci": {
               "clienti": {
                 "title": "Customers, contacts and leads",
-                "text": "A single registry with contact people, sales owner and privacy consent; a lead becomes a customer in one click."
+                "text": "A single registry with contact people, sales owner and privacy consent; a lead becomes a customer in one click.",
+                "dettaglio": {
+                  "intro": "A single registry for customers and prospects, with everything salespeople need: details, people to contact and the history of the relationship.",
+                  "punti": [
+                    "Customer card with contacts, opportunities, activities, offers, notes and attachments",
+                    "Sales status, owner, source and tags for each customer",
+                    "Contact people with role, phone, email and main contact",
+                    "Consent to marketing communications with its date, on customers and leads",
+                    "A lead converted into a new or existing customer, with an opportunity too",
+                    "The lead's activities and notes move to the customer after conversion"
+                  ]
+                }
               },
               "pipeline": {
                 "title": "Opportunities and pipeline",
-                "text": "Drag-and-drop stages, value and probability, expected close date and the history of every move."
+                "text": "Drag-and-drop stages, value and probability, expected close date and the history of every move.",
+                "dettaglio": {
+                  "intro": "Ongoing deals, split by stage: salespeople move them forward, managers see at a glance what each stage is worth.",
+                  "punti": [
+                    "Column view with cards you drag from one stage to another",
+                    "List view as an alternative to columns",
+                    "Value, probability and expected close date for each opportunity",
+                    "Loss reason required when an opportunity is closed as lost",
+                    "History of every stage change in the opportunity card",
+                    "Stages set by the company, of type open, won and lost"
+                  ]
+                }
               },
               "agenda": {
                 "title": "Agenda and reminders",
-                "text": "Calls and meetings with their outcome, a reminder before they start and activities in your personal calendar."
+                "text": "Calls and meetings with their outcome, a reminder before they start and activities in your personal calendar.",
+                "dettaglio": {
+                  "intro": "Every salesperson's activities in one agenda: calls, emails and meetings linked to customers, leads and opportunities.",
+                  "punti": [
+                    "Today's, overdue, upcoming and done or cancelled activities",
+                    "Filter to show only the activities assigned to you",
+                    "Outcome recorded when the activity is marked as done",
+                    "Pop-up reminder before it starts, with notice set by the company",
+                    "Assigned activities shown in your personal calendar through an .ics feed",
+                    "Activity types configurable in the CRM tables"
+                  ]
+                }
               },
               "preventivi": {
                 "title": "Quotes and offers",
-                "text": "Price list of products and services, discounts and VAT, PDF sent by email; an accepted offer becomes a won opportunity."
+                "text": "Price list of products and services, discounts and VAT, PDF sent by email; an accepted offer becomes a won opportunity.",
+                "dettaglio": {
+                  "intro": "Offers prepared in a few steps from the price list, with calculated totals and a PDF ready to send to the customer.",
+                  "punti": [
+                    "Lines with products and services from the price list, quantity, price and discount",
+                    "Taxable amount, VAT and total calculated automatically",
+                    "Yearly numbering with prefix and default validity",
+                    "PDF with the company's terms, sent by email as an attachment",
+                    "A sent offer stays in the deadlines until its validity date, then expires without an outcome",
+                    "Accepted offer: the linked opportunity moves to the won stage with its value"
+                  ]
+                }
               },
               "assistenza": {
                 "title": "Customer support",
-                "text": "Customer requests with priority, channel and assignee, response times and the history in the customer card."
+                "text": "Customer requests with priority, channel and assignee, response times and the history in the customer card.",
+                "dettaglio": {
+                  "intro": "Requests coming from the company's customers, followed up to the solution by whoever is in charge.",
+                  "punti": [
+                    "Request with subject, priority, channel and assigned user",
+                    "Statuses from new to closed, through in progress and waiting for the customer",
+                    "Response and resolution hours calculated for each request",
+                    "Internal notes with a notification to the assignee",
+                    "List with open requests, those assigned to you and urgent ones highlighted",
+                    "Request history in the customer card"
+                  ]
+                }
               },
               "report": {
                 "title": "Reports and export",
-                "text": "Pipeline by stage and salesperson, won and lost by reason, lead conversion and lists in Excel."
+                "text": "Pipeline by stage and salesperson, won and lost by reason, lead conversion and lists in Excel.",
+                "dettaglio": {
+                  "intro": "Sales figures for a chosen period, to see how the pipeline and the salespeople's work are going.",
+                  "punti": [
+                    "Opportunities won and lost in the period and win rate",
+                    "Open pipeline by stage and by owner, including the weighted value",
+                    "Won by owner and lost by reason",
+                    "Leads created and converted in the period",
+                    "Activities done by user",
+                    "Customer list in Excel with the page filters"
+                  ]
+                }
               },
               "visibilita": {
                 "title": "Visibility and reassignment",
-                "text": "Each salesperson sees their own customers, or everyone sees everything; when someone leaves, their deals move to a colleague."
+                "text": "Each salesperson sees their own customers, or everyone sees everything; when someone leaves, their deals move to a colleague.",
+                "dettaglio": {
+                  "intro": "The company decides what each salesperson sees and, when someone changes role or leaves, moves their work to a colleague.",
+                  "punti": [
+                    "Salespeople see only their own customers, or all customers",
+                    "With own only: also customers without an owner and those they are involved in",
+                    "Administrators always see everything",
+                    "Customers, opportunities, leads and pending activities reassigned in one go",
+                    "Data moved to another user or left without an owner"
+                  ]
+                }
               }
             }
           },
@@ -144,31 +308,104 @@
             "voci": {
               "archivio": {
                 "title": "Organised archive",
-                "text": "Folders, document types with expiry and retention, versions of the same document and a recycle bin."
+                "text": "Folders, document types with expiry and retention, versions of the same document and a recycle bin.",
+                "dettaglio": {
+                  "intro": "A single archive for company, customer and staff documents, organised by folders and types.",
+                  "punti": [
+                    "Folder tree, also visible read-only to employees",
+                    "Types with period, expiry, acknowledgement, signature and retention years",
+                    "New versions of the same document without losing the previous ones",
+                    "Draft, published or archived status: employees don't see drafts",
+                    "Recycle bin with restore and deletion after the chosen number of days",
+                    "Default types and folders ready on activation"
+                  ]
+                }
               },
               "ricerca": {
                 "title": "Search",
-                "text": "By title, type, employee, customer, year and the text inside the files."
+                "text": "By title, type, employee, customer, year and the text inside the files.",
+                "dettaglio": {
+                  "intro": "A few filters are enough to find a document, even when you only remember a word inside the file.",
+                  "punti": [
+                    "Filters by folder, type, employee and year",
+                    "Search in the title, the description and the text extracted from the file",
+                    "Reference in the list: the document's employee, customer or folder",
+                    "Recycle bin list kept apart from the archive",
+                    "File text is not sent to the AI"
+                  ]
+                }
               },
               "personale": {
                 "title": "Personnel documents",
-                "text": "Restricted to the employee concerned and authorised staff; the same document to several employees, each with their own copy."
+                "text": "Restricted to the employee concerned and authorised staff; the same document to several employees, each with their own copy.",
+                "dettaglio": {
+                  "intro": "Payslips, tax statements, contracts and other documents of each employee, delivered confidentially.",
+                  "punti": [
+                    "Visible only to the employee concerned and to authorised users",
+                    "My documents page with those to confirm and to sign",
+                    "The same file to several employees, with one document for each",
+                    "Email notice to the employee when a new document arrives",
+                    "Employee records even without access to the app"
+                  ]
+                }
               },
               "firma": {
                 "title": "Acknowledgement and signature",
-                "text": "Read confirmation or one-click electronic signature, with date, time and recorded evidence; see who has not read yet."
+                "text": "Read confirmation or one-click electronic signature, with date, time and recorded evidence; see who has not read yet.",
+                "dettaglio": {
+                  "intro": "When a document must be read or accepted, the employee confirms it with one click and the company knows who did it and when.",
+                  "punti": [
+                    "Acknowledgement and signature suggested by the type, adjustable per document",
+                    "Simple electronic signature with one click after downloading the document",
+                    "Date and time, IP address and file fingerprint recorded",
+                    "For each recipient you see whether they opened, downloaded, read or signed",
+                    "A new version must be signed again"
+                  ]
+                }
               },
               "verbali": {
                 "title": "Reports for the other applications",
-                "text": "Handover of goods and PPE, remote-working agreements: the report is generated as a PDF, signed and archived."
+                "text": "Handover of goods and PPE, remote-working agreements: the report is generated as a PDF, signed and archived.",
+                "dettaglio": {
+                  "intro": "Other modules ask the employee for an acknowledgement; with document management active it becomes a document to sign, kept in the archive.",
+                  "punti": [
+                    "Reports for the handover and return of company assets",
+                    "Reports for the handover of PPE",
+                    "Smart working agreements to accept",
+                    "PDF generated with company, date, recipient and the template statement",
+                    "The document reaches the employee's documents, with signature if required",
+                    "Signature or acknowledgement confirms the request in the original module"
+                  ]
+                }
               },
               "riservatezza": {
                 "title": "Permissions and access log",
-                "text": "The company decides who sees personnel documents; every opening, download or deletion is logged."
+                "text": "The company decides who sees personnel documents; every opening, download or deletion is logged.",
+                "dettaglio": {
+                  "intro": "Staff documents are confidential: the company chooses who manages them and every action is logged.",
+                  "punti": [
+                    "The CompanyPowerAdmin always sees and uploads staff documents",
+                    "Other administrators only if allowed to view or to upload",
+                    "Log of uploads, versions, edits and views",
+                    "Downloads, acknowledgements, signatures, recycle bin and deletions logged too",
+                    "User, date and detail for every action"
+                  ]
+                }
               },
               "spazio": {
                 "title": "Expiry and storage",
-                "text": "Documents expiring or past their retention period are flagged; storage follows your plan, with a warning before it runs out."
+                "text": "Documents expiring or past their retention period are flagged; storage follows your plan, with a warning before it runs out.",
+                "dettaglio": {
+                  "intro": "Document expiry dates and used space always under control, with no surprise automatic deletions.",
+                  "punti": [
+                    "Documents with an expiry date flagged in the lists",
+                    "Past the retention years a document is only flagged, never deleted automatically",
+                    "Space according to the licence plan, with the percentage used",
+                    "Notice at the space threshold and at 100%",
+                    "Widget with used space and a chart by type",
+                    "Number of versions to keep chosen by the company"
+                  ]
+                }
               }
             }
           },
@@ -178,27 +415,91 @@
             "voci": {
               "cedolini": {
                 "title": "Payslips and tax forms in one go",
-                "text": "The firm or the company uploads a single PDF: the system splits it by tax code or employee number and flags the pages to assign."
+                "text": "The firm or the company uploads a single PDF: the system splits it by tax code or employee number and flags the pages to assign.",
+                "dettaglio": {
+                  "intro": "For the HR office and the payroll firm: upload a single PDF with the payslips or tax forms and the system prepares each employee's document.",
+                  "punti": [
+                    "Single PDF uploaded by the company, or by the firm for its client companies",
+                    "Split in the background by tax code, then employee number, with progress in the jobs bar",
+                    "Unrecognised pages flagged for review, with an employee suggested from the name found",
+                    "Each page under review is assigned to the right employee or ignored",
+                    "Publish even with pages still to check: those assigned later go out straight away",
+                    "Payslips by month, thirteenth-month pay included, and the yearly tax form"
+                  ]
+                }
               },
               "portale": {
                 "title": "Employee area",
-                "text": "\"My payslips\": a notification for every new document, acknowledgement and a report of who has confirmed."
+                "text": "\"My payslips\": a notification for every new document, acknowledgement and a report of who has confirmed.",
+                "dettaglio": {
+                  "intro": "The employee's own space: with their account they find published payslips and tax forms and confirm they have seen them, while the company knows who did.",
+                  "punti": [
+                    "\"My payslips\" page with documents published by the HR office or the firm",
+                    "A notification for every new document, through the channel each user chooses",
+                    "PDF download and acknowledgement of receipt",
+                    "Widget with the latest payslip and the documents to confirm",
+                    "Report for each upload: confirmed, waiting and employees without an account"
+                  ]
+                }
               },
               "formazione": {
                 "title": "Training and skills",
-                "text": "Course catalogue, certificates and acquired skills, with renewal dates in the deadline schedule."
+                "text": "Course catalogue, certificates and acquired skills, with renewal dates in the deadline schedule.",
+                "dettaglio": {
+                  "intro": "For whoever organises company training: course catalogue, sessions with participants and certificates, with renewal dates kept under control.",
+                  "punti": [
+                    "Course catalogue with duration, provider, mandatory courses and validity in months",
+                    "Sessions with dates, place, trainer, participants and result",
+                    "Certificates uploaded for each participant",
+                    "Skill acquired by the employee on passing the course",
+                    "Certificate expiry worked out from the validity and added to the deadline schedule",
+                    "Yearly training plans with progress for each employee"
+                  ]
+                }
               },
               "onboarding": {
                 "title": "Onboarding and offboarding",
-                "text": "Joining and leaving checklists generated from the employment dates, with the steps falling due."
+                "text": "Joining and leaving checklists generated from the employment dates, with the steps falling due.",
+                "dettaglio": {
+                  "intro": "For the HR office: joiners and leavers follow a checklist that starts on its own from the employment dates, so no step is left behind.",
+                  "punti": [
+                    "Joining and leaving checklist templates with their items",
+                    "The default template generates the checklist from the hiring or termination date",
+                    "Each item has an owner and a date, even before the first day",
+                    "Item due dates go into the shared deadline schedule",
+                    "Checklists can also be created by hand from a template",
+                    "Widget with open checklists and items overdue or coming up"
+                  ]
+                }
               },
               "consegne": {
                 "title": "Documents to hand over or sign",
-                "text": "Checklist items with a file are closed when the employee confirms or signs."
+                "text": "Checklist items with a file are closed when the employee confirms or signs.",
+                "dettaglio": {
+                  "intro": "Documents to give employees when they join or leave are part of the checklist: attach the file and the item closes once they confirm.",
+                  "punti": [
+                    "Checklist items with a document to hand over",
+                    "File upload and acknowledgement request sent to the employee",
+                    "The item is completed when the employee confirms",
+                    "With Document Management active, the employee signs the document",
+                    "The request can be sent again if a new confirmation is needed"
+                  ]
+                }
               },
               "account": {
                 "title": "App account",
-                "text": "Access created on hiring and disabled on termination, straight from the checklist."
+                "text": "Access created on hiring and disabled on termination, straight from the checklist.",
+                "dettaglio": {
+                  "intro": "The employee's access to the app is handled from the same joining or leaving checklist, without going to other pages.",
+                  "punti": [
+                    "Checklist item with the \"Create account\" or \"Disable account\" action",
+                    "Username, email and password asked for when the account is created",
+                    "Account with the User role, linked to the existing employee record",
+                    "The account counts toward the licence user limit",
+                    "On termination the account is disabled and the employee can no longer log in",
+                    "The item is completed once the action is done"
+                  ]
+                }
               }
             }
           },
@@ -208,31 +509,104 @@
             "voci": {
               "corsi": {
                 "title": "Mandatory safety training",
-                "text": "Courses by job role, completed courses and renewals: the training status of every employee."
+                "text": "Courses by job role, completed courses and renewals: the training status of every employee.",
+                "dettaglio": {
+                  "intro": "For whoever looks after workplace safety: required courses come from each employee's job roles, and you see at once who is up to date.",
+                  "punti": [
+                    "Job roles with a risk level and mandatory courses with validity in months",
+                    "Job roles assigned to employees, with dates",
+                    "Completed courses with type, date, provider, hours and certificate",
+                    "The latest course renews earlier ones and puts its expiry in the schedule",
+                    "Status per employee: courses missing, valid, expiring or expired",
+                    "Employees see their own courses in \"My obligations\""
+                  ]
+                }
               },
               "visite": {
                 "title": "Medical checks and fitness",
-                "text": "Results and due dates for administrators, health data encrypted and visible only to authorised staff."
+                "text": "Results and due dates for administrators, health data encrypted and visible only to authorised staff.",
+                "dettaglio": {
+                  "intro": "Employee medical checks with results and the next due date; health data stays reserved for the company doctor or other authorised users.",
+                  "punti": [
+                    "Pre-employment, periodic, role-change, return-to-work and termination checks",
+                    "Fitness result, with prescriptions or limitations useful for organising work",
+                    "Next check due date in the deadline schedule",
+                    "Health data encrypted and visible only to users authorised in the settings",
+                    "Health data never in the AI chat or in exports",
+                    "Employees see their result and next check in their obligations"
+                  ]
+                }
               },
               "dpi": {
                 "title": "PPE handover",
-                "text": "Protective equipment handed over with a report and the employee's acknowledgement."
+                "text": "Protective equipment handed over with a report and the employee's acknowledgement.",
+                "dettaglio": {
+                  "intro": "To record the personal protective equipment given to employees and get their confirmation of receipt.",
+                  "punti": [
+                    "PPE catalogue with category",
+                    "Handover with date, quantity and size",
+                    "Employees with a user account confirm the handover in their acknowledgements",
+                    "With Document Management active, the PPE report is signed",
+                    "Employees see the equipment received and what is still to confirm"
+                  ]
+                }
               },
               "nomine": {
                 "title": "Appointments and risk assessment",
-                "text": "Safety officers, representatives, supervisors and emergency staff with the appointee's acknowledgement; risk assessment documents and their due dates."
+                "text": "Safety officers, representatives, supervisors and emergency staff with the appointee's acknowledgement; risk assessment documents and their due dates.",
+                "dettaglio": {
+                  "intro": "Safety appointments and risk assessment documents in one place, with end and review dates under control.",
+                  "punti": [
+                    "Safety officers, representatives, supervisors, emergency and first-aid staff, company doctor",
+                    "Appointment of an employee with acknowledgement, or of an external person",
+                    "Appointment by site, with its end date in the schedule",
+                    "Risk assessments, emergency plans, DUVRI and procedures with version, review and expiry",
+                    "Reference to the document in the archive or in Document Management"
+                  ]
+                }
               },
               "gdpr": {
                 "title": "Record of processing",
-                "text": "The GDPR record with Excel export, appointments and external processors with contract expiry."
+                "text": "The GDPR record with Excel export, appointments and external processors with contract expiry.",
+                "dettaglio": {
+                  "intro": "The company's record of processing activities, with external processors and their contracts, always up to date and exportable.",
+                  "punti": [
+                    "Processing activities with purpose, legal basis, data subject and data categories",
+                    "Recipients, non-EU transfers, erasure periods and security measures",
+                    "External processors, sub-processors, DPO and joint controllers with the activities entrusted",
+                    "Processor contract expiry in the deadline schedule",
+                    "Excel export of the record, ready in the jobs bar"
+                  ]
+                }
               },
               "violazioni": {
                 "title": "Data breach register",
-                "text": "Every breach with its 72-hour deadline in the schedule and a notice to administrators."
+                "text": "Every breach with its 72-hour deadline in the schedule and a notice to administrators.",
+                "dettaglio": {
+                  "intro": "To record personal data breaches and not miss the 72-hour deadline for notifying the supervisory authority.",
+                  "punti": [
+                    "Date of the breach and of discovery, which starts the 72 hours",
+                    "Notification deadline in the schedule until it is recorded",
+                    "Notice to administrators for every new breach",
+                    "Risk level: no notification due when the risk is unlikely",
+                    "Data subjects, consequences, measures taken and reasons for any delay",
+                    "Communication to data subjects when the risk is high"
+                  ]
+                }
               },
               "studio": {
                 "title": "Managed by your consultant",
-                "text": "The firm keeps the GDPR record and deadlines on behalf of its client companies."
+                "text": "The firm keeps the GDPR record and deadlines on behalf of its client companies.",
+                "dettaglio": {
+                  "intro": "For the consultant or firm looking after several companies: from its own login it works on each one's GDPR record.",
+                  "punti": [
+                    "List of the firm's companies with Compliance active",
+                    "Open and overdue deadlines for each company at a glance",
+                    "Full GDPR record managed on behalf of the chosen company",
+                    "The company's Compliance deadlines in read-only mode",
+                    "No access to employees' workplace safety data"
+                  ]
+                }
               }
             }
           },
@@ -242,27 +616,91 @@
             "voci": {
               "flotta": {
                 "title": "Fleet",
-                "text": "Vehicles, assignment to employees and fringe benefits, linked to the mileage refunds in Attendance."
+                "text": "Vehicles, assignment to employees and fringe benefits, linked to the mileage refunds in Attendance.",
+                "dettaglio": {
+                  "intro": "For whoever manages company vehicles: records, assignments and fringe benefits, linked to expense claims in Attendance.",
+                  "punti": [
+                    "Vehicles with plate, make, model, fuel and ownership: owned, rented or leased",
+                    "Assigned to an employee or in a bookable pool",
+                    "Each assignment updates the employee's car used for mileage refunds",
+                    "Fringe benefit worked out from the ACI cost per km and emissions",
+                    "Employees see their assigned vehicle and the year's fringe benefit",
+                    "Disposed vehicles hidden from the list but kept"
+                  ]
+                }
               },
               "scadenzeVeicoli": {
                 "title": "Vehicle deadlines",
-                "text": "Road tax, insurance, inspection, servicing and rental or leasing contracts in the deadline schedule."
+                "text": "Road tax, insurance, inspection, servicing and rental or leasing contracts in the deadline schedule.",
+                "dettaglio": {
+                  "intro": "Each vehicle's deadlines go into the shared schedule, with the notice period chosen in the settings.",
+                  "punti": [
+                    "Road tax, insurance, inspection, servicing and other deadlines",
+                    "A deadline closes when the date it was done is entered",
+                    "Rental or leasing contract with supplier, monthly fee and included km",
+                    "Contract expiry in the deadline schedule",
+                    "Widget with fleet deadlines overdue or coming up"
+                  ]
+                }
               },
               "multe": {
                 "title": "Fines and costs",
-                "text": "The driver is found from the assignment period and is notified of the fine."
+                "text": "The driver is found from the assignment period and is notified of the fine.",
+                "dettaglio": {
+                  "intro": "To record each vehicle's fines and costs and know who was driving on the day of the offence.",
+                  "punti": [
+                    "Fine with date and time, ticket number, place and amount",
+                    "Driver suggested from whoever had the vehicle on the day",
+                    "Fine sent to the driver from the list",
+                    "Status: to notify, notified, paid or disputed",
+                    "Costs by type, from fuel to tolls, with the yearly total",
+                    "Employees see their fines in \"My resources\""
+                  ]
+                }
               },
               "beni": {
                 "title": "Assigned equipment",
-                "text": "PCs, phones, badges and tools with categories and warranty expiry."
+                "text": "PCs, phones, badges and tools with categories and warranty expiry.",
+                "dettaglio": {
+                  "intro": "The inventory of equipment given to employees, so you always know what you have, who holds it and when the warranty ends.",
+                  "punti": [
+                    "Equipment categories set by the company",
+                    "Inventory code, make and model, serial number, purchase and value",
+                    "Status: available, handed over, under repair or disposed",
+                    "Warranty end in the shared deadline schedule",
+                    "Handover history for each item"
+                  ]
+                }
               },
               "consegne": {
                 "title": "Handover and return",
-                "text": "A signed report on handover and return; on termination, the list of what must be given back."
+                "text": "A signed report on handover and return; on termination, the list of what must be given back.",
+                "dettaglio": {
+                  "intro": "Every handover and return has its report confirmed by the employee; on termination you know what must come back.",
+                  "punti": [
+                    "Handover and return reports to confirm in the acknowledgements",
+                    "With Document Management active, the report is signed",
+                    "Condition of the item noted on return",
+                    "List of equipment and vehicles still held by leaving employees",
+                    "Nightly check with a notice to administrators and the return in the schedule",
+                    "Employees see what they hold and the reports to confirm"
+                  ]
+                }
               },
               "prenotazioni": {
                 "title": "Bookings",
-                "text": "Desks, meeting rooms and pool cars without overlaps, also in your personal calendar."
+                "text": "Desks, meeting rooms and pool cars without overlaps, also in your personal calendar.",
+                "dettaglio": {
+                  "intro": "To book desks, meeting rooms and pool cars on your own, with no double bookings on the same resource.",
+                  "punti": [
+                    "Bookable resources by type, with the number of seats",
+                    "Weekly view, filtered by resource or by your own bookings",
+                    "A resource already booked for that time cannot be booked again",
+                    "Maximum length and advance booking set in the settings",
+                    "Optional administrator approval for each resource",
+                    "Bookings also shown in your personal calendar and widget"
+                  ]
+                }
               }
             }
           },
@@ -272,31 +710,105 @@
             "voci": {
               "scadenzario": {
                 "title": "Single deadline schedule",
-                "text": "Deadlines from every application on one page and in the \"Due soon\" widget."
+                "text": "Deadlines from every application on one page and in the \"Due soon\" widget.",
+                "dettaglio": {
+                  "intro": "A single page for the deadlines of all active modules, with reminders to whoever is responsible.",
+                  "punti": [
+                    "Deadlines for courses, medical checks, appointments, assets, vehicles and offers in one list",
+                    "Manually added deadlines with notice days and owner",
+                    "Filters for open or closed, within how many days and mine only",
+                    "Reminder at notice and at expiry, to the owner or to administrators",
+                    "Expiring widget with overdue items and the next 30 days",
+                    "Administrators see everything, others only their own"
+                  ]
+                }
               },
               "notifiche": {
                 "title": "Notifications and preferences",
-                "text": "In-app and email alerts, with preferences chosen by each user."
+                "text": "In-app and email alerts, with preferences chosen by each user.",
+                "dettaglio": {
+                  "intro": "Notices from every module arrive the same way, and each user chooses how to receive them.",
+                  "punti": [
+                    "Pop-up notice in the app and an always up-to-date counter",
+                    "Notifications page to find those received while you were offline",
+                    "Preferences for each notification type: app, email or both",
+                    "Notification types of the modules active for the company",
+                    "Notifications from all the companies you work for"
+                  ]
+                }
               },
               "preseVisione": {
                 "title": "Acknowledgements",
-                "text": "One read confirmation for payslips, reports and appointments; with Documents it becomes a signature with a report."
+                "text": "One read confirmation for payslips, reports and appointments; with Documents it becomes a signature with a report.",
+                "dettaglio": {
+                  "intro": "When a module asks to confirm that something has been read, the employee finds everything on a single page.",
+                  "punti": [
+                    "Acknowledgements for payslips, asset and PPE handovers, appointments and agreements",
+                    "Notification to the recipient for each new request",
+                    "Acknowledgements page with those to confirm and the history",
+                    "One-click confirmation, with the date recorded",
+                    "With document management active it becomes a document with an electronic signature"
+                  ]
+                }
               },
               "calendario": {
                 "title": "Personal calendar",
-                "text": "Activities, bookings and deadlines in Google, Outlook or your phone calendar through an .ics feed."
+                "text": "Activities, bookings and deadlines in Google, Outlook or your phone calendar through an .ics feed.",
+                "dettaglio": {
+                  "intro": "Your commitments from the app in the calendar you already use, without copying them by hand.",
+                  "punti": [
+                    "Personal address to subscribe to in Google Calendar, Outlook or Apple Calendar",
+                    "Deadlines from the deadline list as all-day events",
+                    "CRM activities assigned to you, with a link to the card",
+                    "Confirmed bookings of desks, rooms and cars",
+                    "Read-only calendar that updates by itself",
+                    "New address in one click if the current one has been shared"
+                  ]
+                }
               },
               "riepilogo": {
                 "title": "Weekly AI summary",
-                "text": "Every week a summary of what happened in the company and, for the firm, in all its client companies."
+                "text": "Every week a summary of what happened in the company and, for the firm, in all its client companies.",
+                "dettaglio": {
+                  "intro": "Every week administrators get a summary of what happened in the company; the accounting firm gets one for the companies to follow up.",
+                  "punti": [
+                    "Summary of the last 7 days for each company administrator",
+                    "Text written by AI using only the app's data",
+                    "Facts of the period and items to handle right away always available",
+                    "For the accounting firm, the list of companies with issues",
+                    "Delivered as a notification, which can be turned off in preferences",
+                    "Generate now button to get one at any time"
+                  ]
+                }
               },
               "assistente": {
                 "title": "AI assistant and voice commands",
-                "text": "Speak or type: clock in, request leave, open a customer or the page you need."
+                "text": "Speak or type: clock in, request leave, open a customer or the page you need.",
+                "dettaglio": {
+                  "intro": "An assistant you can ask, by voice or in writing, to carry out a task or open a page, only in the active modules.",
+                  "punti": [
+                    "Voice commands from the microphone or typed in the chat",
+                    "Clock-ins, leave requests and other attendance tasks",
+                    "Opens customers, pages and records by name",
+                    "Asks for missing values and confirms before running",
+                    "Spoken replies too, which you can turn on or off",
+                    "PDF manual with the commands available for your roles"
+                  ]
+                }
               },
               "ticket": {
                 "title": "Support and manuals",
-                "text": "Support tickets with answers suggested from the documentation and PDF manuals for every application."
+                "text": "Support tickets with answers suggested from the documentation and PDF manuals for every application.",
+                "dettaglio": {
+                  "intro": "Support requests move from one level to the next until they reach someone who can answer, helped by AI and the manuals.",
+                  "punti": [
+                    "Tickets by request type, with attachments and history",
+                    "The ticket goes up from employee to company, accounting firm or centre, by type",
+                    "Automatic AI answer from the documentation uploaded for the level",
+                    "If the AI can't solve it, the ticket goes to an operator",
+                    "PDF manuals for each module, built from the functions in your menu"
+                  ]
+                }
               }
             }
           }
