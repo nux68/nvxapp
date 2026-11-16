@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
-import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { ShowcaseContenutiRidefiniti, voceShowcase } from './showcase.model';
 import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
@@ -30,6 +30,8 @@ export class ShowcaseAttendanceTrackingService {
     const t = (key: string, params?: Record<string, unknown>) =>
       this.transloco?.translate('attendance.showcase.' + key, params) ?? 'attendance.showcase.' + key;
     const site = { siteName: SITE_NAME };
+    // voce della pagina funzionalita' con l'eventuale dettaglio (<chiave>.dettaglio), aperto in un dialog
+    const v = (icon: string, key: string) => voceShowcase(this.transloco, icon, 'attendance.showcase.' + key);
     return {
       brand: {
         nome: SITE_NAME,
@@ -61,19 +63,19 @@ export class ShowcaseAttendanceTrackingService {
         titolo: t('features.titolo'),
         sottotitolo: t('features.sottotitolo'),
         sezioni: [
-          { icon: 'mic-outline', title: t('features.sezioni.vocale.title'), text: t('features.sezioni.vocale.text') },
-          { icon: 'finger-print-outline', title: t('features.sezioni.timbrature.title'), text: t('features.sezioni.timbrature.text') },
-          { icon: 'document-text-outline', title: t('features.sezioni.giustificativi.title'), text: t('features.sezioni.giustificativi.text') },
-          { icon: 'time-outline', title: t('features.sezioni.straordinari.title'), text: t('features.sezioni.straordinari.text') },
-          { icon: 'people-circle-outline', title: t('features.sezioni.reparti.title'), text: t('features.sezioni.reparti.text') },
-          { icon: 'calendar-outline', title: t('features.sezioni.calendario.title'), text: t('features.sezioni.calendario.text') },
-          { icon: 'pulse-outline', title: t('features.sezioni.presenti.title'), text: t('features.sezioni.presenti.text') },
-          { icon: 'speedometer-outline', title: t('features.sezioni.profili.title'), text: t('features.sezioni.profili.text') },
-          { icon: 'checkbox-outline', title: t('features.sezioni.quadratura.title'), text: t('features.sezioni.quadratura.text') },
-          { icon: 'download-outline', title: t('features.sezioni.export.title'), text: t('features.sezioni.export.text') },
-          { icon: 'receipt-outline', title: t('features.sezioni.noteSpese.title'), text: t('features.sezioni.noteSpese.text') },
-          { icon: 'briefcase-outline', title: t('features.sezioni.commesse.title'), text: t('features.sezioni.commesse.text') },
-          { icon: 'options-outline', title: t('features.sezioni.menu.title'), text: t('features.sezioni.menu.text') }
+          v('mic-outline', 'features.sezioni.vocale'),
+          v('finger-print-outline', 'features.sezioni.timbrature'),
+          v('document-text-outline', 'features.sezioni.giustificativi'),
+          v('time-outline', 'features.sezioni.straordinari'),
+          v('people-circle-outline', 'features.sezioni.reparti'),
+          v('calendar-outline', 'features.sezioni.calendario'),
+          v('pulse-outline', 'features.sezioni.presenti'),
+          v('speedometer-outline', 'features.sezioni.profili'),
+          v('checkbox-outline', 'features.sezioni.quadratura'),
+          v('download-outline', 'features.sezioni.export'),
+          v('receipt-outline', 'features.sezioni.noteSpese'),
+          v('briefcase-outline', 'features.sezioni.commesse'),
+          v('options-outline', 'features.sezioni.menu')
         ]
       },
       pricing: {

@@ -1694,55 +1694,196 @@
         "sezioni": {
           "vocale": {
             "title": "Voice commands and chat",
-            "text": "Speak or write to the assistant: clock in, request an absence justification or open the page you need, without looking for it in the menu."
+            "text": "Speak or write to the assistant: clock in, request an absence justification or open the page you need, without looking for it in the menu.",
+            "dettaglio": {
+              "intro": "The assistant handles the most common tasks without going through the menu: speak into the microphone or type in the chat, in your own words.",
+              "punti": [
+                "Clock in or out and request holidays, leave or clocking corrections",
+                "Ask for hours worked, holiday and leave balances, pending requests",
+                "For managers: who is present, the holiday plan, days to fix, approvals",
+                "Opens the right page or an employee's HR calendar",
+                "Before saving it shows a summary and asks for confirmation, by voice too",
+                "Answers only about data the user can see with their role"
+              ]
+            }
           },
           "timbrature": {
             "title": "Clockings",
-            "text": "Clock in and out, and request corrections for forgotten or wrong clockings."
+            "text": "Clock in and out, and request corrections for forgotten or wrong clockings.",
+            "dettaglio": {
+              "intro": "Employees record clock-in and clock-out from the browser, with nothing to install; if they forget or get one wrong, they ask their manager for a correction.",
+              "punti": [
+                "Clocking terminal with the last clocking always in view",
+                "Choice of the activity being worked on, if the company requires it",
+                "On site also via the QR station or the kiosk with PIN and badge",
+                "Request with day, time, in or out, approved by the manager",
+                "HR corrects from the HR calendar, keeping the original time",
+                "Rounding and tolerances applied according to the employee's schedule"
+              ]
+            }
           },
           "giustificativi": {
             "title": "Absence justifications",
-            "text": "Holidays, leave, sickness and the other reason codes, requested by the employee and approved by the manager."
+            "text": "Holidays, leave, sickness and the other reason codes, requested by the employee and approved by the manager.",
+            "dettaglio": {
+              "intro": "Holidays, leave, sickness and the company's other reason codes: employees request them, department approvers decide and the timesheet updates itself.",
+              "punti": [
+                "Requests for full days or by the hour, with a note",
+                "Counters with accrued, taken and balance, also for the following months",
+                "Warning or block when the balance does not cover the request",
+                "Amount-based justifications, in euros, that leave hours and counters untouched",
+                "Their own colours in the calendar and the holiday plan",
+                "Revocation of already approved requests, with a new approval"
+              ]
+            }
           },
           "straordinari": {
             "title": "Overtime and hour bank",
-            "text": "Overtime authorised with an absence justification, and extra hours credited to the hour bank in approved timesheets."
+            "text": "Overtime authorised with an absence justification, and extra hours credited to the hour bank in approved timesheets.",
+            "dettaglio": {
+              "intro": "Hours beyond the schedule become overtime, additional hours or hour bank according to the work schedule profile rules and the approved authorisations.",
+              "punti": [
+                "Overtime authorisation requested by the employee, day by day",
+                "Option to recognise only authorised extra hours",
+                "Daily allowance and recognition in blocks of minutes",
+                "Additional hours for part-timers, separate night and holiday overtime",
+                "Extra hours of approved timesheets credited to the hour bank",
+                "HR can recognise or reject the month's extra hours"
+              ]
+            }
           },
           "reparti": {
             "title": "Departments and approvers",
-            "text": "For each department, who administers and who approves requests, with the approval mode chosen by the company."
+            "text": "For each department, who administers and who approves requests, with the approval mode chosen by the company.",
+            "dettaglio": {
+              "intro": "Departments decide who receives requests and who sees employees' timesheets. Each department belongs to a site.",
+              "punti": [
+                "For each department, its administrators and which of them approve requests",
+                "Approval by a single administrator, by all, or in hierarchical order",
+                "Order of approvers for the hierarchical chain",
+                "Activities carried out in the department and employees with the right skills",
+                "A department administrator sees only the employees of their departments",
+                "Without an enabled approver the department's requests cannot be sent"
+              ]
+            }
           },
           "calendario": {
             "title": "Calendar and holiday plan",
-            "text": "Each employee's calendar, the HR calendar and the holiday plan for the whole company."
+            "text": "Each employee's calendar, the HR calendar and the holiday plan for the whole company.",
+            "dettaglio": {
+              "intro": "The same month from three angles: the employee's calendar, the department calendar for managers and the HR calendar for whoever manages staff.",
+              "punti": [
+                "The employee's month with clockings, justifications, expenses and calculated hours",
+                "Approve requests straight from the day",
+                "HR calendar: add or correct clockings, justifications and pay codes, then recalculate",
+                "Reopen approved timesheets and print the month's timesheets as PDF",
+                "Company-wide holiday plan, filtered by department and employee",
+                "From the holiday plan, approve pending absences and print the PDF"
+              ]
+            }
           },
           "presenti": {
             "title": "Staff present",
-            "text": "Who is at work, who is absent and why, in real time."
+            "text": "Who is at work, who is absent and why, in real time.",
+            "dettaglio": {
+              "intro": "A picture of the staff at the moment the page is opened, for managers and administration.",
+              "punti": [
+                "Filter by department and by employee",
+                "For each employee a status icon and the day's last clocking, in or out",
+                "Present today widget on the dashboard: present, absent and justified absences",
+                "Just ask the assistant who is present"
+              ]
+            }
           },
           "profili": {
             "title": "Work schedule profiles",
-            "text": "Schedules, public holidays and sites: the timesheet is calculated on each person's rules."
+            "text": "Schedules, public holidays and sites: the timesheet is calculated on each person's rules.",
+            "dettaglio": {
+              "intro": "The timesheet is calculated on each employee's rules: daily schedules, work schedule profile and the public holidays of their site.",
+              "punti": [
+                "Schedules with time bands, tolerances, rounding and clocked or automatic breaks",
+                "Weekly or shift profiles, with a cycle of 1 to 15 days",
+                "Extra-hour rules: counting period, thresholds, night band",
+                "Recurring, one-off or calculated public holidays, company-wide or per site",
+                "Duplicate a profile to create a similar one",
+                "Custom formulas for special calculation rules"
+              ]
+            }
           },
           "quadratura": {
             "title": "Monthly reconciliation",
-            "text": "Check of the month's timesheets, anomalies highlighted and bulk approval."
+            "text": "Check of the month's timesheets, anomalies highlighted and bulk approval.",
+            "dettaglio": {
+              "intro": "Closing the month: on a single page you check every employee's timesheet and approve them together.",
+              "punti": [
+                "Hours worked, extra, additional, overtime, excess and not recognised",
+                "Status of each timesheet: not calculated, provisional, to approve, approved",
+                "Warnings for authorisations to decide and months to recalculate",
+                "Automatic selection of closed timesheets and bulk approval",
+                "After approval the days are locked and extra hours go to the hour bank",
+                "PDF printout of the monthly reconciliation"
+              ]
+            }
           },
           "export": {
             "title": "Payroll export",
-            "text": "Pay code export with configurable templates, ready for your payroll software."
+            "text": "Pay code export with configurable templates, ready for your payroll software.",
+            "dettaglio": {
+              "intro": "Produces the file for your payroll software from the month's timesheets, using an export template set up once.",
+              "punti": [
+                "For each pay code the payroll software's code, in hours, days or amount",
+                "Daily or monthly processing, with rows to add or subtract",
+                "AI builds the format by reading the file layout, manual or a sample file",
+                "Test the format on an employee's real data before using it",
+                "Export by month, department or employee, prepared in the background",
+                "Warnings at the end of the export, for example missing employee numbers"
+              ]
+            }
           },
           "noteSpese": {
             "title": "Expense reports",
-            "text": "Reimbursements with multiple expenses and attachments; approving the report approves all its expenses."
+            "text": "Reimbursements with multiple expenses and attachments; approving the report approves all its expenses.",
+            "dettaglio": {
+              "intro": "Paperless expense refunds: employees fill in the report with expenses and attachments, the manager reviews it and approves it as a whole.",
+              "punti": [
+                "Several expenses per report, each with date, type, amount and description",
+                "Receipts and invoices as PDF or images, up to 10 per expense",
+                "Mileage refund calculated on kilometres and the rate of the employee's car",
+                "Editable while pending; once approved, a revocation is requested",
+                "Review by employee or by expense type, with a chart",
+                "Expense reports also shown in the employee's calendar"
+              ]
+            }
           },
           "commesse": {
             "title": "Job orders and activities",
-            "text": "Customers, job orders and activities to know what is being worked on, with statistics."
+            "text": "Customers, job orders and activities to know what is being worked on, with statistics.",
+            "dettaglio": {
+              "intro": "To know what employees are working on: clockings go on activities linked to job orders and customers, and hours are analysed by period.",
+              "punti": [
+                "Job orders linked to customers in the shared registry, split into sub-orders",
+                "Activities with the required skills, enabled per site and department",
+                "Clock in only on activities of the sub-orders you are linked to",
+                "Hour statistics by activity, job order, customer and employee",
+                "List of days excluded from the count, to be fixed",
+                "PDF report of totals by activity or by employee"
+              ]
+            }
           },
           "menu": {
             "title": "Tailored menu",
-            "text": "The administrator chooses which pages administrators and employees can see."
+            "text": "The administrator chooses which pages administrators and employees can see.",
+            "dettaglio": {
+              "intro": "Each company fits the menu to its roles: the administrator chooses which items to hide from department administrators and employees.",
+              "punti": [
+                "User menu page with items grouped by section",
+                "Items hidden separately for administrators and employees",
+                "Items can only be removed, never added beyond what the role allows",
+                "Hidden pages cannot be opened even from their direct address",
+                "Dashboard, preferences and manuals always remain available",
+                "It also applies to the items of the other active applications"
+              ]
+            }
           }
         }
       },
