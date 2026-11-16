@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
-import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { ShowcaseContenutiRidefiniti, voceShowcase } from './showcase.model';
 import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
@@ -30,6 +30,8 @@ export class ShowcaseAllFunctionService {
     const t = (key: string, params?: Record<string, unknown>) =>
       this.transloco?.translate('allfunction.showcase.' + key, params) ?? 'allfunction.showcase.' + key;
     const site = { siteName: SITE_NAME };
+    // voce della pagina funzionalita' con l'eventuale dettaglio (<chiave>.dettaglio), aperto in un dialog
+    const v = (icon: string, key: string) => voceShowcase(this.transloco, icon, 'allfunction.showcase.' + key);
     return {
       brand: {
         nome: SITE_NAME,
@@ -70,84 +72,84 @@ export class ShowcaseAllFunctionService {
           {
             titolo: t('features.gruppi.presenze.titolo'), sottotitolo: t('features.gruppi.presenze.sottotitolo'), icon: 'calendar-clear-outline',
             sezioni: [
-              { icon: 'finger-print-outline', title: t('features.gruppi.presenze.voci.timbrature.title'), text: t('features.gruppi.presenze.voci.timbrature.text') },
-              { icon: 'calendar-number-outline', title: t('features.gruppi.presenze.voci.turni.title'), text: t('features.gruppi.presenze.voci.turni.text') },
-              { icon: 'home-outline', title: t('features.gruppi.presenze.voci.smartWorking.title'), text: t('features.gruppi.presenze.voci.smartWorking.text') },
-              { icon: 'checkmark-done-outline', title: t('features.gruppi.presenze.voci.richieste.title'), text: t('features.gruppi.presenze.voci.richieste.text') },
-              { icon: 'receipt-outline', title: t('features.gruppi.presenze.voci.noteSpese.title'), text: t('features.gruppi.presenze.voci.noteSpese.text') },
-              { icon: 'alert-circle-outline', title: t('features.gruppi.presenze.voci.anomalie.title'), text: t('features.gruppi.presenze.voci.anomalie.text') },
-              { icon: 'bar-chart-outline', title: t('features.gruppi.presenze.voci.commesse.title'), text: t('features.gruppi.presenze.voci.commesse.text') },
-              { icon: 'download-outline', title: t('features.gruppi.presenze.voci.paghe.title'), text: t('features.gruppi.presenze.voci.paghe.text') }
+              v('finger-print-outline', 'features.gruppi.presenze.voci.timbrature'),
+              v('calendar-number-outline', 'features.gruppi.presenze.voci.turni'),
+              v('home-outline', 'features.gruppi.presenze.voci.smartWorking'),
+              v('checkmark-done-outline', 'features.gruppi.presenze.voci.richieste'),
+              v('receipt-outline', 'features.gruppi.presenze.voci.noteSpese'),
+              v('alert-circle-outline', 'features.gruppi.presenze.voci.anomalie'),
+              v('bar-chart-outline', 'features.gruppi.presenze.voci.commesse'),
+              v('download-outline', 'features.gruppi.presenze.voci.paghe')
             ]
           },
           {
             titolo: t('features.gruppi.crm.titolo'), sottotitolo: t('features.gruppi.crm.sottotitolo'), icon: 'git-network-outline',
             sezioni: [
-              { icon: 'business-outline', title: t('features.gruppi.crm.voci.clienti.title'), text: t('features.gruppi.crm.voci.clienti.text') },
-              { icon: 'funnel-outline', title: t('features.gruppi.crm.voci.pipeline.title'), text: t('features.gruppi.crm.voci.pipeline.text') },
-              { icon: 'calendar-outline', title: t('features.gruppi.crm.voci.agenda.title'), text: t('features.gruppi.crm.voci.agenda.text') },
-              { icon: 'document-text-outline', title: t('features.gruppi.crm.voci.preventivi.title'), text: t('features.gruppi.crm.voci.preventivi.text') },
-              { icon: 'headset-outline', title: t('features.gruppi.crm.voci.assistenza.title'), text: t('features.gruppi.crm.voci.assistenza.text') },
-              { icon: 'stats-chart-outline', title: t('features.gruppi.crm.voci.report.title'), text: t('features.gruppi.crm.voci.report.text') },
-              { icon: 'eye-outline', title: t('features.gruppi.crm.voci.visibilita.title'), text: t('features.gruppi.crm.voci.visibilita.text') }
+              v('business-outline', 'features.gruppi.crm.voci.clienti'),
+              v('funnel-outline', 'features.gruppi.crm.voci.pipeline'),
+              v('calendar-outline', 'features.gruppi.crm.voci.agenda'),
+              v('document-text-outline', 'features.gruppi.crm.voci.preventivi'),
+              v('headset-outline', 'features.gruppi.crm.voci.assistenza'),
+              v('stats-chart-outline', 'features.gruppi.crm.voci.report'),
+              v('eye-outline', 'features.gruppi.crm.voci.visibilita')
             ]
           },
           {
             titolo: t('features.gruppi.documentale.titolo'), sottotitolo: t('features.gruppi.documentale.sottotitolo'), icon: 'documents-outline',
             sezioni: [
-              { icon: 'folder-open-outline', title: t('features.gruppi.documentale.voci.archivio.title'), text: t('features.gruppi.documentale.voci.archivio.text') },
-              { icon: 'search-outline', title: t('features.gruppi.documentale.voci.ricerca.title'), text: t('features.gruppi.documentale.voci.ricerca.text') },
-              { icon: 'people-outline', title: t('features.gruppi.documentale.voci.personale.title'), text: t('features.gruppi.documentale.voci.personale.text') },
-              { icon: 'create-outline', title: t('features.gruppi.documentale.voci.firma.title'), text: t('features.gruppi.documentale.voci.firma.text') },
-              { icon: 'clipboard-outline', title: t('features.gruppi.documentale.voci.verbali.title'), text: t('features.gruppi.documentale.voci.verbali.text') },
-              { icon: 'lock-closed-outline', title: t('features.gruppi.documentale.voci.riservatezza.title'), text: t('features.gruppi.documentale.voci.riservatezza.text') },
-              { icon: 'server-outline', title: t('features.gruppi.documentale.voci.spazio.title'), text: t('features.gruppi.documentale.voci.spazio.text') }
+              v('folder-open-outline', 'features.gruppi.documentale.voci.archivio'),
+              v('search-outline', 'features.gruppi.documentale.voci.ricerca'),
+              v('people-outline', 'features.gruppi.documentale.voci.personale'),
+              v('create-outline', 'features.gruppi.documentale.voci.firma'),
+              v('clipboard-outline', 'features.gruppi.documentale.voci.verbali'),
+              v('lock-closed-outline', 'features.gruppi.documentale.voci.riservatezza'),
+              v('server-outline', 'features.gruppi.documentale.voci.spazio')
             ]
           },
           {
             titolo: t('features.gruppi.risorseUmane.titolo'), sottotitolo: t('features.gruppi.risorseUmane.sottotitolo'), icon: 'id-card-outline',
             sezioni: [
-              { icon: 'cloud-upload-outline', title: t('features.gruppi.risorseUmane.voci.cedolini.title'), text: t('features.gruppi.risorseUmane.voci.cedolini.text') },
-              { icon: 'person-outline', title: t('features.gruppi.risorseUmane.voci.portale.title'), text: t('features.gruppi.risorseUmane.voci.portale.text') },
-              { icon: 'school-outline', title: t('features.gruppi.risorseUmane.voci.formazione.title'), text: t('features.gruppi.risorseUmane.voci.formazione.text') },
-              { icon: 'list-outline', title: t('features.gruppi.risorseUmane.voci.onboarding.title'), text: t('features.gruppi.risorseUmane.voci.onboarding.text') },
-              { icon: 'document-attach-outline', title: t('features.gruppi.risorseUmane.voci.consegne.title'), text: t('features.gruppi.risorseUmane.voci.consegne.text') },
-              { icon: 'key-outline', title: t('features.gruppi.risorseUmane.voci.account.title'), text: t('features.gruppi.risorseUmane.voci.account.text') }
+              v('cloud-upload-outline', 'features.gruppi.risorseUmane.voci.cedolini'),
+              v('person-outline', 'features.gruppi.risorseUmane.voci.portale'),
+              v('school-outline', 'features.gruppi.risorseUmane.voci.formazione'),
+              v('list-outline', 'features.gruppi.risorseUmane.voci.onboarding'),
+              v('document-attach-outline', 'features.gruppi.risorseUmane.voci.consegne'),
+              v('key-outline', 'features.gruppi.risorseUmane.voci.account')
             ]
           },
           {
             titolo: t('features.gruppi.compliance.titolo'), sottotitolo: t('features.gruppi.compliance.sottotitolo'), icon: 'shield-checkmark-outline',
             sezioni: [
-              { icon: 'school-outline', title: t('features.gruppi.compliance.voci.corsi.title'), text: t('features.gruppi.compliance.voci.corsi.text') },
-              { icon: 'medkit-outline', title: t('features.gruppi.compliance.voci.visite.title'), text: t('features.gruppi.compliance.voci.visite.text') },
-              { icon: 'hand-left-outline', title: t('features.gruppi.compliance.voci.dpi.title'), text: t('features.gruppi.compliance.voci.dpi.text') },
-              { icon: 'ribbon-outline', title: t('features.gruppi.compliance.voci.nomine.title'), text: t('features.gruppi.compliance.voci.nomine.text') },
-              { icon: 'lock-closed-outline', title: t('features.gruppi.compliance.voci.gdpr.title'), text: t('features.gruppi.compliance.voci.gdpr.text') },
-              { icon: 'warning-outline', title: t('features.gruppi.compliance.voci.violazioni.title'), text: t('features.gruppi.compliance.voci.violazioni.text') },
-              { icon: 'briefcase-outline', title: t('features.gruppi.compliance.voci.studio.title'), text: t('features.gruppi.compliance.voci.studio.text') }
+              v('school-outline', 'features.gruppi.compliance.voci.corsi'),
+              v('medkit-outline', 'features.gruppi.compliance.voci.visite'),
+              v('hand-left-outline', 'features.gruppi.compliance.voci.dpi'),
+              v('ribbon-outline', 'features.gruppi.compliance.voci.nomine'),
+              v('lock-closed-outline', 'features.gruppi.compliance.voci.gdpr'),
+              v('warning-outline', 'features.gruppi.compliance.voci.violazioni'),
+              v('briefcase-outline', 'features.gruppi.compliance.voci.studio')
             ]
           },
           {
             titolo: t('features.gruppi.risorseAziendali.titolo'), sottotitolo: t('features.gruppi.risorseAziendali.sottotitolo'), icon: 'cube-outline',
             sezioni: [
-              { icon: 'car-outline', title: t('features.gruppi.risorseAziendali.voci.flotta.title'), text: t('features.gruppi.risorseAziendali.voci.flotta.text') },
-              { icon: 'alarm-outline', title: t('features.gruppi.risorseAziendali.voci.scadenzeVeicoli.title'), text: t('features.gruppi.risorseAziendali.voci.scadenzeVeicoli.text') },
-              { icon: 'cash-outline', title: t('features.gruppi.risorseAziendali.voci.multe.title'), text: t('features.gruppi.risorseAziendali.voci.multe.text') },
-              { icon: 'laptop-outline', title: t('features.gruppi.risorseAziendali.voci.beni.title'), text: t('features.gruppi.risorseAziendali.voci.beni.text') },
-              { icon: 'swap-horizontal-outline', title: t('features.gruppi.risorseAziendali.voci.consegne.title'), text: t('features.gruppi.risorseAziendali.voci.consegne.text') },
-              { icon: 'today-outline', title: t('features.gruppi.risorseAziendali.voci.prenotazioni.title'), text: t('features.gruppi.risorseAziendali.voci.prenotazioni.text') }
+              v('car-outline', 'features.gruppi.risorseAziendali.voci.flotta'),
+              v('alarm-outline', 'features.gruppi.risorseAziendali.voci.scadenzeVeicoli'),
+              v('cash-outline', 'features.gruppi.risorseAziendali.voci.multe'),
+              v('laptop-outline', 'features.gruppi.risorseAziendali.voci.beni'),
+              v('swap-horizontal-outline', 'features.gruppi.risorseAziendali.voci.consegne'),
+              v('today-outline', 'features.gruppi.risorseAziendali.voci.prenotazioni')
             ]
           },
           {
             titolo: t('features.gruppi.comuni.titolo'), sottotitolo: t('features.gruppi.comuni.sottotitolo'), icon: 'apps-outline',
             sezioni: [
-              { icon: 'alarm-outline', title: t('features.gruppi.comuni.voci.scadenzario.title'), text: t('features.gruppi.comuni.voci.scadenzario.text') },
-              { icon: 'notifications-outline', title: t('features.gruppi.comuni.voci.notifiche.title'), text: t('features.gruppi.comuni.voci.notifiche.text') },
-              { icon: 'checkmark-circle-outline', title: t('features.gruppi.comuni.voci.preseVisione.title'), text: t('features.gruppi.comuni.voci.preseVisione.text') },
-              { icon: 'calendar-outline', title: t('features.gruppi.comuni.voci.calendario.title'), text: t('features.gruppi.comuni.voci.calendario.text') },
-              { icon: 'sparkles-outline', title: t('features.gruppi.comuni.voci.riepilogo.title'), text: t('features.gruppi.comuni.voci.riepilogo.text') },
-              { icon: 'mic-outline', title: t('features.gruppi.comuni.voci.assistente.title'), text: t('features.gruppi.comuni.voci.assistente.text') },
-              { icon: 'help-buoy-outline', title: t('features.gruppi.comuni.voci.ticket.title'), text: t('features.gruppi.comuni.voci.ticket.text') }
+              v('alarm-outline', 'features.gruppi.comuni.voci.scadenzario'),
+              v('notifications-outline', 'features.gruppi.comuni.voci.notifiche'),
+              v('checkmark-circle-outline', 'features.gruppi.comuni.voci.preseVisione'),
+              v('calendar-outline', 'features.gruppi.comuni.voci.calendario'),
+              v('sparkles-outline', 'features.gruppi.comuni.voci.riepilogo'),
+              v('mic-outline', 'features.gruppi.comuni.voci.assistente'),
+              v('help-buoy-outline', 'features.gruppi.comuni.voci.ticket')
             ]
           }
         ]
