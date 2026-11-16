@@ -11,7 +11,9 @@ WORKDIR /src/nvxapp.client
 COPY nvxapp.client/package.json nvxapp.client/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY nvxapp.client/ ./
-RUN npx ng build --configuration production
+# NVX_BUILD_VERSION (data e ora UTC): finisce come ?v= negli URL delle traduzioni, a ogni build il browser le riscarica
+# (nvxapp.client/src/nvx/Utility/infrastructure/build-version.ts)
+RUN npx ng build --configuration production --define "NVX_BUILD_VERSION='$(date -u +%Y%m%d%H%M%S)'"
 
 # --- 2. publish del server .NET, con il client in wwwroot ---
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
