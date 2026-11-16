@@ -155,6 +155,11 @@ app.UseDefaultFiles(); // Serve automaticamente il file "index.html"
 // Aggiunge il MIME type per il manifest PWA
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".webmanifest"] = "application/manifest+json";
+// File con l'hash della build nel nome, generati da "ng build" con outputHashing=all: main-3CFXPD2I.js,
+// polyfills-KX4REJ6Z.js, styles-HORTBXR3.css, chunk--FzSK5Ph.js, chunk-D_40ycs9.js, media/xxx-ABCD1234.png
+// (8 caratteri tra lettere, cifre, '_' e '-' prima dell'estensione; i chunk possono avere un '-' come primo carattere)
+var hashedBuildFile = new System.Text.RegularExpressions.Regex(@"-[A-Za-z0-9_-]{8}\.[A-Za-z0-9]+$",
+    System.Text.RegularExpressions.RegexOptions.Compiled);
 var staticFileOptions = new StaticFileOptions
 {
     ContentTypeProvider = provider
@@ -162,9 +167,14 @@ var staticFileOptions = new StaticFileOptions
     OnPrepareResponse = ctx =>
     {
         var fileName = ctx.File.Name;
+        var request = ctx.Context.Request;
         var headers = ctx.Context.Response.Headers;
+        var path = request.Path.Value ?? string.Empty;
+        // assets/** e svg/** sono copiati cosi' come sono (nome senza hash), anche se il nome somiglia a uno con hash
+        var isCopiedAsset = path.StartsWith("/assets/", StringComparison.OrdinalIgnoreCase) ||
+                            path.StartsWith("/svg/", StringComparison.OrdinalIgnoreCase);
 
-        // index.html e manifest: no-cache ? il browser richiede sempre la versione aggiornata
+        // index.html e manifest: no-store, il browser li richiede sempre (index.html punta ai bundle della build corrente)
         if (fileName.Equals("index.html", StringComparison.OrdinalIgnoreCase) ||
             fileName.Equals("manifest.webmanifest", StringComparison.OrdinalIgnoreCase))
         {
@@ -172,10 +182,19 @@ var staticFileOptions = new StaticFileOptions
             headers["Pragma"] = "no-cache";
             headers["Expires"] = "0";
         }
+        // File con l'hash nel nome: il nome cambia a ogni build che ne cambia il contenuto, quindi la copia in cache
+        // non diventa mai vecchia -> cache lunga (1 anno, immutable). Idem per un file chiesto con la versione della
+        // build nell'URL (?v=<build>, es. le traduzioni: vedi i18n.providers.ts): a ogni pubblicazione cambia l'URL.
+        else if ((!isCopiedAsset && hashedBuildFile.IsMatch(fileName)) || request.Query.ContainsKey("v"))
+        {
+            headers["Cache-Control"] = "public, max-age=31536000, immutable";
+        }
+        // Tutto il resto (assets/**, svg/**, .map, ...) ha lo stesso nome a ogni pubblicazione: no-cache = il browser
+        // lo tiene ma a ogni uso chiede al server se e' cambiato (ETag/Last-Modified -> 304 se uguale).
+        // Prima avevano anch'essi la cache lunga e il browser usava i file vecchi fino a un Ctrl+F5.
         else
         {
-            // Bundle JS/CSS con hash nel nome: cache lunga (1 anno)
-            headers["Cache-Control"] = "public, max-age=31536000, immutable";
+            headers["Cache-Control"] = "no-cache";
         }
     }
 };

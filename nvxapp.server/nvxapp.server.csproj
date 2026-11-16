@@ -53,8 +53,12 @@
 		<!-- Elimina la cache di Angular per forzare ricompilazione completa -->
 		<RemoveDir Directories="$(MSBuildProjectDirectory)/../nvxapp.client/.angular/cache" />
 
-		<!-- Build Angular -->
-		<Exec Command="npx ng build" WorkingDirectory="$(MSBuildProjectDirectory)/../nvxapp.client" StandardOutputImportance="High" StandardErrorImportance="High">
+		<!-- Build Angular. NVX_BUILD_VERSION (data e ora UTC) finisce come ?v= negli URL delle traduzioni:
+		     a ogni pubblicazione il browser le riscarica (nvxapp.client/src/nvx/Utility/infrastructure/build-version.ts) -->
+		<PropertyGroup>
+			<NvxBuildVersion>$([System.DateTime]::UtcNow.ToString('yyyyMMddHHmmss'))</NvxBuildVersion>
+		</PropertyGroup>
+		<Exec Command="npx ng build --define &quot;NVX_BUILD_VERSION='$(NvxBuildVersion)'&quot;" WorkingDirectory="$(MSBuildProjectDirectory)/../nvxapp.client" StandardOutputImportance="High" StandardErrorImportance="High">
 			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
 		</Exec>
 		<Error Condition="'$(ErrorCode)' != '0'" Text="La build Angular è fallita. Controlla l'output." />
