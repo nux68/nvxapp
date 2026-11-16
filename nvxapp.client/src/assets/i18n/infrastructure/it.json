@@ -313,7 +313,9 @@
       "contactUs": "Contattaci"
     },
     "featuresPage": {
-      "seePrices": "Vedi i prezzi"
+      "seePrices": "Vedi i prezzi",
+      "details": "Scopri di più",
+      "close": "Chiudi"
     },
     "pricingPage": {
       "faqTitle": "Domande frequenti",
