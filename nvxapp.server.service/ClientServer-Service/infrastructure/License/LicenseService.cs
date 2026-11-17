@@ -13,6 +13,7 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.License.Payment;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Site;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Storage;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -399,6 +400,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     CanManage = canManage,
                     DebugPagamenti = _gatewayResolver.DebugMode,
                     Metodo = _gatewayResolver.MetodiDisponibili().Select(x => (int)x).ToList(),
+                    MetodoSimulato = _gatewayResolver.MetodiSimulati().Select(x => (int)x).ToList(),
+                    MetodoSandbox = _gatewayResolver.MetodiSandbox().Select(x => (int)x).ToList(),
                     GraceGiorni = settings.GraceGiorni
                 };
 
@@ -566,7 +569,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
                 var esito = await _subscriptionManager.SubscribeAsync(soggetto, (AmbitoLicenza)dati.Ambito, (LivelloLicenza)dati.Livello,
                                                                       (PeriodicitaLicenza)dati.Periodicita, (MetodoPagamento)dati.Metodo,
-                                                                      dati.RinnovoAutomatico, dati.ReturnUrl);
+                                                                      dati.RinnovoAutomatico, UrlRitorno(dati.ReturnUrl));
                 var retVal = new LicenseSubscribeOutModel
                 {
                     Abbonamento = SubscriptionModel(esito.Abbonamento, await _settingsProvider.GetAsync()),
@@ -576,23 +579,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 if (retVal.RedirectUrl == null)
                     retVal.Messages.Add(new Message(InfrastructureMessages.Get(retVal.Debug ? "LicenseSubscribedDebug" : "LicenseSubscribed"), MessageType.Information));
 
-                // azienda che si sottoscrive da se' la licenza: si attivano gli applicativi coperti, con schema e dati iniziali
-                // come in companyedit (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6). Un errore non annulla la sottoscrizione: si avvisa.
                 if (soggetto.Tipo == TipoSoggettoLicenza.Company && esito.Abbonamento.Stato == StatoAbbonamento.Attivo)
-                {
-                    try
-                    {
-                        var attivati = await _companyApplicationService.ActivateForLicenseAsync(soggetto.Id, esito.Abbonamento.Ambito);
-                        if (attivati.Count > 0)
-                            retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivated",
-                                string.Join(", ", attivati.Select(a => LicenseSubscriptionManager.NomeFunzione((AmbitoLicenza)(int)a)))), MessageType.Information));
-                    }
-                    catch (Exception ex)
-                    {
-                        Serilog.Log.Error(ex, "Attivazione degli applicativi per la licenza {Id} non riuscita", esito.Abbonamento.Id);
-                        retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivationFailed"), MessageType.Warning));
-                    }
-                }
+                    retVal.Messages.AddRange(await AttivaApplicativi(soggetto.Id, esito.Abbonamento));
                 return retVal;
             }, isSubProcess);
         }
@@ -607,7 +595,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
                 var abbonamento = await AbbonamentiSoggetto(soggetto).FirstOrDefaultAsync(x => x.Id == model.Data.IdAbbonamento)
                                   ?? throw new UserMessageException(InfrastructureMessages.Get("LicenseSubscriptionNotFound"));
-                var esito = await _subscriptionManager.RenewAsync(abbonamento, automatico: false, model.Data.ReturnUrl)
+                var esito = await _subscriptionManager.RenewAsync(abbonamento, automatico: false, UrlRitorno(model.Data.ReturnUrl))
                             ?? throw new UserMessageException(InfrastructureMessages.Get("LicensePaymentNotConfigured"));
                 var retVal = new LicenseRenewOutModel
                 {
@@ -617,6 +605,67 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 };
                 if (retVal.RedirectUrl == null)
                     retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicenseRenewed", esito.Abbonamento.DataScadenza.ToString("dd/MM/yyyy")), MessageType.Information));
+                return retVal;
+            }, isSubProcess);
+        }
+
+        /*
+         Esito di un pagamento ospitato dal provider (PayPal, ANALISI_INFRASTRUCTURE_LICENZE.md §7.4): il client passa il
+         riferimento dell'ordine (token del ritorno) oppure l'abbonamento (pulsante "Verifica pagamento": ultimo pagamento in
+         attesa) e se l'utente ha rinunciato. Solo il PowerAdmin del soggetto e solo per i pagamenti dei suoi abbonamenti
+         (il riferimento non basta: si verifica l'appartenenza). Idempotente: ripetere la chiamata non applica due volte.
+         Nuova sottoscrizione completata dell'azienda: si attivano gli applicativi coperti, come a LicenseSubscribe (§15.6).
+        */
+        public virtual async Task<GenericResult<LicensePaymentConfirmOutModel>> LicensePaymentConfirm(GenericRequest<LicensePaymentConfirmInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var (soggetto, canManage) = await SoggettoCorrente();
+                if (!canManage)
+                    throw new UserMessageException(InfrastructureMessages.Get("LicenseNotAllowed"));
+
+                var riferimento = model.Data.Riferimento?.Trim();
+                Lic_Pagamento? pagamento = null;
+                if (!string.IsNullOrEmpty(riferimento))
+                    pagamento = await _pagamentoRepository.FindAll(x => x.RiferimentoGateway == riferimento).FirstOrDefaultAsync();
+                else if (model.Data.IdAbbonamento is int idAbbonamento)
+                    pagamento = await _pagamentoRepository.FindAll(x => x.IdAbbonamento == idAbbonamento && x.RiferimentoGateway != null
+                                                                        && (x.Stato == StatoPagamento.Creato || x.Stato == StatoPagamento.InAttesa))
+                                                          .OrderByDescending(x => x.Id)
+                                                          .FirstOrDefaultAsync();
+                var abbonamento = pagamento?.IdAbbonamento == null ? null
+                                  : await AbbonamentiSoggetto(soggetto).FirstOrDefaultAsync(x => x.Id == pagamento.IdAbbonamento);
+                if (pagamento == null || abbonamento == null)
+                    throw new UserMessageException(InfrastructureMessages.Get("LicensePaymentNotFound"));
+
+                var esito = await _subscriptionManager.ConfirmPaymentAsync(pagamento, abbonamento, model.Data.Annullato);
+                var settings = await _settingsProvider.GetAsync();
+                var retVal = new LicensePaymentConfirmOutModel
+                {
+                    Abbonamento = SubscriptionModel(esito.Abbonamento, settings),
+                    Stato = (int)esito.Stato
+                };
+
+                switch (esito.Stato)
+                {
+                    case StatoPagamento.Completato:
+                    case StatoPagamento.Debug:
+                        retVal.Messages.Add(esito.NuovaSottoscrizione
+                            ? new Message(InfrastructureMessages.Get("LicenseSubscribed"), MessageType.Information)
+                            : new Message(InfrastructureMessages.Get("LicenseRenewed", esito.Abbonamento.DataScadenza.ToString("dd/MM/yyyy")), MessageType.Information));
+                        if (esito.Applicato && esito.NuovaSottoscrizione && soggetto.Tipo == TipoSoggettoLicenza.Company
+                            && esito.Abbonamento.Stato == StatoAbbonamento.Attivo)
+                            retVal.Messages.AddRange(await AttivaApplicativi(soggetto.Id, esito.Abbonamento));
+                        break;
+                    case StatoPagamento.Fallito:
+                        retVal.Messages.Add(model.Data.Annullato
+                            ? new Message(InfrastructureMessages.Get("LicensePaymentCancelled"), MessageType.Warning)
+                            : new Message(InfrastructureMessages.Get("LicensePaymentFailed", esito.Errore ?? pagamento.Note ?? string.Empty), MessageType.Error));
+                        break;
+                    default:
+                        retVal.Messages.Add(new Message(InfrastructureMessages.Get("LicensePaymentStillPending", esito.Errore ?? string.Empty), MessageType.Warning));
+                        break;
+                }
                 return retVal;
             }, isSubProcess);
         }
@@ -791,6 +840,46 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             throw new UserMessageException(InfrastructureMessages.Get("LicenseNotAllowed"));
         }
 
+        /*
+         Azienda che si sottoscrive da se' la licenza: si attivano gli applicativi coperti, con schema e dati iniziali
+         come in companyedit (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6). Un errore non annulla la sottoscrizione: si avvisa.
+         Con un pagamento ospitato dal provider si chiama alla conferma del pagamento (LicensePaymentConfirm).
+        */
+        private async Task<List<Message>> AttivaApplicativi(int idCompany, Lic_Abbonamento abbonamento)
+        {
+            var retVal = new List<Message>();
+            try
+            {
+                var attivati = await _companyApplicationService.ActivateForLicenseAsync(idCompany, abbonamento.Ambito);
+                if (attivati.Count > 0)
+                    retVal.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivated",
+                        string.Join(", ", attivati.Select(a => LicenseSubscriptionManager.NomeFunzione((AmbitoLicenza)(int)a)))), MessageType.Information));
+            }
+            catch (Exception ex)
+            {
+                Serilog.Log.Error(ex, "Attivazione degli applicativi per la licenza {Id} non riuscita", abbonamento.Id);
+                retVal.Add(new Message(InfrastructureMessages.Get("LicenseApplicationsActivationFailed"), MessageType.Warning));
+            }
+            return retVal;
+        }
+
+        /*
+         Pagina a cui il provider riporta l'utente (§7.3, §7.4): quella indicata dal client solo se e' sullo stesso sito
+         (App:PublicUrl o origine della richiesta), altrimenti la pagina statica di ritorno del client
+         (assets/pagamento-ritorno.html, che passa l'esito all'app). Niente redirect verso siti esterni.
+        */
+        private string? UrlRitorno(string? richiesto)
+        {
+            string sito;
+            try { sito = SiteUrl.Base(_configuration, _httpContextAccessor); }
+            catch { return null; }
+            if (!string.IsNullOrWhiteSpace(richiesto) && Uri.TryCreate(richiesto, UriKind.Absolute, out var url)
+                && Uri.TryCreate(sito, UriKind.Absolute, out var origine)
+                && string.Equals(url.GetLeftPart(UriPartial.Authority), origine.GetLeftPart(UriPartial.Authority), StringComparison.OrdinalIgnoreCase))
+                return url.GetLeftPart(UriPartial.Path);
+            return sito + "/assets/pagamento-ritorno.html";
+        }
+
         private IQueryable<Lic_Abbonamento> AbbonamentiSoggetto(LicenseSubject soggetto)
             => soggetto.Tipo == TipoSoggettoLicenza.Company
                ? _abbonamentoRepository.FindAll(x => x.IdCompany == soggetto.Id)
@@ -922,6 +1011,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         Task<GenericResult<LicenseStatusGetOutModel>> LicenseStatusGet(GenericRequest<LicenseStatusGetInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseSubscribeOutModel>> LicenseSubscribe(GenericRequest<LicenseSubscribeInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseRenewOutModel>> LicenseRenew(GenericRequest<LicenseRenewInModel> model, Boolean isSubProcess);
+        Task<GenericResult<LicensePaymentConfirmOutModel>> LicensePaymentConfirm(GenericRequest<LicensePaymentConfirmInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseAutoRenewPutOutModel>> LicenseAutoRenewPut(GenericRequest<LicenseAutoRenewPutInModel> model, Boolean isSubProcess);
         Task<GenericResult<LicenseCancelOutModel>> LicenseCancel(GenericRequest<LicenseCancelInModel> model, Boolean isSubProcess);
     }
