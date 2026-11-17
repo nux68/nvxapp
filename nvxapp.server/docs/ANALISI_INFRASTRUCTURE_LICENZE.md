@@ -302,7 +302,7 @@ Flag di configurazione (es. `NVXAPP_Payments__Debug=true`) che fa risolvere l'`I
 
 **Configurazione** (`Payments:PayPal` in `appsettings.json`, secret mai nel repository):
 - `Mode`: `sandbox` (conti di prova di developer.paypal.com, denaro finto) o `live`;
-- `ClientId`, `Secret`: variabili d'ambiente `NVXAPP_Payments__PayPal__ClientId` e `NVXAPP_Payments__PayPal__Secret`;
+- `ClientId`, `Secret`: variabili d'ambiente `NVXAPP_Payments__PayPal__ClientId` e `NVXAPP_Payments__PayPal__Secret`. Windows (Visual Studio, IIS): `docs/imposta-variabili-nvxapp.ps1` o la copia locale `*.segreti.ps1`. Docker: `DockerLocale.env` / `DockerVps.env` (modello `.env.example`), passate dal `docker-compose.yml` (anche `NVXAPP_Payments__PayPal__Mode`, predefinito `sandbox`). Vedi `ANALISI_INFRASTRUCTURE_DOCKER.md` §8;
 - `BrandName`: nome mostrato sulla pagina PayPal.
 
 **Scelta del gateway** (`PaymentGatewayResolver`, per metodo): un gateway reale configurato per il metodo vince sempre; altrimenti, con `Payments:Debug = true`, quello di debug. Con le chiavi PayPal, quindi, **PayPal passa dal provider vero e la carta resta simulata**. Senza chiavi tutto resta come prima (anche il deploy Docker). Il client riceve `MetodoSimulato` e `MetodoSandbox` per mostrare la nota giusta per il metodo scelto.
