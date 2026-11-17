@@ -249,8 +249,37 @@
     font-size: 0.9rem;
   }
 
+  // metodo di pagamento: pulsanti a pillola; la scelta in colore primario (il riquadro e' gia' bianco)
   .nvx-pricing-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     max-width: 420px;
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--nvx-border);
+      border-radius: 999px;
+      padding: 8px 18px;
+      font: inherit;
+      font-weight: 600;
+      color: var(--nvx-text-muted);
+      background: var(--nvx-surface-soft);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+
+      &.attivo {
+        background: var(--ion-color-primary);
+        border-color: var(--ion-color-primary);
+        color: var(--ion-color-primary-contrast);
+      }
+    }
   }
 
   .nvx-pricing-renew {
