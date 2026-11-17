@@ -30,6 +30,8 @@ $variabili = [ordered]@{
     'NVXAPP_AI__AI_deepseek__ApiKey'            = @('API key di DeepSeek (chat AI con AI:UseLLM = AI_deepseek)', $null)
     'NVXAPP_Payments__PayPal__ClientId'         = @('Client ID PayPal (developer.paypal.com > Apps & Credentials; sandbox o live come Payments:PayPal:Mode)', $null)
     'NVXAPP_Payments__PayPal__Secret'           = @('Secret PayPal della stessa app del Client ID', $null)
+    'NVXAPP_Payments__PayPal__SandboxBuyer__Email'    = @('email del conto personal della sandbox PayPal (mostrato agli utenti di prova in /licensesubscribe)', $null)
+    'NVXAPP_Payments__PayPal__SandboxBuyer__Password' = @('password del conto personal della sandbox PayPal', $null)
 }
 
 if (-not $Prova) {
