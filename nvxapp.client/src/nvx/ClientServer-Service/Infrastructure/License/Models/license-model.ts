@@ -208,6 +208,12 @@ export class LicenseCoveredCompanyModel {
   public ambitoSuperiore: number[] = [];
 }
 
+// conto "personal" della sandbox PayPal (solo per gli utenti di prova)
+export class LicenseSandboxBuyerModel {
+  public email: string = '';
+  public password: string = '';
+}
+
 export class LicenseStatusGetInModel { }
 export class LicenseStatusGetOutModel extends ModelResult {
   public tipoSoggetto: TipoSoggettoLicenza = TipoSoggettoLicenza.Company;
@@ -226,6 +232,8 @@ export class LicenseStatusGetOutModel extends ModelResult {
   public funzione: LicenseFunctionStatusModel[] = [];
   // stato della licenza Cumulativo (propria o dello studio)
   public cumulativo: LicenseFunctionStatusModel = new LicenseFunctionStatusModel();
+  // conto PayPal di prova (solo sandbox e solo per gli utenti di prova configurati sul server)
+  public contoProvaPayPal: LicenseSandboxBuyerModel | null = null;
   public abbonamento: LicenseSubscriptionModel[] = [];
   public offerta: LicenseOfferModel[] = [];
   public pagamento: LicensePaymentModel[] = [];

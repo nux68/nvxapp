@@ -152,6 +152,7 @@ export class LicenseManagementPageComponent {
         debugPagamenti: this.status.debugPagamenti,
         metodoSimulato: this.status.metodoSimulato ?? [],
         metodoSandbox: this.status.metodoSandbox ?? [],
+        contoProvaPayPal: this.status.contoProvaPayPal ?? null,
         attuale: this.abbonamentiDi(ambito).find(x => x.stato === StatoAbbonamento.Attivo) ?? null
       }
     });
