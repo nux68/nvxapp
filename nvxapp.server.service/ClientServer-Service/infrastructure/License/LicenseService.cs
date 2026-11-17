@@ -402,7 +402,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                     Metodo = _gatewayResolver.MetodiDisponibili().Select(x => (int)x).ToList(),
                     MetodoSimulato = _gatewayResolver.MetodiSimulati().Select(x => (int)x).ToList(),
                     MetodoSandbox = _gatewayResolver.MetodiSandbox().Select(x => (int)x).ToList(),
-                    GraceGiorni = settings.GraceGiorni
+                    GraceGiorni = settings.GraceGiorni,
+                    ContoProvaPayPal = await ContoProvaPayPalAsync()
                 };
 
                 // copertura effettiva per funzione, con il limite della funzione e l'uso attuale (§5.1):
@@ -878,6 +879,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
                 && string.Equals(url.GetLeftPart(UriPartial.Authority), origine.GetLeftPart(UriPartial.Authority), StringComparison.OrdinalIgnoreCase))
                 return url.GetLeftPart(UriPartial.Path);
             return sito + "/assets/pagamento-ritorno.html";
+        }
+
+        /*
+         Conto PayPal di prova (ANALISI_INFRASTRUCTURE_LICENZE.md §7.4): email e password del conto "personal" della sandbox,
+         mostrati nella pagina di sottoscrizione per non doverli cercare durante le prove. Solo se PayPal e' in sandbox e
+         l'utente collegato e' tra Payments:PayPal:SandboxBuyer:Users; email e password stanno nelle variabili d'ambiente
+         (NVXAPP_Payments__PayPal__SandboxBuyer__Email / __Password), mai nel codice. Con Mode = live non si mostrano mai.
+        */
+        private async Task<LicenseSandboxBuyerModel?> ContoProvaPayPalAsync()
+        {
+            if (!_gatewayResolver.MetodiSandbox().Contains(MetodoPagamento.PayPal))
+                return null;
+            var conto = _configuration.GetSection("Payments:PayPal:SandboxBuyer");
+            string? email = conto["Email"], password = conto["Password"];
+            var utenti = (conto["Users"] ?? string.Empty).Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || utenti.Length == 0 || string.IsNullOrEmpty(CurrentUserId))
+                return null;
+
+            var utente = await _userManager.FindByIdAsync(CurrentUserId);
+            if (utente?.UserName == null || !utenti.Contains(utente.UserName, StringComparer.OrdinalIgnoreCase))
+                return null;
+            return new LicenseSandboxBuyerModel { Email = email.Trim(), Password = password };
         }
 
         private IQueryable<Lic_Abbonamento> AbbonamentiSoggetto(LicenseSubject soggetto)
