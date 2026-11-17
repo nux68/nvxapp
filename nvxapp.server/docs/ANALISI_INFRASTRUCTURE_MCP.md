@@ -181,6 +181,55 @@ Motivi per non riusare il JWT del login così com'è:
 Il token personale va conservato in forma non leggibile (solo impronta), mostrato una volta sola, con data
 dell'ultimo uso. Un utente con più aziende sceglie l'azienda alla creazione del token.
 
+### 7.1 Impersonificazione
+
+**Come funziona oggi.** Chi sta più in alto nella gerarchia (SuperUser → centro → studio → azienda → utente) può
+lavorare come un utente dei livelli sotto. Tecnicamente `Account/UserLoad` emette un **nuovo token** che contiene
+due identità:
+
+| Dato nel token | Contenuto | Usato per |
+|---|---|---|
+| `UserId` (+ centro, studio, azienda) | l'utente impersonato | dati visibili, ruoli, comandi disponibili |
+| `UserIdFirstConnection` | l'utente che ha fatto il login | controlli da SuperUser, registro delle eliminazioni, notifiche dei job, licenze |
+
+I servizi leggono l'una o l'altra a seconda del caso (`ServiceBase.CurrentUserId` / `UserIdFirstConnection`). La
+chat usa l'utente impersonato (`ChatAIService`: `_chatUserContext.UserId = CurrentUserId`).
+
+**Perché riguarda MCP.** Quasi tutti i comandi lavorano sui dati di un'azienda. Un SuperUser, un utente di centro o
+di studio che si collega con la propria identità non ha un'azienda nel token: vedrebbe pochissimi strumenti. Per
+questi utenti l'impersonificazione è il modo normale di lavorare, quindi MCP deve prevederla.
+
+**Proposta, in due tempi.**
+
+1. **Fase 1 – token legato alla coppia di identità.** Il token personale si crea dal profilo *mentre si sta
+   lavorando come un certo utente* e conserva entrambe le identità, come il token dell'app. Chi impersona l'azienda
+   Rossi e crea il token ottiene un collegamento che lavora sull'azienda Rossi; l'elenco dei token mostra per chi
+   vale ciascuno. Nessun cambio di identità durante la conversazione. Semplice, ma serve un token per ogni azienda.
+2. **Fase 6 – impersonificazione come strumenti MCP.** Quattro strumenti: "chi sono", "chi posso impersonare"
+   (con ricerca), "lavora come …", "torna indietro". L'identità impersonata vale per la sessione MCP e scade con
+   essa; dopo il cambio nvxapp avvisa il client che l'elenco degli strumenti è cambiato (ruoli e applicativi sono
+   quelli del nuovo utente). Un solo token per tutte le aziende.
+
+Scartata l'alternativa del parametro "per conto di" su ogni strumento: facile da sbagliare e da manipolare.
+
+**Regole comuni ai due tempi.**
+
+- **Stesse autorizzazioni dell'app**: si può impersonare solo chi si potrebbe impersonare dall'interfaccia, con
+  controllo **lato server**. Vedi il punto MCP-A7: nel codice letto di `UserLoad` non ho trovato questo controllo
+  (il metodo carica l'utente indicato ed emette il token), e la protezione visibile è nel client
+  (`RoleGuard4UserImpersonate`). Va verificato se il controllo è altrove; se manca, va aggiunto **prima** di MCP,
+  perché un client AI chiama il server direttamente.
+- **Doppia identità sempre registrata**: il registro delle chiamate (8.4) riporta utente del login e utente
+  impersonato; le modifiche restano attribuite come avviene oggi nell'app.
+- **I controlli da SuperUser** continuano a usare l'utente del login, come oggi.
+- **"Lavora come …" è uno strumento di modifica**: il client AI chiede conferma, e ogni risposta degli strumenti
+  ricorda per chi si sta lavorando, per evitare operazioni sull'azienda sbagliata.
+- **Vale l'interruttore dell'azienda impersonata**: se un'azienda ha l'accesso AI spento, non si può lavorare sui
+  suoi dati via MCP nemmeno impersonando (i dati sono dell'azienda). Decisione MCP-D9.
+- **Revoca**: revocando il token o disattivando l'utente del login, cade anche ogni impersonificazione.
+- **Niente impersonificazione a catena oltre quella dell'app**: il "torna indietro" segue la stessa pila di
+  navigazione dell'interfaccia (`UserNavigationService`).
+
 ## 8. Sicurezza
 
 ### 8.1 Conferma delle modifiche
@@ -266,6 +315,8 @@ ingresso agli stessi comandi.
 | MCP-D6 | Comandi che producono file (`PrintReport`) | 🔍 esclusi nella prima versione |
 | MCP-D7 | Funzione inclusa o legata alla licenza | 🔍 da decidere |
 | MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | 🔍 `/mcp`, ultima versione stabile dell'SDK |
+| MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | 🔍 sì |
+| MCP-D10 | Impersonificazione: solo token legato alla coppia di identità (fase 1) o anche strumenti di cambio identità (fase 6) | 🔍 entrambi, in due tempi |
 
 ## 12. Fasi
 
@@ -277,6 +328,7 @@ ingresso agli stessi comandi.
 | 3 | Nuovi strumenti di lettura per modulo (sezione 6) | rami dei moduli |
 | 4 | Scrittura amministrativa (livello 3) con conferma in due passi | Infrastructure_Dev + rami dei moduli |
 | 5 | OAuth e connettore per claude.ai | Infrastructure_Dev |
+| 6 | Impersonificazione tramite strumenti MCP (sezione 7.1) | Infrastructure_Dev |
 
 Le prove della fase 1 si fanno in locale con Claude Code verso il server di sviluppo, con il database usa e getta
 e gli utenti di prova.
@@ -291,7 +343,9 @@ e gli utenti di prova.
 - [ ] MCP-A3 Verificare SDK MCP per .NET: versione, compatibilità con .NET 11, convivenza con controller e SignalR
 - [ ] MCP-A4 Individuare la logica di validazione e risoluzione degli slot che oggi sta in `ChatAIService` e va messa in comune
 - [ ] MCP-A5 Verificare come azienda e ruoli entrano nel token (`AccountService`) per definire il token personale
-- [ ] MCP-A6 Prendere le decisioni MCP-D1 … MCP-D8
+- [ ] MCP-A6 Prendere le decisioni MCP-D1 … MCP-D10
+- [x] MCP-A7a Ricognizione dell'impersonificazione attuale (token con doppia identità, sezione 7.1)
+- [ ] MCP-A7 Verificare se `Account/UserLoad` controlla lato server chi può impersonare chi; se manca, aggiungerlo prima di MCP
 
 ### Fase 1 – Infrastructure_Dev
 
@@ -302,7 +356,8 @@ e gli utenti di prova.
 - [ ] MCP-05 Esecuzione con normalizzazione e validazione comuni alla chat; errori e candidati restituiti all'AI
 - [ ] MCP-06 Risultato con testo e dati strutturati
 - [ ] MCP-07 Token personale: tabella, creazione, scadenza, revoca, ultimo uso
-- [ ] MCP-08 Pagina del profilo per gestire i token (client)
+- [ ] MCP-07b Token personale con doppia identità (utente del login e utente impersonato alla creazione)
+- [ ] MCP-08 Pagina del profilo per gestire i token (client), con l'indicazione di per chi vale ogni token
 - [ ] MCP-09 Impostazione per azienda: accesso AI attivo e livello massimo (server e client)
 - [ ] MCP-10 Registro delle chiamate e pagina di consultazione per l'amministratore
 - [ ] MCP-11 Testi in italiano e inglese
@@ -335,3 +390,10 @@ e gli utenti di prova.
 - [ ] MCP-50 Login OAuth per i client MCP
 - [ ] MCP-51 Prova del connettore personalizzato su claude.ai verso l'installazione pubblica
 - [ ] MCP-52 Aggiornamento dell'informativa e del registro dei trattamenti
+
+### Fase 6 – Impersonificazione tramite strumenti
+
+- [ ] MCP-60 Strumenti "chi sono", "chi posso impersonare", "lavora come …", "torna indietro"
+- [ ] MCP-61 Identità impersonata legata alla sessione MCP, con avviso al client del cambio dell'elenco strumenti
+- [ ] MCP-62 Rispetto dell'interruttore AI dell'azienda impersonata (MCP-D9)
+- [ ] MCP-63 Registro delle chiamate con entrambe le identità e prove con SuperUser, centro e studio
