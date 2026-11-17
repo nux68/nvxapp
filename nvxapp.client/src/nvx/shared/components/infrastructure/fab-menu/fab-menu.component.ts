@@ -37,6 +37,17 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   // l'ultimo messaggio e' arrivato a voce: la risposta si pronuncia
   private lastInputVoice = false;
 
+  // l'assistente ha fatto una domanda o chiede conferma: "annulla" detto a bozza vuota e' una risposta
+  private pendingQuestion = false;
+
+  // -------------------------------------------------------------------------
+  // Bozza vocale (invio manuale): le frasi dettate si accodano e partono quando lo decide l'utente
+  // (pulsante Invia o parola chiave "invia" alla fine della frase). Vedi ANALISI_INFRASTRUCTURE_INVIO_VOCALE_MANUALE
+  // -------------------------------------------------------------------------
+
+  public voiceDraft   = '';   // testo accumulato (modificabile a mano nel composer vocale)
+  public voiceInterim = '';   // anteprima della frase in corso, solo da mostrare
+
   // -------------------------------------------------------------------------
   // Stato modale
   // -------------------------------------------------------------------------
@@ -78,6 +89,21 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // campo della bozza vocale: come la chat, il testo modificato a mano si legge fuori da Angular
+  private draftInputEl: (HTMLElement & { value?: string | null }) | null = null;
+
+  @ViewChild('draftInput', { static: false, read: ElementRef })
+  set draftInput(ref: ElementRef | undefined) {
+    const el = ref?.nativeElement ?? null;
+    if (el === this.draftInputEl) return;
+    this.draftInputEl = el;
+    if (el) {
+      el.value = this.voiceDraft;
+      this.zone.runOutsideAngular(() =>
+        el.addEventListener('ionInput', (e: any) => this.onDraftInput(e.detail?.value ?? el.value ?? '')));
+    }
+  }
+
   // -------------------------------------------------------------------------
   // Constructor / lifecycle
   // -------------------------------------------------------------------------
@@ -109,15 +135,21 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.speechService.Message$.subscribe(msg => {
-      if (msg) {
-        // la voce dell'assistente captata dal microfono non e' un messaggio dell'utente
-        if (this.speechOutput.isEcho(msg)) return;
-        // l'utente parla: la voce dell'assistente si interrompe
-        this.speechOutput.cancel();
-        this.sendVoiceMessage(msg);
-        this.cdRef.detectChanges();
-      }
+    this.speechService.Phrase$.subscribe(phrase => {
+      // la voce dell'assistente captata dal microfono non e' un messaggio dell'utente
+      if (this.speechOutput.isEcho(phrase)) return;
+      // l'utente parla: la voce dell'assistente si interrompe
+      this.speechOutput.cancel();
+      this.onVoicePhrase(phrase);
+      this.cdRef.detectChanges();
+    });
+
+    // anteprima della frase in corso (mentre l'assistente parla e' quasi sempre la sua eco: non si mostra)
+    this.speechService.Interim$.subscribe(text => {
+      const interim = this.speechOutput.isSpeaking ? '' : text;
+      if (interim === this.voiceInterim) return;
+      this.voiceInterim = interim;
+      this.cdRef.detectChanges();
     });
 
     this.speechService.VoiceCommandActive$.subscribe(active => {
@@ -242,7 +274,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
         if (navigatePayload?.route) {
           const navOptions = navigatePayload.state ? { state: navigatePayload.state } : {};
           if (this.isModalOpen) {
-            this.chatModal.dismiss(null, 'cancel').then(() =>
+            this.chatModal.dismiss(null, 'navigate').then(() =>
               this.navCtrl.navigateForward(navigatePayload.route, navOptions)
             );
           } else {
@@ -259,6 +291,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
         }
 
         const responseType = res.data?.responseType ?? '';
+        this.pendingQuestion = responseType === 'question' || responseType === 'confirmation';
         const autoConfirm = responseType === 'confirmation' && !!res.data?.autoConfirm;
 
         // risposta vocale (se il messaggio e' arrivato a voce): domanda, riepilogo in forma di frase o risultato.
@@ -311,6 +344,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
         this.isChatLoading = false;
         this.pushMessage('Assistant', this.transloco.translate('components.fabMenu.serverError'), 'error');
         this.currentSessionId = null;
+        this.pendingQuestion  = false;
         this.cdRef.detectChanges();
         this.scrollToBottom();
       }
@@ -370,6 +404,10 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     this.modalType        = null;
     this.currentSessionId = null;   // reset sessione alla chiusura del modale
     this.suggestions      = [];
+    this.pendingQuestion  = false;
+    // chiusura decisa dall'utente: la bozza non inviata si scarta. Chiusura per navigazione (risposta del
+    // server): si tiene quello che l'utente ha dettato nel frattempo
+    if (event?.detail?.role !== 'navigate') this.setDraft('');
     // i comandi vocali rimangono attivi anche dopo la chiusura del modale
   }
 
@@ -407,6 +445,122 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   stopPushToTalk() {
     this.speechService.stopPushToTalk();
+  }
+
+  // invio manuale (bozza) / automatico (ogni frase parte da sola); scelta salvata nel browser
+  toggleSendMode() {
+    this.speechService.manualSend = !this.speechService.manualSend;
+  }
+
+  // -------------------------------------------------------------------------
+  // Bozza vocale
+  // -------------------------------------------------------------------------
+
+  // frase riconosciuta: in automatico si invia; in manuale si accoda alla bozza o la invia/svuota
+  private onVoicePhrase(phrase: string) {
+    if (!this.speechService.manualSend) {
+      this.sendVoiceMessage(phrase);
+      return;
+    }
+
+    const parsed = this.parseVoicePhrase(phrase);
+    const draft = this.voiceDraft.trim();
+
+    if (parsed.cancel) {
+      if (draft) this.setDraft('');
+      // bozza vuota e domanda in sospeso: "annulla" e' la risposta all'assistente
+      else if (this.pendingQuestion) this.sendVoiceMessage(phrase);
+      return;
+    }
+
+    // risposta breve a una domanda: uguale a un chip suggerito ("sì", "no") e nulla in bozza, parte subito
+    if (!draft && parsed.text && this.matchesSuggestion(parsed.text)) {
+      this.sendVoiceMessage(parsed.text);
+      return;
+    }
+
+    const next = this.joinDraft(draft, parsed.text);
+    if (parsed.send) {
+      this.setDraft('');
+      if (next) this.sendVoiceMessage(next);
+      return;
+    }
+    this.setDraft(next);
+  }
+
+  // pulsante Invia (composer vocale o riquadro con la modale chiusa)
+  sendVoiceDraft() {
+    // la frase in attesa della pausa entra subito nella bozza (o la invia, se finisce con "invia")
+    this.speechService.flushPending();
+    const text = this.voiceDraft.trim();
+    this.setDraft('');
+    if (text) {
+      this.speechOutput.cancel();
+      this.sendVoiceMessage(text);
+    }
+    this.cdRef.detectChanges();
+  }
+
+  clearVoiceDraft() {
+    this.speechService.flushPending();
+    this.setDraft('');
+    this.cdRef.detectChanges();
+  }
+
+  private setDraft(text: string) {
+    this.voiceDraft = text;
+    if (this.draftInputEl) this.draftInputEl.value = text;
+  }
+
+  // bozza modificata a mano (fuori da Angular): si aggiorna solo quando passa da vuota a piena o viceversa
+  private onDraftInput(value: string) {
+    const eraVuota = !this.voiceDraft.trim();
+    this.voiceDraft = value;
+    if (eraVuota !== !value.trim()) this.cdRef.detectChanges();
+  }
+
+  // frasi separate da un punto: il server le legge come comandi distinti (piano con piu' azioni)
+  private joinDraft(draft: string, text: string): string {
+    if (!text) return draft;
+    if (!draft) return text;
+    return draft + (/[.!?;,]$/.test(draft) ? ' ' : '. ') + text;
+  }
+
+  // "annulla" / "cancella" detta da sola; "invia" / "esegui" / "vai" alla fine della frase (tolta dal testo)
+  private parseVoicePhrase(phrase: string): { text: string; send: boolean; cancel: boolean } {
+    const text = phrase.trim();
+    if (this.voiceWords('components.fabMenu.voiceCancelWords').includes(this.normalizeVoice(text)))
+      return { text: '', send: false, cancel: true };
+
+    const words = text.split(/\s+/);
+    if (this.voiceWords('components.fabMenu.voiceSendWords').includes(this.normalizeVoice(words[words.length - 1] ?? ''))) {
+      words.pop();
+      const rest = words.join(' ')
+        .replace(/[\s.,;:!?]+$/, '')
+        .replace(/\s+(e|ed|poi|and|then)$/i, '')   // congiunzione rimasta in fondo ("... e invia")
+        .replace(/^(e|ed|poi|and|then)$/i, '');
+      return { text: rest, send: true, cancel: false };
+    }
+    return { text, send: false, cancel: false };
+  }
+
+  private matchesSuggestion(text: string): boolean {
+    const t = this.normalizeVoice(text);
+    return !!t && this.suggestions.some(s => this.normalizeVoice(s) === t);
+  }
+
+  // parole chiave nella lingua dell'interfaccia (la stessa del riconoscimento), separate da "|"
+  private voiceWords(key: string): string[] {
+    return this.transloco.translate(key).split('|').map(w => this.normalizeVoice(w)).filter(w => !!w);
+  }
+
+  // minuscolo, senza accenti e punteggiatura: "Sì!" -> "si"
+  private normalizeVoice(text: string): string {
+    return (text ?? '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[.,;:!?¡¿"«»“”]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   // risposte vocali attive / disattivate (scelta salvata nel browser)

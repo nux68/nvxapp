@@ -1309,7 +1309,16 @@
       "listening": "Ti ascolto…",
       "voiceReplyOn": "Risposte vocali attive",
       "voiceReplyOff": "Risposte vocali disattivate",
-      "stopSpeaking": "Interrompi la voce"
+      "stopSpeaking": "Interrompi la voce",
+      "emptyVocalManual": "Attiva il microfono e detta uno o più comandi: quando hai finito dì «invia» o premi il pulsante di invio.",
+      "voiceActiveManual": "Detta i comandi, poi dì «invia»",
+      "voiceDraftTitle": "Comando da inviare",
+      "voiceDraftHint": "Dì «invia» o premi Invia; «annulla» per svuotare",
+      "clearDraft": "Svuota",
+      "sendManual": "Invio manuale: dì «invia» o premi il pulsante di invio",
+      "sendAuto": "Invio automatico dopo ogni frase",
+      "voiceSendWords": "invia|esegui|vai",
+      "voiceCancelWords": "annulla|cancella"
     },
     "httpBackgroundErrorDialog": {
       "title": "Si è verificato un errore",
