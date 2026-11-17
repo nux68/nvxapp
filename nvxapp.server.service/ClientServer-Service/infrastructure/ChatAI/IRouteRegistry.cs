@@ -6,6 +6,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     {
         string Resolve(string? page, IReadOnlyCollection<string>? roles = null);
 
+        // Come Resolve, ma solo per i nomi dichiarati dai provider: null se il nome non e' dichiarato (nessun fallback)
+        string? Find(string? page, IReadOnlyCollection<string>? roles = null);
+
         // nomi di pagina dichiarati dai moduli per il prompt del comando Navigate (IRouteProvider.PromptPages)
         IReadOnlyList<string> PromptPages { get; }
     }

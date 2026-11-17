@@ -30,6 +30,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             if (string.IsNullOrWhiteSpace(page)) return "/home";
 
+            // Fallback: usa il nome della pagina direttamente come route
+            return Find(page, roles) ?? "/" + page.Trim().ToLowerInvariant();
+        }
+
+        public string? Find(string? page, IReadOnlyCollection<string>? roles = null)
+        {
+            if (string.IsNullOrWhiteSpace(page)) return null;
+
             // pagina diversa secondo il ruolo (es. "richieste" per l'amministratore)
             if (roles is { Count: > 0 })
             {
@@ -40,11 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return roleRoute.Route;
             }
 
-            if (_routes.TryGetValue(page.Trim(), out var route))
-                return route;
-
-            // Fallback: usa il nome della pagina direttamente come route
-            return "/" + page.Trim().ToLowerInvariant();
+            return _routes.TryGetValue(page.Trim(), out var route) ? route : null;
         }
     }
 }
