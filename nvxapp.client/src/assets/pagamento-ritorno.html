@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagamento</title>
+  <!--
+   Ritorno dalla pagina del provider di pagamento (PayPal, ANALISI_INFRASTRUCTURE_LICENZE.md §7.4).
+   Si apre nella finestra di pagamento aperta dall'app: passa l'esito ("pagamento=ok|annullato&token=<ordine>")
+   all'app con un BroadcastChannel (funziona anche se il provider ha staccato window.opener) e prova a chiudersi.
+   La conferma vera la fa l'app, con la sessione dell'utente (LicensePaymentConfirm): qui non c'e' login.
+  -->
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 32px 16px;
+           background: #f7f7f8; color: #1f2328; text-align: center; }
+    p { max-width: 420px; margin: 0 auto 12px; line-height: 1.5; }
+    .en { color: #6b7280; font-size: 0.9em; }
+    @media (prefers-color-scheme: dark) { body { background: #1b1c1f; color: #e6e6e6; } .en { color: #9ca3af; } }
+  </style>
+</head>
+<body>
+  <p id="it">Ritorno all'applicazione in corso…</p>
+  <p id="en" class="en">Returning to the application…</p>
+  <script>
+    (function () {
+      var q = new URLSearchParams(window.location.search);
+      var dati = { tipo: 'nvx-pagamento', esito: q.get('pagamento') === 'ok' ? 'ok' : 'annullato', token: q.get('token') };
+      var inviato = false;
+      if (dati.token) {
+        try { var canale = new BroadcastChannel('nvx-pagamento'); canale.postMessage(dati); canale.close(); inviato = true; } catch (e) { }
+        try { if (window.opener && !window.opener.closed) { window.opener.postMessage(dati, window.location.origin); inviato = true; } } catch (e) { }
+      }
+      document.getElementById('it').textContent = inviato
+        ? 'Fatto: puoi chiudere questa finestra e tornare all\'applicazione.'
+        : 'Torna all\'applicazione: in Gestione licenze usa "Verifica pagamento".';
+      document.getElementById('en').textContent = inviato
+        ? 'Done: you can close this window and go back to the application.'
+        : 'Go back to the application: in License management use "Check payment".';
+      if (inviato)
+        setTimeout(function () { window.close(); }, 300);
+    })();
+  </script>
+</body>
+</html>
