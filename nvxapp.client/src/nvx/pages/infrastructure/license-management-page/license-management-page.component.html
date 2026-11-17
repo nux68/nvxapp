@@ -20,11 +20,28 @@
         @if (!status.attive) {
           <ion-note class="nvx-nota-disabled">{{ 'pages.licenseManagement.systemNotActive' | transloco }}</ion-note>
         }
-        @if (status.debugPagamenti) {
+        @if (status.debugPagamenti && status.metodoSimulato?.length) {
           <br /><ion-note color="warning">{{ 'pages.license.debugPayments' | transloco }}</ion-note>
         }
+        @if (status.metodoSandbox?.length) {
+          <br /><ion-note color="warning">{{ 'pages.license.sandboxPayments' | transloco }}</ion-note>
+        }
         @if (messaggio) {
-          <br /><ion-note color="success">{{ messaggio }}</ion-note>
+          <br /><ion-note [color]="messaggioColore">{{ messaggio }}</ion-note>
+        }
+        @if (attesa) {
+          <div class="nvx-attesa-pagamento">
+            @if (attesa.redirectUrl) {
+              <ion-button size="small" fill="outline" shape="round" [href]="attesa.redirectUrl" target="_blank">
+                <ion-icon slot="start" name="open-outline"></ion-icon>
+                {{ 'pages.licenseManagement.paymentOpen' | transloco }}
+              </ion-button>
+            }
+            <ion-button size="small" shape="round" (click)="verificaPagamento(attesa.idAbbonamento)">
+              <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+              {{ 'pages.licenseManagement.paymentCheck' | transloco }}
+            </ion-button>
+          </div>
         }
         @if (!status.canManage) {
           <br /><ion-note class="nvx-nota-disabled">{{ 'pages.licenseManagement.readOnly' | transloco }}</ion-note>
@@ -154,6 +171,12 @@
             @if (a.disponibileSuCompany) { · {{ 'pages.licenseManagement.sharedWithCompanies' | transloco }} }
           </p>
         </ion-label>
+        @if (status?.canManage && a.stato === StatoAbbonamento.InAttesa) {
+          <ion-button slot="end" size="small" fill="outline" shape="round" (click)="verificaPagamento(a.id)">
+            <ion-icon slot="start" name="checkmark-done-outline"></ion-icon>
+            {{ 'pages.licenseManagement.paymentCheck' | transloco }}
+          </ion-button>
+        }
         @if (rinnovabile(a)) {
           <ion-button slot="end" size="small" fill="outline" shape="round" (click)="rinnova(a)">
             <ion-icon slot="start" name="refresh-outline"></ion-icon>
