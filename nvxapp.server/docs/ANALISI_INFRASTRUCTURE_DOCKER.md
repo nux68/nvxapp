@@ -173,6 +173,10 @@ I segreti non stanno negli appsettings (che vanno in git) ma in variabili d'ambi
 | `NVXAPP_AI__AI_groq__ApiKey` | `AI:AI_groq:ApiKey` | Solo con `AI:UseLLM = AI_groq` |
 | `NVXAPP_AI__AI_openrouter__ApiKey` | `AI:AI_openrouter:ApiKey` | Solo con `AI:UseLLM = AI_openrouter` |
 | `NVXAPP_AI__AI_deepseek__ApiKey` | `AI:AI_deepseek:ApiKey` | Solo con `AI:UseLLM = AI_deepseek` |
+| `NVXAPP_Payments__PayPal__ClientId` | `Payments:PayPal:ClientId` | Per i pagamenti PayPal delle licenze (con il Secret); senza, PayPal è simulato (`ANALISI_INFRASTRUCTURE_LICENZE.md` §7.4) |
+| `NVXAPP_Payments__PayPal__Secret` | `Payments:PayPal:Secret` | Come il ClientId |
+
+`NVXAPP_Payments__PayPal__Mode` (`sandbox` o `live`) non è un segreto: predefinito `sandbox` in `appsettings.json` e nel compose.
 
 Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo (es. `NVXAPP_Swagger__Enabled=true`).
 
