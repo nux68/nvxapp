@@ -1309,7 +1309,16 @@
       "listening": "Listening…",
       "voiceReplyOn": "Voice replies on",
       "voiceReplyOff": "Voice replies off",
-      "stopSpeaking": "Stop speaking"
+      "stopSpeaking": "Stop speaking",
+      "emptyVocalManual": "Turn on the microphone and dictate one or more commands: when you are done, say “send” or press the send button.",
+      "voiceActiveManual": "Dictate your commands, then say “send”",
+      "voiceDraftTitle": "Command to send",
+      "voiceDraftHint": "Say “send” or press Send; “cancel” to clear",
+      "clearDraft": "Clear",
+      "sendManual": "Manual send: say “send” or press the send button",
+      "sendAuto": "Automatic send after each sentence",
+      "voiceSendWords": "send|go|run",
+      "voiceCancelWords": "cancel|clear"
     },
     "httpBackgroundErrorDialog": {
       "title": "An error occurred",
