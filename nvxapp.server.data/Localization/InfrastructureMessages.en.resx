@@ -533,6 +533,22 @@
     <value>Payment failed. {0}</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicensePaymentCancelled" xml:space="preserve">
+    <value>Payment cancelled: you have not been charged.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentCancelledNote" xml:space="preserve">
+    <value>Cancelled by the user on the provider page.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentStillPending" xml:space="preserve">
+    <value>The payment is not completed yet. {0}</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentNotFound" xml:space="preserve">
+    <value>Payment not found.</value>
+    <comment>licenze</comment>
+  </data>
   <data name="LicenseNotRenewable" xml:space="preserve">
     <value>This licence cannot be renewed.</value>
     <comment>licenze</comment>

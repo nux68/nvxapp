@@ -16,6 +16,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
         public string? RedirectUrl { get; set; }
     }
 
+    public class ConfirmPaymentResult
+    {
+        public Lic_Abbonamento Abbonamento { get; set; } = null!;
+        /// <summary>stato del pagamento dopo la conferma</summary>
+        public StatoPagamento Stato { get; set; }
+        /// <summary>true = questa chiamata ha applicato il pagamento all'abbonamento (false = gia' applicato prima, o non completato)</summary>
+        public bool Applicato { get; set; }
+        /// <summary>true = era una nuova sottoscrizione (abbonamento InAttesa), false = un rinnovo</summary>
+        public bool NuovaSottoscrizione { get; set; }
+        public string? Errore { get; set; }
+    }
+
     /*
      Sottoscrizione, rinnovo e scadenza delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §6, §7).
      Non dipende dall'utente corrente: i controlli su chi puo' farlo stanno in LicenseService; lo usa anche la manutenzione notturna.
@@ -36,6 +48,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
 
         /// <summary>rinnova; automatico = dalla manutenzione notturna (null = non rinnovabile adesso, es. gestito dal provider)</summary>
         Task<SubscribeResult?> RenewAsync(Lic_Abbonamento abbonamento, bool automatico, string? returnUrl);
+
+        /// <summary>
+        /// esito di un pagamento ospitato dal provider (ritorno da PayPal): annullato = l'utente ha rinunciato.
+        /// Idempotente: il pagamento si applica all'abbonamento una sola volta
+        /// </summary>
+        Task<ConfirmPaymentResult> ConfirmPaymentAsync(Lic_Pagamento pagamento, Lic_Abbonamento abbonamento, bool annullato);
 
         /// <summary>disdetta immediata: Annullato e rinnovo automatico spento (nessun rimborso del periodo residuo)</summary>
         Task<Lic_Abbonamento> CancelAsync(Lic_Abbonamento abbonamento);
@@ -264,6 +282,133 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License
             abbonamento.Stato = StatoAbbonamento.Attivo;
             abbonamento.DataUltimoAvviso = null;
             retVal.Abbonamento = await _abbonamentoRepository.UpdateAsync(abbonamento);
+            return retVal;
+        }
+
+        /*
+         Conferma di un pagamento ospitato dal provider (§7.4), chiamata al ritorno dell'utente dalla pagina del provider.
+            - pagamento gia' Completato/Fallito: si restituisce lo stato, senza toccare nulla (ritorno ricaricato)
+            - si chiede sempre al gateway (capture se l'ordine e' approvato): anche con "annullato" (finestra chiusa, annulla su
+              PayPal) un ordine gia' approvato si incassa, cosi' un pagamento fatto non va perso
+            - annullato e ordine non approvato: pagamento Fallito; se era una nuova sottoscrizione (InAttesa) l'abbonamento diventa Annullato
+            - Completato applica il pagamento una sola volta: il passaggio a Completato
+              e' un UPDATE condizionato, con due conferme contemporanee solo una lo applica:
+                - nuova sottoscrizione: Attivo e annullati gli altri abbonamenti validi della funzione (cambio piano, come SubscribeAsync)
+                - rinnovo: periodo dal pagamento (DataInizioCoperta/DataFineCoperta, calcolati da RenewAsync); prezzo e limiti
+                  restano quelli gia' sull'abbonamento (la nuova fotografia del piano fatta da RenewAsync non era stata salvata)
+              InAttesa (non ancora approvato o incasso in verifica): nulla cambia
+        */
+        public async Task<ConfirmPaymentResult> ConfirmPaymentAsync(Lic_Pagamento pagamento, Lic_Abbonamento abbonamento, bool annullato)
+        {
+            var retVal = new ConfirmPaymentResult
+            {
+                Abbonamento = abbonamento,
+                Stato = pagamento.Stato,
+                // nuova sottoscrizione = nessun pagamento completato prima di questo (vale anche quando la conferma si ripete)
+                NuovaSottoscrizione = abbonamento.Stato == StatoAbbonamento.InAttesa
+                                      || !await _pagamentoRepository.FindAll(x => x.IdAbbonamento == abbonamento.Id && x.Id < pagamento.Id
+                                                                                  && (x.Stato == StatoPagamento.Completato || x.Stato == StatoPagamento.Debug))
+                                                                    .AnyAsync()
+            };
+            if (pagamento.Stato is not (StatoPagamento.Creato or StatoPagamento.InAttesa) || string.IsNullOrEmpty(pagamento.RiferimentoGateway))
+                return retVal;
+
+            var annullatoDallUtente = new PaymentResult { Stato = StatoPagamento.Fallito, Errore = InfrastructureMessages.Get("LicensePaymentCancelledNote") };
+            PaymentResult esito;
+            var gateway = _gatewayResolver.Resolve(pagamento.Metodo);
+            if (gateway == null || gateway.Debug)
+            {
+                // provider non piu' configurato: si puo' solo rinunciare
+                if (!annullato)
+                    throw new UserMessageException(InfrastructureMessages.Get("LicensePaymentNotConfigured"));
+                esito = annullatoDallUtente;
+            }
+            else
+            {
+                try
+                {
+                    esito = await gateway.ConfirmAsync(pagamento.RiferimentoGateway);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "Conferma del pagamento {Id} della licenza {IdAbbonamento} non riuscita", pagamento.Id, abbonamento.Id);
+                    throw new UserMessageException(InfrastructureMessages.Get("LicensePaymentFailed", ex.Message));
+                }
+                if (annullato && esito.Stato is StatoPagamento.InAttesa or StatoPagamento.Creato)
+                    esito = annullatoDallUtente;
+            }
+
+            retVal.Stato = esito.Stato;
+            retVal.Errore = esito.Errore;
+            var ora = DateTime.Now;
+            var nota = esito.Errore is { Length: > 500 } e ? e[..500] : esito.Errore;
+
+            if (esito.Stato == StatoPagamento.Completato)
+            {
+                var applicato = await _pagamentoRepository.FindAll(x => x.Id == pagamento.Id && (x.Stato == StatoPagamento.Creato || x.Stato == StatoPagamento.InAttesa))
+                                                          .ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, StatoPagamento.Completato)
+                                                                                    .SetProperty(x => x.DataPagamento, ora)
+                                                                                    .SetProperty(x => x.Note, (string?)null)
+                                                                                    .SetProperty(x => x.ModifiedDate, ora));
+                if (applicato == 0)
+                    return retVal;
+                retVal.Applicato = true;
+
+                if (abbonamento.Stato == StatoAbbonamento.InAttesa)
+                {
+                    var precedenti = await _abbonamentoRepository.FindAll(x => x.Id != abbonamento.Id && x.Ambito == abbonamento.Ambito
+                                                                               && x.IdCompany == abbonamento.IdCompany && x.IdFinancialAdvisor == abbonamento.IdFinancialAdvisor
+                                                                               && (x.Stato == StatoAbbonamento.Attivo || x.Stato == StatoAbbonamento.InAttesa))
+                                                                 .ToListAsync();
+                    abbonamento.Stato = StatoAbbonamento.Attivo;
+                    abbonamento.Metodo = pagamento.Metodo;
+                    retVal.Abbonamento = await _abbonamentoRepository.UpdateAsync(abbonamento);
+                    await AnnullaPrecedenti(precedenti);
+                }
+                else if (abbonamento.Stato == StatoAbbonamento.Annullato)
+                {
+                    // disdetto mentre l'utente pagava: il pagamento resta registrato, l'abbonamento non si riattiva
+                    Log.Warning("Pagamento {Id} completato per la licenza {IdAbbonamento} gia' disdetta: verificare un eventuale rimborso", pagamento.Id, abbonamento.Id);
+                }
+                else
+                {
+                    // rinnovo: continua il periodo se il pagamento parte dal giorno dopo la scadenza, altrimenti riparte dal pagamento
+                    if (pagamento.DataInizioCoperta.Date > abbonamento.DataScadenza.Date)
+                    {
+                        if (pagamento.DataInizioCoperta.Date != abbonamento.DataScadenza.Date.AddDays(1))
+                            abbonamento.DataInizio = pagamento.DataInizioCoperta;
+                        abbonamento.DataScadenza = pagamento.DataFineCoperta;
+                    }
+                    else if (pagamento.DataFineCoperta.Date > abbonamento.DataScadenza.Date)
+                        abbonamento.DataScadenza = pagamento.DataFineCoperta;
+                    abbonamento.Stato = StatoAbbonamento.Attivo;
+                    abbonamento.Metodo = pagamento.Metodo;
+                    abbonamento.DataUltimoAvviso = null;
+                    retVal.Abbonamento = await _abbonamentoRepository.UpdateAsync(abbonamento);
+                }
+                return retVal;
+            }
+
+            if (esito.Stato == StatoPagamento.Fallito)
+            {
+                await _pagamentoRepository.FindAll(x => x.Id == pagamento.Id && (x.Stato == StatoPagamento.Creato || x.Stato == StatoPagamento.InAttesa))
+                                          .ExecuteUpdateAsync(u => u.SetProperty(x => x.Stato, StatoPagamento.Fallito)
+                                                                    .SetProperty(x => x.Note, nota)
+                                                                    .SetProperty(x => x.ModifiedDate, ora));
+                if (abbonamento.Stato == StatoAbbonamento.InAttesa)
+                {
+                    abbonamento.Stato = StatoAbbonamento.Annullato;
+                    abbonamento.RinnovoAutomatico = false;
+                    retVal.Abbonamento = await _abbonamentoRepository.UpdateAsync(abbonamento);
+                }
+                return retVal;
+            }
+
+            // ancora in attesa (non approvato o incasso in verifica): si annota il motivo, se c'e'
+            if (nota != null)
+                await _pagamentoRepository.FindAll(x => x.Id == pagamento.Id)
+                                          .ExecuteUpdateAsync(u => u.SetProperty(x => x.Note, nota)
+                                                                    .SetProperty(x => x.ModifiedDate, ora));
             return retVal;
         }
 

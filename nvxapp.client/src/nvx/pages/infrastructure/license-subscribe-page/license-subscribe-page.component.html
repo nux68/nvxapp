@@ -124,8 +124,11 @@
             <ion-toggle formControlName="rinnovoAutomatico" justify="start">{{ 'pages.licenseManagement.autoRenew' | transloco }}</ion-toggle>
           </ion-item>
 
-          @if (debugPagamenti && prezzo > 0) {
+          @if (debugPagamenti && prezzo > 0 && metodoSimulato) {
             <ion-note color="warning">{{ 'pages.license.debugPayments' | transloco }}</ion-note>
+          }
+          @if (prezzo > 0 && metodoSandbox) {
+            <ion-note color="warning">{{ 'pages.license.sandboxPayments' | transloco }}</ion-note>
           }
         </section>
       }
