@@ -678,6 +678,6 @@ Comportamento (`LicenseService.LicenseCancel`):
 - [x] Client: finestra di pagamento (`ProviderCheckoutService`), pagina statica `assets/pagamento-ritorno.html`, attesa e "Verifica pagamento" in Gestione licenze, note debug/sandbox per metodo, testi (it, en)
 - [x] Build server e client
 - [ ] Prova con le chiavi sandbox dell'utente: sottoscrizione, rinnovo, annullo su PayPal, finestra chiusa + Verifica pagamento
-- [ ] Merge nella catena (Infrastructure → rami → AllFunction)
+- [x] Merge nella catena (Infrastructure → rami → AllFunction, build server e client di AllFunction), 17/11/2026
 - [x] Manuale `/licensemanagement` (it, en): pagamento PayPal nella finestra e "Verifica pagamento"
 - [ ] (più avanti) webhook PayPal, rinnovi automatici con le subscription PayPal, gateway carta
