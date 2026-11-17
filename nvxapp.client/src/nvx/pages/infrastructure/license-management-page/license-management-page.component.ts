@@ -1,14 +1,16 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { EsitoProvider, ProviderCheckoutService } from '../../../Utility/infrastructure/provider-checkout.service';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  AmbitoLicenza, FonteCopertura, LicenseAutoRenewPutInModel, LicenseCancelInModel, LicenseFunctionStatusModel, LicenseOfferModel, LicenseRenewInModel,
-  LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscriptionModel, StatoAbbonamento, TipoSoggettoLicenza
+  AmbitoLicenza, FonteCopertura, LicenseAutoRenewPutInModel, LicenseCancelInModel, LicenseFunctionStatusModel, LicenseOfferModel, LicensePaymentConfirmInModel, LicenseRenewInModel,
+  LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscriptionModel, MetodoPagamento, StatoAbbonamento, StatoPagamento, TipoSoggettoLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
@@ -18,6 +20,8 @@ import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Accou
     - licenze sottoscritte: rinnovo, rinnovo automatico e disdetta (solo PowerAdmin); la disdetta toglie subito la funzione dal menu
     - sottoscrizione o cambio piano dal listino risolto (l'azienda coperta dallo studio vede solo i piani superiori)
     - storico dei pagamenti; per lo studio, le aziende coperte dalle sue licenze
+    - pagamento ospitato dal provider (PayPal, §7.4) in una finestra a parte (ProviderCheckoutService): l'esito arriva dalla
+      pagina di ritorno e la pagina lo conferma (LicensePaymentConfirm); "Verifica pagamento" per i pagamenti rimasti in attesa
  Pagina di sola consultazione con azioni: i form stanno nella pagina di sottoscrizione.
 */
 @Component({
@@ -32,6 +36,10 @@ export class LicenseManagementPageComponent {
   public title: string;
   public status: LicenseStatusGetOutModel | null = null;
   public messaggio: string | null = null;
+  public messaggioColore = 'success';
+  // pagamento aperto nella finestra del provider: abbonamento e pagina del provider (per riaprirla se la finestra e' stata bloccata)
+  public attesa: { idAbbonamento: number; redirectUrl: string | null } | null = null;
+  private esitiSub: Subscription | null = null;
   public readonly Fonte = FonteCopertura;
   public readonly Stato = StatoLicenza;
   public readonly StatoAbbonamento = StatoAbbonamento;
@@ -40,6 +48,7 @@ export class LicenseManagementPageComponent {
               private licenseService: LicenseService,
               private collectionDialogService: CollectionDialogService,
               private userNavigationService: UserNavigationService,
+              private checkout: ProviderCheckoutService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('pages.licenseManagement.title');
   }
@@ -47,7 +56,50 @@ export class LicenseManagementPageComponent {
   ionViewWillEnter() {
     // esito della sottoscrizione appena fatta (dalla pagina di sottoscrizione)
     this.messaggio = history.state?.messaggio ?? null;
+    this.messaggioColore = history.state?.attesaPagamento ? 'warning' : 'success';
+    this.attesa = history.state?.attesaPagamento ?? null;
+    this.esitiSub?.unsubscribe();
+    this.esitiSub = this.checkout.esiti().subscribe(e => this.esitoProvider(e));
     this.load();
+  }
+
+  ionViewWillLeave() {
+    this.esitiSub?.unsubscribe();
+    this.esitiSub = null;
+  }
+
+  // esito dalla pagina di ritorno del provider (finestra di pagamento)
+  private esitoProvider(e: EsitoProvider) {
+    const request = new GenericRequest<LicensePaymentConfirmInModel>(LicensePaymentConfirmInModel);
+    request.data.riferimento = e.token;
+    request.data.annullato = e.esito !== 'ok';
+    this.conferma(request);
+  }
+
+  // "Verifica pagamento": ultimo pagamento in attesa dell'abbonamento (finestra chiusa, bloccata o esito perso)
+  verificaPagamento(idAbbonamento: number) {
+    const request = new GenericRequest<LicensePaymentConfirmInModel>(LicensePaymentConfirmInModel);
+    request.data.idAbbonamento = idAbbonamento;
+    this.conferma(request);
+  }
+
+  private conferma(request: GenericRequest<LicensePaymentConfirmInModel>) {
+    this.licenseService.LicensePaymentConfirm(request).subscribe({
+      next: res => {
+        if (res.success && res.data) {
+          const stato = res.data.stato;
+          this.messaggio = res.data.messages?.map(m => m.text).join(' ') || null;
+          this.messaggioColore = stato === StatoPagamento.Completato || stato === StatoPagamento.Debug ? 'success'
+            : stato === StatoPagamento.Fallito && !request.data.annullato ? 'danger' : 'warning';
+          // ancora in attesa: il pannello resta (si puo' riaprire la pagina del provider o verificare di nuovo)
+          if (stato !== StatoPagamento.InAttesa && stato !== StatoPagamento.Creato)
+            this.attesa = null;
+          this.userNavigationService.RefreshLicense();
+        }
+        this.load();
+      },
+      error: () => this.load()
+    });
   }
 
   private load() {
@@ -98,6 +150,8 @@ export class LicenseManagementPageComponent {
         offerta,
         metodo: this.status.metodo,
         debugPagamenti: this.status.debugPagamenti,
+        metodoSimulato: this.status.metodoSimulato ?? [],
+        metodoSandbox: this.status.metodoSandbox ?? [],
         attuale: this.abbonamentiDi(ambito).find(x => x.stato === StatoAbbonamento.Attivo) ?? null
       }
     });
@@ -113,18 +167,34 @@ export class LicenseManagementPageComponent {
       return;
     const request = new GenericRequest<LicenseRenewInModel>(LicenseRenewInModel);
     request.data.idAbbonamento = a.id;
-    request.data.returnUrl = window.location.href;
+    request.data.returnUrl = window.location.origin + '/assets/pagamento-ritorno.html';
+    // pagamento dal provider: la finestra si apre adesso, ancora dentro il clic di conferma (dopo la chiamata verrebbe bloccata)
+    const metodo = a.metodo || MetodoPagamento.CartaCredito;
+    const esterno = a.prezzo > 0 && !(this.status?.metodoSimulato ?? []).includes(metodo);
+    if (esterno)
+      this.checkout.apri();
     this.licenseService.LicenseRenew(request).subscribe(res => {
       if (res.success && res.data?.redirectUrl) {
-        window.location.href = res.data.redirectUrl;
+        this.inAttesa(a.id, res.data.redirectUrl);
         return;
       }
+      if (esterno)
+        this.checkout.chiudi();
       if (res.success) {
         this.messaggio = res.data?.messages?.[0]?.text ?? null;
         this.userNavigationService.RefreshLicense();
       }
       this.load();
     });
+  }
+
+  // pagamento avviato sulla pagina del provider: la finestra (se il browser l'ha aperta) va su PayPal, qui si aspetta l'esito
+  private inAttesa(idAbbonamento: number, redirectUrl: string) {
+    const aperta = this.checkout.vai(redirectUrl);
+    this.attesa = { idAbbonamento, redirectUrl };
+    this.messaggio = this.transloco.translate(aperta ? 'pages.licenseManagement.paymentWaiting' : 'pages.licenseManagement.popupBlocked');
+    this.messaggioColore = 'warning';
+    this.load();
   }
 
   rinnovoAutomatico(a: LicenseSubscriptionModel, valore: boolean) {
