@@ -17,6 +17,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string Request { get; set; } = string.Empty;
         public string SessionId { get; set; } = string.Empty;  // identifica la sessione conversazionale
         public string CurrentRoute { get; set; } = string.Empty; // pagina del client in cui si trova l'utente (help contestuale)
+        // voci del menu che l'utente vede, gia' tradotte dal client: la navigazione trova la pagina anche dal titolo
+        // della voce ("vai a tabelle" -> /crmparlist), vedi MenuPageMatcher. Vuoto = client che non le manda
+        public List<MenuPageModel> MenuPages { get; set; } = new();
+    }
+
+    // Voce del menu dell'utente (titolo e sezione nella sua lingua)
+    public class MenuPageModel
+    {
+        public string Title { get; set; } = string.Empty;    // "Tabelle"
+        public string Route { get; set; } = string.Empty;    // "/crmparlist"
+        public string Section { get; set; } = string.Empty;  // sezione del menu, es. "CRM"
     }
 
     public class ChatAIOutModel : ModelResult
@@ -71,6 +82,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         // Pagina del client al momento dell'ultimo messaggio (contesto per il LLM)
         public string CurrentRoute { get; set; } = string.Empty;
+
+        // Voci del menu dell'utente all'ultimo messaggio (contesto per il LLM: nomi di pagina per Navigate)
+        public List<MenuPageModel> MenuPages { get; set; } = new();
 
         public void AddToHistory(string role, string content)
         {
@@ -522,6 +536,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Contesto(sb, DateTime.Now, session.CurrentRoute);
+            if (_intents.Any(i => i.IsNavigation))
+                BuildSystemPromptUtil.BuildSystemPrompt_Append_Menu(sb, session.MenuPages);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intents(sb, _intents, detailedIntents);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Stato(sb, session, _intents);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Regole_Piano(sb, _intents.Any(i => i.Slots.Any(s => s.IsPerson)));
@@ -615,6 +631,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             if (!string.IsNullOrWhiteSpace(currentRoute))
                 sb.AppendLine($"L'utente si trova nella pagina {currentRoute}.");
             sb.AppendLine("");
+        }
+
+        // Voci del menu dell'utente (dal client, nella sua lingua): per Navigate lo slot page puo' essere il titolo di una voce
+        public static void BuildSystemPrompt_Append_Menu(StringBuilder sb, IReadOnlyList<MenuPageModel>? menuPages)
+        {
+            if (menuPages == null || menuPages.Count == 0) return;
+            var voci = menuPages
+                .Where(p => !string.IsNullOrWhiteSpace(p.Title))
+                .Select(p => string.IsNullOrWhiteSpace(p.Section) ? p.Title.Trim() : $"{p.Title.Trim()} ({p.Section.Trim()})")
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (voci.Count == 0) return;
+
+            sb.AppendLine("VOCI DEL MENU DELL'UTENTE (titolo e, tra parentesi, la sezione):");
+            sb.AppendLine(string.Join(", ", voci));
+            sb.AppendLine("Per l'intent Navigate lo slot page può essere il titolo di una di queste voci, scritto come lo dice l'utente (es. \"vai a tabelle\" -> page = \"tabelle\"); aggiungi la sezione solo se l'utente la nomina.");
+            sb.AppendLine();
         }
 
         // Catalogo degli intent: per tutti nome, descrizione ed esempi; per quelli in detailedIntents
