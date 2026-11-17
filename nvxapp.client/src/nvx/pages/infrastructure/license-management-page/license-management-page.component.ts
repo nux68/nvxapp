@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { formatDate } from '@angular/common';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -49,6 +49,7 @@ export class LicenseManagementPageComponent {
               private collectionDialogService: CollectionDialogService,
               private userNavigationService: UserNavigationService,
               private checkout: ProviderCheckoutService,
+              private toastCtrl: ToastController,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('pages.licenseManagement.title');
   }
@@ -152,7 +153,6 @@ export class LicenseManagementPageComponent {
         debugPagamenti: this.status.debugPagamenti,
         metodoSimulato: this.status.metodoSimulato ?? [],
         metodoSandbox: this.status.metodoSandbox ?? [],
-        contoProvaPayPal: this.status.contoProvaPayPal ?? null,
         attuale: this.abbonamentiDi(ambito).find(x => x.stato === StatoAbbonamento.Attivo) ?? null
       }
     });
@@ -196,6 +196,24 @@ export class LicenseManagementPageComponent {
     this.messaggio = this.transloco.translate(aperta ? 'pages.licenseManagement.paymentWaiting' : 'pages.licenseManagement.popupBlocked');
     this.messaggioColore = 'warning';
     this.load();
+  }
+
+  // conto PayPal di prova: copia di email o password negli appunti
+  async copia(valore: string) {
+    let copiato = false;
+    try {
+      await navigator.clipboard.writeText(valore);
+      copiato = true;
+    } catch {
+      // appunti non disponibili (es. pagina non sicura): si seleziona il testo a mano
+    }
+    const toast = await this.toastCtrl.create({
+      message: this.transloco.translate(copiato ? 'pages.licenseSubscribe.copied' : 'pages.licenseSubscribe.copyFailed'),
+      duration: 2000,
+      position: 'top',
+      color: copiato ? 'success' : 'warning'
+    });
+    await toast.present();
   }
 
   rinnovoAutomatico(a: LicenseSubscriptionModel, valore: boolean) {

@@ -8,3 +8,29 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+// conto PayPal di prova: email e password con il pulsante Copia
+.nvx-conto-prova {
+  margin-top: 8px;
+
+  .riga {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .etichetta-conto {
+    min-width: 90px;
+    color: var(--nvx-text-muted);
+    font-size: 0.9rem;
+  }
+
+  code {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--nvx-surface-soft);
+    font-size: 0.9rem;
+    word-break: break-all;
+  }
+}
