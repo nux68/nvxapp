@@ -1,4 +1,5 @@
 using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using System.Text.RegularExpressions;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
@@ -20,6 +21,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Applicativi attivi per l'azienda dell'utente; null = non noti (nessun limite, es. prova delle frasi)
         IReadOnlyCollection<ApplicationType>? Applications { get; set; }
 
+        // Voci del menu che l'utente vede (dal client, gia' tradotte); vuoto = non note
+        IReadOnlyList<MenuPageModel> MenuPages { get; set; }
+
         bool IsInRole(params string[] roles);
 
         // vero se l'applicativo è attivo per l'azienda (null = elemento comune, sempre disponibile)
@@ -32,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         public IReadOnlyList<string> Roles { get; set; } = new List<string>();
         public string CurrentRoute { get; set; } = string.Empty;
         public IReadOnlyCollection<ApplicationType>? Applications { get; set; }
+        public IReadOnlyList<MenuPageModel> MenuPages { get; set; } = new List<MenuPageModel>();
 
         public bool IsInRole(params string[] roles) =>
             roles.Any(r => Roles.Contains(r, StringComparer.OrdinalIgnoreCase));

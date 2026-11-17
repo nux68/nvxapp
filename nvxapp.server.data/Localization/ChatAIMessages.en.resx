@@ -87,6 +87,12 @@
   <data name="NavigateResult" xml:space="preserve">
     <value>Navigating to '{0}'.</value>
   </data>
+  <data name="NavigatePageAmbiguous" xml:space="preserve">
+    <value>There is more than one '{0}' page: {1}. Tell me which one, for example by adding the section.</value>
+  </data>
+  <data name="NavigatePageNotFound" xml:space="preserve">
+    <value>I can't find the '{0}' page in your menu.</value>
+  </data>
   <data name="AnswerNotProcessed" xml:space="preserve">
     <value>I couldn't process your answer, please try again.</value>
   </data>

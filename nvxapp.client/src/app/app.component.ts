@@ -6,7 +6,7 @@ import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
-import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
+import { MainMenuItem, MainMenuService, MenuType, VoceNavigabile } from '../nvx/Utility/infrastructure/main-menu.service';
 import { GRUPPO_SERVIZI, MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
@@ -275,6 +275,26 @@ export class AppComponent implements OnInit {
         sezioni: [{ gruppi: this.groupedSupportMenu, mostra: () => true }],
         aperta: this.groupedSupportMenu[0].menuHeader.title
       }];
+
+    this.pubblicaVociNavigabili();
+  }
+
+  // voci cliccabili del menu appena composto, per la navigazione della chat (MainMenuService.VociNavigabili):
+  // sezione = applicativo ("CRM") o, per Accesso, l'intestazione del gruppo
+  private pubblicaVociNavigabili(): void {
+    const voci: VoceNavigabile[] = [];
+    const aggiungi = (sezioni: SezioneMenu[], sezione: ((g: GroupMainMenuItem) => string)) => {
+      for (const s of sezioni)
+        for (const g of s.gruppi)
+          for (const p of g.menuItem)
+            if (p.menuType === MenuType.MenuItem && p.url && s.mostra(p.component) && !this.voceDisattivata(p) &&
+                !voci.some(v => v.url === p.url))
+              voci.push({ title: p.title, url: p.url, section: sezione(g) });
+    };
+    aggiungi(this.sezioniAccesso, g => g.menuHeader.title);
+    for (const a of this.sezioniApplicativi)
+      aggiungi(a.sezioni, () => a.titolo);
+    this.mainMenuService.VociNavigabili = voci;
   }
 
   // dopo il login si apre solo il primo applicativo disponibile (mai "Amministrazione"), con la sua prima sottosezione
