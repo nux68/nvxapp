@@ -60,6 +60,10 @@ namespace nvxapp.server.Controllers.Infrastructure
         public async Task<GenericResult<LicenseRenewOutModel>> LicenseRenew(GenericRequest<LicenseRenewInModel> inModel)
             => await _service.LicenseRenew(inModel, false);
 
+        [Authorize, HttpPost, Route("LicensePaymentConfirm")]
+        public async Task<GenericResult<LicensePaymentConfirmOutModel>> LicensePaymentConfirm(GenericRequest<LicensePaymentConfirmInModel> inModel)
+            => await _service.LicensePaymentConfirm(inModel, false);
+
         [Authorize, HttpPost, Route("LicenseAutoRenewPut")]
         public async Task<GenericResult<LicenseAutoRenewPutOutModel>> LicenseAutoRenewPut(GenericRequest<LicenseAutoRenewPutInModel> inModel)
             => await _service.LicenseAutoRenewPut(inModel, false);
