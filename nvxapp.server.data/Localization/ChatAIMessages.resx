@@ -94,6 +94,14 @@
     <value>Navigazione verso '{0}'.</value>
     <comment>{0} = route</comment>
   </data>
+  <data name="NavigatePageAmbiguous" xml:space="preserve">
+    <value>Ci sono più pagine '{0}': {1}. Dimmi quale, ad esempio aggiungendo la sezione.</value>
+    <comment>{0} = nome detto dall'utente, {1} = voci del menu con la sezione tra parentesi</comment>
+  </data>
+  <data name="NavigatePageNotFound" xml:space="preserve">
+    <value>Non trovo la pagina '{0}' nel tuo menu.</value>
+    <comment>{0} = nome detto dall'utente</comment>
+  </data>
   <data name="AnswerNotProcessed" xml:space="preserve">
     <value>Non sono riuscito a elaborare la risposta, riprova.</value>
   </data>

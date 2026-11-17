@@ -15,6 +15,11 @@ import { DIALOG_REDEFINITION } from './dialog-redefinition';
 })
 export class MainMenuService implements iMainMenuService {
 
+  // voci di menu che l'utente vede, con la sezione in cui compaiono (chiavi di traduzione). Le pubblica AppComponent
+  // ogni volta che ricompone il menu (ruoli, applicativi, voci nascoste, licenze); la chat le manda al server cosi'
+  // la navigazione a voce trova la pagina anche dal titolo della voce ("vai a tabelle" -> /crmparlist)
+  public VociNavigabili: VoceNavigabile[] = [];
+
   // ridefinizioni dei dialog registrate dagli applicativi (vedi dialog-redefinition.ts)
   private readonly dialogRedefinitions = inject(DIALOG_REDEFINITION, { optional: true }) ?? [];
 
@@ -445,6 +450,13 @@ export class MainMenuItem {
   }
 }
 
+
+/** Voce del menu visibile all'utente (MainMenuService.VociNavigabili): titolo e sezione sono chiavi di traduzione. */
+export interface VoceNavigabile {
+  title: string;
+  url: string;
+  section: string;
+}
 
 /** Ruoli dell'azienda a cui il CompanyPowerAdmin puo' nascondere le voci di menu (lui vede sempre tutto). */
 export const RUOLI_MENU_CONFIGURABILI = ['CompanyAdmin', 'User'];
