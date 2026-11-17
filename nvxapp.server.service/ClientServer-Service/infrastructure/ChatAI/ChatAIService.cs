@@ -167,6 +167,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 _chatUserContext.Roles = userRoles;
                 _chatUserContext.CurrentRoute = model.Data.CurrentRoute ?? string.Empty;
                 _chatUserContext.Applications = applications;
+                _chatUserContext.MenuPages = model.Data.MenuPages ?? new();
 
                 return await ProcessMessageAsync(model.Data);
 
@@ -193,6 +194,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             // il messaggio si elabora in una sessione nuova: non va perso.
             var session = TryGetSession(input.SessionId) ?? CreateSession();
             session.CurrentRoute = input.CurrentRoute ?? string.Empty;
+            session.MenuPages = input.MenuPages ?? new();
 
             // 2. Comando di reset
             if (IsResetCommand(userMessage))
