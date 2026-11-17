@@ -842,7 +842,8 @@
       "subscriptionState2": "Scaduta",
       "subscriptionState3": "Sospesa",
       "subscriptionState4": "Annullata",
-      "debugPayments": "Pagamenti in modalità debug: il giro di acquisto si completa senza addebiti reali."
+      "debugPayments": "Pagamenti in modalità debug: il giro di acquisto si completa senza addebiti reali.",
+      "sandboxPayments": "PayPal in modalità di prova (sandbox): si paga con i conti di prova PayPal, nessun addebito reale."
     },
     "licenseCatalogList": {
       "title": "Listini licenze",
@@ -908,6 +909,10 @@
       "dealersNote": "Un centro abilitato può definire listini propri, che per le sue aziende e i suoi studi sostituiscono quelli globali."
     },
     "licenseManagement": {
+      "paymentWaiting": "Completa il pagamento nella finestra di PayPal: al ritorno l'esito comparirà qui. Se hai chiuso la finestra usa «Verifica pagamento».",
+      "popupBlocked": "Il browser ha bloccato la finestra di pagamento: usa «Apri la pagina di pagamento» (o consenti i popup per questo sito), poi «Verifica pagamento».",
+      "paymentOpen": "Apri la pagina di pagamento",
+      "paymentCheck": "Verifica pagamento",
       "title": "Gestione licenze",
       "studio": "Studio: {{studio}}",
       "systemNotActive": "Il sistema licenze non è ancora attivo: per ora nessuna funzione viene limitata.",

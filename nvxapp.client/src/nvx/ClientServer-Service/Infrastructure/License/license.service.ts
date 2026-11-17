@@ -7,7 +7,7 @@ import { GenericResult } from '../../ModelsBase/generic-result';
 import {
   LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel, LicenseCancelInModel, LicenseCancelOutModel, LicenseCatalogDeleteInModel, LicenseCatalogDeleteOutModel,
   LicenseCatalogGetInModel, LicenseCatalogGetOutModel, LicenseCatalogListInModel, LicenseCatalogListOutModel,
-  LicenseCatalogPutInModel, LicenseCatalogPutOutModel, LicensePublicPriceListInModel, LicensePublicPriceListOutModel, LicenseRenewInModel, LicenseRenewOutModel,
+  LicenseCatalogPutInModel, LicenseCatalogPutOutModel, LicensePaymentConfirmInModel, LicensePaymentConfirmOutModel, LicensePublicPriceListInModel, LicensePublicPriceListOutModel, LicenseRenewInModel, LicenseRenewOutModel,
   LicenseSettingsGetInModel, LicenseSettingsGetOutModel, LicenseSettingsPutInModel, LicenseSettingsPutOutModel,
   LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscribeInModel, LicenseSubscribeOutModel
 } from './Models/license-model';
@@ -35,6 +35,8 @@ export class LicenseService {
   LicenseStatusGet(model: GenericRequest<LicenseStatusGetInModel>) { return this.post<LicenseStatusGetInModel, LicenseStatusGetOutModel>('LicenseStatusGet', model); }
   LicenseSubscribe(model: GenericRequest<LicenseSubscribeInModel>) { return this.post<LicenseSubscribeInModel, LicenseSubscribeOutModel>('LicenseSubscribe', model); }
   LicenseRenew(model: GenericRequest<LicenseRenewInModel>) { return this.post<LicenseRenewInModel, LicenseRenewOutModel>('LicenseRenew', model); }
+  // ritorno dalla pagina del provider (PayPal): conferma o annullamento del pagamento
+  LicensePaymentConfirm(model: GenericRequest<LicensePaymentConfirmInModel>) { return this.post<LicensePaymentConfirmInModel, LicensePaymentConfirmOutModel>('LicensePaymentConfirm', model); }
   LicenseAutoRenewPut(model: GenericRequest<LicenseAutoRenewPutInModel>) { return this.post<LicenseAutoRenewPutInModel, LicenseAutoRenewPutOutModel>('LicenseAutoRenewPut', model); }
   LicenseCancel(model: GenericRequest<LicenseCancelInModel>) { return this.post<LicenseCancelInModel, LicenseCancelOutModel>('LicenseCancel', model); }
 }
