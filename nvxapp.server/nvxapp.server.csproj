@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.2.0" />
+    <PackageReference Include="AutoMapper" Version="17.0.0" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.25" />
     <PackageReference Include="Hangfire.PostgreSql" Version="1.21.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
@@ -42,8 +42,7 @@
 	</Target>
 
 	<!-- BUILD ANGULAR E COPIA IN wwwroot SOLO IN RELEASE/PUBLISH -->
-	<Target Name="BuildAngular" BeforeTargets="PrepareForPublish;WebPublish"
-					Condition="'$(Configuration)' == 'Release' AND '$(AngularBuilt)' != 'true'">
+	<Target Name="BuildAngular" BeforeTargets="PrepareForPublish;WebPublish" Condition="'$(Configuration)' == 'Release' AND '$(AngularBuilt)' != 'true'">
 
 		<!-- Flag per evitare doppia esecuzione se entrambi i target scattano -->
 		<PropertyGroup>
@@ -71,9 +70,7 @@
 		<ItemGroup>
 			<AngularOutputFiles Include="$(MSBuildProjectDirectory)/../nvxapp.client/www/**/*.*" />
 		</ItemGroup>
-		<Copy SourceFiles="@(AngularOutputFiles)"
-					DestinationFolder="$(MSBuildProjectDirectory)/wwwroot/%(RecursiveDir)"
-					SkipUnchangedFiles="false" />
+		<Copy SourceFiles="@(AngularOutputFiles)" DestinationFolder="$(MSBuildProjectDirectory)/wwwroot/%(RecursiveDir)" SkipUnchangedFiles="false" />
 
 	</Target>
 
