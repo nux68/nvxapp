@@ -202,7 +202,13 @@
         "closed": "Fatte / annullate",
         "done": "Fatta",
         "onlyMine": "Solo le mie",
-        "empty": "Nessuna attività."
+        "empty": "Nessuna attività.",
+        "viewList": "Lista",
+        "viewWeek": "Settimana",
+        "viewMonth": "Mese",
+        "previous": "Precedente",
+        "following": "Successivo",
+        "more": "+{{n}} altre"
       },
       "activityEdit": {
         "title": "Attività",

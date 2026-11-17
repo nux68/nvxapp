@@ -3,17 +3,74 @@
 <ion-content [fullscreen]="true" class="nvx-wide">
   <ion-card>
     <ion-card-content>
-      <ion-segment [(ngModel)]="sezione" (ionChange)="filtra()" [scrollable]="true">
-        <ion-segment-button value="oggi"><ion-label>{{ 'crm.pages.activityList.today' | transloco }}</ion-label></ion-segment-button>
-        <ion-segment-button value="scadute"><ion-label>{{ 'crm.pages.activityList.overdue' | transloco }} @if (conta('scadute') > 0) { <ion-badge color="danger">{{ conta('scadute') }}</ion-badge> }</ion-label></ion-segment-button>
-        <ion-segment-button value="prossime"><ion-label>{{ 'crm.pages.activityList.next' | transloco }}</ion-label></ion-segment-button>
-        <ion-segment-button value="fatte"><ion-label>{{ 'crm.pages.activityList.closed' | transloco }}</ion-label></ion-segment-button>
-      </ion-segment>
-      @if (amministratore) {
-        <ion-item lines="none"><ion-toggle [(ngModel)]="soloMie" (ionChange)="load()">{{ 'crm.pages.activityList.onlyMine' | transloco }}</ion-toggle></ion-item>
+      <div class="agenda-head">
+        <ion-segment class="agenda-vista" [(ngModel)]="vista" (ionChange)="cambiaVista()">
+          <ion-segment-button value="lista"><ion-icon name="list-outline"></ion-icon><ion-label>{{ 'crm.pages.activityList.viewList' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="settimana"><ion-icon name="calendar-number-outline"></ion-icon><ion-label>{{ 'crm.pages.activityList.viewWeek' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="mese"><ion-icon name="calendar-outline"></ion-icon><ion-label>{{ 'crm.pages.activityList.viewMonth' | transloco }}</ion-label></ion-segment-button>
+        </ion-segment>
+        @if (amministratore) {
+          <ion-item lines="none"><ion-toggle [(ngModel)]="soloMie" (ionChange)="load()">{{ 'crm.pages.activityList.onlyMine' | transloco }}</ion-toggle></ion-item>
+        }
+      </div>
+
+      @if (vista === 'lista') {
+        <ion-segment [(ngModel)]="sezione" (ionChange)="filtra()" [scrollable]="true">
+          <ion-segment-button value="oggi"><ion-label>{{ 'crm.pages.activityList.today' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="scadute"><ion-label>{{ 'crm.pages.activityList.overdue' | transloco }} @if (conta('scadute') > 0) { <ion-badge color="danger">{{ conta('scadute') }}</ion-badge> }</ion-label></ion-segment-button>
+          <ion-segment-button value="prossime"><ion-label>{{ 'crm.pages.activityList.next' | transloco }}</ion-label></ion-segment-button>
+          <ion-segment-button value="fatte"><ion-label>{{ 'crm.pages.activityList.closed' | transloco }}</ion-label></ion-segment-button>
+        </ion-segment>
+        <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="calendar-outline" [searchText]="searchText" [highlight]="scaduta"
+          [emptyText]="'crm.pages.activityList.empty' | transloco"></nvx-list>
+      } @else {
+        <div class="agenda-nav">
+          <ion-button fill="clear" size="small" (click)="sposta(-1)" [attr.aria-label]="'crm.pages.activityList.previous' | transloco"><ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon></ion-button>
+          <ion-button fill="outline" size="small" (click)="vaiAOggi()">{{ 'crm.pages.activityList.today' | transloco }}</ion-button>
+          <ion-button fill="clear" size="small" (click)="sposta(1)" [attr.aria-label]="'crm.pages.activityList.following' | transloco"><ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon></ion-button>
+          <span class="agenda-periodo">{{ periodo }}</span>
+        </div>
+
+        <div class="agenda-grid" [class.mese]="vista === 'mese'" [class.settimana]="vista === 'settimana'">
+          @if (vista === 'mese') {
+            @for (g of giorni.slice(0, 7); track g.chiave) {
+              <div class="agenda-intest">{{ g.nome }}</div>
+            }
+          }
+          @for (g of giorni; track g.chiave) {
+            <div class="agenda-giorno" [class.oggi]="g.oggi" [class.fuori]="g.fuoriMese" (click)="nuova(g)"
+                 [attr.title]="'crm.pages.activityList.new' | transloco">
+              <div class="agenda-data" (click)="vista === 'mese' && apriSettimana(g, $event)">
+                @if (vista === 'settimana') { <span class="agenda-nome">{{ g.nome }}</span> }
+                <span class="agenda-num">{{ g.numero }}</span>
+                @if (vista === 'mese' && g.attivita.length) { <span class="agenda-conta">{{ g.attivita.length }}</span> }
+              </div>
+              @for (x of (vista === 'mese' ? g.attivita.slice(0, maxPerGiornoMese) : g.attivita); track x.id) {
+                <div class="agenda-att" [class.chiusa]="chiusa(x)" [class.scaduta]="scaduta(x)" [style.border-left-color]="x.colore || null"
+                     (click)="apri(x, $event)" [attr.title]="x.tipo + ': ' + x.oggetto">
+                  <div class="agenda-att-riga">
+                    @if (x.icona) { <ion-icon [name]="x.icona" [style.color]="x.colore || null"></ion-icon> }
+                    <span class="agenda-ora">{{ ora(x) }}</span>
+                    <span class="agenda-ogg">{{ x.oggetto }}</span>
+                  </div>
+                  @if (vista === 'settimana') {
+                    @if (riferimentoDi(x)) { <div class="agenda-rif">{{ riferimentoDi(x) }}</div> }
+                    @if (!soloMie && x.assegnatario) { <div class="agenda-rif">{{ x.assegnatario }}</div> }
+                  }
+                </div>
+              }
+              @if (vista === 'mese' && g.attivita.length > maxPerGiornoMese) {
+                <button type="button" class="agenda-altre" (click)="apriSettimana(g, $event)">
+                  {{ 'crm.pages.activityList.more' | transloco: { n: g.attivita.length - maxPerGiornoMese } }}
+                </button>
+              }
+              @if (vista === 'settimana' && !g.attivita.length) {
+                <div class="agenda-vuoto">—</div>
+              }
+            </div>
+          }
+        </div>
       }
-      <nvx-list [items]="items" [columns]="columns" [actions]="actions" icon="calendar-outline" [searchText]="searchText" [highlight]="scaduta"
-        [emptyText]="'crm.pages.activityList.empty' | transloco"></nvx-list>
     </ion-card-content>
   </ion-card>
 </ion-content>
