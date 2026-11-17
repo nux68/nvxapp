@@ -1,0 +1,40 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-note class="nvx-mcp-note">{{ (wholeCompany ? 'pages.mcpCallLog.noteCompany' : 'pages.mcpCallLog.noteOwn') | transloco }}</ion-note>
+
+      <ion-segment [value]="giorni" (ionChange)="periodoChanged($event.detail.value)" [scrollable]="true">
+        @for (p of periodi; track p) {
+          <ion-segment-button [value]="p">
+            <ion-label>{{ ('pages.mcpCallLog.period.' + p) | transloco }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+
+      @if (truncated) {
+        <ion-note class="nvx-mcp-note" color="warning">{{ 'pages.mcpCallLog.truncated' | transloco }}</ion-note>
+      }
+
+      <nvx-list
+        [items]="logList"
+        [columns]="columns"
+        trackKey="id"
+        [icon]="iconOf"
+        [highlight]="highlight"
+        [searchText]="searchText"
+        [sort]="sortByData"
+        [emptyText]="'pages.mcpCallLog.empty' | transloco">
+      </nvx-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
