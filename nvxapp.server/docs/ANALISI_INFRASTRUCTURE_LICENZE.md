@@ -303,7 +303,8 @@ Flag di configurazione (es. `NVXAPP_Payments__Debug=true`) che fa risolvere l'`I
 **Configurazione** (`Payments:PayPal` in `appsettings.json`, secret mai nel repository):
 - `Mode`: `sandbox` (conti di prova di developer.paypal.com, denaro finto) o `live`;
 - `ClientId`, `Secret`: variabili d'ambiente `NVXAPP_Payments__PayPal__ClientId` e `NVXAPP_Payments__PayPal__Secret`. Windows (Visual Studio, IIS): `docs/imposta-variabili-nvxapp.ps1` o la copia locale `*.segreti.ps1`. Docker: `DockerLocale.env` / `DockerVps.env` (modello `.env.example`), passate dal `docker-compose.yml` (anche `NVXAPP_Payments__PayPal__Mode`, predefinito `sandbox`). Vedi `ANALISI_INFRASTRUCTURE_DOCKER.md` §8;
-- `BrandName`: nome mostrato sulla pagina PayPal.
+- `BrandName`: nome mostrato sulla pagina PayPal;
+- `SandboxBuyer` (17/11/2026, solo per le prove): `Users` (nomi utente separati da virgola, es. `CompanyPowerAdmin_1_1_1`), `Email` e `Password` del conto "personal" della sandbox (variabili `NVXAPP_Payments__PayPal__SandboxBuyer__Email` / `__Password`). Con PayPal in sandbox e l'utente collegato nell'elenco, `LicenseStatusGet` restituisce `ContoProvaPayPal` e la pagina di sottoscrizione mostra email e password, ciascuna con il pulsante **Copia**, sotto la nota sandbox nel riquadro "La tua scelta" (con PayPal scelto). Con `Mode = live` non si mostrano mai.
 
 **Scelta del gateway** (`PaymentGatewayResolver`, per metodo): un gateway reale configurato per il metodo vince sempre; altrimenti, con `Payments:Debug = true`, quello di debug. Con le chiavi PayPal, quindi, **PayPal passa dal provider vero e la carta resta simulata**. Senza chiavi tutto resta come prima (anche il deploy Docker). Il client riceve `MetodoSimulato` e `MetodoSandbox` per mostrare la nota giusta per il metodo scelto.
 
@@ -680,4 +681,5 @@ Comportamento (`LicenseService.LicenseCancel`):
 - [ ] Prova con le chiavi sandbox dell'utente: sottoscrizione, rinnovo, annullo su PayPal, finestra chiusa + Verifica pagamento
 - [x] Merge nella catena (Infrastructure → rami → AllFunction, build server e client di AllFunction), 17/11/2026
 - [x] Manuale `/licensemanagement` (it, en): pagamento PayPal nella finestra e "Verifica pagamento"
+- [x] Conto PayPal di prova (`Payments:PayPal:SandboxBuyer`) mostrato con il pulsante Copia agli utenti di prova in sandbox, 17/11/2026
 - [ ] (più avanti) webhook PayPal, rinnovi automatici con le subscription PayPal, gateway carta
