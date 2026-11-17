@@ -296,6 +296,36 @@ Flag di configurazione (es. `NVXAPP_Payments__Debug=true`) che fa risolvere l'`I
 - Callback del provider verificati (firma/webhook) e **idempotenti** (un rinnovo non deve contare due volte): chiave sul `RiferimentoGateway`.
 - Rilevante per `piano-security.md` (auth/authz): gli endpoint di pagamento richiedono il ruolo PowerAdmin del soggetto e verificano l'appartenenza, mai l'id soggetto dal client.
 
+### 7.4 PayPal (17/11/2026)
+
+`PayPalPaymentGateway` (`License/Payment/PayPalPaymentGateway.cs`), API REST **Orders v2** con pagamento ospitato da PayPal.
+
+**Configurazione** (`Payments:PayPal` in `appsettings.json`, secret mai nel repository):
+- `Mode`: `sandbox` (conti di prova di developer.paypal.com, denaro finto) o `live`;
+- `ClientId`, `Secret`: variabili d'ambiente `NVXAPP_Payments__PayPal__ClientId` e `NVXAPP_Payments__PayPal__Secret`;
+- `BrandName`: nome mostrato sulla pagina PayPal.
+
+**Scelta del gateway** (`PaymentGatewayResolver`, per metodo): un gateway reale configurato per il metodo vince sempre; altrimenti, con `Payments:Debug = true`, quello di debug. Con le chiavi PayPal, quindi, **PayPal passa dal provider vero e la carta resta simulata**. Senza chiavi tutto resta come prima (anche il deploy Docker). Il client riceve `MetodoSimulato` e `MetodoSandbox` per mostrare la nota giusta per il metodo scelto.
+
+**Flusso**:
+1. `LicenseSubscribe` / `LicenseRenew`: il server crea l'ordine (intent `CAPTURE`, importo dal listino, `custom_id` = abbonamento) e restituisce `RedirectUrl`. Il pagamento resta `InAttesa` con `RiferimentoGateway` = id dell'ordine; la nuova sottoscrizione resta `InAttesa`, il rinnovo non tocca ancora l'abbonamento (il periodo è sul pagamento).
+2. Il login del client vive **solo in memoria**: un redirect a pagina intera lo perderebbe. PayPal si apre quindi in una **finestra a parte**, aperta nello stesso clic (`ProviderCheckoutService`), mentre l'app resta sulla Gestione licenze ad aspettare.
+3. PayPal riporta la finestra su `assets/pagamento-ritorno.html?pagamento=ok|annullato&token=<ordine>`: la pagina statica passa l'esito all'app con un `BroadcastChannel` (funziona anche se PayPal stacca `window.opener`) e prova a chiudersi.
+4. L'app chiama `LicensePaymentConfirm` con la sua sessione → `LicenseSubscriptionManager.ConfirmPaymentAsync`:
+   - si chiede **sempre** a PayPal lo stato dell'ordine; se è approvato lo si incassa (capture, `PayPal-Request-Id` fissa sull'ordine): anche un "annullato" con ordine già approvato viene incassato, così un pagamento fatto non si perde;
+   - `Completato` si applica **una sola volta** (UPDATE condizionato sul pagamento): nuova sottoscrizione → `Attiva`, cambio piano come `SubscribeAsync`, attivazione degli applicativi dell'azienda (§15.6); rinnovo → periodo del pagamento;
+   - annullato e ordine non approvato → pagamento `Fallito`, nuova sottoscrizione `Annullata`;
+   - non ancora approvato o incasso in verifica (`PENDING`) → resta in attesa.
+5. **Verifica pagamento** (Gestione licenze, accanto agli abbonamenti `InAttesa` e nel riquadro di attesa): la stessa conferma sull'ultimo pagamento in attesa dell'abbonamento. Copre la finestra chiusa, bloccata dal browser (c'è anche "Apri la pagina di pagamento") o l'esito perso.
+
+**Sicurezza**: `LicensePaymentConfirm` solo per il PowerAdmin del soggetto e solo sui pagamenti dei suoi abbonamenti; l'URL di ritorno indicato dal client è accettato solo se è sullo stesso sito (`App:PublicUrl` o origine della richiesta), altrimenti si usa la pagina statica.
+
+**Limiti**:
+- niente rinnovo automatico con PayPal (la manutenzione notturna salta i gateway reali: servirebbero le subscription PayPal);
+- niente webhook: senza ritorno nell'app il pagamento si chiude con "Verifica pagamento" (l'ordine approvato e non incassato non addebita nulla);
+- al rinnovo confermato prezzo e limiti restano quelli già sull'abbonamento (la nuova fotografia del piano non è salvata finché il pagamento è in attesa);
+- in `live` serve un conto PayPal Business e l'app approvata per il live.
+
 ---
 
 ## 8. Inibizione delle funzioni a licenza scaduta (punto 9)
@@ -483,7 +513,7 @@ Implementato su **Infrastructure_Dev**: Fasi 0, 1 e 2, `ILicenseGuard` (§8.1, �
 | Punto di verità | `License/LicenseGuard.cs` (`ILicenseGuard`) |
 | Risoluzione del listino (§4.1) | `License/LicenseCatalogResolver.cs` |
 | Sottoscrizione, rinnovo, scadenza, avvisi | `License/LicenseSubscriptionManager.cs` |
-| Pagamenti | `License/Payment/PaymentGateway.cs` (`IPaymentGateway`, `DebugPaymentGateway`, `IPaymentGatewayResolver`) |
+| Pagamenti | `License/Payment/PaymentGateway.cs` (`IPaymentGateway`, `DebugPaymentGateway`, `IPaymentGatewayResolver`), `License/Payment/PayPalPaymentGateway.cs` (§7.4); client `provider-checkout.service.ts`, `assets/pagamento-ritorno.html` |
 | API | `License/LicenseService.cs`, `Controllers/Infrastructure/LicenseController.cs` |
 | Manutenzione notturna | `nvxapp.server/Utility/LicenseMaintenanceService.cs` (dopo le 3: rinnovi automatici, scadenze, avvisi) |
 | Limiti per funzione (§5.1) | utenti: `AccountService.UserCompanyPut` / `UserFinancialAdvisorPut`; clienti: `Az_ClienteService` e ramo CRM; spazio: `StorageQuotaService` |
@@ -511,7 +541,7 @@ Dove il §13 è aperto ho scelto la soluzione più semplice e, quando possibile,
 
 ### 15.4 Cosa manca
 
-- **Fase 3, pagamenti reali**: le implementazioni di `IPaymentGateway` per carta (es. Stripe Checkout) e PayPal, l'endpoint dei webhook (`ConfirmAsync`, idempotente sul `RiferimentoGateway`, con indice univoco già presente) e la configurazione dei secret. Senza debug e senza un provider configurato, i piani a pagamento rispondono "metodo di pagamento non disponibile".
+- **Fase 3, pagamenti reali**: **PayPal fatto il 17/11/2026** (§7.4, con conferma al ritorno e "Verifica pagamento"). Mancano la carta (es. Stripe Checkout), i webhook (`ConfirmAsync` è già idempotente sul `RiferimentoGateway`, con indice univoco) e i rinnovi automatici con il provider. Senza debug e senza un provider configurato, i piani a pagamento rispondono "metodo di pagamento non disponibile".
 - **Fase 4, inibizione delle funzioni**: i metodi ci sono; nessuna funzione li usa ancora tranne il limite utenti. Manca anche il blocco tramite `CompanyApplication` alla scadenza.
 - **Fase 5**: scelta Azienda/Studio nella registrazione.
 - **Schermate del manuale** per le due nuove voci di menu: si rigenerano con `nvxapp.server/Tools/ManualScreenshots`.
@@ -638,3 +668,16 @@ Comportamento (`LicenseService.LicenseCancel`):
 - [x] Prova API in AllFunction (prova a secco su AllFunction_Dev + questo ramo, DB usa e getta, 29 controlli): schema CRM eliminato e applicativo disattivato alla disdetta, Common conservato, notifica al PowerAdmin; nuova sottoscrizione che ricrea lo schema con tutte le tabelle; CRM coperto anche dal Cumulativo: schema conservato e notifica "nessun dato eliminato"; disdetta del Cumulativo: restano solo gli schemi Common; disdetta dello studio: notifica all'azienda e al PowerAdmin dello studio, schema dell'azienda conservato
 - [x] Merge nella catena (fino ad AllFunction, build server e client di AllFunction) e cancellazione del worktree, 12/11/2026
 - [ ] (rami dei moduli) eliminazione dei file su disco dell'applicativo prima del `DROP SCHEMA`
+
+### PayPal (§7.4, 17/11/2026)
+- [x] `PayPalPaymentGateway` (Orders v2: ordine, link di approvazione, capture idempotente, token OAuth in memoria), configurazione `Payments:PayPal` (secret da variabili d'ambiente)
+- [x] `PaymentGatewayResolver`: gateway reale per metodo, altrimenti debug; `MetodiSimulati` / `MetodiSandbox` nello stato
+- [x] `LicenseSubscriptionManager.ConfirmPaymentAsync` (applicazione una sola volta, annullo che verifica prima con PayPal, rinnovo dal periodo del pagamento)
+- [x] `LicenseService.LicensePaymentConfirm` + endpoint + modelli; URL di ritorno solo sullo stesso sito; attivazione degli applicativi alla conferma
+- [x] Testi server (it, en)
+- [x] Client: finestra di pagamento (`ProviderCheckoutService`), pagina statica `assets/pagamento-ritorno.html`, attesa e "Verifica pagamento" in Gestione licenze, note debug/sandbox per metodo, testi (it, en)
+- [x] Build server e client
+- [ ] Prova con le chiavi sandbox dell'utente: sottoscrizione, rinnovo, annullo su PayPal, finestra chiusa + Verifica pagamento
+- [ ] Merge nella catena (Infrastructure → rami → AllFunction)
+- [x] Manuale `/licensemanagement` (it, en): pagamento PayPal nella finestra e "Verifica pagamento"
+- [ ] (più avanti) webhook PayPal, rinnovi automatici con le subscription PayPal, gateway carta
