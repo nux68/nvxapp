@@ -202,7 +202,13 @@
         "closed": "Done / cancelled",
         "done": "Done",
         "onlyMine": "Only mine",
-        "empty": "No activities."
+        "empty": "No activities.",
+        "viewList": "List",
+        "viewWeek": "Week",
+        "viewMonth": "Month",
+        "previous": "Previous",
+        "following": "Next",
+        "more": "+{{n}} more"
       },
       "activityEdit": {
         "title": "Activity",
