@@ -608,6 +608,22 @@
     <value>Pagamento non riuscito. {0}</value>
     <comment>licenze</comment>
   </data>
+  <data name="LicensePaymentCancelled" xml:space="preserve">
+    <value>Pagamento annullato: nessun addebito è stato effettuato.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentCancelledNote" xml:space="preserve">
+    <value>Annullato dall'utente sulla pagina del provider.</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentStillPending" xml:space="preserve">
+    <value>Il pagamento non risulta ancora completato. {0}</value>
+    <comment>licenze</comment>
+  </data>
+  <data name="LicensePaymentNotFound" xml:space="preserve">
+    <value>Pagamento non trovato.</value>
+    <comment>licenze</comment>
+  </data>
   <data name="LicenseNotRenewable" xml:space="preserve">
     <value>Questa licenza non si può rinnovare.</value>
     <comment>licenze</comment>

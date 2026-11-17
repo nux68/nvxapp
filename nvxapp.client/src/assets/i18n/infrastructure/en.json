@@ -842,7 +842,8 @@
       "subscriptionState2": "Expired",
       "subscriptionState3": "Suspended",
       "subscriptionState4": "Cancelled",
-      "debugPayments": "Payments in debug mode: the purchase flow completes without real charges."
+      "debugPayments": "Payments in debug mode: the purchase flow completes without real charges.",
+      "sandboxPayments": "PayPal in test mode (sandbox): pay with PayPal test accounts, no real charges."
     },
     "licenseCatalogList": {
       "title": "Licence price lists",
@@ -908,6 +909,10 @@
       "dealersNote": "An enabled centre can define its own price lists, which replace the global ones for its companies and firms."
     },
     "licenseManagement": {
+      "paymentWaiting": "Complete the payment in the PayPal window: the result will appear here. If you closed the window use “Check payment”.",
+      "popupBlocked": "The browser blocked the payment window: use “Open payment page” (or allow pop-ups for this site), then “Check payment”.",
+      "paymentOpen": "Open payment page",
+      "paymentCheck": "Check payment",
       "title": "Licence management",
       "studio": "Firm: {{studio}}",
       "systemNotActive": "The licence system is not active yet: for now no function is limited.",
