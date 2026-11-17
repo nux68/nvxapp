@@ -6,6 +6,7 @@ import { Observable, catchError, map, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { ProviderCheckoutService } from '../../../Utility/infrastructure/provider-checkout.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
@@ -35,15 +36,20 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   public offerta: LicenseOfferModel | null = null;
   public metodi: MetodoPagamento[] = [];
   public debugPagamenti = false;
+  public metodiSimulati: MetodoPagamento[] = [];
+  public metodiSandbox: MetodoPagamento[] = [];
   public attuale: LicenseSubscriptionModel | null = null;
   public readonly Periodicita = PeriodicitaLicenza;
   private messaggio: string | null = null;
+  // pagamento avviato sulla pagina del provider: si torna alla gestione licenze ad aspettare l'esito
+  private attesaPagamento: { idAbbonamento: number; redirectUrl: string } | null = null;
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private licenseService: LicenseService,
               private userNavigationService: UserNavigationService,
+              private checkout: ProviderCheckoutService,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
     this.btnConfirm.text = this.transloco.translate('pages.licenseSubscribe.confirm');
@@ -65,6 +71,8 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     this.offerta = state.offerta ?? null;
     this.metodi = state.metodo ?? [];
     this.debugPagamenti = !!state.debugPagamenti;
+    this.metodiSimulati = state.metodoSimulato ?? [];
+    this.metodiSandbox = state.metodoSandbox ?? [];
     this.attuale = state.attuale ?? null;
     if (!this.offerta || this.offerta.piano.length === 0)
       return of(null);
@@ -150,6 +158,19 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     return valore.toLocaleString(this.transloco.getActiveLang(), { style: 'currency', currency: this.offerta?.valuta || 'EUR', minimumFractionDigits: 2 });
   }
 
+  // metodo scelto: simulato (debug, nessun provider) o ambiente di prova del provider (sandbox)
+  get metodoScelto(): MetodoPagamento {
+    return Number(this._editForm?.get('metodo')?.value);
+  }
+
+  get metodoSimulato(): boolean {
+    return this.metodiSimulati.includes(this.metodoScelto);
+  }
+
+  get metodoSandbox(): boolean {
+    return this.metodiSandbox.includes(this.metodoScelto);
+  }
+
   // a pagamento senza metodi disponibili non si puo' confermare
   get pagamentoNonDisponibile(): boolean {
     return this.prezzo > 0 && this.metodi.length === 0;
@@ -191,6 +212,11 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   SaveData = (editModel: LicenseSubscribeInModel): Observable<boolean> => {
     if (this.pagamentoNonDisponibile)
       return of(false);
+    // pagamento dal provider (PayPal): la finestra si apre adesso, dentro il clic (dopo la chiamata il browser la bloccherebbe)
+    const esterno = this.prezzo > 0 && !this.metodoSimulato;
+    if (esterno)
+      this.checkout.apri();
+    this.attesaPagamento = null;
     const request = new GenericRequest<LicenseSubscribeInModel>(LicenseSubscribeInModel);
     request.data = {
       ambito: this.offerta!.ambito,
@@ -198,20 +224,26 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
       periodicita: Number(editModel.periodicita),
       metodo: this.prezzo > 0 ? Number(editModel.metodo) : MetodoPagamento.Nessuno,
       rinnovoAutomatico: !!editModel.rinnovoAutomatico,
-      returnUrl: window.location.origin + '/licensemanagement'
+      returnUrl: window.location.origin + '/assets/pagamento-ritorno.html'
     };
     return this.licenseService.LicenseSubscribe(request).pipe(
       map(res => {
         if (res.success && res.data?.redirectUrl) {
-          // pagamento ospitato dal provider: l'esito arriva al ritorno
-          window.location.href = res.data.redirectUrl;
-          return false;
+          // pagamento ospitato dal provider: la finestra va su PayPal, l'esito lo aspetta la gestione licenze
+          const aperta = this.checkout.vai(res.data.redirectUrl);
+          this.attesaPagamento = { idAbbonamento: res.data.abbonamento.id, redirectUrl: res.data.redirectUrl };
+          this.messaggio = this.transloco.translate(aperta ? 'pages.licenseManagement.paymentWaiting' : 'pages.licenseManagement.popupBlocked');
+          return true;
         }
+        if (esterno)
+          this.checkout.chiudi();
         if (res.success)
           this.messaggio = res.data?.messages?.map(m => m.text).join(' ') ?? null;
         return res.success;
       }),
       catchError((error) => {
+        if (esterno)
+          this.checkout.chiudi();
         console.error('Errore durante la chiamata API:', error);
         return of(false);
       })
@@ -223,6 +255,6 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     if (!saved)
       return;
     this.userNavigationService.RefreshLicense();
-    this.navCtrl.navigateBack('/licensemanagement', { state: { messaggio: this.messaggio } });
+    this.navCtrl.navigateBack('/licensemanagement', { state: { messaggio: this.messaggio, attesaPagamento: this.attesaPagamento } });
   }
 }

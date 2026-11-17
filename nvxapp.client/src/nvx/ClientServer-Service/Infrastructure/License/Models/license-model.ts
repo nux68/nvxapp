@@ -217,6 +217,9 @@ export class LicenseStatusGetOutModel extends ModelResult {
   public canManage: boolean = false;
   public debugPagamenti: boolean = false;
   public metodo: MetodoPagamento[] = [];
+  // metodi che si completano senza provider (debug) e metodi che passano dall'ambiente di prova del provider (sandbox)
+  public metodoSimulato: MetodoPagamento[] = [];
+  public metodoSandbox: MetodoPagamento[] = [];
   public graceGiorni: number = 0;
   public utentiAttivi: number = 0;
   public limiteUtenti: number | null = null;
@@ -251,6 +254,17 @@ export class LicenseRenewOutModel extends ModelResult {
   public abbonamento: LicenseSubscriptionModel = new LicenseSubscriptionModel();
   public redirectUrl: string | null = null;
   public debug: boolean = false;
+}
+
+// esito di un pagamento ospitato dal provider: riferimento = id dell'ordine (parametro "token" di PayPal), oppure l'abbonamento ("Verifica pagamento")
+export class LicensePaymentConfirmInModel {
+  public riferimento: string | null = null;
+  public idAbbonamento: number | null = null;
+  public annullato: boolean = false;
+}
+export class LicensePaymentConfirmOutModel extends ModelResult {
+  public abbonamento: LicenseSubscriptionModel = new LicenseSubscriptionModel();
+  public stato: StatoPagamento = StatoPagamento.Creato;
 }
 
 export class LicenseAutoRenewPutInModel {
