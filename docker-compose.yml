@@ -48,6 +48,8 @@ services:
       NVXAPP_Payments__PayPal__Mode: ${NVXAPP_Payments__PayPal__Mode:-sandbox}
       NVXAPP_Payments__PayPal__ClientId: ${NVXAPP_Payments__PayPal__ClientId:-}
       NVXAPP_Payments__PayPal__Secret: ${NVXAPP_Payments__PayPal__Secret:-}
+      NVXAPP_Payments__PayPal__SandboxBuyer__Email: ${NVXAPP_Payments__PayPal__SandboxBuyer__Email:-}
+      NVXAPP_Payments__PayPal__SandboxBuyer__Password: ${NVXAPP_Payments__PayPal__SandboxBuyer__Password:-}
       NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:-}
       # si decide al primo avvio su database vuoto e non si puo' piu' cambiare (Note/Migrazioni.txt)
       NVXAPP_DbParameter__MultiTenant: ${NVXAPP_DbParameter__MultiTenant:-true}
