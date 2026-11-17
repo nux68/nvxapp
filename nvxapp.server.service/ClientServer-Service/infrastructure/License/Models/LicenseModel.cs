@@ -259,6 +259,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public bool CanManage { get; set; }
         public bool DebugPagamenti { get; set; }
         public List<int> Metodo { get; set; } = new List<int>();
+        // metodi che si completano senza provider (debug) e metodi che passano dall'ambiente di prova del provider (sandbox)
+        public List<int> MetodoSimulato { get; set; } = new List<int>();
+        public List<int> MetodoSandbox { get; set; } = new List<int>();
         public int GraceGiorni { get; set; }
         public int UtentiAttivi { get; set; }
         public int? LimiteUtenti { get; set; }
@@ -299,6 +302,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Mode
         public LicenseSubscriptionModel Abbonamento { get; set; } = new LicenseSubscriptionModel();
         public string? RedirectUrl { get; set; }
         public bool Debug { get; set; }
+    }
+
+    // esito di un pagamento ospitato dal provider: riferimento = id dell'ordine (parametro "token" di PayPal),
+    // oppure l'abbonamento (ultimo pagamento in attesa, pulsante "Verifica pagamento")
+    public class LicensePaymentConfirmInModel
+    {
+        public string? Riferimento { get; set; }
+        public int? IdAbbonamento { get; set; }
+        public bool Annullato { get; set; }
+    }
+    public class LicensePaymentConfirmOutModel : ModelResult
+    {
+        public LicenseSubscriptionModel Abbonamento { get; set; } = new LicenseSubscriptionModel();
+        // StatoPagamento dopo la conferma
+        public int Stato { get; set; }
     }
 
     public class LicenseAutoRenewPutInModel

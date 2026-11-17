@@ -28,6 +28,8 @@ $variabili = [ordered]@{
     'NVXAPP_AI__AI_groq__ApiKey'                = @('API key di Groq (chat AI con AI:UseLLM = AI_groq)', 'groq.key')
     'NVXAPP_AI__AI_openrouter__ApiKey'          = @('API key di OpenRouter (chat AI con AI:UseLLM = AI_openrouter)', 'openrouter.key')
     'NVXAPP_AI__AI_deepseek__ApiKey'            = @('API key di DeepSeek (chat AI con AI:UseLLM = AI_deepseek)', $null)
+    'NVXAPP_Payments__PayPal__ClientId'         = @('Client ID PayPal (developer.paypal.com > Apps & Credentials; sandbox o live come Payments:PayPal:Mode)', $null)
+    'NVXAPP_Payments__PayPal__Secret'           = @('Secret PayPal della stessa app del Client ID', $null)
 }
 
 if (-not $Prova) {
