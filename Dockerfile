@@ -16,7 +16,7 @@ COPY nvxapp.client/ ./
 RUN npx ng build --configuration production --define "NVX_BUILD_VERSION='$(date -u +%Y%m%d%H%M%S)'"
 
 # --- 2. publish del server .NET, con il client in wwwroot ---
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build
 WORKDIR /src
 # prima solo i progetti: il restore resta in cache finche' i pacchetti non cambiano
 COPY nvxapp.server/nvxapp.server.csproj nvxapp.server/
@@ -32,7 +32,7 @@ RUN dotnet publish nvxapp.server/nvxapp.server.csproj -c Release --no-restore -p
 
 # --- 3. runtime ---
 # immagine completa (non chiseled/alpine): contiene ICU e tzdata, necessari per RunTime:Culture e RunTime:TimeZone
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:11.0 AS final
 WORKDIR /app
 COPY --from=build /app .
 # libgssapi-krb5-2: Npgsql la cerca alla prima connessione (senza scrive "Cannot load library libgssapi_krb5.so.2")
