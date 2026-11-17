@@ -106,13 +106,15 @@
           @if (prezzo > 0) {
             @if (metodi.length > 0) {
               <div class="etichetta">{{ 'pages.licenseSubscribe.method' | transloco }}</div>
-              <ion-segment formControlName="metodo" class="nvx-pricing-methods">
+              <!-- pulsanti come Mensile/Annuale: un ion-segment sul riquadro bianco non mostrava la scelta -->
+              <div class="nvx-pricing-methods" role="radiogroup">
                 @for (m of metodi; track m) {
-                  <ion-segment-button [value]="m">
-                    <ion-label>{{ 'pages.license.method' + m | transloco }}</ion-label>
-                  </ion-segment-button>
+                  <button type="button" role="radio" [attr.aria-checked]="metodoScelto === m" [class.attivo]="metodoScelto === m" (click)="scegliMetodo(m)">
+                    <ion-icon [name]="m === Metodo.PayPal ? 'logo-paypal' : 'card-outline'"></ion-icon>
+                    {{ 'pages.license.method' + m | transloco }}
+                  </button>
                 }
-              </ion-segment>
+              </div>
             } @else {
               <ion-note color="danger">{{ 'pages.licenseSubscribe.noPaymentMethod' | transloco }}</ion-note>
             }
