@@ -29,6 +29,26 @@
         @if (messaggio) {
           <br /><ion-note [color]="messaggioColore">{{ messaggio }}</ion-note>
         }
+        @if (status.contoProvaPayPal; as conto) {
+          <!-- conto PayPal di prova (solo sandbox e solo per gli utenti di prova, deciso dal server): resta visibile
+               mentre si paga nella finestra di PayPal -->
+          <div class="nvx-conto-prova">
+            <div class="riga">
+              <span class="etichetta-conto">{{ 'pages.licenseSubscribe.sandboxEmail' | transloco }}</span>
+              <code>{{ conto.email }}</code>
+              <ion-button size="small" fill="clear" (click)="copia(conto.email)" [attr.aria-label]="'pages.licenseSubscribe.copy' | transloco">
+                <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+              </ion-button>
+            </div>
+            <div class="riga">
+              <span class="etichetta-conto">{{ 'pages.licenseSubscribe.sandboxPassword' | transloco }}</span>
+              <code>{{ conto.password }}</code>
+              <ion-button size="small" fill="clear" (click)="copia(conto.password)" [attr.aria-label]="'pages.licenseSubscribe.copy' | transloco">
+                <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        }
         @if (attesa) {
           <div class="nvx-attesa-pagamento">
             @if (attesa.redirectUrl) {
