@@ -12,6 +12,14 @@
             </ion-buttons>
             <ion-title>{{ (modalType === 'vocal' ? 'components.fabMenu.titleVocal' : 'components.fabMenu.title') | transloco }}</ion-title>
             <ion-buttons slot="end">
+              <!-- invio dei comandi vocali: manuale (bozza) / automatico (ogni frase parte da sola) -->
+              @if (modalType === 'vocal') {
+                <ion-button (click)="toggleSendMode()"
+                  [attr.aria-label]="(speechService.manualSend ? 'components.fabMenu.sendManual' : 'components.fabMenu.sendAuto') | transloco"
+                  [title]="(speechService.manualSend ? 'components.fabMenu.sendManual' : 'components.fabMenu.sendAuto') | transloco">
+                  <ion-icon slot="icon-only" [name]="speechService.manualSend ? 'hand-left-outline' : 'flash-outline'"></ion-icon>
+                </ion-button>
+              }
               <!-- la voce dell'assistente sta parlando: si puo' interrompere -->
               @if (speechOutput.isSpeaking) {
                 <ion-button (click)="stopSpeaking()" [attr.aria-label]="'components.fabMenu.stopSpeaking' | transloco">
@@ -46,7 +54,7 @@
                 <h2>{{ 'components.fabMenu.emptyTitle' | transloco }}</h2>
                 <p>
                   @if (modalType === 'vocal') {
-                    {{ 'components.fabMenu.emptyVocal' | transloco }}
+                    {{ (speechService.manualSend ? 'components.fabMenu.emptyVocalManual' : 'components.fabMenu.emptyVocal') | transloco }}
                   } @else {
                     {{ 'components.fabMenu.emptyText' | transloco }}
                   }
@@ -121,15 +129,39 @@
             <!-- Modalità vocale -->
             @if (modalType === 'vocal') {
               <div class="nvx-composer nvx-composer-vocal">
-                <span class="nvx-vocal-label">
-                  @if (speechService.isPushToTalk) {
-                    {{ 'components.fabMenu.listening' | transloco }}
-                  } @else if (speechService.VoiceCommandActive) {
-                    {{ 'components.fabMenu.voiceActive' | transloco }}
-                  } @else {
-                    {{ 'components.fabMenu.pushToTalkHint' | transloco }}
+                <!-- bozza dettata (modificabile), anteprima della frase in corso, oppure lo stato del microfono -->
+                <div class="nvx-vocal-body">
+                  @if (voiceDraft) {
+                    <!-- niente ngModel: il testo modificato si legge fuori da Angular (vedi draftInput nel componente) -->
+                    <ion-textarea #draftInput class="chat-input nvx-vocal-draft"
+                      rows="1"
+                      auto-grow="true"
+                      [attr.aria-label]="'components.fabMenu.voiceDraftTitle' | transloco"
+                      (keydown.enter)="$event.preventDefault(); sendVoiceDraft()">
+                    </ion-textarea>
                   }
-                </span>
+                  @if (voiceInterim) {
+                    <span class="nvx-vocal-interim">{{ voiceInterim }}</span>
+                  } @else if (!voiceDraft) {
+                    <span class="nvx-vocal-label">
+                      @if (speechService.isPushToTalk) {
+                        {{ 'components.fabMenu.listening' | transloco }}
+                      } @else if (speechService.VoiceCommandActive) {
+                        {{ (speechService.manualSend ? 'components.fabMenu.voiceActiveManual' : 'components.fabMenu.voiceActive') | transloco }}
+                      } @else {
+                        {{ 'components.fabMenu.pushToTalkHint' | transloco }}
+                      }
+                    </span>
+                  }
+                </div>
+                @if (voiceDraft) {
+                  <ion-button class="nvx-vocal-clear" fill="clear" shape="round"
+                    (click)="clearVoiceDraft()"
+                    [attr.aria-label]="'components.fabMenu.clearDraft' | transloco"
+                    [title]="'components.fabMenu.clearDraft' | transloco">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                  </ion-button>
+                }
                 <!-- tieni premuto per parlare: solo quando l'ascolto continuo e' spento -->
                 @if (!speechService.VoiceCommandActive) {
                   <ion-button class="nvx-send nvx-push-to-talk" shape="round"
@@ -149,6 +181,15 @@
                   [attr.aria-label]="'components.fabMenu.microphone' | transloco">
                   <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
                 </ion-button>
+                <!-- invio della bozza: lo decide l'utente -->
+                @if (speechService.manualSend || voiceDraft) {
+                  <ion-button class="nvx-send nvx-vocal-send" shape="round"
+                    (click)="sendVoiceDraft()"
+                    [disabled]="isChatLoading || !voiceDraft.trim()"
+                    [attr.aria-label]="'common.buttons.send' | transloco">
+                    <ion-icon slot="icon-only" name="arrow-up"></ion-icon>
+                  </ion-button>
+                }
               </div>
             }
 
@@ -195,6 +236,34 @@
     </ion-fab-list>
 
   </ion-fab>
+
+  <!-- bozza vocale con la modale chiusa (ascolto continuo): resta finche' l'utente non la invia o la svuota -->
+  @if (!isModalOpen && (voiceDraft || (speechService.manualSend && voiceInterim))) {
+    <div class="nvx-voice-notice nvx-voice-draft" [class.nvx-below]="voiceOffNotice" role="status" aria-live="polite">
+      <div class="nvx-voice-notice-icon">
+        <ion-icon name="mic-outline"></ion-icon>
+      </div>
+      <div class="nvx-voice-notice-text">
+        <strong>{{ 'components.fabMenu.voiceDraftTitle' | transloco }}</strong>
+        @if (voiceDraft) {
+          <span class="nvx-voice-draft-text">{{ voiceDraft }}</span>
+        }
+        @if (voiceInterim) {
+          <span class="nvx-vocal-interim">{{ voiceInterim }}</span>
+        }
+        <span>{{ 'components.fabMenu.voiceDraftHint' | transloco }}</span>
+      </div>
+      @if (voiceDraft) {
+        <ion-button class="nvx-voice-notice-action" fill="clear" size="small" (click)="sendVoiceDraft()" [disabled]="isChatLoading">
+          {{ 'common.buttons.send' | transloco }}
+        </ion-button>
+      }
+      <ion-button class="nvx-voice-notice-close" fill="clear" size="small" (click)="clearVoiceDraft()"
+        [attr.aria-label]="'components.fabMenu.clearDraft' | transloco" [title]="'components.fabMenu.clearDraft' | transloco">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </div>
+  }
 
   <!-- avviso: comandi vocali disattivati automaticamente (inattivita'), con dissolvenza -->
   @if (voiceOffNotice) {

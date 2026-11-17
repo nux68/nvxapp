@@ -9,9 +9,31 @@ import { Subject, BehaviorSubject, Observable } from 'rxjs';
 export class SpeechService {
   private recognition!: any;
 
-  private _Message$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
-  public get Message$(): Observable<string | null> {
-    return this._Message$.asObservable();
+  // frase riconosciuta (definitiva): chi la riceve decide se inviarla subito o accodarla a una bozza
+  private _Phrase$ = new Subject<string>();
+  public get Phrase$(): Observable<string> {
+    return this._Phrase$.asObservable();
+  }
+
+  // anteprima della frase in corso (risultati non definitivi): solo da mostrare, mai da inviare
+  private _Interim$ = new BehaviorSubject<string>('');
+  public get Interim$(): Observable<string> {
+    return this._Interim$.asObservable();
+  }
+  public get interim(): string {
+    return this._Interim$.value;
+  }
+
+  // invio dei comandi vocali: manuale (bozza, si invia con il pulsante o dicendo "invia") o automatico
+  // (ogni frase parte da sola, comportamento storico). Scelta salvata nel browser
+  private static readonly SendModeKey = 'nvx-voice-send';
+  private _manualSend = true;
+  public get manualSend(): boolean {
+    return this._manualSend;
+  }
+  public set manualSend(value: boolean) {
+    this._manualSend = value;
+    try { localStorage.setItem(SpeechService.SendModeKey, value ? 'manual' : 'auto'); } catch { }
   }
 
   
@@ -122,10 +144,11 @@ export class SpeechService {
   }
 
   /*
-   Una frase detta, un messaggio. In ascolto continuo Chrome (soprattutto su Android) consegna la stessa
+   Una frase detta, una consegna (Phrase$). In ascolto continuo Chrome (soprattutto su Android) consegna la stessa
    frase piu' volte come definitiva, a pezzi crescenti ("piano", "piano fe", "piano ferie", "piano ferie"),
    e nei risultati successivi ripete anche le frasi gia' consegnate. Si tiene l'ultimo testo e lo si
-   manda dopo una breve pausa senza nuovi risultati, togliendo la parte gia' mandata nella sessione.
+   consegna dopo una breve pausa senza nuovi risultati, togliendo la parte gia' consegnata nella sessione.
+   Consegnare non vuol dire inviare: con l'invio manuale la frase si accoda alla bozza (FabMenuComponent).
   */
   private collect(text: string) {
     // non e' il seguito della frase in attesa: quella si manda subito
@@ -154,8 +177,30 @@ export class SpeechService {
     this.lastSent = text;
     this.lastSentAt = now;
 
-    console.log("📨 Comando vocale:", text);
-    this._Message$.next(text);
+    console.log("📨 Frase vocale:", text);
+    this._Phrase$.next(text);
+  }
+
+  // consegna subito la frase in attesa (es. l'utente preme Invia mentre la pausa non e' ancora scaduta)
+  public flushPending() {
+    this.flush();
+  }
+
+  private setInterim(text: string) {
+    if (this._Interim$.value !== text) this._Interim$.next(text);
+  }
+
+  // anteprima: i risultati non definitivi dell'evento, senza la parte gia' consegnata nella sessione
+  private interimOf(event: any): string {
+    let text = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (!event.results[i].isFinal) text += event.results[i][0].transcript;
+    }
+    text = text.trim();
+    const before = this.pendingFull || this.heardInSession;
+    if (before && text.toLowerCase().startsWith(before.toLowerCase()))
+      text = text.substring(before.length).trim();
+    return text;
   }
 
   // ascolto continuo chiuso dal browser mentre l'utente lo vuole acceso: si riavvia
@@ -177,12 +222,13 @@ export class SpeechService {
   
 
   constructor(private languageService: LanguageService) {
+    try { this._manualSend = localStorage.getItem(SpeechService.SendModeKey) !== 'auto'; } catch { }
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
       this.recognition.lang = this.languageService.speechLanguage; // lingua dell'interfaccia
       this.recognition.continuous = true; // Continua ad ascoltare
-      this.recognition.interimResults = false; // Mostra risultati parziali
+      this.recognition.interimResults = true; // risultati parziali: solo anteprima (Interim$)
 
       this.recognition.onstart = () => {
         console.log("🎤 Riconoscimento attivato.");
@@ -191,15 +237,19 @@ export class SpeechService {
       };
 
       this.recognition.onresult = (event: any) => {
-        // solo i risultati definitivi di questo evento
+        // risultati definitivi di questo evento; quelli non definitivi solo per l'anteprima
         let resultText = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) resultText = event.results[i][0].transcript.trim();
         }
-        if (!resultText) return;
+        if (!resultText) {
+          this.setInterim(this.interimOf(event));
+          return;
+        }
         console.log("🗣️ Riconosciuto:", resultText);
         this.silentRestarts = 0;
         this.collect(resultText);
+        this.setInterim(this.interimOf(event));
       };
 
       // dopo onerror arriva sempre onend: la decisione (riavvio o chiusura) si prende li'
@@ -215,6 +265,7 @@ export class SpeechService {
       this.recognition.onend = () => {
         console.log("⏹️ Riconoscimento terminato.");
         this.flush();
+        this.setInterim('');
         if (this.restartContinuous()) return;
         this.onRecognitionClosed();
       };
