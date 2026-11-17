@@ -77,13 +77,53 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
+        // Pagina richiesta -> route.
+        // 1. nome dichiarato da un IRouteProvider (anche per ruolo, es. "richieste"), se la sua pagina e' nel menu
+        //    dell'utente o il menu non e' noto;
+        // 2. titolo di una voce del menu dell'utente (MenuPageMatcher): "tabelle" -> /crmparlist; con piu' voci
+        //    dallo stesso titolo (in sezioni diverse) si chiede quale;
+        // 3. nome dichiarato per una pagina fuori menu (login, logout, impersonate...);
+        // 4. la route stessa di una voce ("crmparlist");
+        // 5. menu non noto (client che non lo manda): come prima, il nome diventa la route.
+        // Altrimenti la pagina non c'e' nel menu dell'utente: errore invece di navigare verso una route inesistente.
+        private (string? Route, string? Error) ResolveRoute(string? page)
+        {
+            if (string.IsNullOrWhiteSpace(page)) return ("/home", null);
+
+            var menu = _chatUserContext.MenuPages ?? [];
+            var declared = _routeRegistry.Find(page, _chatUserContext.Roles);
+            if (declared != null && (menu.Count == 0 || menu.Any(m => MenuPageMatcher.SameRoute(m.Route, declared))))
+                return (declared, null);
+
+            var matches = MenuPageMatcher.Match(page, menu);
+            if (matches.Count == 1)
+                return (matches[0].Route, null);
+            if (matches.Count > 1)
+                return (null, ChatAIMessages.Get("NavigatePageAmbiguous", page.Trim(),
+                    string.Join(", ", matches.Select(MenuPageMatcher.Label))));
+
+            if (declared != null)
+                return (declared, null);
+
+            var asRoute = menu.FirstOrDefault(m => MenuPageMatcher.SameRoute(m.Route, page));
+            if (asRoute != null)
+                return (asRoute.Route, null);
+
+            if (menu.Count == 0)
+                return (_routeRegistry.Resolve(page, _chatUserContext.Roles), null);
+
+            return (null, ChatAIMessages.Get("NavigatePageNotFound", page.Trim()));
+        }
+
         public override Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             slots.TryGetValue("page", out var page);
             slots.TryGetValue("params", out var rawParams);
 
-            // stessa voce di menu, pagina diversa secondo il ruolo (es. "richieste" per l'amministratore)
-            var route = _routeRegistry.Resolve(page, _chatUserContext.Roles);
+            // nome dichiarato dai provider (anche per ruolo) o titolo di una voce del menu dell'utente
+            var (route, error) = ResolveRoute(page);
+            if (route == null)
+                return Task.FromResult(CommandResult.Fail(error ?? ChatAIMessages.Get("NavigatePageNotFound", page?.Trim() ?? string.Empty)));
 
             var navParams = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(rawParams))
