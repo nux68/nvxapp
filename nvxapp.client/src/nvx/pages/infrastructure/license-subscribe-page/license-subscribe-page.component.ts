@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, ToastController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { Observable, catchError, map, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
@@ -10,7 +10,7 @@ import { ProviderCheckoutService } from '../../../Utility/infrastructure/provide
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  AmbitoLicenza, LicenseOfferModel, LicensePlanModel, LicenseSandboxBuyerModel, LicenseSubscribeInModel, LicenseSubscriptionModel, MetodoPagamento, PeriodicitaLicenza
+  AmbitoLicenza, LicenseOfferModel, LicensePlanModel, LicenseSubscribeInModel, LicenseSubscriptionModel, MetodoPagamento, PeriodicitaLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { LivelloLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
@@ -38,8 +38,6 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   public debugPagamenti = false;
   public metodiSimulati: MetodoPagamento[] = [];
   public metodiSandbox: MetodoPagamento[] = [];
-  // conto PayPal di prova da mostrare (solo per gli utenti di prova, deciso dal server)
-  public contoProva: LicenseSandboxBuyerModel | null = null;
   public attuale: LicenseSubscriptionModel | null = null;
   public readonly Periodicita = PeriodicitaLicenza;
   public readonly Metodo = MetodoPagamento;
@@ -53,7 +51,6 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
               private licenseService: LicenseService,
               private userNavigationService: UserNavigationService,
               private checkout: ProviderCheckoutService,
-              private toastCtrl: ToastController,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
     this.btnConfirm.text = this.transloco.translate('pages.licenseSubscribe.confirm');
@@ -77,7 +74,6 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
     this.debugPagamenti = !!state.debugPagamenti;
     this.metodiSimulati = state.metodoSimulato ?? [];
     this.metodiSandbox = state.metodoSandbox ?? [];
-    this.contoProva = state.contoProvaPayPal ?? null;
     this.attuale = state.attuale ?? null;
     if (!this.offerta || this.offerta.piano.length === 0)
       return of(null);
@@ -179,28 +175,6 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
 
   get metodoSandbox(): boolean {
     return this.metodiSandbox.includes(this.metodoScelto);
-  }
-
-  // conto di prova visibile: PayPal scelto e in sandbox
-  get mostraContoProva(): boolean {
-    return !!this.contoProva && this.metodoScelto === MetodoPagamento.PayPal && this.metodoSandbox;
-  }
-
-  async copia(valore: string) {
-    let copiato = false;
-    try {
-      await navigator.clipboard.writeText(valore);
-      copiato = true;
-    } catch {
-      // appunti non disponibili (es. pagina non sicura): si seleziona il testo a mano
-    }
-    const toast = await this.toastCtrl.create({
-      message: this.transloco.translate(copiato ? 'pages.licenseSubscribe.copied' : 'pages.licenseSubscribe.copyFailed'),
-      duration: 2000,
-      position: 'top',
-      color: copiato ? 'success' : 'warning'
-    });
-    await toast.present();
   }
 
   // a pagamento senza metodi disponibili non si puo' confermare
