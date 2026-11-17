@@ -4,7 +4,7 @@ import { SpeechService } from '../../../../Utility/infrastructure/speech.service
 import { SpeechOutputService } from '../../../../Utility/infrastructure/speech-output.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { ChatAIInModel, ClientActionPayload } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
+import { ChatAIInModel, ClientActionPayload, MenuPageModel } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
 import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
 import { ThemeService } from '../../../../Utility/infrastructure/theme.service';
 import { Language, LanguageService, SUPPORTED_LANGUAGES } from '../../../../Utility/infrastructure/language.service';
@@ -240,6 +240,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     request.data.request   = text;
     request.data.sessionId = this.currentSessionId ?? '';  // stringa vuota = nuova sessione
     request.data.currentRoute = this.router.url;            // pagina corrente: help contestuale
+    request.data.menuPages = this.menuPages();               // voci del menu: navigazione anche dal titolo
 
     this.isChatLoading = true;
 
@@ -357,6 +358,15 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   private pushMessage(sender: string, text: string, type: string = '') {
     this.messages.push({ sender, text, type });
+  }
+
+  // voci del menu che l'utente vede, nella sua lingua ("vai a tabelle": il server trova /crmparlist dal titolo)
+  private menuPages(): MenuPageModel[] {
+    return this.mainMenuService.VociNavigabili.map(v => ({
+      title:   this.transloco.translate(v.title.trim()),
+      route:   v.url,
+      section: v.section ? this.transloco.translate(v.section.trim()) : ''
+    }));
   }
 
   // route della pagina nel testo -> nome della voce di menu nella lingua dell'utente (route non nel menu: invariato)
