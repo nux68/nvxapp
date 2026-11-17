@@ -1,3 +1,4 @@
+using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
@@ -62,7 +63,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
                     throw new Exception("Password SMTP non configurata: impostare la variabile d'ambiente NVXAPP_Email__Password.");
                 await client.AuthenticateAsync(user, password);
             }
-            await client.SendAsync(message);
+            // MailKit 5: Send/SendAsync accettano un ISendRequest e non piu' direttamente il MimeMessage
+            await client.SendAsync(new SendRequest(message));
             await client.DisconnectAsync(true);
         }
     }
