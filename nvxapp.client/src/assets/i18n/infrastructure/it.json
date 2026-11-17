@@ -956,6 +956,11 @@
       "usersUnlimited": "Utenti attivi: {{attivi}} (illimitati)"
     },
     "licenseSubscribe": {
+      "sandboxEmail": "Email di prova",
+      "sandboxPassword": "Password",
+      "copy": "Copia",
+      "copied": "Copiato negli appunti",
+      "copyFailed": "Copia non riuscita: seleziona il testo a mano",
       "heading": "Scegli il piano per {{funzione}}",
       "subheading": "Prezzi al mese. Puoi cambiare piano quando vuoi.",
       "saveUpTo": "risparmi fino al {{pct}}%",
