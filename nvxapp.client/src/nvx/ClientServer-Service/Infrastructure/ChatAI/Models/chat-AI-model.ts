@@ -4,6 +4,15 @@ export class ChatAIInModel {
   public request:   string = '';
   public sessionId: string = '';  // identifica la sessione conversazionale sul server
   public currentRoute: string = '';  // pagina in cui si trova l'utente (help contestuale)
+  // voci del menu che l'utente vede, gia' tradotte: "vai a tabelle" trova la pagina anche dal titolo della voce
+  public menuPages: MenuPageModel[] = [];
+}
+
+// Voce del menu dell'utente per la navigazione della chat
+export class MenuPageModel {
+  public title:   string = '';  // titolo della voce nella lingua dell'utente ("Tabelle")
+  public route:   string = '';  // url della pagina ("/crmparlist")
+  public section: string = '';  // sezione del menu (applicativo, es. "CRM"), per distinguere voci con lo stesso titolo
 }
 
 // Azione eseguita dal client senza navigare (es. cambio tema o lingua)
