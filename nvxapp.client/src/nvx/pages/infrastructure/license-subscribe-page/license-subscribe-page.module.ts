@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonNote, IonSegment, IonSegmentButton, IonToggle } from '@ionic/angular';
+import { IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonNote, IonToggle } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { LicenseSubscribePageComponent } from './license-subscribe-page.component';
@@ -11,7 +11,7 @@ import { LicenseSubscribePageComponent } from './license-subscribe-page.componen
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonNote, IonSegment, IonSegmentButton, IonToggle,
+    IonButton, IonCard, IonCardContent, IonContent, IonIcon, IonItem, IonLabel, IonNote, IonToggle,
     RouterModule.forChild([{ path: '', component: LicenseSubscribePageComponent }]),
     SharedComponentInfrastructureModule
   ],
