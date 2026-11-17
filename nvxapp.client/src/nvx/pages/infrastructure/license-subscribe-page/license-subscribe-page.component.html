@@ -132,25 +132,6 @@
           @if (prezzo > 0 && metodoSandbox) {
             <ion-note color="warning">{{ 'pages.license.sandboxPayments' | transloco }}</ion-note>
           }
-          @if (prezzo > 0 && mostraContoProva) {
-            <!-- conto PayPal di prova, solo per gli utenti di prova (deciso dal server) -->
-            <div class="nvx-conto-prova">
-              <div class="riga">
-                <span class="etichetta-conto">{{ 'pages.licenseSubscribe.sandboxEmail' | transloco }}</span>
-                <code>{{ contoProva!.email }}</code>
-                <ion-button size="small" fill="clear" (click)="copia(contoProva!.email)" [attr.aria-label]="'pages.licenseSubscribe.copy' | transloco">
-                  <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-                </ion-button>
-              </div>
-              <div class="riga">
-                <span class="etichetta-conto">{{ 'pages.licenseSubscribe.sandboxPassword' | transloco }}</span>
-                <code>{{ contoProva!.password }}</code>
-                <ion-button size="small" fill="clear" (click)="copia(contoProva!.password)" [attr.aria-label]="'pages.licenseSubscribe.copy' | transloco">
-                  <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
-                </ion-button>
-              </div>
-            </div>
-          }
         </section>
       }
 
