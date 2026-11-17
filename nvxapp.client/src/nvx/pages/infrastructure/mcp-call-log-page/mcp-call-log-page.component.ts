@@ -43,15 +43,16 @@ export class McpCallLogPageComponent {
     this.title = this.transloco.translate('pages.mcpCallLog.title');
 
     this.columns = [
-      { key: 'data', title: this.transloco.translate('pages.mcpCallLog.columnDate'), width: '150px', mobile: 'note',
+      { key: 'data', title: this.transloco.translate('pages.mcpCallLog.columnDate'), width: '130px', mobile: 'note',
         value: x => x.data ? formatDate(x.data, 'short', this.languageService.locale) : '',
         sortValue: x => x.data ? new Date(x.data) : null },
       { key: 'tool', title: this.transloco.translate('pages.mcpCallLog.columnTool'), mobile: 'title' },
       { key: 'userName', title: this.transloco.translate('pages.mcpCallLog.columnUser'),
         value: x => this.descrizioneUtente(x) },
-      { key: 'tokenName', title: this.transloco.translate('pages.mcpCallLog.columnToken'), mobile: 'hidden' },
-      { key: 'arguments', title: this.transloco.translate('pages.mcpCallLog.columnArguments'), mobile: 'hidden' },
-      { key: 'message', title: this.transloco.translate('pages.mcpCallLog.columnResult'),
+      { key: 'tokenName', title: this.transloco.translate('pages.mcpCallLog.columnToken'), width: '130px', mobile: 'hidden' },
+      { key: 'arguments', title: this.transloco.translate('pages.mcpCallLog.columnArguments'), mobile: 'hidden',
+        value: x => this.parametri(x) },
+      { key: 'message', title: this.transloco.translate('pages.mcpCallLog.columnResult'), width: '32%',
         value: x => this.esito(x) },
     ];
   }
@@ -85,9 +86,28 @@ export class McpCallLogPageComponent {
 
   // esito: il messaggio dello strumento su una riga, preceduto da "Errore" se la chiamata non e' riuscita
   private esito(x: McpCallLogModel): string {
-    const testo = (x.message ?? '').replace(/\s+/g, ' ').trim();
-    const breve = testo.length > 160 ? testo.substring(0, 160) + '…' : testo;
+    const testo = this.aCapo((x.message ?? '').replace(/\s+/g, ' ').trim());
+    const breve = testo.length > 140 ? testo.substring(0, 140) + '…' : testo;
     return x.success ? breve : this.transloco.translate('pages.mcpCallLog.failed', { message: breve });
+  }
+
+  // parametri della chiamata come "nome: valore, nome: valore" (nel registro sono JSON); se non si leggono, il testo com'e'
+  private parametri(x: McpCallLogModel): string {
+    if (!x.arguments)
+      return '';
+    try {
+      const valori = JSON.parse(x.arguments) as Record<string, unknown>;
+      return Object.keys(valori).map(k => `${k}: ${valori[k] ?? ''}`).join(', ');
+    } catch {
+      return this.aCapo(x.arguments);
+    }
+  }
+
+  // i nomi con i trattini bassi citati nei messaggi (es. l'elenco degli strumenti disponibili) non hanno spazi e
+  // allargherebbero la tabella: uno spazio a larghezza zero dopo ogni trattino basso permette di andare a capo senza
+  // cambiare il testo visibile. Non si usa sulla colonna dello strumento, che deve restare cercabile.
+  private aCapo(testo: string): string {
+    return (testo ?? '').replace(/_/g, '_​');
   }
 
   Filter(CurrFilter: any) {

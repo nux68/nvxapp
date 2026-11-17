@@ -4,7 +4,12 @@ Analisi del 17/11/2026, branch **Infrastructure_Dev** (lavoro su `Infrastructure
 Documenti collegati: `ANALISI_INFRASTRUCTURE_CHAT_AI.md` (motore dei comandi della chat, che qui si riusa),
 `ANALISI_INFRASTRUCTURE_DOCKER.md` (pubblicazione dietro Caddy), `ANALISI_INFRASTRUCTURE_LICENZE.md` (applicativi attivi per azienda).
 
-Stato: **solo analisi, nessun codice scritto**. La checklist dei lavori è nella sezione 13.
+Stato al 17/11/2026: **fase 0 (verifiche) e fase 1 implementate su `Infrastructure_Dev_mcp`**: endpoint MCP, token personali,
+impostazione dell'azienda, registro delle chiamate, pagine del client, manuale. Solo strumenti di **lettura**.
+Da fare: catena dei merge, poi le fasi 2–6. Cosa è stato costruito e come è stato provato: sezione 12bis. Checklist: sezione 13.
+
+> **Da decidere con urgenza, a prescindere da MCP** (punto MCP-A7, sezione 7.1): `Account/UserLoad` emette il token di
+> qualunque utente indicato senza controllare, lato server, se chi chiama può impersonarlo.
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare / da decidere.
 
@@ -52,7 +57,7 @@ comprensione della frase la fa il client AI dell'utente; nvxapp riceve già lo s
 | Filtro per ruolo | `IntentDefinition.Usable4Role` | un utente vede solo gli strumenti del suo ruolo |
 | Filtro per applicativo | `IntentDefinition.Application` + `ICompanyApplicationRepository.ActiveApplications` | compaiono solo gli strumenti degli applicativi attivi per l'azienda |
 | Contesto dell'utente | `.../ChatAI/ChatUserContext.cs` (utente, ruoli, applicativi) | da valorizzare anche per le chiamate MCP |
-| Autenticazione | JWT (`Installers.InstallAuthentication`), durata `JwtParameter:ExpireMinutes` = 1200 minuti | base per la fase 1 (sezione 7) |
+| Autenticazione | JWT (`Installers.InstallAuthentication`); `JwtParameter:ExpireMinutes` = 1200, ma `UtilToken` lo applica in **secondi** (20 minuti), e il token si rinnova a ogni risposta | i servizi leggono l'identità dai claim della richiesta: il token personale ricostruisce gli stessi claim (sezione 7) |
 | Pubblicazione | Caddy come reverse proxy, HTTPS, `ForwardedHeaders` già configurati | l'endpoint MCP esce dallo stesso sito |
 
 ### 3.2 Comandi esistenti
@@ -60,8 +65,13 @@ comprensione della frase la fa il client AI dell'utente; nvxapp riceve già lo s
 Nel ramo `AllFunction_Dev` ci sono **60 comandi**. Quelli di sola interrogazione sono già riconoscibili perché
 dichiarano `RequiresConfirmation = false`; quelli di navigazione dichiarano `IsNavigation = true`.
 
-La classificazione che segue è fatta da nome del comando e file di appartenenza (`*QueryHandlers`, `*WriteHandlers`):
-**va confermata comando per comando** (punto MCP-A2).
+La classificazione che segue è fatta da nome del comando e file di appartenenza (`*QueryHandlers`, `*WriteHandlers`).
+È stata poi **verificata eseguendo l'adattatore** su tutti i rami uniti (MCP-A2): con tutti gli applicativi attivi un
+CompanyPowerAdmin vede 30 strumenti di lettura, tutti rispondono, nessuno di scrittura o di interfaccia è pubblicato.
+Due correzioni rispetto alla tabella, da fare nei rami dei moduli (MCP-23):
+
+- `PrintReport` (presenze) risulta di lettura perché non chiede conferma, ma produce un file: va marcato escluso (MCP-D6);
+- `DocSearch` (documentale) non è di navigazione ed è pubblicato: risponde con il testo dei documenti trovati, va bene così.
 
 | Ramo | Lettura | Scrittura | Solo interfaccia |
 |---|---|---|---|
@@ -79,7 +89,8 @@ Totali indicativi: circa 29 di lettura, 22 di scrittura, 9 legati all'interfacci
 
 1. **Un endpoint MCP**: oggi l'unico ingresso ai comandi è `api/ChatAI/SendMessage`, che prende una frase e fa
    tutto il dialogo (LLM, domande, conferma). Un client MCP non manda frasi: manda nome dello strumento e parametri.
-2. **Un modo di autenticarsi adatto a un client AI**: il JWT si ottiene solo dal login dell'interfaccia e dura 20 ore.
+2. **Un modo di autenticarsi adatto a un client AI**: il JWT si ottiene solo dal login dell'interfaccia, dura 20 minuti
+   e si rinnova a ogni risposta: un client AI non può usarlo.
 3. **Risultati strutturati**: i comandi di lettura rispondono con un testo pensato per essere letto o pronunciato
    (`CommandResult.Message`). A un'AI servono anche i dati (`CommandResult.Data`), per poterli elaborare.
 4. **Tracciatura**: non c'è un registro di cosa ha fatto un'AI esterna per conto di chi.
@@ -121,7 +132,8 @@ che sia marcato come escluso. L'adattatore sta in Infrastructure; i comandi rest
 | `NeedsConfirmation` (falso) | marcatura "sola lettura" | il client AI può eseguirlo senza chiedere |
 | `NeedsConfirmation` (vero) | marcatura "modifica dati" | il client AI chiede il permesso all'utente |
 | `Validator`, `CrossValidator`, `Normalizer` | eseguiti dall'adattatore | l'errore torna all'AI come testo, che corregge e riprova |
-| `IsPerson` + "me stesso" | parametro facoltativo | se la persona manca, vale l'utente collegato |
+| `IsPerson` + "me stesso" | valore `@me` | l'AI scrive `@me` per l'utente collegato (lo dice la descrizione del parametro); se la persona manca non si assume nulla: vale il default del comando, oppure torna l'errore "parametro mancante" |
+| `McpAccess` (nuovo) | livello dello strumento | escluso / lettura / modifica personale / modifica amministrativa; se non impostato si ricava dalle righe sopra |
 
 Punti che richiedono attenzione:
 
@@ -173,13 +185,26 @@ Non esiste un accesso "di sistema" che vede tutto.
 
 Motivi per non riusare il JWT del login così com'è:
 
-- dura 20 ore e non si può revocare singolarmente;
+- dura 20 minuti, si rinnova solo passando dalle API, e non si può revocare singolarmente;
 - dà accesso a tutte le API, non solo agli strumenti MCP;
-- il contesto dell'azienda entra nel token solo dopo il caricamento dell'utente: il token MCP deve nascere già
-  legato a utente e azienda (da verificare sul codice di `AccountService`, MCP-A5).
+- il contesto dell'azienda entra nel token solo dopo `UserLoad` (verificato, MCP-A5): il token MCP nasce già legato
+  a utente, centro, studio e azienda, copiati dai claim della sessione in cui viene creato.
 
-Il token personale va conservato in forma non leggibile (solo impronta), mostrato una volta sola, con data
-dell'ultimo uso. Un utente con più aziende sceglie l'azienda alla creazione del token.
+**Come è stato realizzato (fase 1).**
+
+- Token: `nvx_` + 32 byte casuali (47 caratteri). Nel database resta solo l'impronta SHA-256, più i primi caratteri
+  per riconoscerlo. Il valore si vede una sola volta, alla creazione.
+- Durata scelta dall'utente, da 1 a `Mcp:TokenMaxDays` giorni (365); revoca immediata; data dell'ultimo uso;
+  al massimo 20 token attivi per utente.
+- Schema di autenticazione dedicato (`McpToken`) valido **solo** sull'endpoint MCP: il token personale non apre le
+  API dell'applicazione e il JWT non apre l'endpoint MCP (provato nei due sensi).
+- A ogni richiesta si verifica che il token non sia revocato o scaduto, che esistano ancora l'utente che lo ha
+  creato e quello con cui lavora, e che quest'ultimo sia ancora collegato all'azienda e non disabilitato.
+- Il token valido diventa un utente con gli stessi claim del JWT: comandi, servizi e contesti dei dati lavorano
+  senza modifiche.
+- Lingua dei testi restituiti (italiano / inglese) scelta alla creazione del token.
+
+Un utente con più aziende crea il token mentre lavora nell'azienda che gli interessa.
 
 ### 7.1 Impersonificazione
 
@@ -215,10 +240,20 @@ Scartata l'alternativa del parametro "per conto di" su ogni strumento: facile da
 **Regole comuni ai due tempi.**
 
 - **Stesse autorizzazioni dell'app**: si può impersonare solo chi si potrebbe impersonare dall'interfaccia, con
-  controllo **lato server**. Vedi il punto MCP-A7: nel codice letto di `UserLoad` non ho trovato questo controllo
-  (il metodo carica l'utente indicato ed emette il token), e la protezione visibile è nel client
-  (`RoleGuard4UserImpersonate`). Va verificato se il controllo è altrove; se manca, va aggiunto **prima** di MCP,
-  perché un client AI chiama il server direttamente.
+  controllo **lato server**.
+
+  **Esito della verifica MCP-A7 (17/11/2026): il controllo lato server non c'è.** `AccountService.UserLoad` (tutto il
+  metodo) carica l'utente con l'id ricevuto ed emette un token con la sua identità, il suo centro, studio e azienda;
+  non confronta mai l'id con l'utente che chiama né con la sua gerarchia. L'endpoint richiede solo di essere
+  autenticati. La protezione esistente è nel client (pulsanti "Impersona" negli elenchi, `RoleGuard4UserImpersonate`).
+  Conseguenza: un utente autenticato che conosce l'id di un altro utente può ottenerne il token chiamando
+  direttamente l'API. Gli id sono GUID, quindi non si indovinano, ma compaiono negli elenchi degli utenti.
+
+  Non è stato corretto in questo lavoro perché va prima fissata la regola (chi può impersonare chi: livelli della
+  gerarchia, stesso livello, ritorno all'utente precedente) e la modifica tocca il percorso del login. La fase 1 di
+  MCP non peggiora la situazione: un token personale si crea solo da una sessione già aperta e ne copia l'identità.
+  La correzione è però **necessaria prima della fase 6** (impersonificazione dagli strumenti) e consigliata subito,
+  indipendentemente da MCP (punto MCP-A7b).
 - **Doppia identità sempre registrata**: il registro delle chiamate (8.4) riporta utente del login e utente
   impersonato; le modifiche restano attribuite come avviene oggi nell'app.
 - **I controlli da SuperUser** continuano a usare l'utente del login, come oggi.
@@ -305,18 +340,21 @@ ingresso agli stessi comandi.
 
 ## 11. Decisioni aperte
 
-| Sigla | Decisione | Proposta |
+Con il via all'implementazione (17/11/2026) sono state adottate le proposte. Restano modificabili: quasi tutte sono
+un'impostazione o una riga di codice.
+
+| Sigla | Decisione | Stato |
 |---|---|---|
-| MCP-D1 | Partire da sola lettura o includere subito la scrittura | 🔍 partire dal livello 1, poi il 2 |
-| MCP-D2 | Token personale subito e OAuth dopo, oppure OAuth subito | 🔍 token personale (fase 1) |
-| MCP-D3 | Conferma in due passi lato server per il livello 3 | 🔍 sì |
-| MCP-D4 | Accesso AI spento per impostazione predefinita, attivato dall'amministratore | 🔍 sì |
-| MCP-D5 | Nomi degli strumenti: come oggi o con prefisso del modulo | 🔍 prefisso del modulo, in inglese |
-| MCP-D6 | Comandi che producono file (`PrintReport`) | 🔍 esclusi nella prima versione |
-| MCP-D7 | Funzione inclusa o legata alla licenza | 🔍 da decidere |
-| MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | 🔍 `/mcp`, ultima versione stabile dell'SDK |
-| MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | 🔍 sì |
-| MCP-D10 | Impersonificazione: solo token legato alla coppia di identità (fase 1) o anche strumenti di cambio identità (fase 6) | 🔍 entrambi, in due tempi |
+| MCP-D1 | Partire da sola lettura o includere subito la scrittura | ✅ adottata: livello 1; l'installazione lo limita con `Mcp:MaxLevel` = 1 |
+| MCP-D2 | Token personale subito e OAuth dopo, oppure OAuth subito | ✅ adottata: token personale |
+| MCP-D3 | Conferma in due passi lato server per il livello 3 | 🔍 proposta sì (fase 4). Fino ad allora il livello 3 non è attivabile nemmeno da configurazione |
+| MCP-D4 | Accesso AI spento per impostazione predefinita, attivato dall'amministratore | ✅ adottata: lo attiva solo il CompanyPowerAdmin |
+| MCP-D5 | Nomi degli strumenti: come oggi o con prefisso del modulo | ✅ adottata: `attendance_`, `crm_`, `doc_`, `hr_`, `compliance_`, `assets_`, `nvx_` + nome del comando in minuscolo (es. `attendance_who_is_present`) |
+| MCP-D6 | Comandi che producono file (`PrintReport`) | ✅ adottata: esclusi; il meccanismo c'è (`McpAccess = Excluded`), la marcatura di `PrintReport` va fatta nel ramo presenze (MCP-23) |
+| MCP-D7 | Funzione inclusa o legata alla licenza | 🔍 da decidere: per ora inclusa, senza controllo di licenza |
+| MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | ✅ adottata: `/mcp`, SDK ufficiale .NET 2.4.0, trasporto HTTP senza sessione |
+| MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | ✅ adottata e provata |
+| MCP-D10 | Impersonificazione: solo token legato alla coppia di identità (fase 1) o anche strumenti di cambio identità (fase 6) | ✅ primo tempo fatto; il secondo resta in fase 6 |
 
 ## 12. Fasi
 
@@ -333,43 +371,103 @@ ingresso agli stessi comandi.
 Le prove della fase 1 si fanno in locale con Claude Code verso il server di sviluppo, con il database usa e getta
 e gli utenti di prova.
 
+## 12bis. Stato dell'implementazione (17/11/2026)
+
+### 12bis.1 Cosa è stato costruito
+
+| Parte | Dove |
+|---|---|
+| Tabelle `McpAccessToken`, `McpCompanySetting`, `McpCallLog` (schema public) e migrazione `AddMcp` | `nvxapp.server.data/Entities/Public/Mcp.cs`, `Repositories/Public/Mcp*Repository.cs`, `Migrations/Public` |
+| Livello dello strumento sul comando (`IntentDefinition.McpAccess`) | `.../ChatAI/Models/ChatAIModel.cs` |
+| Normalizzazione e validazione comuni a chat e MCP | `.../ChatAI/CommandSlotProcessor.cs` |
+| Adattatore da comando a strumento, strumento `nvx_whoami`, registro | `.../infrastructure/Mcp/McpToolService.cs` |
+| Verifica del token personale | `.../infrastructure/Mcp/McpTokenAuthenticator.cs` |
+| Token, impostazione dell'azienda, registro (API delle pagine) | `.../infrastructure/Mcp/McpAccessService.cs`, `Controllers/Infrastructure/McpAccessController.cs` |
+| Endpoint MCP e schema di autenticazione (unico punto che usa l'SDK MCP) | `nvxapp.server/Utility/McpEndpoint.cs`, `Program.cs` |
+| Pagine `/aiaccess`, `/aiaccesstoken`, `/aiaccesslog`, `/aiaccesssetting` | `nvxapp.client/src/nvx/pages/infrastructure/mcp-*-page` |
+| Voci di menu "Accesso AI" (tutti gli utenti collegati) e "Accesso AI dell'azienda" (CompanyPowerAdmin, in Parametri) | `main-menu-infrastructure.service.ts`, `route-infrastructure.service.ts` |
+| Testi it / en | `InfrastructureMessages*.resx`, `assets/i18n/infrastructure/*.json`, `Manuals/infrastructure.*.md` |
+
+Impostazioni dell'installazione (`appsettings.json`, sezione `Mcp`): `Enabled` (endpoint presente), `MaxLevel` (1 = sola
+lettura), `TokenMaxDays` (365).
+
+### 12bis.2 Come funziona per l'utente
+
+1. Il CompanyPowerAdmin attiva l'accesso da **Parametri > Accesso AI dell'azienda**.
+2. Ogni utente crea un token da **Accesso AI > Nuovo token**: la pagina mostra il token una sola volta, con il comando
+   per Claude Code e la configurazione per Claude Desktop già compilati.
+3. Collegato il client, l'AI vede gli strumenti del ruolo dell'utente (per un CompanyPowerAdmin con tutti gli
+   applicativi: 30 strumenti di lettura più `nvx_whoami`).
+4. Ogni chiamata finisce nel **Registro chiamate**; revocando il token o spegnendo l'accesso dell'azienda il
+   collegamento smette di funzionare alla richiesta successiva.
+
+### 12bis.3 Prove fatte
+
+Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro (merge di prova senza conflitti):
+
+- **61 controlli automatici, tutti superati**: token (creazione, elenco, revoca, permessi tra utenti), autenticazione
+  dell'endpoint nei due sensi, protocollo MCP (`initialize`, `tools/list`, `tools/call`), accesso dell'azienda spento /
+  acceso / rispento, strumenti per ruolo, chiamata di tutti i 30 strumenti, errori (strumento sconosciuto, parametro
+  non previsto, dipendente inesistente, strumento di scrittura non eseguibile), impersonificazione (token creato
+  impersonando, doppia identità nel registro, interruttore dell'azienda valido anche per chi impersona), lingua
+  inglese, utente senza azienda, registro delle chiamate, chat interna ancora funzionante.
+- **Pagine del client** aperte in un browser senza interfaccia: elenco, creazione del token con le istruzioni,
+  registro, impostazione dell'azienda, voci di menu; nessun errore nella console.
+
+### 12bis.4 Limiti noti
+
+- **Non provato con un client reale** (MCP-A8): il protocollo è stato esercitato da uno script. La configurazione
+  proposta per Claude Desktop usa il ponte `mcp-remote` (richiede Node.js): va verificata sulla versione installata.
+- Solo lettura: i comandi di scrittura esistono ma non sono pubblicati (fasi 2 e 4).
+- Nessun limite di frequenza per token (MCP-21).
+- I testi dei parametri degli strumenti sono quelli scritti per il LLM della chat, in italiano anche con il token
+  in inglese: funzionano, ma andrebbero riletti pensando a un'AI esterna.
+- Su `Infrastructure_Dev` da solo l'unico strumento è `nvx_whoami`: i comandi di lettura sono nei rami dei moduli e
+  compaiono dopo la catena dei merge.
+- `PrintReport` risulta pubblicato finché non viene marcato escluso nel ramo presenze (MCP-23).
+- `Account/UserLoad` senza controllo lato server (MCP-A7b), indipendente da MCP.
+
 ## 13. Checklist
 
 ### Analisi
 
 - [x] MCP-A1 Ricognizione del motore dei comandi della chat e della sua corrispondenza con gli strumenti MCP (sezioni 3 e 5)
 - [x] MCP-A1b Inventario dei 60 comandi per ramo, con prima classificazione lettura / scrittura / interfaccia (sezione 3.2)
-- [ ] MCP-A2 Confermare la classificazione comando per comando leggendo ogni handler
-- [ ] MCP-A3 Verificare SDK MCP per .NET: versione, compatibilità con .NET 11, convivenza con controller e SignalR
-- [ ] MCP-A4 Individuare la logica di validazione e risoluzione degli slot che oggi sta in `ChatAIService` e va messa in comune
-- [ ] MCP-A5 Verificare come azienda e ruoli entrano nel token (`AccountService`) per definire il token personale
-- [ ] MCP-A6 Prendere le decisioni MCP-D1 … MCP-D10
+- [x] MCP-A2 Classificazione verificata eseguendo l'adattatore su tutti i rami uniti (30 strumenti di lettura, sezione 3.2)
+- [x] MCP-A3 SDK MCP per .NET verificato: `ModelContextProtocol.AspNetCore` 2.4.0, funziona su .NET 11 accanto a controller e SignalR
+- [x] MCP-A4 Logica di normalizzazione e validazione degli slot messa in comune (`CommandSlotProcessor`), usata da chat e MCP
+- [x] MCP-A5 Verificato come centro, studio e azienda entrano nel token (`UserLoad`): il token personale li copia dai claim
+- [x] MCP-A6 Decisioni MCP-D1 … MCP-D10: adottate le proposte, tranne D3 (fase 4) e D7 (licenza) ancora aperte
 - [x] MCP-A7a Ricognizione dell'impersonificazione attuale (token con doppia identità, sezione 7.1)
-- [ ] MCP-A7 Verificare se `Account/UserLoad` controlla lato server chi può impersonare chi; se manca, aggiungerlo prima di MCP
+- [x] MCP-A7 Verificato: `Account/UserLoad` **non** controlla lato server chi può impersonare chi (sezione 7.1)
+- [ ] MCP-A7b Fissare la regola e aggiungere il controllo lato server a `UserLoad` (consigliato subito; obbligatorio prima della fase 6)
+- [ ] MCP-A8 Provare il collegamento con un client reale: Claude Code e Claude Desktop (finora provato il protocollo con uno script)
 
 ### Fase 1 – Infrastructure_Dev
 
-- [ ] MCP-01 Endpoint MCP in `nvxapp.server`, attivabile da configurazione
-- [ ] MCP-02 Adattatore da `ICommandHandler` a strumento (elenco, schema dei parametri, marcatura lettura / modifica)
-- [ ] MCP-03 Filtro degli strumenti per ruolo, applicativo attivo e livello ammesso dall'azienda
-- [ ] MCP-04 Esclusione dei comandi solo di interfaccia
-- [ ] MCP-05 Esecuzione con normalizzazione e validazione comuni alla chat; errori e candidati restituiti all'AI
-- [ ] MCP-06 Risultato con testo e dati strutturati
-- [ ] MCP-07 Token personale: tabella, creazione, scadenza, revoca, ultimo uso
-- [ ] MCP-07b Token personale con doppia identità (utente del login e utente impersonato alla creazione)
-- [ ] MCP-08 Pagina del profilo per gestire i token (client), con l'indicazione di per chi vale ogni token
-- [ ] MCP-09 Impostazione per azienda: accesso AI attivo e livello massimo (server e client)
-- [ ] MCP-10 Registro delle chiamate e pagina di consultazione per l'amministratore
-- [ ] MCP-11 Testi in italiano e inglese
-- [ ] MCP-12 Prove in locale con Claude Code (elenco strumenti per ruolo, letture, errori)
-- [ ] MCP-13 Pagina del manuale utente: come collegare Claude
-- [ ] MCP-14 Catena dei merge verso i rami dei moduli
+- [x] MCP-01 Endpoint MCP in `nvxapp.server` (`/mcp`), attivabile da configurazione (`Mcp:Enabled`)
+- [x] MCP-02 Adattatore da `ICommandHandler` a strumento (elenco, schema dei parametri, marcatura lettura / modifica)
+- [x] MCP-03 Filtro degli strumenti per ruolo, applicativo attivo e livello ammesso dall'azienda
+- [x] MCP-04 Esclusione dei comandi solo di interfaccia (navigazione, `Help`, `ChangeTheme`, `ChangeLanguage`)
+- [x] MCP-05 Esecuzione con normalizzazione e validazione comuni alla chat; errori e candidati restituiti all'AI
+- [x] MCP-06 Risultato con testo e, quando il comando li restituisce, dati in JSON
+- [x] MCP-07 Token personale: tabella, creazione, scadenza, revoca, ultimo uso
+- [x] MCP-07b Token personale con doppia identità (utente del login e utente impersonato alla creazione)
+- [x] MCP-08 Pagine "Accesso AI" (elenco dei token, nuovo token con le istruzioni di collegamento)
+- [x] MCP-09 Impostazione per azienda: accesso AI attivo e livello massimo (server e client)
+- [x] MCP-10 Registro delle chiamate e pagina di consultazione
+- [x] MCP-11 Testi in italiano e inglese (server e client)
+- [x] MCP-12 Prove in locale: 61 controlli sul protocollo e sulle API, più le quattro pagine in un browser (sezione 12bis.3)
+- [x] MCP-13 Manuale utente: pagine "Accesso AI" e "Accesso AI dell'azienda"
+- [x] MCP-15 Strumento `nvx_whoami` ("chi sono"): utente, azienda, ruoli, livello, motivo degli strumenti mancanti
+- [ ] MCP-14 Catena dei merge verso i rami dei moduli (in attesa di conferma)
 
 ### Fase 2 – Scrittura personale e limiti
 
-- [ ] MCP-20 Abilitazione degli strumenti di livello 2
+- [ ] MCP-20 Marcare `PersonalWrite` i comandi personali nei rami dei moduli (`ClockNow`, `RequestClocking`, `RequestLeave`, `AstBookResource`, `AstCancelBooking`, `DocConfirmRead`) e alzare `Mcp:MaxLevel` a 2
 - [ ] MCP-21 Limiti di frequenza per token e tetto alle righe restituite
 - [ ] MCP-22 Provenienza "AI" visibile sulle modifiche
+- [ ] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
 
 ### Fase 3 – Nuovi strumenti di lettura (rami dei moduli)
 
