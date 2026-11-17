@@ -43,4 +43,4 @@ Nessuna modifica lato server.
 - [x] Preferenza manuale/automatico salvata nel browser
 - [x] Verifica lato server: più comandi nello stesso messaggio (`ChatAIOutModel.ActionResults`, piano di azioni)
 - [ ] Test su Chrome desktop e Android: frasi ripetute, pause lunghe, riavvii della sessione (da fare a mano, serve il microfono)
-- [ ] Catena dei merge (Infrastructure_Dev → Infrastructure → rami → AllFunction)
+- [x] Catena dei merge (Infrastructure_Dev → Infrastructure → rami → AllFunction), 2026-11-17
