@@ -21,10 +21,10 @@ export class MainMenuCrmService implements iMainMenuService {
     const tutti = ['CompanyPowerAdmin', 'CompanyAdmin'];
     return [
       { menuType: MenuType.MenuHeader, zorder: 300000, group: 30, title: 'crm.menu.section', roles: tutti, component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 300050, group: 30, title: 'crm.menu.activities', roles: tutti, component: 'CrmActivityListPageComponent', url: '/crmactivitylist', icon: 'calendar' },
       { menuType: MenuType.MenuItem, zorder: 300100, group: 30, title: 'crm.menu.customers', roles: tutti, component: 'CrmCustomerListPageComponent', url: '/crmcustomerlist', icon: 'business' },
       { menuType: MenuType.MenuItem, zorder: 300200, group: 30, title: 'crm.menu.leads', roles: tutti, component: 'CrmLeadListPageComponent', url: '/crmleadlist', icon: 'person-add' },
       { menuType: MenuType.MenuItem, zorder: 300300, group: 30, title: 'crm.menu.pipeline', roles: tutti, component: 'CrmPipelinePageComponent', url: '/crmpipeline', icon: 'git-network' },
-      { menuType: MenuType.MenuItem, zorder: 300400, group: 30, title: 'crm.menu.activities', roles: tutti, component: 'CrmActivityListPageComponent', url: '/crmactivitylist', icon: 'calendar' },
       { menuType: MenuType.MenuItem, zorder: 300500, group: 30, title: 'crm.menu.offers', roles: tutti, component: 'CrmOfferListPageComponent', url: '/crmofferlist', icon: 'document-text' },
       { menuType: MenuType.MenuItem, zorder: 300550, group: 30, title: 'crm.menu.requests', roles: tutti, component: 'CrmRequestListPageComponent', url: '/crmrequestlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem, zorder: 300600, group: 30, title: 'crm.menu.report', roles: tutti, component: 'CrmReportPageComponent', url: '/crmreport', icon: 'bar-chart' },
