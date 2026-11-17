@@ -40,6 +40,7 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
   public metodiSandbox: MetodoPagamento[] = [];
   public attuale: LicenseSubscriptionModel | null = null;
   public readonly Periodicita = PeriodicitaLicenza;
+  public readonly Metodo = MetodoPagamento;
   private messaggio: string | null = null;
   // pagamento avviato sulla pagina del provider: si torna alla gestione licenze ad aspettare l'esito
   private attesaPagamento: { idAbbonamento: number; redirectUrl: string } | null = null;
@@ -103,6 +104,11 @@ export class LicenseSubscribePageComponent extends BasePageConfirmCancelComponen
 
   periodo(valore: PeriodicitaLicenza) {
     this._editForm.get('periodicita')?.setValue(valore);
+  }
+
+  scegliMetodo(valore: MetodoPagamento) {
+    this._editForm.get('metodo')?.setValue(valore);
+    this._editForm.markAsDirty();
   }
 
   seleziona(p: LicensePlanModel) {
