@@ -484,4 +484,46 @@
   <data name="ChatOpenChecklistLabel" xml:space="preserve">
     <value>Checklist HR</value>
   </data>
+  <data name="ChatOrgChartDisplayName" xml:space="preserve">
+    <value>Organigramma</value>
+  </data>
+  <data name="ChatOrgChartDescription" xml:space="preserve">
+    <value>Struttura dell'azienda: sedi e reparti con i sottoreparti, di tutta l'azienda o di una sola sede o reparto. Risorse Umane non registra responsabili né le persone dei reparti</value>
+  </data>
+  <data name="ChatUnitQuestion" xml:space="preserve">
+    <value>Di quale sede o reparto?</value>
+  </data>
+  <data name="ChatUnitLabel" xml:space="preserve">
+    <value>Sede o reparto</value>
+  </data>
+  <data name="ChatOrgChartNone" xml:space="preserve">
+    <value>Non ci sono sedi né reparti registrati per l'azienda.</value>
+  </data>
+  <data name="ChatOrgChartNotFound" xml:space="preserve">
+    <value>Non ho trovato la sede o il reparto "{0}".</value>
+  </data>
+  <data name="ChatOrgChartTitle" xml:space="preserve">
+    <value>Organigramma{0}: {1} sedi e {2} reparti:</value>
+  </data>
+  <data name="ChatOrgChartNote" xml:space="preserve">
+    <value>Risorse Umane non registra i responsabili né l'assegnazione delle persone ai reparti.</value>
+  </data>
+  <data name="ChatContractExpiriesDisplayName" xml:space="preserve">
+    <value>Contratti in scadenza</value>
+  </data>
+  <data name="ChatContractExpiriesDescription" xml:space="preserve">
+    <value>Dipendenti il cui rapporto di lavoro termina (data di cessazione della scheda HR) entro alcuni giorni, 60 se non detto e al massimo 365, più quelli ancora attivi con la data già passata. Il tipo di contratto non è gestito in Risorse Umane</value>
+  </data>
+  <data name="ChatContractDaysInvalid" xml:space="preserve">
+    <value>Indica un numero di giorni da 1 a {0}.</value>
+  </data>
+  <data name="ChatContractExpiriesNone" xml:space="preserve">
+    <value>Nessun rapporto di lavoro termina entro {0} giorni.</value>
+  </data>
+  <data name="ChatContractExpiriesOverdue" xml:space="preserve">
+    <value>{0} dipendenti ancora attivi con la data di cessazione già passata:</value>
+  </data>
+  <data name="ChatContractExpiriesTitle" xml:space="preserve">
+    <value>{0} rapporti di lavoro terminano nei prossimi {1} giorni:</value>
+  </data>
 </root>
