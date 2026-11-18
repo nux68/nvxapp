@@ -17,6 +17,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.4.0" />
     <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <!-- EF Core/Npgsql (e Identity/DataProtection.EntityFrameworkCore che dipendono da EF Core) restano su 10.x: Npgsql.EntityFrameworkCore.PostgreSQL 11 non e' ancora stabile (solo RC). EF Core 10 gira su net11.0 -->
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.3" />
