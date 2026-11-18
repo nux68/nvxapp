@@ -74,12 +74,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         private readonly IntentDefinition _intentDefinition;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
+        private readonly IChatUserContext _chatUserContext;
 
         public RequestLeaveHandler(IDip_GG_RichiestaService dip_GG_RichiestaService,
-                                   IPar_GiustificativiService par_GiustificativiService)
+                                   IPar_GiustificativiService par_GiustificativiService,
+                                   IChatUserContext chatUserContext)
         {
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
             _par_GiustificativiService = par_GiustificativiService;
+            _chatUserContext = chatUserContext;
 
             _intentDefinition = new IntentDefinition
             {
@@ -149,7 +152,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             }
 
             // null = utente corrente; non dall'HR: resta in attesa di approvazione
-            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore, importo);
+            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore, importo,
+                viaAi: _chatUserContext.ViaMcp);
             if (errore != null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRequestError", errore));
 
@@ -210,7 +214,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatEmployeeSelfNotFound"));
 
             var errore = await ChatInvioRichiestaHelper.Timbratura(_dip_GG_RichiestaService, null, false, giorno, ora,
-                utente.dip_RapportoLavoro.IdAz_SubCommessaAttivita);
+                utente.dip_RapportoLavoro.IdAz_SubCommessaAttivita, viaAi: _chatUserContext.ViaMcp);
             if (errore != null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRequestError", errore));
 
