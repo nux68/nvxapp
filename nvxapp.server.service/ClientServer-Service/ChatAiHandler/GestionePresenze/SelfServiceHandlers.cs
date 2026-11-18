@@ -39,7 +39,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "timbra adesso", "timbrami", "timbro", "sono arrivato", "sto uscendo", "clock me in", "clock me out" },
                 Examples = new() { "timbra la mia entrata", "sono arrivato, timbrami", "sto uscendo", "clock me in now" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatClockNowSummary"),
-                Pages = new() { "/timeclockuser" }
+                Pages = new() { "/timeclockuser" },
+                // MCP: modifica che l'utente fa per se' (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite
             };
         }
 
@@ -72,12 +74,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         private readonly IntentDefinition _intentDefinition;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
+        private readonly IChatUserContext _chatUserContext;
 
         public RequestLeaveHandler(IDip_GG_RichiestaService dip_GG_RichiestaService,
-                                   IPar_GiustificativiService par_GiustificativiService)
+                                   IPar_GiustificativiService par_GiustificativiService,
+                                   IChatUserContext chatUserContext)
         {
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
             _par_GiustificativiService = par_GiustificativiService;
+            _chatUserContext = chatUserContext;
 
             _intentDefinition = new IntentDefinition
             {
@@ -92,6 +97,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Examples = new() { "chiedo ferie dal 3 al 7 novembre", "vorrei 2 ore di permesso venerdì", "richiedo un giorno di ROL per lunedì", "I'd like to take holiday from 3 to 7 November" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRequestLeaveSummary"),
                 Pages = new() { "/requestjustificationuser", "/requests" },
+                // MCP: richiesta per se', resta da approvare (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite,
                 CrossValidator = slots =>
                     slots.TryGetValue("from", out var dal) && slots.TryGetValue("to", out var al) && ParseData(al) < ParseData(dal)
                         ? SlotValidationResult.Failed(SlotValidationError.BusinessRuleViolation, AttendanceTrackingMessages.Get("ChatPeriodInvalid"), "to")
@@ -145,7 +152,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             }
 
             // null = utente corrente; non dall'HR: resta in attesa di approvazione
-            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore, importo);
+            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore, importo,
+                viaAi: _chatUserContext.ViaMcp);
             if (errore != null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRequestError", errore));
 
@@ -183,6 +191,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Examples = new() { "ho dimenticato di timbrare ieri alle 9", "chiedo una timbratura per stamattina alle 8:30", "I forgot to clock in yesterday at 9" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRequestClockingSummary"),
                 Pages = new() { "/requestclockinguser", "/requests" },
+                // MCP: richiesta per se', resta da approvare (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite,
                 Slots = BuildSlots(
                     SlotOrario("time", true, AttendanceTrackingMessages.Get("ChatRegisterClockingTimeQuestion"), AttendanceTrackingMessages.Get("ChatTimeLabel")),
                     SlotData("date", false, "oggi", AttendanceTrackingMessages.Get("ChatDateQuestion"), AttendanceTrackingMessages.Get("ChatDateLabel")))
@@ -204,7 +214,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatEmployeeSelfNotFound"));
 
             var errore = await ChatInvioRichiestaHelper.Timbratura(_dip_GG_RichiestaService, null, false, giorno, ora,
-                utente.dip_RapportoLavoro.IdAz_SubCommessaAttivita);
+                utente.dip_RapportoLavoro.IdAz_SubCommessaAttivita, viaAi: _chatUserContext.ViaMcp);
             if (errore != null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRequestError", errore));
 
