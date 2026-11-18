@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -64,6 +65,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
      Chiamata di uno strumento: i parametri diventano gli slot del comando, con la stessa normalizzazione e validazione
      della chat (CommandSlotProcessor); gli errori tornano come testo, cosi' l'AI corregge e riprova. Ogni chiamata e'
      registrata (McpCallLog).
+
+     Limiti (MCP-21): chiamate per token al minuto e al giorno (Mcp:MaxCallsPerMinute / MaxCallsPerDay), contate sul
+     registro delle chiamate, quindi validi anche con piu' istanze del server; ogni elenco dei dati restituiti si ferma a
+     Mcp:MaxRows righe, e il testo avvisa l'AI che il risultato e' parziale.
 
      L'identita' e' quella dei claim della richiesta, costruiti dal token personale (McpTokenAuthenticationHandler):
      i comandi e i servizi che usano lavorano come nell'applicazione, senza sapere di MCP.
@@ -187,7 +192,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             try
             {
                 contesto = await ContestoAsync();
-                risultato = await EseguiAsync(contesto, name ?? string.Empty, arguments);
+                var limite = await LimiteSuperatoAsync();
+                risultato = limite != null
+                    ? Errore(limite)
+                    : await EseguiAsync(contesto, name ?? string.Empty, arguments);
             }
             catch (Exception ex)
             {
@@ -271,35 +279,102 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                 testo.AppendLine(validazione.InfoMessage);
             testo.Append(esito.Message);
 
+            string? dati = null;
+            if (esito.Success)
+            {
+                int maxRighe = McpOptions.MaxRows(_configuration);
+                (dati, bool troncati) = Dati(esito.Data, maxRighe);
+                if (troncati)
+                    testo.AppendLine().Append(InfrastructureMessages.Get("McpRowsTruncated", maxRighe));
+            }
+
             return new McpToolCallResult
             {
                 Success = esito.Success,
                 Text = testo.ToString(),
-                DataJson = esito.Success ? Dati(esito.Data) : null
+                DataJson = dati
             };
         }
 
         private static McpToolCallResult Errore(string messaggio) => new() { Success = false, Text = messaggio };
 
-        // dati del comando in JSON; i payload per il client (navigazione, azioni dell'interfaccia) non servono a un'AI
-        private static string? Dati(object? data)
+        // limiti di frequenza del token (MCP-21), contati sul registro delle chiamate: null = chiamata ammessa.
+        // Anche le chiamate respinte finiscono nel registro e contano: un client che insiste resta fermo.
+        private async Task<string?> LimiteSuperatoAsync()
+        {
+            var token = TokenCorrente();
+            if (token.Id == null)
+                return null;
+
+            int alMinuto = McpOptions.MaxCallsPerMinute(_configuration);
+            if (alMinuto > 0)
+            {
+                var daUnMinuto = DateTime.Now.AddMinutes(-1);
+                int ultimoMinuto = await _mcpCallLogRepository.FindAll(x => x.IdMcpAccessToken == token.Id && x.Data >= daUnMinuto).CountAsync();
+                if (ultimoMinuto >= alMinuto)
+                    return InfrastructureMessages.Get("McpRateLimitMinute", alMinuto);
+            }
+
+            int alGiorno = McpOptions.MaxCallsPerDay(_configuration);
+            if (alGiorno > 0)
+            {
+                var oggi = DateTime.Today;
+                int diOggi = await _mcpCallLogRepository.FindAll(x => x.IdMcpAccessToken == token.Id && x.Data >= oggi).CountAsync();
+                if (diOggi >= alGiorno)
+                    return InfrastructureMessages.Get("McpRateLimitDay", alGiorno);
+            }
+            return null;
+        }
+
+        // dati del comando in JSON; i payload per il client (navigazione, azioni dell'interfaccia) non servono a un'AI.
+        // Ogni elenco, a qualunque livello, si ferma a maxRighe elementi (troncati = true se qualcosa e' stato omesso).
+        private static (string? Json, bool Troncati) Dati(object? data, int maxRighe)
         {
             if (data == null || data is string || data is NavigatePayload || data is ClientActionPayload)
-                return null;
+                return (null, false);
             try
             {
-                var json = JsonSerializer.Serialize(data, new JsonSerializerOptions
+                var nodo = JsonSerializer.SerializeToNode(data, new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                     ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles
                 });
-                return json.Length > MaxDataChars || json == "{}" || json == "[]" ? null : json;
+                if (nodo == null)
+                    return (null, false);
+
+                bool troncati = TagliaElenchi(nodo, maxRighe);
+                var json = nodo.ToJsonString();
+                return (json.Length > MaxDataChars || json == "{}" || json == "[]" ? null : json, troncati);
             }
             catch (Exception ex)
             {
                 Log.Warning(ex, "[MCP] Dati del comando non serializzabili ({Type})", data.GetType().Name);
-                return null;
+                return (null, false);
             }
+        }
+
+        private static bool TagliaElenchi(JsonNode nodo, int maxRighe)
+        {
+            bool troncati = false;
+            switch (nodo)
+            {
+                case JsonArray elenco:
+                    while (elenco.Count > maxRighe)
+                    {
+                        elenco.RemoveAt(elenco.Count - 1);
+                        troncati = true;
+                    }
+                    foreach (var figlio in elenco)
+                        if (figlio != null)
+                            troncati |= TagliaElenchi(figlio, maxRighe);
+                    break;
+                case JsonObject oggetto:
+                    foreach (var proprieta in oggetto)
+                        if (proprieta.Value != null)
+                            troncati |= TagliaElenchi(proprieta.Value, maxRighe);
+                    break;
+            }
+            return troncati;
         }
 
         // ---------------------------------------------------------------------------
@@ -394,6 +469,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             _chatUserContext.CurrentRoute = string.Empty;
             _chatUserContext.Applications = contesto.Applicativi;
             _chatUserContext.MenuPages = new List<MenuPageModel>();
+            _chatUserContext.ViaMcp = true;
 
             foreach (var handler in _handlers)
             {
