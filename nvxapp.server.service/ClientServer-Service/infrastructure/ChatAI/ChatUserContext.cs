@@ -24,6 +24,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Voci del menu che l'utente vede (dal client, gia' tradotte); vuoto = non note
         IReadOnlyList<MenuPageModel> MenuPages { get; set; }
 
+        // vero se il comando arriva da un assistente AI esterno tramite MCP (lo imposta McpToolService):
+        // i comandi che creano richieste lo segnano nel corpo (McpProvenance), cosi' chi approva lo vede (MCP-22)
+        bool ViaMcp { get; set; }
+
         bool IsInRole(params string[] roles);
 
         // vero se l'applicativo è attivo per l'azienda (null = elemento comune, sempre disponibile)
@@ -37,6 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         public string CurrentRoute { get; set; } = string.Empty;
         public IReadOnlyCollection<ApplicationType>? Applications { get; set; }
         public IReadOnlyList<MenuPageModel> MenuPages { get; set; } = new List<MenuPageModel>();
+        public bool ViaMcp { get; set; }
 
         public bool IsInRole(params string[] roles) =>
             roles.Any(r => Roles.Contains(r, StringComparer.OrdinalIgnoreCase));
