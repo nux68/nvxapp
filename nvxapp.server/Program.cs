@@ -54,6 +54,8 @@ CultureInfo serverCulture = Installers.InstallCultureAndTimeZone(builder);
 // CORS: origini consentite da configurazione (Cors:AllowedOrigins); vuoto = solo stessa origine
 Boolean useCors = Installers.InstallCors(builder);
 Installers.InstallAuthentication(builder, useSignalR);
+// endpoint MCP per i client AI (Mcp:Enabled): autenticazione con il token personale, vedi Utility/McpEndpoint.cs
+Boolean useMcp = McpEndpoint.Install(builder);
 // dietro un reverse proxy (Docker): IP e schema originali da X-Forwarded-*; disattivato di default (ReverseProxy:Enabled)
 Boolean useReverseProxy = Installers.InstallForwardedHeaders(builder);
 
@@ -202,6 +204,9 @@ app.UseStaticFiles(staticFileOptions);
 
 app.MapControllers();
 
+if (useMcp)
+    McpEndpoint.Map(app);
+
 
 if (useSignalR)
     Installers.InstallSignalRHub(app);
@@ -218,7 +223,7 @@ if (useHangFire)
 
 // Fallback del client Angular: le sue rotte (es. /confirm-email e /reset-password dei link nelle email,
 // o una pagina ricaricata con F5) non sono file e senza fallback il server risponde 404. Si risponde con
-// index.html e la rotta la gestisce Angular. Esclusi le API, l'hub SignalR e i file (es. un .js mancante resta 404).
-app.MapFallbackToFile("{*path:nonfile:regex(^(?!api/|chathub).*$)}", "index.html", staticFileOptions);
+// index.html e la rotta la gestisce Angular. Esclusi le API, l'hub SignalR, l'endpoint MCP e i file (es. un .js mancante resta 404).
+app.MapFallbackToFile("{*path:nonfile:regex(^(?!api/|chathub|mcp$).*$)}", "index.html", staticFileOptions);
 
 app.Run();

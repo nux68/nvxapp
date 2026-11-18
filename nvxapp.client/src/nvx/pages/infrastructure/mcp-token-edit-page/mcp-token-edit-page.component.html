@@ -1,0 +1,95 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      @if (!created) {
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.mcpTokenEdit.info' | transloco }}</ion-label>
+        </ion-item>
+        <ion-note class="nvx-mcp-note">{{ 'pages.mcpTokenEdit.note' | transloco }}</ion-note>
+
+        <form [formGroup]="_editForm">
+          <ion-item>
+            <ion-input formControlName="name" [label]="'pages.mcpTokenEdit.name' | transloco" labelPlacement="floating"
+                       [placeholder]="'pages.mcpTokenEdit.namePlaceholder' | transloco" maxlength="100"></ion-input>
+          </ion-item>
+          @if (_editForm.get('name')?.invalid && _editForm.get('name')?.touched) {
+            <ion-note color="danger">{{ 'pages.mcpTokenEdit.nameRequired' | transloco }}</ion-note>
+          }
+
+          <ion-item>
+            <ion-input type="number" formControlName="days" [label]="'pages.mcpTokenEdit.days' | transloco" labelPlacement="floating"></ion-input>
+          </ion-item>
+          @if (_editForm.get('days')?.invalid && _editForm.get('days')?.touched) {
+            <ion-note color="danger">{{ 'pages.mcpTokenEdit.daysInvalid' | transloco: { max: tokenMaxDays } }}</ion-note>
+          }
+
+          <ion-item>
+            <ion-select formControlName="language" [label]="'pages.mcpTokenEdit.language' | transloco" labelPlacement="floating" interface="popover">
+              @for (l of lingue; track l) {
+                <ion-select-option [value]="l">{{ ('pages.mcpTokenEdit.languages.' + l) | transloco }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-note class="nvx-nota-disabled">{{ 'pages.mcpTokenEdit.languageNote' | transloco }}</ion-note>
+        </form>
+      }
+
+      @if (created; as c) {
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'pages.mcpTokenEdit.createdTitle' | transloco }}</ion-label>
+        </ion-item>
+        <ion-note class="nvx-mcp-note" color="warning">{{ 'pages.mcpTokenEdit.createdWarning' | transloco }}</ion-note>
+
+        <ion-item lines="full">
+          <ion-input [label]="'pages.mcpTokenEdit.token' | transloco" labelPlacement="stacked" [value]="c.token" [readonly]="true"
+                     (click)="seleziona($event)"></ion-input>
+        </ion-item>
+        <div class="nvx-mcp-actions">
+          <ion-button size="small" shape="round" [color]="btnCopia.color" (click)="copia(c.token)">
+            <ion-icon slot="start" [name]="btnCopia.image"></ion-icon>
+            {{ 'pages.mcpTokenEdit.copyToken' | transloco }}
+          </ion-button>
+        </div>
+
+        <ion-item lines="full">
+          <ion-input [label]="'pages.mcpTokenEdit.endpoint' | transloco" labelPlacement="stacked" [value]="c.endpointUrl" [readonly]="true"
+                     (click)="seleziona($event)"></ion-input>
+        </ion-item>
+
+        <h3>{{ 'pages.mcpTokenEdit.howTo' | transloco }}</h3>
+        <dl class="nvx-mcp-howto">
+          <dt>Claude Code</dt>
+          <dd>
+            {{ 'pages.mcpTokenEdit.claudeCode' | transloco }}
+            <pre class="nvx-mcp-code">{{ comandoClaudeCode }}</pre>
+            <ion-button size="small" shape="round" fill="outline" color="medium" (click)="copia(comandoClaudeCode)">
+              <ion-icon slot="start" [name]="btnCopia.image"></ion-icon>
+              {{ 'pages.mcpTokenEdit.copyCommand' | transloco }}
+            </ion-button>
+          </dd>
+          <dt>Claude Desktop</dt>
+          <dd>
+            {{ 'pages.mcpTokenEdit.claudeDesktop' | transloco }}
+            <pre class="nvx-mcp-code">{{ configClaudeDesktop }}</pre>
+            <ion-button size="small" shape="round" fill="outline" color="medium" (click)="copia(configClaudeDesktop)">
+              <ion-icon slot="start" [name]="btnCopia.image"></ion-icon>
+              {{ 'pages.mcpTokenEdit.copyConfig' | transloco }}
+            </ion-button>
+          </dd>
+        </dl>
+        <ion-note class="nvx-mcp-note">{{ 'pages.mcpTokenEdit.afterConnect' | transloco }}</ion-note>
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

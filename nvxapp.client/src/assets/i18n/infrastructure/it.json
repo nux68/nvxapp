@@ -56,6 +56,7 @@
       "confirmRead": "Confermo di aver letto",
       "copy": "Copia",
       "regenerate": "Nuovo indirizzo",
+      "revoke": "Revoca",
       "calendar": "Calendario",
       "generateNow": "Genera ora"
     },
@@ -140,6 +141,8 @@
     "notifications": "Notifiche",
     "deadlines": "Scadenzario",
     "calendarFeed": "Calendario",
+    "aiAccess": "Accesso AI",
+    "aiAccessSetting": "Accesso AI dell'azienda",
     "acknowledgements": "Prese visione",
     "requests": "Le mie richieste",
     "requestsAdmin": "Richieste da approvare",
@@ -1262,6 +1265,109 @@
       "sourcePlain": "Senza AI",
       "generating": "Generazione in corso, può richiedere qualche secondo...",
       "empty": "Nessun riepilogo."
+    },
+    "mcpTokenList": {
+      "title": "Accesso AI",
+      "note": "Collega un assistente AI (Claude Code, Claude Desktop) a nvxapp: potrà leggere i tuoi dati ed eseguire le operazioni permesse, con i tuoi stessi permessi. Ogni collegamento usa un token personale creato qui.",
+      "serverDisabled": "L'accesso AI non è attivo in questa installazione.",
+      "noCompany": "Non stai lavorando in un'azienda: un assistente collegato vede solo le informazioni sul tuo utente.",
+      "companyDisabled": "L'accesso AI non è attivo per la tua azienda: puoi creare un token, ma l'assistente non vedrà nessuno strumento finché l'amministratore dell'azienda non lo attiva.",
+      "companyDisabledAdmin": "L'accesso AI non è attivo per l'azienda: attivalo da «Accesso AI dell'azienda». Fino ad allora gli assistenti collegati non vedono nessuno strumento.",
+      "companyEnabled": {
+        "1": "Accesso AI attivo per l'azienda: sola lettura.",
+        "2": "Accesso AI attivo per l'azienda: lettura e modifiche personali.",
+        "3": "Accesso AI attivo per l'azienda: lettura e tutte le modifiche."
+      },
+      "filter": {
+        "active": "Attivi",
+        "all": "Tutti"
+      },
+      "columnName": "Nome",
+      "columnPrefix": "Token",
+      "columnUser": "Lavora come",
+      "columnExpires": "Scadenza",
+      "columnLastUsed": "Ultimo uso",
+      "columnState": "Stato",
+      "state": {
+        "active": "Attivo",
+        "expired": "Scaduto",
+        "revoked": "Revocato"
+      },
+      "never": "mai",
+      "impersonated": "impersonato",
+      "newToken": "Nuovo token",
+      "callLog": "Registro chiamate",
+      "companySetting": "Accesso AI dell'azienda",
+      "confirmRevoke": "Revocare il token «{{name}}»? L'assistente che lo usa non potrà più collegarsi. L'operazione non si può annullare.",
+      "empty": "Nessun token."
+    },
+    "mcpTokenEdit": {
+      "title": "Nuovo token",
+      "info": "Token personale",
+      "note": "Il token lavora come l'utente con cui sei collegato adesso, sulla sua azienda. Se stai impersonando un altro utente, lavora come quell'utente.",
+      "name": "Nome",
+      "namePlaceholder": "es. Claude Desktop ufficio",
+      "nameRequired": "Indica un nome per riconoscere il token.",
+      "days": "Durata (giorni)",
+      "daysInvalid": "La durata deve essere tra 1 e {{max}} giorni.",
+      "language": "Lingua delle risposte",
+      "languages": {
+        "it": "Italiano",
+        "en": "Inglese"
+      },
+      "languageNote": "Lingua dei testi che nvxapp restituisce all'assistente.",
+      "create": "Crea token",
+      "createdTitle": "Token creato",
+      "createdWarning": "Copia il token adesso: per sicurezza non sarà più visibile. Chi lo possiede può agire in nvxapp al tuo posto: non condividerlo. Se lo perdi o pensi che altri lo conoscano, revocalo e creane uno nuovo.",
+      "token": "Token",
+      "copyToken": "Copia token",
+      "endpoint": "Indirizzo del server MCP",
+      "howTo": "Come collegare l'assistente",
+      "claudeCode": "Esegui questo comando nel terminale:",
+      "copyCommand": "Copia comando",
+      "claudeDesktop": "Aggiungi questa voce a «mcpServers» nel file di configurazione di Claude Desktop (Impostazioni > Sviluppatore > Modifica configurazione), poi riavvia l'app. Richiede Node.js installato.",
+      "copyConfig": "Copia configurazione",
+      "afterConnect": "Fatto il collegamento, chiedi all'assistente «chi sono in nvxapp?»: risponde con utente, azienda e strumenti disponibili.",
+      "copied": "Copiato negli appunti.",
+      "copyFailed": "Non è stato possibile copiare: seleziona il testo e copialo a mano."
+    },
+    "mcpCompanySetting": {
+      "title": "Accesso AI dell'azienda",
+      "info": "Accesso degli assistenti AI",
+      "note": "Decidi se gli utenti dell'azienda possono collegare un assistente AI (Claude Code, Claude Desktop) a nvxapp. L'assistente lavora per conto dell'utente che lo collega e vede solo ciò che vede quell'utente.",
+      "serverDisabled": "L'accesso AI non è attivo in questa installazione: l'impostazione non ha effetto.",
+      "enabled": "Accesso AI attivo",
+      "level": "Operazioni permesse",
+      "levels": {
+        "1": "Sola lettura",
+        "2": "Lettura e modifiche personali (timbrare, chiedere ferie, prenotare)",
+        "3": "Lettura e tutte le modifiche"
+      },
+      "levelNote": "L'assistente chiede sempre conferma all'utente prima di un'operazione che modifica i dati.",
+      "privacyTitle": "Riservatezza dei dati",
+      "privacy": "Con l'accesso attivo, i dati che l'assistente legge (presenze, ferie, documenti, dati dei dipendenti e dei clienti che l'utente può vedere) vengono inviati al fornitore dell'AI scelto dall'utente. Valuta se indicarlo nell'informativa ai dipendenti e nel registro dei trattamenti.",
+      "control": "Puoi spegnere l'accesso in qualsiasi momento: vale subito per tutti gli assistenti collegati. Nel registro delle chiamate vedi che cosa è stato chiesto e da chi."
+    },
+    "mcpCallLog": {
+      "title": "Registro chiamate AI",
+      "noteCompany": "Tutte le operazioni chieste dagli assistenti AI sui dati dell'azienda.",
+      "noteOwn": "Le operazioni chieste dagli assistenti AI collegati con i tuoi token.",
+      "period": {
+        "1": "Oggi e ieri",
+        "7": "7 giorni",
+        "30": "30 giorni",
+        "90": "90 giorni"
+      },
+      "truncated": "Sono mostrate solo le chiamate più recenti: riduci il periodo per vederle tutte.",
+      "columnDate": "Data",
+      "columnTool": "Strumento",
+      "columnUser": "Utente",
+      "columnToken": "Token",
+      "columnArguments": "Parametri",
+      "columnResult": "Esito",
+      "userVia": "{{user}} (token di {{login}})",
+      "failed": "Errore: {{message}}",
+      "empty": "Nessuna chiamata nel periodo."
     },
     "digestDetail": {
       "title": "Riepilogo",

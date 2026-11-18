@@ -35,6 +35,16 @@ Your data: user name, email and language. Here you also change your **password**
 2. To change the password enter the current one and the new one, then confirm.
 > If you forgot your password use **Forgot password** on the login page: you will receive an email with a link to set a new one.
 
+@@ /aiaccess
+From here you connect an **AI assistant** (Claude Code or Claude Desktop) to nvxapp: the assistant reads your data and answers your questions ("who is present today?", "how much leave do I have left?") with your own permissions. It sees no more than you do.
+1. Press **New token**, give the connection a name (for example "Claude Desktop office") and choose the duration.
+2. Copy the **token** right away: for security it is shown only once. The same page gives you the Claude Code command and the Claude Desktop configuration, already filled in.
+3. Once connected, ask the assistant "who am I in nvxapp?": it answers with your user, the company and the tools it can use.
+4. **Revoke** turns off a connection you no longer use or that may have been exposed. The **Call log** shows what the assistant requested.
+> The token works like a password: whoever holds it acts in nvxapp on your behalf. Do not share it.
+> If you are impersonating another user, the token you create works as that user.
+> Until the administrator enables AI access for the company, the assistant connects but sees no tools.
+
 @@ /companypoweradmin
 The page reserved to the company's CompanyPowerAdmin, with information about the company and the active applications.
 
@@ -57,6 +67,13 @@ The company's customers: a single registry used by all applications (attendance 
 
 @@ /companymenurestriction
 Here the CompanyPowerAdmin hides from CompanyAdmins and Users the menu items they must not use. System items (login, dashboard, user data) cannot be hidden. Hidden items also disappear from the manuals of those who do not see them.
+
+@@ /aiaccesssetting
+Here the CompanyPowerAdmin decides whether the company's users can connect an AI assistant to nvxapp. Access is **off** until you enable it.
+1. Turn on **AI access enabled** and choose the **allowed operations** (read only, or also the changes users make for themselves).
+2. Confirm: from then on the assistants connected by users see the tools of their role.
+> With access enabled, the data the assistant reads is sent to the AI provider chosen by the user: consider mentioning it in the employee privacy notice and in the record of processing activities.
+> You can turn access off at any time: it applies immediately to all connections, including those created by someone impersonating a user of the company.
 
 @@ /superuser
 The SuperUser page, with general information about the installation.
