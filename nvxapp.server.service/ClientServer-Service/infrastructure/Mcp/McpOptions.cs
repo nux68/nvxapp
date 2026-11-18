@@ -57,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         /// <summary>vero se il corpo JSON di una richiesta la segna come creata da un assistente AI</summary>
         public static bool IsViaAi(Newtonsoft.Json.Linq.JObject? body) =>
             body?.GetValue(RequestBodyKey, StringComparison.OrdinalIgnoreCase) is Newtonsoft.Json.Linq.JToken v
-            && v.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && v.Value<bool>();
+            && v.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && (bool)v;
     }
 
     /*
