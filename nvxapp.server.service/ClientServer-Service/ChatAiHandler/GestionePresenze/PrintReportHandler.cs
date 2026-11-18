@@ -50,6 +50,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "stampa", "stampami", "pdf", "report", "print" },
                 Examples = new() { "stampa il piano ferie di novembre", "fammi il pdf delle attività di ottobre", "stampa le note spese di Rossi del mese scorso", "print the vacation plan for December" },
                 RequiresConfirmation = false,
+                // MCP: escluso, produce un file da scaricare (ANALISI_INFRASTRUCTURE_MCP.md, MCP-D6 / MCP-23)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
                 Pages = new() { "/vacationplan", "/activitystatistics", "/poweradmintimesheet" },
                 Slots = BuildSlots(
                     new SlotDefinition

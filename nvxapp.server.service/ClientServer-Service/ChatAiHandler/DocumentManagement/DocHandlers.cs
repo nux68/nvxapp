@@ -275,7 +275,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManag
                 Examples = new() { "conferma la presa visione del cedolino di ottobre", "ho letto la comunicazione, confermo", "confirm I read the October payslip" },
                 SummaryTemplate = DocumentManagementMessages.Get("ChatConfirmReadSummary"),
                 Pages = new() { "/docmine", "/docedit" },
-                Slots = BuildSlots(SlotTipo(), SlotTesto(), SlotAnno(), SlotMese())
+                Slots = BuildSlots(SlotTipo(), SlotTesto(), SlotAnno(), SlotMese()),
+                // MCP: presa visione di un documento dell'utente (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite
             };
         }
 
