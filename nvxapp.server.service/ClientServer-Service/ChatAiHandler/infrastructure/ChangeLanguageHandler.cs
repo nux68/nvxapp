@@ -28,6 +28,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Keywords    = new() { "lingua", "language" },
             Examples    = new() { "passa all'inglese", "metti la lingua italiana", "switch to Italian", "change language to English" },
             RequiresConfirmation = false,
+            // comando della sola interfaccia: non pubblicato come strumento MCP
+            McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
             Slots =
             [
                 new()

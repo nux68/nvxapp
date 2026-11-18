@@ -908,6 +908,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Pagine del client (route, anche solo l'inizio) in cui l'intent è particolarmente utile:
         // l'help le usa per proporre per primi i comandi della pagina corrente.
         public List<string> Pages { get; set; } = new();
+
+        // Livello del comando quando e' pubblicato come strumento MCP a un'AI esterna
+        // (ANALISI_INFRASTRUCTURE_MCP.md, sezione 6). Se non impostato si ricava dal comando:
+        //   navigazione             -> escluso (apre una pagina del client: da fuori non ha senso)
+        //   senza conferma          -> lettura
+        //   con conferma            -> modifica amministrativa (il livello piu' prudente)
+        // Va impostato quando la regola non basta: Excluded per i comandi della sola interfaccia che non sono
+        // di navigazione (tema, lingua, help) o che producono un file; PersonalWrite per le modifiche che
+        // l'utente fa per se' (timbrare, chiedere ferie, prenotare).
+        public nvxapp.server.data.Entities.Public.McpAccessLevel? McpAccess { get; set; }
+        public nvxapp.server.data.Entities.Public.McpAccessLevel EffectiveMcpAccess =>
+            McpAccess ?? (IsNavigation ? nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded
+                          : NeedsConfirmation ? nvxapp.server.data.Entities.Public.McpAccessLevel.AdminWrite
+                          : nvxapp.server.data.Entities.Public.McpAccessLevel.Read);
     }
 
 
