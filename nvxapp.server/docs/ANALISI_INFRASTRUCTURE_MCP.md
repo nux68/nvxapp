@@ -4,9 +4,9 @@ Analisi del 17/11/2026, branch **Infrastructure_Dev** (lavoro su `Infrastructure
 Documenti collegati: `ANALISI_INFRASTRUCTURE_CHAT_AI.md` (motore dei comandi della chat, che qui si riusa),
 `ANALISI_INFRASTRUCTURE_DOCKER.md` (pubblicazione dietro Caddy), `ANALISI_INFRASTRUCTURE_LICENZE.md` (applicativi attivi per azienda).
 
-Stato al 17/11/2026: **fase 0 (verifiche) e fase 1 implementate su `Infrastructure_Dev_mcp`**: endpoint MCP, token personali,
-impostazione dell'azienda, registro delle chiamate, pagine del client, manuale. Solo strumenti di **lettura**.
-Da fare: catena dei merge, poi le fasi 2–6. Cosa è stato costruito e come è stato provato: sezione 12bis. Checklist: sezione 13.
+Stato al 18/11/2026: **fase 0 (verifiche) e fase 1 implementate e portate su tutti i rami** (catena dei merge fino ad
+`AllFunction`): endpoint MCP, token personali, impostazione dell'azienda, registro delle chiamate, pagine del client,
+manuale. Solo strumenti di **lettura**. Da fare: prova con un client reale (MCP-A8), poi le fasi 2–6. Cosa è stato costruito e come è stato provato: sezione 12bis. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -475,7 +475,7 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
 - [x] MCP-12 Prove in locale: 61 controlli sul protocollo e sulle API, più le quattro pagine in un browser (sezione 12bis.3)
 - [x] MCP-13 Manuale utente: pagine "Accesso AI" e "Accesso AI dell'azienda"
 - [x] MCP-15 Strumento `nvx_whoami` ("chi sono"): utente, azienda, ruoli, livello, motivo degli strumenti mancanti
-- [ ] MCP-14 Catena dei merge verso i rami dei moduli (in attesa di conferma)
+- [x] MCP-14 Catena dei merge verso i rami dei moduli e `AllFunction` (18/11/2026, senza conflitti)
 
 ### Fase 2 – Scrittura personale e limiti
 
