@@ -1335,4 +1335,132 @@ The statement is attached.</value>
     <value>Cancelled (cancellation approved)</value>
     <comment>stato comune delle richieste</comment>
   </data>
+  <data name="McpServerDisabled" xml:space="preserve">
+    <value>AI access is not enabled on this installation</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpTokenNameRequired" xml:space="preserve">
+    <value>Enter a name for the token</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpTokenDaysInvalid" xml:space="preserve">
+    <value>The duration must be between 1 and {0} days</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpTokenTooMany" xml:space="preserve">
+    <value>You already have {0} active tokens: revoke one before creating another</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpTokenNotFound" xml:space="preserve">
+    <value>Token not found</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpNotAllowed" xml:space="preserve">
+    <value>Operation not allowed</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpNoCompany" xml:space="preserve">
+    <value>This setting is only available when working in a company</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpLevelNotAllowed" xml:space="preserve">
+    <value>Level not allowed on this installation</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoAmITitle" xml:space="preserve">
+    <value>Who am I</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoAmIDescription" xml:space="preserve">
+    <value>Tells which nvxapp user and company you are working for, with roles, active applications, access level and number of available tools. Call it first, and whenever a tool you expect is missing.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpToolExamples" xml:space="preserve">
+    <value>Examples of user requests: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamFormat" xml:space="preserve">
+    <value>Format: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamDefault" xml:space="preserve">
+    <value>If omitted: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamSelf" xml:space="preserve">
+    <value>For the connected user use {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpCompanyDisabled" xml:space="preserve">
+    <value>AI access is not enabled for company {0}: the company administrator enables it from the "AI access" page of nvxapp</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpToolUnknown" xml:space="preserve">
+    <value>Tool "{0}" is not available. Available tools: {1}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamUnknown" xml:space="preserve">
+    <value>Parameter "{0}" is not expected. Allowed parameters: {1}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamSuggestions" xml:space="preserve">
+    <value>Possible values: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpParamMissing" xml:space="preserve">
+    <value>Missing required parameters: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoUser" xml:space="preserve">
+    <value>User: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoLogin" xml:space="preserve">
+    <value>Access created by: {0} (working as the user above)</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoCompany" xml:space="preserve">
+    <value>Company: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoNoCompany" xml:space="preserve">
+    <value>Company: none (dealer, advisor or administration user)</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoRoles" xml:space="preserve">
+    <value>Roles: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoApplications" xml:space="preserve">
+    <value>Active applications: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoAccessOn" xml:space="preserve">
+    <value>Company AI access: enabled, level "{0}"</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpLevel1" xml:space="preserve">
+    <value>read only</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpLevel2" xml:space="preserve">
+    <value>read and personal changes</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpLevel3" xml:space="preserve">
+    <value>read and all changes</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoToken" xml:space="preserve">
+    <value>Token: {0}, expires on {1}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpWhoTools" xml:space="preserve">
+    <value>Tools available besides this one: {0}</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="ImpersonateNotAllowed" xml:space="preserve">
+    <value>You cannot work as this user</value>
+    <comment>impersonificazione</comment>
+  </data>
 </root>
