@@ -44,6 +44,8 @@ From here you connect an **AI assistant** (Claude Code or Claude Desktop) to nvx
 > The token works like a password: whoever holds it acts in nvxapp on your behalf. Do not share it.
 > If you are impersonating another user, the token you create works as that user.
 > Until the administrator enables AI access for the company, the assistant connects but sees no tools.
+> If the company also allows personal changes, the assistant can clock in or out, request leave or a forgotten clocking, book or cancel one of your bookings and confirm reading one of your documents: it always asks your permission first.
+> Each connection has a limit of calls per minute and per day; very long lists reach the assistant only in part, and it suggests narrowing the request.
 
 @@ /companypoweradmin
 The page reserved to the company's CompanyPowerAdmin, with information about the company and the active applications.
