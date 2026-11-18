@@ -8,7 +8,8 @@ Stato al 18/11/2026: **fase 0 (verifiche) e fase 1 implementate e portate su tut
 `AllFunction`): endpoint MCP, token personali, impostazione dell'azienda, registro delle chiamate, pagine del client,
 manuale. **Collegamento provato con Claude Desktop** (MCP-A8). **Fase 2 implementata** (sezione 12ter): modifiche
 personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintReport` escluso, nota "tramite
-assistente AI" nelle richieste da approvare (MCP-22). Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
+assistente AI" nelle richieste da approvare (MCP-22). **Notifiche push ai browser** dopo i comandi di modifica (sezione
+12quater) e **fase 3** (13 nuovi strumenti di lettura, sezione 12quinquies) implementate. Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -576,6 +577,56 @@ servizio non avvisa nessuno, o esclude chi ha avviato l'operazione. Via MCP ques
 - La chat interna non manda `DataChangedNotifier`: si potrà chiamare lo stesso `IDataChangeNotifier` da `ChatAIService`.
 - `RegisterJustificationPeriod` manda un avviso `GiustificativiNotifier` per ogni giorno (comportamento precedente).
 
+## 12quinquies. Fase 3: nuovi strumenti di lettura (18/11/2026)
+
+Tredici strumenti nuovi, tutti di sola lettura (livello 1), scritti come comandi della chat nel ramo del loro modulo:
+valgono quindi anche per la chat interna e per la voce. Novità rispetto ai comandi precedenti: oltre al testo
+restituiscono i **dati strutturati** (`CommandResult.Data`), che l'AI può elaborare; ogni elenco resta entro
+`Mcp:MaxRows`. I dati passano sempre dai servizi, con la visibilità delle pagine.
+
+| Punto | Strumento MCP | Cosa restituisce | Parametri |
+|---|---|---|---|
+| MCP-30 | `nvx_support_tickets` | ticket di assistenza aperti dall'utente o in carico a lui, con l'ultima risposta | `scope` |
+| MCP-30 | `nvx_my_notifications` | notifiche dell'utente (non le segna come lette) | `filter`, `count` |
+| MCP-30 | `nvx_deadlines` | scadenzario comune entro N giorni | `days`, `scope` |
+| MCP-30 | `nvx_requests` | richieste da approvare / le mie richieste, di tutti gli applicativi | `scope` |
+| MCP-31 | `attendance_employee_time_sheet` | cartellino di un dipendente per periodo (max 31 giorni): ore, timbrature, giustificativi, anomalie | `employeeName`, `from`, `to` |
+| MCP-31 | `attendance_employee_list` | dipendenti con reparto, sede, contratto e orario di oggi (HR e amministratori) | `search`, `department` |
+| MCP-32 | `crm_customer_search` | ricerca clienti e contatti per testo | `text` |
+| MCP-32 | `crm_quotes` | preventivi (offerte) per cliente, stato e periodo | `customerName`, `status`, `from`, `to` |
+| MCP-32 | `crm_customer_history` | attività e note di un cliente, dalla più recente | `customerName`, `from`, `to` |
+| MCP-33 | `doc_list` | documenti trovati in forma di elenco (stessi filtri di `DocSearch`, senza aprire pagine) | `documentType`, `person`, `query`, `year`, `month` |
+| MCP-33 | `doc_signatures` | stato delle firme richieste (da firmare / firmati) | `status`, `person`, `documentType`, `from`, `to` |
+| MCP-34 | `hr_org_chart` | struttura dell'azienda: sedi e reparti ad albero | `unit` |
+| MCP-34 | `hr_contract_expiries` | rapporti di lavoro che terminano entro N giorni | `days` |
+
+Metodi di sola lettura aggiunti ai servizi: `TicketService.TicketLastReply`, `Crm_ClienteService.Crm_ClienteCerca` e
+`Crm_ClienteStorico`, filtri di stato e periodo in `Crm_OffertaService.Crm_OffertaList`, `Doc_DocumentoService.Doc_FirmaList`.
+
+Limiti dei dati disponibili (non del collegamento):
+
+- **Organigramma**: Risorse umane non registra responsabili né l'assegnazione delle persone ai reparti (quella è nelle
+  presenze): lo strumento mostra solo sedi e reparti, e lo dichiara nella risposta.
+- **Contratti in scadenza**: usa la data di cessazione della scheda del dipendente; il tipo di contratto non c'è in
+  Risorse umane (è nel rapporto di lavoro delle presenze, esposto da `attendance_employee_list`).
+- **Firme**: il documentale conosce solo "da firmare" e "firmato" (niente rifiutate o scadute).
+- **Ricerca clienti**: non comprende i lead.
+- `attendance_employee_list` considera dipendenti gli utenti con ruolo User, come le pagine delle anomalie.
+
+### Prove (fase 3 e notifiche push)
+
+Su un database usa e getta, con `AllFunction_Dev` più gli otto rami di lavoro uniti (merge di prova senza conflitti),
+server e client compilati (controllo dei tipi del client senza errori): **16 controlli superati**.
+
+- I 13 strumenti sono pubblicati e marcati di sola lettura (PowerAdmin: 49 strumenti in tutto, CompanyAdmin: 44).
+- 27 chiamate con parametri diversi: tutte rispondono, nessun errore tecnico (le query nuove vengono tradotte ed
+  eseguite). L'azienda di prova è quasi vuota: i risultati sono per lo più "nessun dato", quindi **i contenuti con
+  dati reali restano da verificare** sull'installazione.
+- Notifiche push, con due connessioni SignalR aperte come farebbero due browser (chi usa l'assistente e un collega):
+  una lettura non manda avvisi; `attendance_clock_now` manda `DataChangedNotifier` a entrambi con applicativo e comando
+  corretti; la fine del ricalcolo (`JobNotifierAsync`) arriva anche a chi ha avviato il comando.
+- Non provato in un browser vero: il ricaricamento visivo delle pagine (cartellino, prenotazioni, documenti).
+
 ## 13. Checklist
 
 ### Analisi
@@ -623,11 +674,14 @@ servizio non avvisa nessuno, o esclude chi ha avviato l'operazione. Via MCP ques
 
 ### Fase 3 – Nuovi strumenti di lettura (rami dei moduli)
 
-- [ ] MCP-30 Infrastructure: ticket, notifiche, scadenze, richieste da approvare
-- [ ] MCP-31 AttendanceTracking: cartellino per periodo, elenco dipendenti
-- [ ] MCP-32 CRM: ricerca clienti e contatti, preventivi, storico attività
-- [ ] MCP-33 DocumentManagement: ricerca documenti in elenco, stato firme
-- [ ] MCP-34 HumanResources: organigramma, contratti in scadenza
+- [x] MCP-30 Infrastructure: ticket, notifiche, scadenze, richieste da approvare
+- [x] MCP-31 AttendanceTracking: cartellino per periodo, elenco dipendenti
+- [x] MCP-32 CRM: ricerca clienti e contatti, preventivi, storico attività
+- [x] MCP-33 DocumentManagement: ricerca documenti in elenco, stato firme
+- [x] MCP-34 HumanResources: organigramma (sedi e reparti), rapporti di lavoro in scadenza
+- [x] MCP-35 Prove della fase 3 e delle notifiche push su tutti i rami uniti (sezione 12quinquies)
+- [ ] MCP-36 Catena dei merge della fase 3 e delle notifiche push
+- [ ] MCP-37 Verifica dei nuovi strumenti con dati reali e del ricaricamento delle pagine in un browser
 
 ### Fase 4 – Scrittura amministrativa
 
