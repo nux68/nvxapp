@@ -121,6 +121,12 @@ export class RouteInfrastructureService {
       { path: 'calendarfeed', loadChildren: () => import('../../pages/infrastructure/calendar-feed-page/calendar-feed-page.module').then(m => m.CalendarFeedPageModule), canActivate: [RoleGuard4CompanyUser] },
       // riepiloghi periodici (INF-AI.3): amministratori dell'azienda e utenti dello studio (la visibilita' la decide il server);
       // l'url /digestdetail lo usa il server nella notifica del riepilogo
+      // accesso di un'AI esterna tramite MCP (ANALISI_INFRASTRUCTURE_MCP.md): token personali e registro per tutti gli utenti
+      // collegati, impostazione dell'azienda solo per il CompanyPowerAdmin (i permessi li ricontrolla il server)
+      { path: 'aiaccess', loadChildren: () => import('../../pages/infrastructure/mcp-token-list-page/mcp-token-list-page.module').then(m => m.McpTokenListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'aiaccesstoken', loadChildren: () => import('../../pages/infrastructure/mcp-token-edit-page/mcp-token-edit-page.module').then(m => m.McpTokenEditPageModule), canActivate: [authenticatedGuard] },
+      { path: 'aiaccesslog', loadChildren: () => import('../../pages/infrastructure/mcp-call-log-page/mcp-call-log-page.module').then(m => m.McpCallLogPageModule), canActivate: [authenticatedGuard] },
+      { path: 'aiaccesssetting', loadChildren: () => import('../../pages/infrastructure/mcp-company-setting-page/mcp-company-setting-page.module').then(m => m.McpCompanySettingPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'digests', loadChildren: () => import('../../pages/infrastructure/digest-list-page/digest-list-page.module').then(m => m.DigestListPageModule), canActivate: [authenticatedGuard] },
       { path: 'digestdetail', loadChildren: () => import('../../pages/infrastructure/digest-detail-page/digest-detail-page.module').then(m => m.DigestDetailPageModule), canActivate: [authenticatedGuard] },
 
