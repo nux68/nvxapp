@@ -162,6 +162,47 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
     // firma del destinatario: versione che ha davanti (se nel frattempo ne e' arrivata un'altra la firma si rifiuta)
     public class Doc_DocumentoFirmaInModel { public int Id { get; set; } public int Versione { get; set; } }
 
+    // stato delle firme richieste: una riga per destinatario a cui e' chiesta la firma (sola lettura)
+    public class Doc_FirmaListInModel
+    {
+        // solo le firme richieste all'utente corrente
+        public bool Miei { get; set; }
+        // periodo dell'invio al destinatario (default: ultimi 12 mesi; al massimo Doc_DocumentoService.MaxGiorniFirme)
+        public DateTime? Dal { get; set; }
+        public DateTime? Al { get; set; }
+        // true = solo firmate, false = solo da firmare, null = tutte
+        public bool? Firmati { get; set; }
+    }
+
+    public class Doc_FirmaModel
+    {
+        public int IdDoc_Documento { get; set; }
+        public string Titolo { get; set; } = string.Empty;
+        public string Tipo { get; set; } = string.Empty;
+        public string? Dipendente { get; set; }
+        public string? Cliente { get; set; }
+        public DateTime? DataDocumento { get; set; }
+        public int? Anno { get; set; }
+        public int? Mese { get; set; }
+        public DateTime? DataScadenza { get; set; }
+        public int VersioneCorrente { get; set; }
+        // destinatario a cui e' chiesta la firma; Mia = e' l'utente corrente
+        public string Destinatario { get; set; } = string.Empty;
+        public bool Mia { get; set; }
+        public DateTime? DataRichiesta { get; set; }
+        public DateTime? DataFirma { get; set; }
+        public int? FirmaVersione { get; set; }
+    }
+
+    public class Doc_FirmaListOutModel : ModelResult
+    {
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+        public List<Doc_FirmaModel> Firme { get; set; } = new List<Doc_FirmaModel>();
+        // elenco troncato al massimo di righe: restringere il periodo
+        public bool Troncato { get; set; }
+    }
+
     public class Doc_SvuotaCestinoInModel { }
     public class Doc_SvuotaCestinoOutModel : ModelResult { public int Eliminati { get; set; } }
 

@@ -54,6 +54,219 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManag
         }
     }
 
+    // R4 — come R1, ma con l'elenco strutturato dei documenti trovati (per l'AI esterna, MCP-33): non apre pagine
+    public class DocListHandler : BaseCommandHandler
+    {
+        // righe nei dati strutturati (il servizio ne legge al massimo 500, MCP le taglia a Mcp:MaxRows)
+        private const int MaxRighe = 200;
+
+        private readonly IDoc_DocumentoService _service;
+        private readonly IntentDefinition _intentDefinition;
+
+        public DocListHandler(IDoc_DocumentoService service)
+        {
+            _service = service;
+            _intentDefinition = new IntentDefinition
+            {
+                Name = "DocList",
+                Application = ApplicationType.DocumentManagement,
+                Category = DocumentManagementMessages.Get("ChatCategoryDocuments"),
+                CategoryOrder = CategoryOrder,
+                DisplayName = DocumentManagementMessages.Get("ChatListDisplayName"),
+                Description = DocumentManagementMessages.Get("ChatListDescription"),
+                Usable4Role = Ruoli,
+                // frasi di elenco: "trova", "cerca", "apri" restano a DocSearch e DocOpen
+                Keywords = new() { "elenco documenti", "elenco dei documenti", "lista documenti", "lista dei documenti", "elenca", "document list", "list documents", "list my documents" },
+                Examples = new() { "elenco dei documenti di Rossi del 2025", "lista dei miei cedolini", "elenca i contratti in archivio", "list the documents of customer Enel" },
+                RequiresConfirmation = false,
+                Pages = new() { "/doclist", "/docmine" },
+                Slots = BuildSlots(SlotTipo(), SlotPersona(), SlotTesto(), SlotAnno(), SlotMese())
+            };
+        }
+
+        public override IntentDefinition IntentDefinition => _intentDefinition;
+
+        public override async Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        {
+            var (r, errore) = await Cerca(_service, slots);
+            if (r == null) return CommandResult.Fail(errore!);
+
+            var oggi = DateTime.Today;
+            var dati = new DocElencoDati
+            {
+                Filtro = string.IsNullOrEmpty(r.Filtro) ? null : r.Filtro.Trim(' ', '(', ')'),
+                Totale = r.Documenti.Count,
+                Troncato = r.Troncato || r.Documenti.Count > MaxRighe,
+                Documenti = r.Documenti.Take(MaxRighe).Select(d => new DocDocumentoDati
+                {
+                    Id = d.Id,
+                    Titolo = d.Titolo,
+                    Tipo = d.Tipo,
+                    Categoria = d.Categoria.ToString(),
+                    Cartella = d.Cartella,
+                    Dipendente = d.Dipendente,
+                    Cliente = d.Cliente,
+                    DataDocumento = Iso(d.DataDocumento),
+                    Competenza = d.Anno.HasValue && d.Mese.HasValue ? $"{d.Anno:D4}-{d.Mese:D2}" : null,
+                    DataScadenza = Iso(d.DataScadenza),
+                    Scaduto = d.DataScadenza.HasValue && d.DataScadenza.Value.Date < oggi,
+                    Stato = d.Stato.ToString(),
+                    Versione = d.VersioneCorrente,
+                    DataCaricamento = Iso(d.DataCaricamento),
+                    NuovoPerMe = d.Nuovo,
+                    PresaVisioneRichiestaAMe = d.PresaVisioneRichiesta,
+                    MiaDataPresaVisione = Iso(d.DataPresaVisione),
+                    FirmaRichiestaAMe = d.FirmaRichiesta,
+                    MiaDataFirma = Iso(d.DataFirma),
+                    FirmaRichiesta = d.FirmaDocumento,
+                    Firmatari = d.Firmatari,
+                    Firmati = d.Firmati,
+                    OltreConservazione = d.OltreConservazione
+                }).ToList()
+            };
+
+            if (r.Documenti.Count == 0)
+                return CommandResult.Ok(DocumentManagementMessages.Get("ChatSearchNone", r.Filtro), dati);
+
+            var testo = Elenco(DocumentManagementMessages.Get("ChatSearchTitle", r.Documenti.Count, r.Filtro), r.Documenti.Select(Descrivi));
+            if (dati.Troncato) testo += "\n" + DocumentManagementMessages.Get("ChatSearchTruncated");
+            return CommandResult.Ok(testo, dati);
+        }
+    }
+
+    // R5 — stato delle firme richieste: le mie, o per chi gestisce i documenti quelle dei destinatari (per persona, tipo e periodo dell'invio)
+    public class DocSignaturesHandler : BaseCommandHandler
+    {
+        private readonly IDoc_DocumentoService _service;
+        private readonly IntentDefinition _intentDefinition;
+
+        public DocSignaturesHandler(IDoc_DocumentoService service)
+        {
+            _service = service;
+            _intentDefinition = new IntentDefinition
+            {
+                Name = "DocSignatures",
+                Application = ApplicationType.DocumentManagement,
+                Category = DocumentManagementMessages.Get("ChatCategoryDocuments"),
+                CategoryOrder = CategoryOrder,
+                DisplayName = DocumentManagementMessages.Get("ChatSignDisplayName"),
+                Description = DocumentManagementMessages.Get("ChatSignDescription"),
+                Usable4Role = Ruoli,
+                Keywords = new() { "firma", "firme", "firmare", "firmato", "firmati", "da firmare", "signature", "signatures", "to sign", "signed" },
+                Examples = new() { "ho documenti da firmare?", "chi non ha ancora firmato la circolare?", "stato delle firme di Rossi da gennaio", "which documents are still to be signed?" },
+                RequiresConfirmation = false,
+                Pages = new() { "/doclist", "/docmine", "/docedit" },
+                Slots = BuildSlots(
+                    SlotStatoFirma(),
+                    SlotPersona(),
+                    SlotTipo(),
+                    SlotData("from", DocumentManagementMessages.Get("ChatFromQuestion"), DocumentManagementMessages.Get("ChatFromLabel"),
+                        $"inizio del periodo dell'invio dei documenti da firmare (default: un anno fa; periodo massimo {Doc_DocumentoService.MaxGiorniFirme} giorni)"),
+                    SlotData("to", DocumentManagementMessages.Get("ChatToQuestion"), DocumentManagementMessages.Get("ChatToLabel"),
+                        "fine del periodo dell'invio (default: oggi)"))
+            };
+        }
+
+        public override IntentDefinition IntentDefinition => _intentDefinition;
+
+        public override async Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        {
+            var persona = slots.GetValueOrDefault("person")?.Trim();
+            var miei = string.Equals(persona, ChatSelf.Token, StringComparison.OrdinalIgnoreCase);
+            var stato = NormalizzaStatoFirma(slots.GetValueOrDefault("status") ?? string.Empty) ?? FirmeTutte;
+
+            var res = await _service.Doc_FirmaList(new GenericRequest<Doc_FirmaListInModel>(new Doc_FirmaListInModel
+            {
+                Miei = miei,
+                Dal = ParseData(slots.GetValueOrDefault("from")),
+                Al = ParseData(slots.GetValueOrDefault("to")),
+                Firmati = stato == FirmeFatte ? true : stato == FirmeDaFare ? false : null
+            }), false);
+            if (!res.Success || res.Data == null)
+                return CommandResult.Fail(DocumentManagementMessages.Get("ChatServiceError", Errore(res.Messages)));
+
+            var firme = res.Data.Firme;
+            var filtri = new List<string>();
+
+            if (slots.TryGetValue("documentType", out var tipo) && !string.IsNullOrWhiteSpace(tipo))
+            {
+                var tipi = TrovaTipi(firme.Select(f => f.Tipo), tipo);
+                firme = firme.Where(f => tipi.Contains(f.Tipo, StringComparer.OrdinalIgnoreCase)).ToList();
+                filtri.Add(tipo.Trim());
+            }
+
+            if (miei)
+                filtri.Add(DocumentManagementMessages.Get("ChatMine"));
+            else if (!string.IsNullOrWhiteSpace(persona))
+            {
+                // destinatario che deve firmare, oppure dipendente o cliente del documento
+                var nomi = Trova(firme.Select(f => f.Destinatario).Concat(firme.Select(f => f.Dipendente ?? string.Empty)).Concat(firme.Select(f => f.Cliente ?? string.Empty)), persona);
+                firme = firme.Where(f => nomi.Contains(f.Destinatario, StringComparer.OrdinalIgnoreCase)
+                                         || nomi.Contains(f.Dipendente ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                                         || nomi.Contains(f.Cliente ?? string.Empty, StringComparer.OrdinalIgnoreCase)).ToList();
+                filtri.Add(persona);
+            }
+            var filtro = filtri.Count > 0 ? $" ({string.Join(", ", filtri)})" : string.Empty;
+
+            var daFirmare = firme.Where(f => f.DataFirma == null).ToList();
+            var firmate = firme.Where(f => f.DataFirma != null).OrderByDescending(f => f.DataFirma).ToList();
+            var dati = new DocFirmeDati
+            {
+                Dal = Iso(res.Data.Dal)!,
+                Al = Iso(res.Data.Al)!,
+                Filtro = filtri.Count > 0 ? string.Join(", ", filtri) : null,
+                DaFirmare = daFirmare.Count,
+                Firmate = firmate.Count,
+                Troncato = res.Data.Troncato,
+                Firme = firme.Select(f => new DocFirmaDati
+                {
+                    IdDocumento = f.IdDoc_Documento,
+                    Titolo = f.Titolo,
+                    Tipo = f.Tipo,
+                    Dipendente = f.Dipendente,
+                    Cliente = f.Cliente,
+                    DataDocumento = Iso(f.DataDocumento),
+                    Competenza = f.Anno.HasValue && f.Mese.HasValue ? $"{f.Anno:D4}-{f.Mese:D2}" : null,
+                    DataScadenza = Iso(f.DataScadenza),
+                    Destinatario = f.Destinatario,
+                    Mia = f.Mia,
+                    Stato = f.DataFirma == null ? "daFirmare" : "firmato",
+                    DataRichiesta = Iso(f.DataRichiesta),
+                    DataFirma = Iso(f.DataFirma),
+                    VersioneFirmata = f.FirmaVersione,
+                    VersioneCorrente = f.VersioneCorrente
+                }).ToList()
+            };
+
+            var periodo = DocumentManagementMessages.Get("ChatSignPeriod", Data(res.Data.Dal), Data(res.Data.Al));
+            if (firme.Count == 0)
+                return CommandResult.Ok(DocumentManagementMessages.Get("ChatSignNone", filtro, periodo), dati);
+
+            // per le mie firme il destinatario non si ripete
+            string Riga(Doc_FirmaModel f, string quando)
+            {
+                var parti = new List<string> { Descrivi(new Doc_DocumentoListModel { Titolo = f.Titolo, Tipo = f.Tipo, Dipendente = f.Dipendente, Cliente = f.Cliente, Anno = f.Anno, Mese = f.Mese, DataDocumento = f.DataDocumento }) };
+                if (!miei && !string.IsNullOrWhiteSpace(f.Destinatario) && f.Destinatario != f.Dipendente) parti.Add(f.Destinatario);
+                parti.Add(quando);
+                return string.Join(" — ", parti);
+            }
+
+            var sb = new StringBuilder();
+            if (daFirmare.Count > 0)
+            {
+                sb.AppendLine(Elenco(DocumentManagementMessages.Get("ChatSignToSignTitle", daFirmare.Count, filtro, periodo),
+                    daFirmare.Select(f => Riga(f, DocumentManagementMessages.Get("ChatSignSentOn", f.DataRichiesta.HasValue ? Data(f.DataRichiesta.Value) : "-")))));
+                sb.AppendLine();
+            }
+            if (firmate.Count > 0)
+                sb.AppendLine(Elenco(DocumentManagementMessages.Get("ChatSignSignedTitle", firmate.Count, filtro, periodo),
+                    firmate.Select(f => Riga(f, DocumentManagementMessages.Get("ChatSignSignedOn", Data(f.DataFirma!.Value))))));
+            var testo = sb.ToString().TrimEnd();
+            if (res.Data.Troncato) testo += "\n" + DocumentManagementMessages.Get("ChatSignTruncated");
+            return CommandResult.Ok(testo, dati);
+        }
+    }
+
     // O1 — apre il documento più recente tra quelli trovati (pagina /docedit, history.state.id)
     public class DocOpenHandler : BaseCommandHandler
     {
