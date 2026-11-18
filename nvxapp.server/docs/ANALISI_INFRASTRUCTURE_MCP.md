@@ -517,6 +517,10 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
   elenchi annidati, elenco entro il limite, solo testo, elenco vuoto). Servirà ai nuovi strumenti della fase 3, che
   dovrebbero restituire i dati strutturati.
 - Limite giornaliero non provato dal vivo: stessa logica del limite al minuto, con la data di inizio giornata.
+- **Nota nelle richieste (MCP-22)**, provata sulle funzioni (6 casi): corpo con `viaAi` solo per le richieste via MCP,
+  corpo invariato dalla chat interna, corpo ancora leggibile dal servizio delle presenze, dettaglio "09:00 · tramite
+  assistente AI", nessuna nota senza il campo o con un valore non booleano. Dal vivo non è stata inviata una richiesta
+  completa: l'azienda di prova non aveva un approvatore configurato ("Nessun amministratore abilitato all'approvazione").
 
 ## 13. Checklist
 
