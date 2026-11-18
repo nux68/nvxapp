@@ -1326,6 +1326,207 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("Lic_Piano", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpAccessToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersLogin")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDealer")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Tenant")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("TokenPrefix")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdAspNetUsersLogin");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("McpAccessToken", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpCallLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Arguments")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("DurationMs")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersLogin")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdMcpAccessToken")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("TokenName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Tool")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("UserNameLogin")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdMcpAccessToken");
+
+                    b.HasIndex("IdAspNetUsersLogin", "Data");
+
+                    b.HasIndex("IdCompany", "Data");
+
+                    b.ToTable("McpCallLog", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpCompanySetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany")
+                        .IsUnique();
+
+                    b.ToTable("McpCompanySetting", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Notifica", b =>
                 {
                     b.Property<int>("Id")
@@ -2686,6 +2887,48 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired();
 
                     b.Navigation("ListinoNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpAccessToken", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("IdAspNetUsersLogin")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpCallLog", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.McpAccessToken", null)
+                        .WithMany()
+                        .HasForeignKey("IdMcpAccessToken")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.McpCompanySetting", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", null)
+                        .WithMany()
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Notifica", b =>

@@ -56,6 +56,7 @@
       "confirmRead": "I confirm I have read it",
       "copy": "Copy",
       "regenerate": "New address",
+      "revoke": "Revoke",
       "calendar": "Calendar",
       "generateNow": "Generate now"
     },
@@ -140,6 +141,8 @@
     "notifications": "Notifications",
     "deadlines": "Deadlines",
     "calendarFeed": "Calendar",
+    "aiAccess": "AI access",
+    "aiAccessSetting": "Company AI access",
     "acknowledgements": "Acknowledgements",
     "requests": "My requests",
     "requestsAdmin": "Requests to approve",
@@ -1262,6 +1265,109 @@
       "sourcePlain": "Without AI",
       "generating": "Generating, it may take a few seconds...",
       "empty": "No summaries."
+    },
+    "mcpTokenList": {
+      "title": "AI access",
+      "note": "Connect an AI assistant (Claude Code, Claude Desktop) to nvxapp: it can read your data and perform the allowed operations, with your own permissions. Each connection uses a personal token created here.",
+      "serverDisabled": "AI access is not enabled on this installation.",
+      "noCompany": "You are not working in a company: a connected assistant only sees information about your user.",
+      "companyDisabled": "AI access is not enabled for your company: you can create a token, but the assistant will not see any tool until the company administrator enables it.",
+      "companyDisabledAdmin": "AI access is not enabled for the company: enable it from \"Company AI access\". Until then, connected assistants do not see any tool.",
+      "companyEnabled": {
+        "1": "AI access enabled for the company: read only.",
+        "2": "AI access enabled for the company: read and personal changes.",
+        "3": "AI access enabled for the company: read and all changes."
+      },
+      "filter": {
+        "active": "Active",
+        "all": "All"
+      },
+      "columnName": "Name",
+      "columnPrefix": "Token",
+      "columnUser": "Works as",
+      "columnExpires": "Expires",
+      "columnLastUsed": "Last used",
+      "columnState": "State",
+      "state": {
+        "active": "Active",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      },
+      "never": "never",
+      "impersonated": "impersonated",
+      "newToken": "New token",
+      "callLog": "Call log",
+      "companySetting": "Company AI access",
+      "confirmRevoke": "Revoke the token \"{{name}}\"? The assistant using it will no longer be able to connect. This cannot be undone.",
+      "empty": "No tokens."
+    },
+    "mcpTokenEdit": {
+      "title": "New token",
+      "info": "Personal token",
+      "note": "The token works as the user you are logged in as right now, on that user's company. If you are impersonating another user, it works as that user.",
+      "name": "Name",
+      "namePlaceholder": "e.g. Claude Desktop office",
+      "nameRequired": "Enter a name to recognise the token.",
+      "days": "Duration (days)",
+      "daysInvalid": "The duration must be between 1 and {{max}} days.",
+      "language": "Response language",
+      "languages": {
+        "it": "Italian",
+        "en": "English"
+      },
+      "languageNote": "Language of the texts nvxapp returns to the assistant.",
+      "create": "Create token",
+      "createdTitle": "Token created",
+      "createdWarning": "Copy the token now: for security it will not be shown again. Whoever holds it can act in nvxapp on your behalf: do not share it. If you lose it or think others know it, revoke it and create a new one.",
+      "token": "Token",
+      "copyToken": "Copy token",
+      "endpoint": "MCP server address",
+      "howTo": "How to connect the assistant",
+      "claudeCode": "Run this command in the terminal:",
+      "copyCommand": "Copy command",
+      "claudeDesktop": "Add this entry to \"mcpServers\" in the Claude Desktop configuration file (Settings > Developer > Edit Config), then restart the app. Requires Node.js installed.",
+      "copyConfig": "Copy configuration",
+      "afterConnect": "Once connected, ask the assistant \"who am I in nvxapp?\": it answers with user, company and available tools.",
+      "copied": "Copied to the clipboard.",
+      "copyFailed": "Copy failed: select the text and copy it manually."
+    },
+    "mcpCompanySetting": {
+      "title": "Company AI access",
+      "info": "AI assistants access",
+      "note": "Decide whether the company's users can connect an AI assistant (Claude Code, Claude Desktop) to nvxapp. The assistant works on behalf of the user who connects it and only sees what that user sees.",
+      "serverDisabled": "AI access is not enabled on this installation: the setting has no effect.",
+      "enabled": "AI access enabled",
+      "level": "Allowed operations",
+      "levels": {
+        "1": "Read only",
+        "2": "Read and personal changes (clocking, leave requests, bookings)",
+        "3": "Read and all changes"
+      },
+      "levelNote": "The assistant always asks the user for confirmation before an operation that changes data.",
+      "privacyTitle": "Data privacy",
+      "privacy": "With access enabled, the data the assistant reads (attendance, leave, documents, employee and customer data the user can see) is sent to the AI provider chosen by the user. Consider mentioning it in the employee privacy notice and in the record of processing activities.",
+      "control": "You can turn access off at any time: it applies immediately to all connected assistants. The call log shows what was requested and by whom."
+    },
+    "mcpCallLog": {
+      "title": "AI call log",
+      "noteCompany": "All operations requested by AI assistants on the company's data.",
+      "noteOwn": "Operations requested by AI assistants connected with your tokens.",
+      "period": {
+        "1": "Today and yesterday",
+        "7": "7 days",
+        "30": "30 days",
+        "90": "90 days"
+      },
+      "truncated": "Only the most recent calls are shown: reduce the period to see them all.",
+      "columnDate": "Date",
+      "columnTool": "Tool",
+      "columnUser": "User",
+      "columnToken": "Token",
+      "columnArguments": "Parameters",
+      "columnResult": "Result",
+      "userVia": "{{user}} ({{login}}'s token)",
+      "failed": "Error: {{message}}",
+      "empty": "No calls in the period."
     },
     "digestDetail": {
       "title": "Summary",

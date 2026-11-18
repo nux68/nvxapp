@@ -65,6 +65,10 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<Pag_DealerConfig> Pag_DealerConfig { get; set; }
         public DbSet<Pag_InvioEmail> Pag_InvioEmail { get; set; }
 
+        // accesso di un'AI esterna tramite MCP (ANALISI_INFRASTRUCTURE_MCP.md)
+        public DbSet<McpAccessToken> McpAccessToken { get; set; }
+        public DbSet<McpCompanySetting> McpCompanySetting { get; set; }
+        public DbSet<McpCallLog> McpCallLog { get; set; }
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
         {
@@ -85,6 +89,47 @@ namespace nvxapp.server.data.Infrastructure
             Gen_DeletionLog(modelBuilder);
             Gen_License(modelBuilder);
             Gen_Payments(modelBuilder);
+            Gen_Mcp(modelBuilder);
+        }
+
+        /*
+         Accesso di un'AI esterna tramite MCP (ANALISI_INFRASTRUCTURE_MCP.md).
+            - McpAccessToken   : si cerca per impronta (unica); eliminato con l'utente che lo ha creato, con l'utente
+                                 con cui lavora e con l'azienda
+            - McpCompanySetting: una riga per azienda
+            - McpCallLog       : elenco per azienda dal piu' recente; resta leggibile dopo la revoca del token
+                                 (il riferimento al token si azzera se il token viene eliminato)
+        */
+        private void Gen_Mcp(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<McpAccessToken>(entity =>
+            {
+                entity.ToTable("McpAccessToken", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.TokenHash).IsUnique();
+                entity.HasIndex(e => e.IdAspNetUsersLogin);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsersLogin).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(e => e.IdAspNetUsers).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<McpCompanySetting>(entity =>
+            {
+                entity.ToTable("McpCompanySetting", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.IdCompany).IsUnique();
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<McpCallLog>(entity =>
+            {
+                entity.ToTable("McpCallLog", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.IdCompany, e.Data });
+                entity.HasIndex(e => new { e.IdAspNetUsersLogin, e.Data });
+                entity.HasOne<McpAccessToken>().WithMany().HasForeignKey(e => e.IdMcpAccessToken).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne<Company>().WithMany().HasForeignKey(e => e.IdCompany).OnDelete(DeleteBehavior.Cascade);
+            });
         }
 
         /*

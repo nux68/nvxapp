@@ -382,20 +382,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         // Normalizzatore dello slot: il suo, altrimenti quello del tipo. Lo slot di fine di un periodo
         // (PeriodEndSlot di un altro slot) usa la fine: "fino a ottobre" -> 31/10
+        // (logica in CommandSlotProcessor, comune all'endpoint MCP)
         private static Func<string, string?>? NormalizerFor(IntentDefinition intentDef, SlotDefinition slotDef) =>
-            slotDef.Normalizer
-            ?? (slotDef.Type == SlotNormalizers.DateFormat && intentDef.Slots.Any(s => s.PeriodEndSlot == slotDef.Name)
-                ? SlotNormalizers.DateEnd
-                : SlotNormalizers.ForType(slotDef.Type));
+            CommandSlotProcessor.NormalizerFor(intentDef, slotDef);
 
         // Inizio di un periodo detto come mese o settimana ("le ferie di ottobre", "la prima settimana di ottobre"):
         // se la fine non c'e', e' l'ultimo giorno del periodo
-        private static void FillPeriodEnd(ActionEntry entry, SlotDefinition slotDef, string value)
-        {
-            if (string.IsNullOrEmpty(slotDef.PeriodEndSlot) || entry.Slots.ContainsKey(slotDef.PeriodEndSlot)) return;
-            if (SlotNormalizers.TryParsePeriod(value, DateTime.Today, out _, out var end))
-                entry.Slots[slotDef.PeriodEndSlot] = end.ToString(SlotNormalizers.DateFormat, System.Globalization.CultureInfo.InvariantCulture);
-        }
+        private static void FillPeriodEnd(ActionEntry entry, SlotDefinition slotDef, string value) =>
+            CommandSlotProcessor.FillPeriodEnd(entry.Slots, slotDef, value);
 
         // ---------------------------------------------------------------------------
         // Esecuzione del piano e chiusura del turno
@@ -1016,32 +1010,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             if (intentDef == null) return SlotValidationResult.Ok();
 
-            string? pendingInfo = null;
-
-            foreach (var slotDef in intentDef.Slots)
-            {
-                if (slotDef.Validator == null) continue;
-                if (!action.Slots.TryGetValue(slotDef.Name, out var value)) continue;
-                var result = slotDef.Validator(value);
-                if (result == null) continue;
-                if (result.IsValid)
-                {
-                    if (result.NormalizedValue != null)
-                        action.Slots[slotDef.Name] = result.NormalizedValue;
-                    if (result.InfoMessage != null)
-                        pendingInfo = result.InfoMessage;
-                    continue;
-                }
-                return result;
-            }
-
-            if (intentDef.CrossValidator != null)
-            {
-                var crossResult = intentDef.CrossValidator(action.Slots);
-                if (crossResult != null) return crossResult;
-            }
-
-            return SlotValidationResult.Ok(action.Slots.GetValueOrDefault("employeeName", string.Empty), pendingInfo);
+            // logica in CommandSlotProcessor, comune all'endpoint MCP
+            return CommandSlotProcessor.Validate(intentDef, action.Slots);
         }
 
         // ---------------------------------------------------------------------------
@@ -1054,10 +1024,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             if (intentDef == null) return new();
 
-            return intentDef.Slots
-                .Where(s => s.Required && !action.Slots.ContainsKey(s.Name))
-                .Select(s => s.Name)
-                .ToList();
+            return CommandSlotProcessor.MissingRequired(intentDef, action.Slots);
         }
 
         // domanda dello slot senza contesto (per il testo vocale)
