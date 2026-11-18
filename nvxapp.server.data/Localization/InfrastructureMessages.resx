@@ -1546,6 +1546,10 @@ In allegato il rendiconto.</value>
     <value>Limite giornaliero raggiunto: questo token ammette al massimo {0} chiamate al giorno. Riprova domani.</value>
     <comment>accesso AI (MCP)</comment>
   </data>
+  <data name="RequestViaAi" xml:space="preserve">
+    <value>tramite assistente AI</value>
+    <comment>accesso AI (MCP): richiesta creata da un assistente AI, nel dettaglio delle richieste da approvare</comment>
+  </data>
   <data name="McpRowsTruncated" xml:space="preserve">
     <value>Risultato parziale: ogni elenco dei dati è limitato a {0} righe. Restringi la richiesta (periodo, persona, filtro) per vedere il resto.</value>
     <comment>accesso AI (MCP)</comment>

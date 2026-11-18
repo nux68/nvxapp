@@ -46,6 +46,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
     }
 
     /*
+     Provenienza "AI" delle modifiche (ANALISI_INFRASTRUCTURE_MCP.md, MCP-22, decisione MCP-D11 = nota nelle richieste):
+     le richieste da approvare create da un assistente AI hanno nel corpo JSON (Dip_GG_Richiesta.Dati) il campo
+     RequestBodyKey = true; le pagine delle richieste aggiungono al dettaglio il testo RequestViaAi.
+    */
+    public static class McpProvenance
+    {
+        public const string RequestBodyKey = "viaAi";
+
+        /// <summary>vero se il corpo JSON di una richiesta la segna come creata da un assistente AI</summary>
+        public static bool IsViaAi(Newtonsoft.Json.Linq.JObject? body) =>
+            body?.GetValue(RequestBodyKey, StringComparison.OrdinalIgnoreCase) is Newtonsoft.Json.Linq.JToken v
+            && v.Type == Newtonsoft.Json.Linq.JTokenType.Boolean && v.Value<bool>();
+    }
+
+    /*
      Token personale MCP: "nvx_" + 32 byte casuali in base64url (47 caratteri). Nel database resta solo l'impronta
      SHA-256: chi legge la tabella non puo' usare i token. Il prefisso serve a riconoscere il token nell'elenco.
     */

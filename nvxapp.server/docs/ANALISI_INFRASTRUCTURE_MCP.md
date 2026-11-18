@@ -7,8 +7,8 @@ Documenti collegati: `ANALISI_INFRASTRUCTURE_CHAT_AI.md` (motore dei comandi del
 Stato al 18/11/2026: **fase 0 (verifiche) e fase 1 implementate e portate su tutti i rami** (catena dei merge fino ad
 `AllFunction`): endpoint MCP, token personali, impostazione dell'azienda, registro delle chiamate, pagine del client,
 manuale. **Collegamento provato con Claude Desktop** (MCP-A8). **Fase 2 implementata** (sezione 12ter): modifiche
-personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintReport` escluso; resta da decidere la
-provenienza "AI" sui dati (MCP-22, decisione MCP-D11). Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
+personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintReport` escluso, nota "tramite
+assistente AI" nelle richieste da approvare (MCP-22). Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -373,7 +373,7 @@ un'impostazione o una riga di codice.
 | MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | ✅ adottata: `/mcp`, SDK ufficiale .NET 2.4.0, trasporto HTTP senza sessione |
 | MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | ✅ adottata e provata |
 | MCP-D10 | Impersonificazione: solo token legato alla coppia di identità (fase 1) o anche strumenti di cambio identità (fase 6) | ✅ primo tempo fatto; il secondo resta in fase 6 |
-| MCP-D11 | Provenienza "AI" delle modifiche (MCP-22): dove si vede | 🔍 da decidere, vedi 12ter.3 |
+| MCP-D11 | Provenienza "AI" delle modifiche (MCP-22): dove si vede | ✅ adottata (18/11/2026): nota "tramite assistente AI" nelle richieste da approvare, vedi 12ter.3 |
 
 ## 12. Fasi
 
@@ -480,16 +480,24 @@ I sei comandi del livello 2 sono stati riletti: agiscono **solo sull'utente coll
 utente `null` = utente corrente, annullamento solo delle prenotazioni `Mia`, presa visione solo dei documenti propri);
 le richieste di ferie e di timbratura restano da approvare come dall'app.
 
-### 12ter.3 Provenienza "AI" delle modifiche (MCP-22): decisione aperta
+### 12ter.3 Provenienza "AI" delle modifiche (MCP-22)
 
 `BaseEntity.ChangeUser` contiene l'**id** dell'utente ed è usato come tale: non si può marcare lì la provenienza.
-Ogni modifica fatta via MCP è già nel registro delle chiamate (data, token, utente del login e impersonato, strumento,
-parametri, esito). Opzioni:
+Ogni modifica fatta via MCP è comunque nel registro delle chiamate (data, token, utente del login e impersonato,
+strumento, parametri, esito). Opzioni valutate: solo registro; campo di provenienza sulle tabelle (migrazioni);
+**nota automatica nelle richieste da approvare** — scelta dell'utente (decisione MCP-D11).
 
-1. **Solo registro** (nessun lavoro): la provenienza si ricostruisce dal registro. Proposta per ora.
-2. **Campo di provenienza** sulle tabelle toccate dal livello 2 (`Dip_GG_Timbratura`, `Dip_GG_Richiesta`,
-   `Ast_Prenotazione`, presa visione): una migrazione per contesto e la colonna nelle pagine; da fare prima del livello 3.
-3. **Nota automatica** nelle richieste da approvare ("richiesta tramite assistente AI"), visibile a chi approva.
+Come funziona:
+
+- `IChatUserContext.ViaMcp` = vero per i comandi eseguiti da `McpToolService` (falso nella chat interna);
+- le richieste di giustificativo e di timbratura create da `RequestLeave` / `RequestClocking` via MCP hanno nel corpo
+  JSON `"viaAi": true` (`McpProvenance.RequestBodyKey`);
+- nella pagina comune "Richieste da approvare" (e "Le mie richieste") la colonna Dettaglio aggiunge
+  "· tramite assistente AI" (`RequestViaAi`), così chi approva sa che la richiesta l'ha preparata un assistente.
+
+Non coperti (nessuna richiesta da approvare, o fuori dalle presenze): la timbratura diretta (`ClockNow`), la presa
+visione e le prenotazioni; per queste vale il registro delle chiamate. Le prenotazioni di risorse con approvazione
+potranno usare lo stesso campo nel corpo se servirà.
 
 ### 12ter.4 Prove
 
@@ -549,7 +557,7 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
 
 - [x] MCP-20 Marcare `PersonalWrite` i comandi personali nei rami dei moduli (`ClockNow`, `RequestClocking`, `RequestLeave`, `AstBookResource`, `AstCancelBooking`, `DocConfirmRead`) e alzare `Mcp:MaxLevel` a 2
 - [x] MCP-21 Limiti di frequenza per token e tetto alle righe restituite
-- [ ] MCP-22 Provenienza "AI" visibile sulle modifiche: decisione MCP-D11 aperta (sezione 12ter.3); intanto vale il registro delle chiamate
+- [x] MCP-22 Provenienza "AI" visibile sulle modifiche: nota "tramite assistente AI" nelle richieste di ferie / timbratura da approvare (decisione MCP-D11, sezione 12ter.3)
 - [x] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
 - [x] MCP-24 Prove della fase 2 su tutti i rami uniti (livelli, annotazioni, esecuzione delle modifiche, limiti, tetto alle righe): sezione 12ter.4
 - [ ] MCP-25 Catena dei merge della fase 2 verso i rami dei moduli e `AllFunction`

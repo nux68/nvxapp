@@ -469,6 +469,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             _chatUserContext.CurrentRoute = string.Empty;
             _chatUserContext.Applications = contesto.Applicativi;
             _chatUserContext.MenuPages = new List<MenuPageModel>();
+            _chatUserContext.ViaMcp = true;
 
             foreach (var handler in _handlers)
             {
