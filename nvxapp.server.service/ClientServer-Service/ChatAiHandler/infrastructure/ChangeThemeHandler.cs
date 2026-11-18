@@ -32,6 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Keywords    = new() { "tema", "modalità notte", "theme", "dark mode", "light mode" },
             Examples    = new() { "metti il tema scuro", "passa alla modalità chiara", "cambia tema", "switch to dark mode" },
             RequiresConfirmation = false,
+            // comando della sola interfaccia: non pubblicato come strumento MCP
+            McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
             Slots =
             [
                 new()

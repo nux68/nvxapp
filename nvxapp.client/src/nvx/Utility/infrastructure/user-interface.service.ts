@@ -469,6 +469,19 @@ export class UserInterfaceService {
     return button;
   }
 
+  // revoca di un accesso (es. token personale dell'accesso AI): non si puo' annullare
+  get Btn_Revoca(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.revoke'),
+      'ban-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Revoca cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
   get Btn_Calendario(): ButtonItem {
     const button = new ButtonItem(
       this.transloco.translate('common.buttons.calendar'),

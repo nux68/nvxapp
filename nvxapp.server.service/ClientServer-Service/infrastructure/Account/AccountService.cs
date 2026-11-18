@@ -29,6 +29,8 @@ using System.Data;
 using System.Linq;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 using nvxapp.server.data.Localization;
+using Serilog;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
@@ -219,6 +221,76 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 return retVal;
             }, isSubProcess);
         }
+        /*
+         Chi puo' ottenere il token di un altro utente con UserLoad (impersonificazione): regola "solo chi sta sotto"
+         (nvxapp.server/docs/ANALISI_INFRASTRUCTURE_MCP.md, punto MCP-A7b). Il controllo e' sul server: i pulsanti
+         "Impersona" del client non bastano, perche' l'API si puo' chiamare direttamente.
+
+         Si valuta l'utente che ha fatto il LOGIN (UserIdFirstConnection), non quello impersonato in quel momento:
+         cosi' valgono anche le catene (SuperUser -> centro -> studio -> azienda -> utente) e il "torna indietro",
+         che ricarica un utente gia' attraversato (sempre se stesso o qualcuno sotto di lui).
+
+         L'utente richiesto e' ammesso se:
+            - e' l'utente del login stesso (primo UserLoad dopo il login, ritorno dall'impersonificazione), oppure
+            - ha un ruolo PIU' BASSO di quello dell'utente del login (ordine di RoleCode: User < CompanyAdmin <
+              CompanyPowerAdmin < FinancialAdvisorAdmin < ... < SuperUser; a pari ruolo no) E sta nel suo ramo:
+                * SuperUser, PowerAdmin, Admin: qualunque utente
+                * utente di un centro : utenti del centro, dei suoi studi e delle loro aziende
+                * utente di uno studio: utenti dello studio e delle sue aziende
+                * utente di un'azienda: utenti dell'azienda
+              I collegamenti disabilitati dell'utente del login non contano.
+        */
+        private async Task<bool> PuoLavorareCome(string idUtente)
+        {
+            string login = this.UserIdFirstConnection;
+            if (string.IsNullOrEmpty(login))
+                login = this.CurrentUserId;
+            if (string.IsNullOrEmpty(login))
+                return false;
+            if (idUtente == login)
+                return true;
+
+            var utenteLogin = await _userManager.FindByIdAsync(login);
+            var utente = await _userManager.FindByIdAsync(idUtente);
+            if (utenteLogin == null || utente == null)
+                return false;
+
+            int livelloLogin = LivelloRuolo(await _userManager.GetRolesAsync(utenteLogin));
+            int livello = LivelloRuolo(await _userManager.GetRolesAsync(utente));
+            if (livello >= livelloLogin)
+                return false;
+
+            if (livelloLogin >= (int)RoleCode.Admin)
+                return true;
+
+            // ramo dell'utente del login: i suoi centri, gli studi (suoi e dei suoi centri), le aziende (sue e dei suoi studi)
+            var centri = await _userDealerRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdDealer).ToListAsync();
+            var studi = await _userFinancialAdvisorRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdFinancialAdvisor).ToListAsync();
+            if (centri.Count > 0)
+                studi.AddRange(await _financialAdvisorRepository.FindAll(x => centri.Contains(x.IdDealer)).Select(x => x.Id).ToListAsync());
+            var aziende = await _userCompanyRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdCompany).ToListAsync();
+            if (studi.Count > 0)
+                aziende.AddRange(await _companyRepository.FindAll(x => studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
+
+            if (centri.Count > 0 && await _userDealerRepository.FindAll(x => x.IdAspNetUsers == idUtente && centri.Contains(x.IdDealer)).AnyAsync())
+                return true;
+            if (studi.Count > 0 && await _userFinancialAdvisorRepository.FindAll(x => x.IdAspNetUsers == idUtente && studi.Contains(x.IdFinancialAdvisor)).AnyAsync())
+                return true;
+            if (aziende.Count > 0 && await _userCompanyRepository.FindAll(x => x.IdAspNetUsers == idUtente && aziende.Contains(x.IdCompany)).AnyAsync())
+                return true;
+            return false;
+        }
+
+        // ruolo piu' alto tra quelli dell'utente, nell'ordine di RoleCode; -1 = nessun ruolo conosciuto
+        private static int LivelloRuolo(IEnumerable<string> ruoli)
+        {
+            int livello = -1;
+            foreach (var ruolo in ruoli)
+                if (Enum.TryParse<RoleCode>(ruolo, out var codice) && (int)codice > livello)
+                    livello = (int)codice;
+            return livello;
+        }
+
         public virtual async Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -227,6 +299,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                 if (!string.IsNullOrEmpty(model.Data.Id))
                 {
+                    // il token restituito e' quello dell'utente richiesto (impersonificazione): solo se stesso o chi sta sotto
+                    if (!await PuoLavorareCome(model.Data.Id))
+                    {
+                        Log.Warning("UserLoad rifiutato: l'utente {Login} non puo' lavorare come {Target}", this.UserIdFirstConnection, model.Data.Id);
+                        throw new UserMessageException(InfrastructureMessages.Get("ImpersonateNotAllowed"));
+                    }
+
                     var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
 
                     if (applicationUser != null)
