@@ -6,7 +6,9 @@ Documenti collegati: `ANALISI_INFRASTRUCTURE_CHAT_AI.md` (motore dei comandi del
 
 Stato al 18/11/2026: **fase 0 (verifiche) e fase 1 implementate e portate su tutti i rami** (catena dei merge fino ad
 `AllFunction`): endpoint MCP, token personali, impostazione dell'azienda, registro delle chiamate, pagine del client,
-manuale. Solo strumenti di **lettura**. Da fare: prova con un client reale (MCP-A8), poi le fasi 2–6. Cosa è stato costruito e come è stato provato: sezione 12bis. Checklist: sezione 13.
+manuale. **Collegamento provato con Claude Desktop** (MCP-A8). **Fase 2 implementata** (sezione 12ter): modifiche
+personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintReport` escluso; resta da decidere la
+provenienza "AI" sui dati (MCP-22, decisione MCP-D11). Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -361,7 +363,7 @@ un'impostazione o una riga di codice.
 
 | Sigla | Decisione | Stato |
 |---|---|---|
-| MCP-D1 | Partire da sola lettura o includere subito la scrittura | ✅ adottata: livello 1; l'installazione lo limita con `Mcp:MaxLevel` = 1 |
+| MCP-D1 | Partire da sola lettura o includere subito la scrittura | ✅ adottata: livello 1 in fase 1; dalla fase 2 `Mcp:MaxLevel` = 2 (modifiche personali, se l'azienda le sceglie) |
 | MCP-D2 | Token personale subito e OAuth dopo, oppure OAuth subito | ✅ adottata: token personale |
 | MCP-D3 | Conferma in due passi lato server per il livello 3 | 🔍 proposta sì (fase 4). Fino ad allora il livello 3 non è attivabile nemmeno da configurazione |
 | MCP-D4 | Accesso AI spento per impostazione predefinita, attivato dall'amministratore | ✅ adottata: lo attiva solo il CompanyPowerAdmin |
@@ -371,6 +373,7 @@ un'impostazione o una riga di codice.
 | MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | ✅ adottata: `/mcp`, SDK ufficiale .NET 2.4.0, trasporto HTTP senza sessione |
 | MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | ✅ adottata e provata |
 | MCP-D10 | Impersonificazione: solo token legato alla coppia di identità (fase 1) o anche strumenti di cambio identità (fase 6) | ✅ primo tempo fatto; il secondo resta in fase 6 |
+| MCP-D11 | Provenienza "AI" delle modifiche (MCP-22): dove si vede | 🔍 da decidere, vedi 12ter.3 |
 
 ## 12. Fasi
 
@@ -442,6 +445,71 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
   compaiono dopo la catena dei merge.
 - `PrintReport` risulta pubblicato finché non viene marcato escluso nel ramo presenze (MCP-23).
 
+## 12ter. Fase 2 (18/11/2026)
+
+### 12ter.1 Collegamento reale (MCP-A8)
+
+Provato con **Claude Desktop** verso l'installazione Docker (`https://192.168.0.227:8443/mcp`), con il ponte
+`mcp-remote`. Note per il manuale e per chi installa:
+
+- la voce `nvxapp` va **dentro** `mcpServers` di `claude_desktop_config.json`; con l'app Store il file è in
+  `%LOCALAPPDATA%\Claude-Data\<pacchetto>\` e non in `%APPDATA%\Claude\`;
+- il file va modificato **con Claude Desktop chiuso** (File → Esci): l'app lo riscrive dalla copia in memoria e
+  cancella le modifiche fatte mentre è aperta;
+- dietro Caddy con certificato interno serve `"env": { "NODE_EXTRA_CA_CERTS": "<percorso>\\nvxapp-caddy-root.crt" }`
+  nella voce, altrimenti `mcp-remote` rifiuta la connessione;
+- la configurazione vale per la **chat** di Claude Desktop; la scheda Code usa quella di Claude Code
+  (`claude mcp add --transport http ...`), che va fatta a parte;
+- il connettore remoto nativo (Impostazioni → Connettori) richiede indirizzo pubblico e OAuth: fase 5.
+
+### 12ter.2 Cosa è stato costruito
+
+| Punto | Modifica | Ramo |
+|---|---|---|
+| MCP-20 | `McpAccess = PersonalWrite` su `ClockNow`, `RequestLeave`, `RequestClocking` | AttendanceTracking_Dev |
+| MCP-20 | `McpAccess = PersonalWrite` su `AstBookResource`, `AstCancelBooking` | Assets_Dev |
+| MCP-20 | `McpAccess = PersonalWrite` su `DocConfirmRead` | DocumentManagement_Dev |
+| MCP-20 | `Mcp:MaxLevel` = 2: l'azienda può scegliere "lettura e modifiche personali" (pagina già pronta dalla fase 1) | Infrastructure_Dev |
+| MCP-20 | strumenti di modifica con `readOnlyHint=false`, `destructiveHint=true`; istruzioni del server: prima di una modifica il client descrive l'operazione e aspetta il permesso esplicito | Infrastructure_Dev |
+| MCP-21 | limiti per token `Mcp:MaxCallsPerMinute` (30) e `Mcp:MaxCallsPerDay` (1000), 0 = nessun limite; contati sul registro delle chiamate (valgono anche con più istanze); le chiamate respinte sono registrate e contano | Infrastructure_Dev |
+| MCP-21 | `Mcp:MaxRows` (200): ogni elenco nei dati restituiti, a qualunque livello, si ferma a quel numero di righe e il testo avvisa l'AI che il risultato è parziale | Infrastructure_Dev |
+| MCP-23 | `PrintReport` marcato `Excluded` | AttendanceTracking_Dev |
+| — | testi it/en dei limiti, manuale "Accesso AI" (modifiche personali e limiti) | Infrastructure_Dev |
+
+I sei comandi del livello 2 sono stati riletti: agiscono **solo sull'utente collegato** (timbratura e richieste con
+utente `null` = utente corrente, annullamento solo delle prenotazioni `Mia`, presa visione solo dei documenti propri);
+le richieste di ferie e di timbratura restano da approvare come dall'app.
+
+### 12ter.3 Provenienza "AI" delle modifiche (MCP-22): decisione aperta
+
+`BaseEntity.ChangeUser` contiene l'**id** dell'utente ed è usato come tale: non si può marcare lì la provenienza.
+Ogni modifica fatta via MCP è già nel registro delle chiamate (data, token, utente del login e impersonato, strumento,
+parametri, esito). Opzioni:
+
+1. **Solo registro** (nessun lavoro): la provenienza si ricostruisce dal registro. Proposta per ora.
+2. **Campo di provenienza** sulle tabelle toccate dal livello 2 (`Dip_GG_Timbratura`, `Dip_GG_Richiesta`,
+   `Ast_Prenotazione`, presa visione): una migrazione per contesto e la colonna nelle pagine; da fare prima del livello 3.
+3. **Nota automatica** nelle richieste da approvare ("richiesta tramite assistente AI"), visibile a chi approva.
+
+### 12ter.4 Prove
+
+Su un database usa e getta, con `AllFunction_Dev` più i quattro rami della fase 2 uniti (merge di prova senza
+conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
+
+- **31 controlli superati** sul protocollo e sulle API: livello 3 rifiutato; a livello 1 nessuno strumento di modifica;
+  a livello 2 compaiono i 6 strumenti personali (PowerAdmin 36 strumenti, CompanyAdmin 31) e nessuno amministrativo;
+  `print_report` assente; annotazioni `readOnlyHint` / `destructiveHint` corrette su letture e modifiche; istruzioni del
+  server con la richiesta di permesso; `nvx_whoami` mostra il livello; `attendance_clock_now` registra davvero la
+  timbratura; le altre modifiche rispondono con il messaggio del servizio (approvatore mancante, risorsa o prenotazione
+  inesistente), nessun errore tecnico; tutte nel registro; la chiamata 61 nel minuto è respinta con il messaggio del
+  limite e registrata; un token nuovo dello stesso utente non è bloccato; tornando al livello 1 le modifiche spariscono e
+  non sono eseguibili.
+- **Tetto alle righe**: i comandi di lettura di oggi restituiscono quasi solo testo (con elenchi già limitati nel
+  comando), quindi il tetto è stato provato direttamente sulla funzione di troncamento (5 casi: elenco semplice,
+  elenchi annidati, elenco entro il limite, solo testo, elenco vuoto). Servirà ai nuovi strumenti della fase 3, che
+  dovrebbero restituire i dati strutturati.
+- Limite giornaliero non provato dal vivo: stessa logica del limite al minuto, con la data di inizio giornata.
+
 ## 13. Checklist
 
 ### Analisi
@@ -456,7 +524,7 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
 - [x] MCP-A7a Ricognizione dell'impersonificazione attuale (token con doppia identità, sezione 7.1)
 - [x] MCP-A7 Verificato: `Account/UserLoad` **non** controlla lato server chi può impersonare chi (sezione 7.1)
 - [x] MCP-A7b Controllo lato server su `UserLoad` con la regola "solo chi sta sotto" (sezione 7.1), provato su tutti i livelli della gerarchia
-- [ ] MCP-A8 Provare il collegamento con un client reale: Claude Code e Claude Desktop (finora provato il protocollo con uno script)
+- [x] MCP-A8 Collegamento con un client reale: provato con Claude Desktop (18/11/2026, sezione 12ter.1); Claude Code da provare con `claude mcp add`
 
 ### Fase 1 – Infrastructure_Dev
 
@@ -479,10 +547,12 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
 
 ### Fase 2 – Scrittura personale e limiti
 
-- [ ] MCP-20 Marcare `PersonalWrite` i comandi personali nei rami dei moduli (`ClockNow`, `RequestClocking`, `RequestLeave`, `AstBookResource`, `AstCancelBooking`, `DocConfirmRead`) e alzare `Mcp:MaxLevel` a 2
-- [ ] MCP-21 Limiti di frequenza per token e tetto alle righe restituite
-- [ ] MCP-22 Provenienza "AI" visibile sulle modifiche
-- [ ] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
+- [x] MCP-20 Marcare `PersonalWrite` i comandi personali nei rami dei moduli (`ClockNow`, `RequestClocking`, `RequestLeave`, `AstBookResource`, `AstCancelBooking`, `DocConfirmRead`) e alzare `Mcp:MaxLevel` a 2
+- [x] MCP-21 Limiti di frequenza per token e tetto alle righe restituite
+- [ ] MCP-22 Provenienza "AI" visibile sulle modifiche: decisione MCP-D11 aperta (sezione 12ter.3); intanto vale il registro delle chiamate
+- [x] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
+- [x] MCP-24 Prove della fase 2 su tutti i rami uniti (livelli, annotazioni, esecuzione delle modifiche, limiti, tetto alle righe): sezione 12ter.4
+- [ ] MCP-25 Catena dei merge della fase 2 verso i rami dei moduli e `AllFunction`
 
 ### Fase 3 – Nuovi strumenti di lettura (rami dei moduli)
 
