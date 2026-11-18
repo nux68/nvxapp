@@ -1459,4 +1459,8 @@ The statement is attached.</value>
     <value>Tools available besides this one: {0}</value>
     <comment>accesso AI (MCP)</comment>
   </data>
+  <data name="ImpersonateNotAllowed" xml:space="preserve">
+    <value>You cannot work as this user</value>
+    <comment>impersonificazione</comment>
+  </data>
 </root>

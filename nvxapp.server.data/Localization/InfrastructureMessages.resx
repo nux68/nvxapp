@@ -1534,4 +1534,8 @@ In allegato il rendiconto.</value>
     <value>Strumenti disponibili oltre a questo: {0}</value>
     <comment>accesso AI (MCP)</comment>
   </data>
+  <data name="ImpersonateNotAllowed" xml:space="preserve">
+    <value>Non puoi lavorare come questo utente</value>
+    <comment>impersonificazione</comment>
+  </data>
 </root>

@@ -8,8 +8,8 @@ Stato al 17/11/2026: **fase 0 (verifiche) e fase 1 implementate su `Infrastructu
 impostazione dell'azienda, registro delle chiamate, pagine del client, manuale. Solo strumenti di **lettura**.
 Da fare: catena dei merge, poi le fasi 2–6. Cosa è stato costruito e come è stato provato: sezione 12bis. Checklist: sezione 13.
 
-> **Da decidere con urgenza, a prescindere da MCP** (punto MCP-A7, sezione 7.1): `Account/UserLoad` emette il token di
-> qualunque utente indicato senza controllare, lato server, se chi chiama può impersonarlo.
+> **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
+> indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare / da decidere.
 
@@ -249,11 +249,27 @@ Scartata l'alternativa del parametro "per conto di" su ogni strumento: facile da
   Conseguenza: un utente autenticato che conosce l'id di un altro utente può ottenerne il token chiamando
   direttamente l'API. Gli id sono GUID, quindi non si indovinano, ma compaiono negli elenchi degli utenti.
 
-  Non è stato corretto in questo lavoro perché va prima fissata la regola (chi può impersonare chi: livelli della
-  gerarchia, stesso livello, ritorno all'utente precedente) e la modifica tocca il percorso del login. La fase 1 di
-  MCP non peggiora la situazione: un token personale si crea solo da una sessione già aperta e ne copia l'identità.
-  La correzione è però **necessaria prima della fase 6** (impersonificazione dagli strumenti) e consigliata subito,
-  indipendentemente da MCP (punto MCP-A7b).
+  **Correzione del 18/11/2026 (MCP-A7b), regola decisa: "solo chi sta sotto".** `UserLoad` ora rifiuta la richiesta
+  (messaggio "Non puoi lavorare come questo utente", riga di avviso nel log) se l'utente richiesto non è ammesso.
+  Il controllo (`AccountService.PuoLavorareCome`) si fa sull'utente che ha fatto il **login**, non su quello
+  impersonato in quel momento: così funzionano le catene (SuperUser → centro → studio → azienda → utente) e il
+  "torna indietro". L'utente richiesto è ammesso se:
+
+  - è l'utente del login stesso, oppure
+  - ha un ruolo **più basso** (ordine di `RoleCode`: User < CompanyAdmin < CompanyPowerAdmin < FinancialAdvisorAdmin <
+    FinancialAdvisorPowerAdmin < DealerAdmin < DealerPowerAdmin < Admin < PowerAdmin < SuperUser; a pari ruolo no)
+    **e** sta nel ramo dell'utente del login:
+
+  | Utente del login | Chi può impersonare |
+  |---|---|
+  | SuperUser, PowerAdmin, Admin | qualunque utente con ruolo più basso |
+  | Utente di un centro | utenti del centro (con ruolo più basso), dei suoi studi e delle loro aziende |
+  | Utente di uno studio | utenti dello studio (con ruolo più basso) e delle sue aziende |
+  | Utente di un'azienda | utenti della stessa azienda con ruolo più basso |
+  | User | nessuno |
+
+  I collegamenti disabilitati dell'utente del login non contano. Tutti i percorsi del client (elenchi di centri,
+  studi, aziende e utenti, aggiornamento delle licenze, torna indietro) rientrano nella regola.
 - **Doppia identità sempre registrata**: il registro delle chiamate (8.4) riporta utente del login e utente
   impersonato; le modifiche restano attribuite come avviene oggi nell'app.
 - **I controlli da SuperUser** continuano a usare l'utente del login, come oggi.
@@ -425,7 +441,6 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
 - Su `Infrastructure_Dev` da solo l'unico strumento è `nvx_whoami`: i comandi di lettura sono nei rami dei moduli e
   compaiono dopo la catena dei merge.
 - `PrintReport` risulta pubblicato finché non viene marcato escluso nel ramo presenze (MCP-23).
-- `Account/UserLoad` senza controllo lato server (MCP-A7b), indipendente da MCP.
 
 ## 13. Checklist
 
@@ -440,7 +455,7 @@ Su un database usa e getta, con i rami di tutti i moduli uniti al ramo di lavoro
 - [x] MCP-A6 Decisioni MCP-D1 … MCP-D10: adottate le proposte, tranne D3 (fase 4) e D7 (licenza) ancora aperte
 - [x] MCP-A7a Ricognizione dell'impersonificazione attuale (token con doppia identità, sezione 7.1)
 - [x] MCP-A7 Verificato: `Account/UserLoad` **non** controlla lato server chi può impersonare chi (sezione 7.1)
-- [ ] MCP-A7b Fissare la regola e aggiungere il controllo lato server a `UserLoad` (consigliato subito; obbligatorio prima della fase 6)
+- [x] MCP-A7b Controllo lato server su `UserLoad` con la regola "solo chi sta sotto" (sezione 7.1), provato su tutti i livelli della gerarchia
 - [ ] MCP-A8 Provare il collegamento con un client reale: Claude Code e Claude Desktop (finora provato il protocollo con uno script)
 
 ### Fase 1 – Infrastructure_Dev
