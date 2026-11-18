@@ -1538,4 +1538,20 @@ In allegato il rendiconto.</value>
     <value>Non puoi lavorare come questo utente</value>
     <comment>impersonificazione</comment>
   </data>
+  <data name="McpRateLimitMinute" xml:space="preserve">
+    <value>Troppe richieste: questo token ammette al massimo {0} chiamate al minuto. Riprova tra un minuto.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpRateLimitDay" xml:space="preserve">
+    <value>Limite giornaliero raggiunto: questo token ammette al massimo {0} chiamate al giorno. Riprova domani.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="RequestViaAi" xml:space="preserve">
+    <value>tramite assistente AI</value>
+    <comment>accesso AI (MCP): richiesta creata da un assistente AI, nel dettaglio delle richieste da approvare</comment>
+  </data>
+  <data name="McpRowsTruncated" xml:space="preserve">
+    <value>Risultato parziale: ogni elenco dei dati è limitato a {0} righe. Restringi la richiesta (periodo, persona, filtro) per vedere il resto.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
 </root>
