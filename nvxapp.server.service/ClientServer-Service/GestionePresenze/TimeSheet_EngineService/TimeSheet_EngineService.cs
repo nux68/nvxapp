@@ -275,6 +275,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                     else
                     {
+                        // ricalcolo avviato da un comando di un assistente AI (MCP): chi lo ha avviato non sta guardando la pagina che ha
+                        // salvato, quindi a fine ricalcolo va avvisato anche lui, altrimenti il suo cartellino aperto non si ricarica
+                        // (ANALISI_INFRASTRUCTURE_MCP.md, MCP-26). Si legge qui: nel lavoro in background la richiesta non c'e' piu'.
+                        bool daComandoMcp = _httpContextAccessor.HttpContext?.User?.FindFirst(
+                            nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp.McpToolService.ClaimTokenId) != null;
+
                         RunInBackground(async scope =>
                         {
                             var scopedEngine = (TimeSheet_EngineService)scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
@@ -371,7 +377,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                );
 
                                     // chi ha aperto il cartellino dei dipendenti ricalcolati lo ricarica
-                                    await NotificaCartellini(scope, IdCompany, model.Data.TimeSheet_Calculate, userId);
+                                    await NotificaCartellini(scope, IdCompany, model.Data.TimeSheet_Calculate, daComandoMcp ? string.Empty : userId);
 
                                 }
 
@@ -411,7 +417,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
          Fine ricalcolo: notifica (JobNotifierAsync) ai dipendenti ricalcolati e agli amministratori dell'azienda
          (CompanyPowerAdmin e CompanyAdmin attivi), cosi' i cartellini aperti si ricaricano: il dipendente vede
          la richiesta approvata o rifiutata dall'HR e l'HR vede la richiesta fatta o cancellata dal dipendente.
-         Chi ha avviato il ricalcolo e' escluso: riceve gia' la fine del job (LongJobProgress).
+         Chi ha avviato il ricalcolo e' escluso: riceve gia' la fine del job (LongJobProgress). Non e' escluso (chiHaAvviato vuoto)
+         quando il ricalcolo parte da un comando di un assistente AI via MCP: la sua pagina non ha salvato nulla e va ricaricata.
          Un errore di invio non tocca il ricalcolo, gia' salvato.
         */
         private static async Task NotificaCartellini(IServiceScope scope, int idCompany, TimeSheet_CalculateModel calcolo, string chiHaAvviato)
