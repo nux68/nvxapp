@@ -1463,4 +1463,16 @@ The statement is attached.</value>
     <value>You cannot work as this user</value>
     <comment>impersonificazione</comment>
   </data>
+  <data name="McpRateLimitMinute" xml:space="preserve">
+    <value>Too many requests: this token allows at most {0} calls per minute. Try again in a minute.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpRateLimitDay" xml:space="preserve">
+    <value>Daily limit reached: this token allows at most {0} calls per day. Try again tomorrow.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
+  <data name="McpRowsTruncated" xml:space="preserve">
+    <value>Partial result: every data list is limited to {0} rows. Narrow the request (period, person, filter) to see the rest.</value>
+    <comment>accesso AI (MCP)</comment>
+  </data>
 </root>

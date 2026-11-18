@@ -9,8 +9,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
      Impostazioni dell'installazione per l'accesso AI tramite MCP (ANALISI_INFRASTRUCTURE_MCP.md, sezione 8.6), sezione "Mcp":
         - Enabled      : endpoint MCP presente (false = nessun endpoint, i token non servono a nulla)
         - MaxLevel     : livello massimo degli strumenti che un'azienda puo' scegliere (1 lettura, 2 modifiche personali,
-                         3 modifiche amministrative). Fase 1 dell'analisi: 1.
+                         3 modifiche amministrative). Fase 2 dell'analisi: 2.
         - TokenMaxDays : durata massima di un token personale
+        - MaxCallsPerMinute / MaxCallsPerDay : chiamate agli strumenti ammesse per token (0 = nessun limite), MCP-21
+        - MaxRows      : righe massime di ogni elenco restituito all'AI, MCP-21
     */
     public static class McpOptions
     {
@@ -30,6 +32,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
 
         public static int TokenMaxDays(IConfiguration configuration) =>
             int.TryParse(configuration["Mcp:TokenMaxDays"], out var days) && days > 0 ? days : 365;
+
+        public static int MaxCallsPerMinute(IConfiguration configuration) => NonNegative(configuration["Mcp:MaxCallsPerMinute"], 30);
+
+        public static int MaxCallsPerDay(IConfiguration configuration) => NonNegative(configuration["Mcp:MaxCallsPerDay"], 1000);
+
+        public static int MaxRows(IConfiguration configuration) =>
+            int.TryParse(configuration["Mcp:MaxRows"], out var rows) && rows > 0 ? rows : 200;
+
+        // valore assente o non valido = predefinito; 0 = nessun limite
+        private static int NonNegative(string? value, int fallback) =>
+            int.TryParse(value, out var number) && number >= 0 ? number : fallback;
     }
 
     /*
