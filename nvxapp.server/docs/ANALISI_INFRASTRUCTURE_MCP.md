@@ -522,6 +522,60 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
   assistente AI", nessuna nota senza il campo o con un valore non booleano. Dal vivo non è stata inviata una richiesta
   completa: l'azienda di prova non aveva un approvatore configurato ("Nessun amministratore abilitato all'approvazione").
 
+## 12quater. Notifiche push ai browser dopo un comando (18/11/2026)
+
+Richiesta: quando un comando inserisce o modifica dati, i browser aperti devono aggiornarsi come se la modifica fosse
+stata fatta dal web.
+
+### 12quater.1 Situazione trovata
+
+Gli avvisi push (SignalR, hub `/chathub`) partono dai **servizi**, non dai controller: i comandi eseguiti via MCP li
+fanno partire come le pagine. Dal web però chi salva ricarica da solo la propria pagina, quindi in alcuni punti il
+servizio non avvisa nessuno, o esclude chi ha avviato l'operazione. Via MCP questo lascia pagine non aggiornate:
+
+| Scrittura | Avviso esistente | Buco via MCP |
+|---|---|---|
+| Timbratura (`Stamp`, `Put`, `Delete`) | solo la fine del ricalcolo del cartellino (`JobNotifierAsync`), **escluso chi lo ha avviato** | il cartellino aperto dell'utente che timbra con l'assistente non si ricaricava |
+| Richiesta di ferie / timbratura (`Send`), approvazione (`SetState`) | `RichiestaNotifier` + `RequestNotifier` a dipendente, approvatori, amministratori | nessuno |
+| Giustificativi (`Put`, `Delete`) | `GiustificativiNotifier` a dipendente e amministratori | nessuno |
+| Prenotazione / annullamento (`Ast_PrenotazionePut`, `Annulla`) | `RequestNotifier` solo se la prenotazione è di un altro o richiede approvazione | prenotazione propria senza approvazione: nessun avviso, i colleghi non vedevano la fascia occupata |
+| Presa visione (`Doc_DocumentoPresaVisione`) | solo se il documento è collegato a una presa visione di un modulo | "I miei documenti" non si aggiornava |
+| CRM, Risorse umane, Compliance (attività, note, checklist, formazione) | nessuno | nessuna pagina in ascolto (comandi di livello 3, non ancora pubblicati) |
+
+### 12quater.2 Cosa è stato fatto (MCP-26)
+
+1. **Avviso generale `DataChangedNotifier`** (Infrastructure). Dopo ogni comando di **modifica** riuscito (livello
+   diverso da "lettura"), `McpToolService` chiama `IDataChangeNotifier`: evento SignalR `DataChangedNotifier` con
+   `{ application, command }` agli utenti attivi dell'azienda, più chi ha eseguito il comando e chi ha fatto il login.
+   L'evento non porta dati: la pagina rilegge dal server con i permessi di chi la guarda. Le letture non avvisano.
+   File: `.../infrastructure/Notification/DataChangeNotifier.cs`, `.../infrastructure/Mcp/McpToolService.cs`.
+2. **Client** (Infrastructure): `DataChangedNotifierService` (`nvx/Utility/infrastructure/data-changed-notifier.service.ts`),
+   con `of(ApplicationType.X)` per le pagine di un applicativo. `RequestNotifierService` ascolta lo stesso evento:
+   contatori del menu, "Le mie richieste", "Richieste da approvare" e la pagina delle **prenotazioni** si aggiornano
+   senza altre modifiche.
+3. **Presenze**: il ricalcolo del cartellino avviato da un comando MCP **non esclude più chi lo ha avviato**
+   (`TimeSheet_EngineService.Calculate` riconosce la richiesta MCP dal claim del token personale). Le pagine del
+   cartellino (utente, amministratore, power admin) si ricaricano a ricalcolo finito, con i dati già aggiornati.
+4. **Documentale**: "I miei documenti" (`/docmine`) ascolta `DataChangedNotifier` e si ricarica.
+
+### 12quater.3 Regola per i comandi nuovi
+
+- Un comando di modifica pubblicato via MCP fa partire `DataChangedNotifier` **senza scrivere nulla**: basta che il
+  comando abbia un livello di modifica (`McpAccess` o la regola predefinita).
+- La **pagina** che mostra quei dati deve ascoltare un avviso: quello specifico del modulo, se il servizio lo manda,
+  oppure `dataChangedNotifierService.of(ApplicationType.X)` (sottoscrizione in `ionViewWillEnter`, chiusura in
+  `ionViewWillLeave`).
+- Se i dati vengono ricalcolati in background (cartellino), la pagina deve ricaricarsi alla **fine del lavoro**, non
+  all'avviso generale, che arriva prima.
+
+### 12quater.4 Non coperto
+
+- La pagina "Timbratura" (`/timeclockuser`) non ascolta nulla: è un modulo di inserimento, non mostra l'elenco.
+- Le pagine di CRM, Risorse umane e Compliance non ascoltano `DataChangedNotifier`: da aggiungere quando i loro comandi
+  di modifica saranno pubblicati (fase 4, MCP-43).
+- La chat interna non manda `DataChangedNotifier`: si potrà chiamare lo stesso `IDataChangeNotifier` da `ChatAIService`.
+- `RegisterJustificationPeriod` manda un avviso `GiustificativiNotifier` per ogni giorno (comportamento precedente).
+
 ## 13. Checklist
 
 ### Analisi
@@ -565,6 +619,7 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
 - [x] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
 - [x] MCP-24 Prove della fase 2 su tutti i rami uniti (livelli, annotazioni, esecuzione delle modifiche, limiti, tetto alle righe): sezione 12ter.4
 - [x] MCP-25 Catena dei merge della fase 2 verso i rami dei moduli e `AllFunction` (18/11/2026, senza conflitti)
+- [x] MCP-26 Notifiche push ai browser dopo un comando di modifica: `DataChangedNotifier`, cartellino, prenotazioni, documenti (sezione 12quater)
 
 ### Fase 3 – Nuovi strumenti di lettura (rami dei moduli)
 
@@ -579,6 +634,7 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
 - [ ] MCP-40 Conferma in due passi lato server
 - [ ] MCP-41 Abilitazione degli strumenti di livello 3 con limiti di quantità per chiamata
 - [ ] MCP-42 Prove di resistenza alle istruzioni nascoste nei dati
+- [ ] MCP-43 Pagine di CRM, Risorse umane e Compliance in ascolto di `DataChangedNotifier` (sezione 12quater.4)
 
 ### Fase 5 – claude.ai
 
