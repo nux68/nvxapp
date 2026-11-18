@@ -112,7 +112,9 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem  , zorder: 201000, group: 1, title: 'menu.preferences'       , roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'options' },
       { menuType: MenuType.MenuItem  , zorder: 201100, group: 1, title: 'menu.preferences'       , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'options' },
       // dopo le voci delle presenze
-      { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
+      { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' },
+      // accesso degli assistenti AI ai dati dell'azienda (ANALISI_INFRASTRUCTURE_MCP.md): spento finche' non viene attivato qui
+      { menuType: MenuType.MenuItem  , zorder: 208100, group: 1, title: 'menu.aiAccessSetting'      , roles: ['CompanyPowerAdmin']  , component: "McpCompanySettingPageComponent", url: '/aiaccesssetting', icon: 'hardware-chip' }
     ];
   }
 
@@ -149,6 +151,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
         badge: this.notificationNotifierService.daConfermare, anyApplication: APPLICATIVI_MODULI },
       // riepilogo AI periodico (INF-AI.3)
       { menuType: MenuType.MenuItem,   zorder: 545, group: 0, title: 'menu.digests', roles: RUOLI_RIEPILOGHI, component: "DigestListPageComponent", url: '/digests', icon: 'sparkles' },
+      // accesso AI (ANALISI_INFRASTRUCTURE_MCP.md): token personali per collegare Claude a nvxapp, per tutti gli utenti collegati
+      { menuType: MenuType.MenuItem,   zorder: 548, group: 0, title: 'menu.aiAccess', component: "McpTokenListPageComponent", url: '/aiaccess', icon: 'hardware-chip' },
       // licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §10), dopo il login: listini per SuperUser e utenti del centro,
       // gestione delle licenze per studio e azienda
       { menuType: MenuType.MenuItem,   zorder: 600, group: 0, title: 'menu.licenseCatalogs', roles: RUOLI_LISTINI_LICENZE, component: "LicenseCatalogListPageComponent", url: '/licensecataloglist', icon: 'pricetag' },

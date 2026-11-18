@@ -35,6 +35,16 @@ I tuoi dati: nome utente, email e lingua. Da qui cambi anche la **password**.
 2. Per cambiare la password inserisci quella attuale e quella nuova, poi conferma.
 > Se hai dimenticato la password usa **Password dimenticata** nella pagina di login: ricevi un'email con il collegamento per impostarne una nuova.
 
+@@ /aiaccess
+Da qui colleghi un **assistente AI** (Claude Code o Claude Desktop) a nvxapp: l'assistente legge i tuoi dati e risponde alle tue domande ("chi è presente oggi?", "quante ferie mi restano?") con i tuoi stessi permessi. Non vede più di quello che vedi tu.
+1. Premi **Nuovo token**, dai un nome al collegamento (per esempio "Claude Desktop ufficio") e scegli la durata.
+2. Copia subito il **token**: per sicurezza viene mostrato una volta sola. Nella stessa pagina trovi il comando per Claude Code e la configurazione per Claude Desktop, già compilati.
+3. Dopo il collegamento chiedi all'assistente "chi sono in nvxapp?": risponde con il tuo utente, l'azienda e gli strumenti che può usare.
+4. Con **Revoca** spegni un collegamento che non usi più o che pensi sia stato scoperto. Dal **Registro chiamate** vedi che cosa ha chiesto l'assistente.
+> Il token vale come una password: chi lo possiede agisce in nvxapp al tuo posto. Non condividerlo.
+> Se stai impersonando un altro utente, il token che crei lavora come quell'utente.
+> Finché l'amministratore non attiva l'accesso AI per l'azienda, l'assistente si collega ma non vede nessuno strumento.
+
 @@ /companypoweradmin
 La pagina riservata al CompanyPowerAdmin dell'azienda, con le informazioni sull'azienda e sugli applicativi attivi.
 
@@ -57,6 +67,13 @@ I clienti dell'azienda: un'anagrafica unica usata da tutti gli applicativi (comm
 
 @@ /companymenurestriction
 Qui il CompanyPowerAdmin nasconde ai CompanyAdmin e agli User le voci di menu che non devono usare. Le voci di sistema (login, dashboard, dati utente) non si possono nascondere. Le voci nascoste spariscono anche dai manuali di chi non le vede.
+
+@@ /aiaccesssetting
+Qui il CompanyPowerAdmin decide se gli utenti dell'azienda possono collegare un assistente AI a nvxapp. L'accesso è **spento** finché non lo attivi.
+1. Attiva **Accesso AI attivo** e scegli le **operazioni permesse** (sola lettura, oppure anche le modifiche che l'utente fa per sé).
+2. Conferma: da quel momento gli assistenti collegati dagli utenti vedono gli strumenti del loro ruolo.
+> Con l'accesso attivo, i dati che l'assistente legge vengono inviati al fornitore dell'AI scelto dall'utente: valuta se indicarlo nell'informativa ai dipendenti e nel registro dei trattamenti.
+> Puoi spegnere l'accesso in qualsiasi momento: vale subito per tutti i collegamenti, anche quelli creati da chi impersona un utente dell'azienda.
 
 @@ /superuser
 La pagina del SuperUser, con le informazioni generali dell'installazione.
