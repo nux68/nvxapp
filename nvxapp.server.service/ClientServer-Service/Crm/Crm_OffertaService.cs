@@ -113,6 +113,19 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
                     q = q.Where(o => o.IdAz_Cliente == model.Data.IdAz_Cliente);
                 if (model.Data.IdCrm_Opportunita.HasValue)
                     q = q.Where(o => o.IdCrm_Opportunita == model.Data.IdCrm_Opportunita);
+                // filtri facoltativi degli strumenti AI (MCP-32)
+                if (model.Data.Stato.HasValue)
+                    q = q.Where(o => o.Stato == model.Data.Stato);
+                if (model.Data.Dal.HasValue)
+                {
+                    var dal = model.Data.Dal.Value.Date;
+                    q = q.Where(o => o.Data >= dal);
+                }
+                if (model.Data.Al.HasValue)
+                {
+                    var al = model.Data.Al.Value.Date.AddDays(1);
+                    q = q.Where(o => o.Data < al);
+                }
                 return new Crm_OffertaListOutModel { Offerte = await CrmLists.OfferteAsync(q, await _utility.CfgAsync(ctx)) };
             }, isSubProcess);
         }
