@@ -564,7 +564,7 @@ conflitti), server con `MaxLevel=2`, `MaxCallsPerMinute=60`, `MaxRows=2`:
 - [x] MCP-22 Provenienza "AI" visibile sulle modifiche: nota "tramite assistente AI" nelle richieste di ferie / timbratura da approvare (decisione MCP-D11, sezione 12ter.3)
 - [x] MCP-23 Ramo presenze: marcare `PrintReport` come escluso (produce un file)
 - [x] MCP-24 Prove della fase 2 su tutti i rami uniti (livelli, annotazioni, esecuzione delle modifiche, limiti, tetto alle righe): sezione 12ter.4
-- [ ] MCP-25 Catena dei merge della fase 2 verso i rami dei moduli e `AllFunction`
+- [x] MCP-25 Catena dei merge della fase 2 verso i rami dei moduli e `AllFunction` (18/11/2026, senza conflitti)
 
 ### Fase 3 – Nuovi strumenti di lettura (rami dei moduli)
 
