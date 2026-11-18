@@ -441,6 +441,7 @@ export class AppComponent implements OnInit {
       // licenze (listini; gestione per studio e azienda): a login fatto (i ruoli li filtra la voce di menu)
       case 'LicenseCatalogListPageComponent':
       case 'LicenseManagementPageComponent':
+      case 'McpTokenListPageComponent':
         return this.authService.Token != null;
 
       // notifiche (tutti), scadenzario e prese visione (utenti dell'azienda, i ruoli li filtra la voce di menu): a login fatto

@@ -19,7 +19,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu", "commands", "what can you do" },
             Examples    = new() { "che cosa posso chiederti?", "non so cosa fare, aiutami", "cosa posso fare in questa pagina?", "what can I ask you?" },
             // elenco dei comandi: nessun dato modificato, si mostra subito
-            RequiresConfirmation = false
+            RequiresConfirmation = false,
+            // comando della sola interfaccia: non pubblicato come strumento MCP
+            McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded
         };
 
         public HelpHandler(IServiceProvider serviceProvider)

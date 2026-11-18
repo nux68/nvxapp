@@ -1,0 +1,37 @@
+.nvx-mcp-note {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.nvx-mcp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.nvx-mcp-howto {
+  margin: 0 0 12px;
+
+  dt {
+    font-weight: 600;
+    margin-top: 12px;
+  }
+
+  dd {
+    margin-left: 0;
+  }
+}
+
+// comando e configurazione da copiare: testo a larghezza fissa che va a capo (contiene il token, molto lungo)
+.nvx-mcp-code {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: var(--ion-color-light);
+  color: var(--ion-color-light-contrast);
+  font-size: 0.85em;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: all;
+}
