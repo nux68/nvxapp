@@ -44,6 +44,8 @@ Da qui colleghi un **assistente AI** (Claude Code o Claude Desktop) a nvxapp: l'
 > Il token vale come una password: chi lo possiede agisce in nvxapp al tuo posto. Non condividerlo.
 > Se stai impersonando un altro utente, il token che crei lavora come quell'utente.
 > Finché l'amministratore non attiva l'accesso AI per l'azienda, l'assistente si collega ma non vede nessuno strumento.
+> Se l'azienda permette anche le modifiche personali, l'assistente può timbrare, chiedere ferie o una timbratura dimenticata, prenotare o annullare una tua prenotazione e confermare la lettura di un tuo documento: prima di farlo ti chiede sempre il permesso.
+> Ogni collegamento ha un limite di chiamate al minuto e al giorno; gli elenchi molto lunghi arrivano all'assistente in parte, e lui ti propone di restringere la richiesta.
 
 @@ /companypoweradmin
 La pagina riservata al CompanyPowerAdmin dell'azienda, con le informazioni sull'azienda e sugli applicativi attivi.
