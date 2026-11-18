@@ -57,7 +57,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
                         Label = AssetsMessages.Get("ChatTitleLabel"),
                         HasRelevantContent = msg => !string.IsNullOrWhiteSpace(msg)
                     }),
-                CrossValidator = ControllaFascia
+                CrossValidator = ControllaFascia,
+                // MCP: prenotazione a nome dell'utente (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite
             };
         }
 
@@ -175,7 +177,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Assets
                     SlotData("date", false, string.Empty, AssetsMessages.Get("ChatDateQuestion"), AssetsMessages.Get("ChatDateLabel"),
                         "giorno della prenotazione se l'utente lo dice, altrimenti ometti"),
                     SlotOrario("start", false, AssetsMessages.Get("ChatStartQuestion"), AssetsMessages.Get("ChatStartLabel"),
-                        "ora di inizio della prenotazione se l'utente la dice, altrimenti ometti"))
+                        "ora di inizio della prenotazione se l'utente la dice, altrimenti ometti")),
+                // MCP: annulla solo le prenotazioni dell'utente (ANALISI_INFRASTRUCTURE_MCP.md, MCP-20)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.PersonalWrite
             };
         }
 
