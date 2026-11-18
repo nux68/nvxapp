@@ -13,8 +13,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
     public static class ChatInvioRichiestaHelper
     {
         // idAspNetUsers null = utente corrente. Ritorna null se inviata, altrimenti il messaggio d'errore del servizio.
+        // viaAi = richiesta preparata da un assistente AI esterno (MCP): il corpo lo segna e chi approva lo vede (MCP-22).
         public static async Task<string?> Giustificativo(IDip_GG_RichiestaService service, string? idAspNetUsers, bool fromHR,
-            DateTime dal, DateTime al, int idPar_Giustificativi, TimeSpan? ore, decimal? importo = null)
+            DateTime dal, DateTime al, int idPar_Giustificativi, TimeSpan? ore, decimal? importo = null, bool viaAi = false)
         {
             // stesso formato del client (request-justification-user-page): senza ore = giornata intera;
             // giustificativo a importo: l'importo per giorno, senza ore
@@ -25,11 +26,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 idPar_Giustificativi,
                 importo
             });
-            return await Invia(service, idAspNetUsers, fromHR, TipoRichiesta.Giustificativo, dal, al, dati);
+            return await Invia(service, idAspNetUsers, fromHR, TipoRichiesta.Giustificativo, dal, al, ConProvenienza(dati, viaAi));
         }
 
         public static async Task<string?> Timbratura(IDip_GG_RichiestaService service, string? idAspNetUsers, bool fromHR,
-            DateTime giorno, TimeOnly orario, int idAz_SubCommessaAttivita)
+            DateTime giorno, TimeOnly orario, int idAz_SubCommessaAttivita, bool viaAi = false)
         {
             // stesso formato del client (request-clocking-user-page)
             var dati = JsonConvert.SerializeObject(new
@@ -37,7 +38,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 hhmm = orario.ToString("HH:mm"),
                 idAz_SubCommessaAttivita
             });
-            return await Invia(service, idAspNetUsers, fromHR, TipoRichiesta.Timbratura, giorno, giorno, dati);
+            return await Invia(service, idAspNetUsers, fromHR, TipoRichiesta.Timbratura, giorno, giorno, ConProvenienza(dati, viaAi));
+        }
+
+        // aggiunge al corpo il campo della provenienza AI (McpProvenance); il servizio e le pagine ignorano i campi che non conoscono
+        private static string ConProvenienza(string dati, bool viaAi)
+        {
+            if (!viaAi)
+                return dati;
+            var corpo = Newtonsoft.Json.Linq.JObject.Parse(dati);
+            corpo[nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp.McpProvenance.RequestBodyKey] = true;
+            return corpo.ToString(Formatting.None);
         }
 
         private static async Task<string?> Invia(IDip_GG_RichiestaService service, string? idAspNetUsers, bool fromHR,

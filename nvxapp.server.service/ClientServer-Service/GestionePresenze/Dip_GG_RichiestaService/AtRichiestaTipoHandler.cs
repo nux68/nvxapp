@@ -68,7 +68,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             foreach (var (r, item) in righe)
             {
                 item.TipoTesto = AttendanceTrackingMessages.Get("RequestType_" + r.RichiestaTipo);
-                item.Dettaglio = Dettaglio(r, giustificativi);
+                item.Dettaglio = ConProvenienza(r, Dettaglio(r, giustificativi));
                 // testo comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)")
                 item.StatoTesto = RichiestaRegole.TestoStato(r);
                 item.SoloData = true;
@@ -112,6 +112,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private static bool PuoAnnullare(Dip_GG_Richiesta r) => RichiestaRegole.PuoAnnullare(r);
 
         private static string TestoStato(StatoRichiesta s) => AttendanceTrackingMessages.Get("RequestState_" + s);
+
+        // richiesta preparata da un assistente AI esterno (MCP-22): "<dettaglio> · tramite assistente AI"
+        private static string? ConProvenienza(Dip_GG_Richiesta r, string? dettaglio)
+        {
+            JObject? dati = null;
+            try { dati = string.IsNullOrEmpty(r.Dati) ? null : JObject.Parse(r.Dati); } catch { }
+            if (!nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp.McpProvenance.IsViaAi(dati))
+                return dettaglio;
+            var nota = InfrastructureMessages.Get("RequestViaAi");
+            return string.IsNullOrWhiteSpace(dettaglio) ? nota : $"{dettaglio} · {nota}";
+        }
 
         // come TimeSheetUtilityService.getDatitext del client
         private static string? Dettaglio(Dip_GG_Richiesta r, IReadOnlyDictionary<int, string> giustificativi)
