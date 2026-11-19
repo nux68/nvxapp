@@ -29,7 +29,19 @@
       </button>
     </section>
 
-    <!-- integrazione con gli assistenti AI (uguale in tutti i rami: testi in showcase.ai) -->
+    <section class="nvx-sc-section">
+      <div class="nvx-sc-grid">
+        @for (p of c.punti; track p.title) {
+          <div class="nvx-sc-card">
+            <div class="nvx-sc-card-icon"><ion-icon [name]="p.icon"></ion-icon></div>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.text }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- integrazione con gli assistenti AI, in mezzo, sotto le sezioni degli applicativi (uguale in tutti i rami: testi in showcase.ai) -->
     <section id="nvx-sc-ai" class="nvx-sc-section nvx-sc-ai">
       <div class="nvx-sc-ai-testa">
         <span class="nvx-sc-label"><ion-icon name="sparkles"></ion-icon>{{ 'showcase.ai.etichetta' | transloco }}</span>
@@ -65,18 +77,6 @@
         <ion-icon name="diamond-outline"></ion-icon>
         <span>{{ 'showcase.ai.piani' | transloco }}</span>
         <ion-button shape="round" size="small" fill="outline" (click)="vai('/pricing')">{{ 'showcase.ai.vediPrezzi' | transloco }}</ion-button>
-      </div>
-    </section>
-
-    <section class="nvx-sc-section">
-      <div class="nvx-sc-grid">
-        @for (p of c.punti; track p.title) {
-          <div class="nvx-sc-card">
-            <div class="nvx-sc-card-icon"><ion-icon [name]="p.icon"></ion-icon></div>
-            <h3>{{ p.title }}</h3>
-            <p>{{ p.text }}</p>
-          </div>
-        }
       </div>
     </section>
 
