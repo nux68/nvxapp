@@ -40,9 +40,16 @@ ion-accordion-group {
     margin-bottom: 6px;
   }
 
+  // al passaggio del mouse le intestazioni (principali e secondarie) si evidenziano come le voci di menu
   ion-accordion ion-item[slot='header'] {
     --background: transparent;
-    --background-hover: transparent;
+    --background-hover: var(--ion-text-color);
+    --background-hover-opacity: 0.05;
+    --background-focused: var(--ion-text-color);
+    --background-focused-opacity: 0.08;
+    --border-radius: var(--nvx-radius-sm);
+    border-radius: var(--nvx-radius-sm);
+    cursor: pointer;
     --color: var(--nvx-text-muted);
     --min-height: 34px;
     --padding-start: 10px;
