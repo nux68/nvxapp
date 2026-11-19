@@ -151,6 +151,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
     }
 
 
+    // ultima risposta di piu' ticket (elenchi dell'assistente AI)
+    public class TicketLastReplyInModel
+    {
+        public List<int> Id { get; set; } = new List<int>();
+    }
+
+    public class TicketLastReplyModel
+    {
+        public int IdTicket { get; set; }
+        public TicketAction Action { get; set; }
+        public string Text { get; set; } = string.Empty;
+        public string? AuthorName { get; set; }
+        public DateTime? CreationDate { get; set; }
+    }
+
+    public class TicketLastReplyOutModel : ModelResult
+    {
+        public List<TicketLastReplyModel> Reply { get; set; } = new List<TicketLastReplyModel>();
+    }
+
+
     // dati per la pagina di apertura
     public class TicketOpenInfoInModel
     {
