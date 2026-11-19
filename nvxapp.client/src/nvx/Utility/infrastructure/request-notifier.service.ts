@@ -44,6 +44,12 @@ export class RequestNotifierService {
         this._changed.next(data);
         this.refreshCount();
       });
+      // un comando eseguito fuori dalle pagine (assistente AI via MCP) puo' aver creato o annullato una richiesta o una
+      // prenotazione senza l'avviso del modulo: contatori e pagine delle richieste si aggiornano comunque (MCP-26)
+      signalrService.on('DataChangedNotifier').subscribe(() => {
+        this._changed.next({ key: null });
+        this.refreshCount();
+      });
     }
 
     // ruoli e applicativi arrivano insieme dopo il login: un solo ricalcolo
