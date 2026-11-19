@@ -45,6 +45,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "ricalcola le presenze di Rossi di ottobre", "calcola il giorno di ieri per Bianchi", "ricalcola Verdi dal 1 al 15", "recalculate Rossi's attendance for October" },
                 Pages = new() { "/poweradmintimesheet" },
+                // MCP: escluso. Il ricalcolo approva anche le richieste in attesa e genera timbrature e giustificativi mancanti,
+                // senza elencarli nel riepilogo: non e' adatto a un assistente esterno finche' non esiste un ricalcolo puro
+                // (ANALISI_INFRASTRUCTURE_MCP.md, sezione 12sexies, MCP-44)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatCalcolaGiornoSummary"),
                 Keywords    = new()
                 {
@@ -162,6 +166,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 al = ParseDate(alEffettivo);
                 if (al < dal) al = dal;
             }
+
+            // via assistente AI (MCP): periodo limitato, verificato prima di avviare il calcolo
+            var oltreLimite = ChatPresenzeHelper.McpLimitePeriodo(_chatUserContext, dal, al);
+            if (oltreLimite != null)
+                return CommandResult.Fail(oltreLimite);
 
             // --- Costruisci richiesta di calcolo ---
             var req = new GenericRequest<TimeSheet_CalculateInModel>
