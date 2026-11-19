@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NavController, Platform } from '@ionic/angular';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
+import { nomeUtente } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { TranslocoService } from '@jsverse/transloco';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
 import { HoverPopupData } from '../hover-popup/hover-popup.component';
@@ -56,12 +57,29 @@ export class PageToolbarComponent {
     return this.userNavigationService.userCronology?.[0]?.userData?.userName ?? null;
   }
 
-  // username dell'utente impersonato (l'ultimo della cronologia), solo se diverso da quello del login
+  // utente impersonato (l'ultimo della cronologia), solo se diverso da quello del login:
+  // Cognome e Nome dell'anagrafica se disponibili (utenti di tipo User), altrimenti lo username
   public get impersonatedUserName(): string | null {
     const cronologia = this.userNavigationService.userCronology;
     if (!cronologia || cronologia.length < 2)
       return null;
+    return nomeUtente(cronologia[cronologia.length - 1]?.userData);
+  }
+
+  // username dell'utente impersonato, per il suggerimento quando la toolbar mostra Cognome e Nome
+  public get impersonatedLogin(): string | null {
+    const cronologia = this.userNavigationService.userCronology;
+    if (!cronologia || cronologia.length < 2)
+      return null;
     return cronologia[cronologia.length - 1]?.userData?.userName ?? null;
+  }
+
+  public get userTooltip(): string | null {
+    const impersonato = this.impersonatedUserName;
+    if (!impersonato)
+      return this.loggedUserName;
+    const login = this.impersonatedLogin;
+    return this.loggedUserName + ' → ' + impersonato + (login && login !== impersonato ? ' (' + login + ')' : '');
   }
 
   goToDashboard(): void {
