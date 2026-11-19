@@ -70,6 +70,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
      Avviso ai browser (MCP-26): dopo un comando di modifica riuscito parte l'evento push "DataChangedNotifier" verso gli
      utenti dell'azienda, cosi' le pagine aperte si aggiornano come se la modifica fosse stata fatta dal web.
 
+     Conferma in due passi (MCP-40): uno strumento di modifica amministrativa (livello 3) alla prima chiamata NON esegue:
+     restituisce il riepilogo e un codice (McpConfirmation); esegue solo alla seconda chiamata, con gli stessi parametri e
+     il codice, usabile una volta sola. In piu' il periodo su cui agisce e' limitato (Mcp:MaxWriteDays, MCP-41).
+
+     Impersonificazione (fase 6): tre strumenti fissi, per chi ha un ruolo sopra User. "nvx_who_can_i_work_as" elenca gli
+     utenti che si possono impersonare (stessa regola dell'applicazione: solo chi sta sotto), "nvx_work_as" cambia
+     l'utente di lavoro del token personale, "nvx_stop_working_as" torna all'identita' di partenza. Il trasporto e' senza
+     sessione: l'identita' scelta resta sul token e scade da sola (Mcp:ImpersonationHours). Finche' dura, ogni risposta
+     ricorda per chi si sta lavorando.
+
      Limiti (MCP-21): chiamate per token al minuto e al giorno (Mcp:MaxCallsPerMinute / MaxCallsPerDay), contate sul
      registro delle chiamate, quindi validi anche con piu' istanze del server; ogni elenco dei dati restituiti si ferma a
      Mcp:MaxRows righe, e il testo avvisa l'AI che il risultato e' parziale.
@@ -80,6 +90,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
     public class McpToolService : ServiceBase, IMcpToolService
     {
         public const string WhoAmITool = "nvx_whoami";
+        public const string WhoCanIWorkAsTool = "nvx_who_can_i_work_as";
+        public const string WorkAsTool = "nvx_work_as";
+        public const string StopWorkingAsTool = "nvx_stop_working_as";
+        /// <summary>parametro aggiunto agli strumenti di modifica amministrativa: il codice della conferma in due passi</summary>
+        public const string ConfirmationParam = "confirmationCode";
+        /// <summary>claim presente quando l'utente di lavoro e' stato scelto con "lavora come"</summary>
+        public const string ClaimImpersonating = "mcp_impersonating";
+        private const int MaxImpersonabili = 50;
         // claim aggiunti dall'autenticazione del token personale
         public const string ClaimTokenId = "mcp_token_id";
         public const string ClaimTokenName = "mcp_token_name";
@@ -95,6 +113,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         private readonly IMcpAccessTokenRepository _mcpAccessTokenRepository;
         private readonly IMcpCallLogRepository _mcpCallLogRepository;
         private readonly IDataChangeNotifier _dataChangeNotifier;
+        private readonly nvxapp.server.service.ClientServer_Service.Infrastructure.Account.IAccountService _accountService;
 
         public McpToolService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -110,7 +129,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                               IMcpCompanySettingRepository mcpCompanySettingRepository,
                               IMcpAccessTokenRepository mcpAccessTokenRepository,
                               IMcpCallLogRepository mcpCallLogRepository,
-                              IDataChangeNotifier dataChangeNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                              IDataChangeNotifier dataChangeNotifier,
+                              nvxapp.server.service.ClientServer_Service.Infrastructure.Account.IAccountService accountService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _handlers = handlers;
             _chatUserContext = chatUserContext;
@@ -120,6 +140,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             _mcpAccessTokenRepository = mcpAccessTokenRepository;
             _mcpCallLogRepository = mcpCallLogRepository;
             _dataChangeNotifier = dataChangeNotifier;
+            _accountService = accountService;
         }
 
         // ---------------------------------------------------------------------------
@@ -139,6 +160,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                     ReadOnly = true
                 }
             };
+            // impersonificazione: solo per chi ha qualcuno sotto di se' (ruolo sopra User)
+            if (await _accountService.PuoImpersonareQualcuno())
+            {
+                strumenti.Add(new McpToolDescriptor
+                {
+                    Name = WhoCanIWorkAsTool,
+                    Title = InfrastructureMessages.Get("McpWhoCanTitle"),
+                    Description = InfrastructureMessages.Get("McpWhoCanDescription"),
+                    ReadOnly = true,
+                    Parameters = new() { new McpToolParameter { Name = "search", Description = InfrastructureMessages.Get("McpWhoCanParamSearch") } }
+                });
+                strumenti.Add(new McpToolDescriptor
+                {
+                    Name = WorkAsTool,
+                    Title = InfrastructureMessages.Get("McpWorkAsTitle"),
+                    Description = InfrastructureMessages.Get("McpWorkAsDescription"),
+                    ReadOnly = false,
+                    Parameters = new() { new McpToolParameter { Name = "user", Required = true, Description = InfrastructureMessages.Get("McpWorkAsParamUser") } }
+                });
+                strumenti.Add(new McpToolDescriptor
+                {
+                    Name = StopWorkingAsTool,
+                    Title = InfrastructureMessages.Get("McpStopTitle"),
+                    Description = InfrastructureMessages.Get("McpStopDescription"),
+                    ReadOnly = false
+                });
+            }
             strumenti.AddRange(contesto.Strumenti.OrderBy(x => x.Key, StringComparer.Ordinal).Select(x => Descrittore(x.Key, x.Value.IntentDefinition)));
             return strumenti;
         }
@@ -152,7 +200,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                 descrizione.Append(' ').Append(InfrastructureMessages.Get("McpToolExamples", string.Join(" | ", def.Examples)));
             }
 
-            return new McpToolDescriptor
+            var descrittore = new McpToolDescriptor
             {
                 Name = nome,
                 Title = string.IsNullOrWhiteSpace(def.DisplayName) ? def.Name : def.DisplayName,
@@ -165,6 +213,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                     Description = DescrizioneParametro(slot)
                 }).ToList()
             };
+            return DuePassi(descrittore, def);
+        }
+
+        // modifica amministrativa: la descrizione spiega i due passi e lo strumento ha in piu' il parametro del codice
+        private static McpToolDescriptor DuePassi(McpToolDescriptor descrittore, IntentDefinition def)
+        {
+            if (def.EffectiveMcpAccess != McpAccessLevel.AdminWrite)
+                return descrittore;
+            descrittore.Description = (descrittore.Description + " " + InfrastructureMessages.Get("McpToolTwoStep")).Trim();
+            descrittore.Parameters.Add(new McpToolParameter
+            {
+                Name = ConfirmationParam,
+                Required = false,
+                Description = InfrastructureMessages.Get("McpParamConfirmationCode")
+            });
+            return descrittore;
         }
 
         // descrizione dello slot scritta per il LLM della chat, piu' formato, valore se omesso e "@me" per le persone
@@ -217,6 +281,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             }
             cronometro.Stop();
 
+            // si sta lavorando come un altro utente ("lavora come"): ogni risposta lo ricorda, per non agire sull'azienda sbagliata
+            if (contesto != null && Impersonando() && name != WorkAsTool && name != StopWorkingAsTool)
+                risultato.Text = (risultato.Text + Environment.NewLine + InfrastructureMessages.Get("McpWorkingAsReminder",
+                    contesto.UserName, string.IsNullOrEmpty(contesto.Azienda) ? "-" : contesto.Azienda)).Trim();
+
             await RegistraAsync(contesto, name ?? string.Empty, arguments, risultato, (int)cronometro.ElapsedMilliseconds);
             return risultato;
         }
@@ -225,6 +294,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         {
             if (name == WhoAmITool)
                 return new McpToolCallResult { Success = true, Text = await ChiSonoAsync(contesto) };
+            if (name == WhoCanIWorkAsTool)
+                return await ChiPossoImpersonareAsync(arguments);
+            if (name == WorkAsTool)
+                return await LavoraComeAsync(arguments);
+            if (name == StopWorkingAsTool)
+                return await TornaIndietroAsync();
+
+            // il codice della conferma in due passi non e' un parametro del comando
+            string? codiceConferma = arguments.FirstOrDefault(a => a.Key.Equals(ConfirmationParam, StringComparison.OrdinalIgnoreCase)).Value?.Trim();
+            arguments = arguments.Where(a => !a.Key.Equals(ConfirmationParam, StringComparison.OrdinalIgnoreCase))
+                                 .ToDictionary(a => a.Key, a => a.Value, StringComparer.OrdinalIgnoreCase);
 
             if (!contesto.Strumenti.TryGetValue(name, out var handler))
             {
@@ -279,6 +359,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             if (mancanti.Count > 0)
                 return Errore(InfrastructureMessages.Get("McpParamMissing", string.Join(", ", mancanti)));
 
+            // modifica amministrativa: periodo limitato e conferma in due passi (senza codice valido non si esegue nulla)
+            if (def.EffectiveMcpAccess == McpAccessLevel.AdminWrite)
+            {
+                var periodo = PeriodoTroppoLungo(def, slots);
+                if (periodo != null)
+                    return Errore(periodo);
+                var conferma = await ConfermaAsync(contesto, name, def, arguments, slots, codiceConferma);
+                if (conferma != null)
+                    return conferma;
+            }
+
             var esito = await handler.ExecuteAsync(slots);
 
             // comando di modifica riuscito: i browser aperti degli utenti dell'azienda vengono avvisati (push) e le pagine
@@ -309,6 +400,180 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         }
 
         private static McpToolCallResult Errore(string messaggio) => new() { Success = false, Text = messaggio };
+
+        // ---------------------------------------------------------------------------
+        // Modifiche amministrative: conferma in due passi (MCP-40) e limite del periodo (MCP-41)
+        // ---------------------------------------------------------------------------
+
+        // null = conferma valida, si puo' eseguire; altrimenti la risposta da dare (riepilogo con il codice, oppure l'errore)
+        private async Task<McpToolCallResult?> ConfermaAsync(Contesto contesto, string name, IntentDefinition def,
+            IReadOnlyDictionary<string, string?> arguments, Dictionary<string, string> slots, string? codice)
+        {
+            var token = TokenCorrente();
+            string impronta = McpConfirmation.Fingerprint(token.Id ?? 0, this.CurrentUserId, name, arguments);
+            int minuti = McpOptions.ConfirmMinutes(_configuration);
+
+            if (string.IsNullOrEmpty(codice))
+            {
+                string nuovo = McpConfirmation.NewCode(_jwtParameter.Key, impronta, DateTime.UtcNow.AddMinutes(minuti));
+                return new McpToolCallResult
+                {
+                    Success = true,
+                    Text = InfrastructureMessages.Get("McpConfirmRequired", Riepilogo(contesto, def, slots), nuovo, minuti)
+                };
+            }
+
+            switch (McpConfirmation.Check(_jwtParameter.Key, impronta, codice, DateTime.UtcNow))
+            {
+                case McpConfirmation.Esito.NonValido: return Errore(InfrastructureMessages.Get("McpConfirmInvalid"));
+                case McpConfirmation.Esito.Scaduto: return Errore(InfrastructureMessages.Get("McpConfirmExpired"));
+            }
+
+            // una volta sola: il codice non deve comparire in una chiamata gia' riuscita (il registro tiene i parametri)
+            var da = DateTime.Now.AddMinutes(-(minuti + 1));
+            bool usato = await _mcpCallLogRepository
+                .FindAll(x => x.IdMcpAccessToken == token.Id && x.Tool == name && x.Success && x.Data >= da
+                              && x.Arguments != null && x.Arguments.Contains(codice))
+                .AnyAsync();
+            return usato ? Errore(InfrastructureMessages.Get("McpConfirmUsed")) : null;
+        }
+
+        // riepilogo dell'operazione per l'utente: la frase del comando (SummaryTemplate) con i valori, altrimenti nome e valori
+        private static string Riepilogo(Contesto contesto, IntentDefinition def, Dictionary<string, string> slots)
+        {
+            string Valore(string v) => v.Equals(ChatSelf.Token, StringComparison.OrdinalIgnoreCase) ? contesto.UserName : v;
+            string titolo = string.IsNullOrWhiteSpace(def.DisplayName) ? def.Name : def.DisplayName;
+
+            if (!string.IsNullOrEmpty(def.SummaryTemplate))
+            {
+                string frase = System.Text.RegularExpressions.Regex.Replace(def.SummaryTemplate, @"\{(\w+)\}", m =>
+                {
+                    if (slots.TryGetValue(m.Groups[1].Value, out var value)) return Valore(value);
+                    var slotDef = def.Slots.FirstOrDefault(s => s.Name == m.Groups[1].Value);
+                    if (string.IsNullOrEmpty(slotDef?.Default)) return string.Empty;
+                    return CommandSlotProcessor.NormalizerFor(def, slotDef)?.Invoke(slotDef.Default) ?? slotDef.Default;
+                }).Trim();
+                if (frase.Length > 0)
+                    return frase;
+            }
+
+            // i valori interni dei comandi (nome con "_" iniziale) non si mostrano
+            var valori = def.Slots.Where(s => slots.ContainsKey(s.Name))
+                                  .Select(s => $"{(string.IsNullOrWhiteSpace(s.Label) ? s.Name : s.Label)}: {Valore(slots[s.Name])}");
+            string elenco = string.Join(", ", valori);
+            return elenco.Length == 0 ? titolo : $"{titolo} ({elenco})";
+        }
+
+        // periodo (slot di inizio con PeriodEndSlot) piu' lungo di Mcp:MaxWriteDays: messaggio di rifiuto, altrimenti null
+        private string? PeriodoTroppoLungo(IntentDefinition def, Dictionary<string, string> slots)
+        {
+            int massimo = McpOptions.MaxWriteDays(_configuration);
+            foreach (var inizio in def.Slots.Where(s => !string.IsNullOrEmpty(s.PeriodEndSlot)))
+            {
+                if (!slots.TryGetValue(inizio.Name, out var dal) || !slots.TryGetValue(inizio.PeriodEndSlot!, out var al))
+                    continue;
+                if (DateTime.TryParseExact(dal, SlotNormalizers.DateFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var d1)
+                    && DateTime.TryParseExact(al, SlotNormalizers.DateFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var d2)
+                    && (d2 - d1).TotalDays + 1 > massimo)
+                    return InfrastructureMessages.Get("McpWritePeriodTooLong", massimo);
+            }
+            return null;
+        }
+
+        // ---------------------------------------------------------------------------
+        // Impersonificazione tramite strumenti (fase 6)
+        // ---------------------------------------------------------------------------
+
+        private bool Impersonando() => _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimImpersonating) != null;
+
+        private static string Argomento(IReadOnlyDictionary<string, string?> arguments, string nome) =>
+            (arguments.FirstOrDefault(a => a.Key.Equals(nome, StringComparison.OrdinalIgnoreCase)).Value ?? string.Empty).Trim();
+
+        private static string Descrivi(nvxapp.server.service.ClientServer_Service.Infrastructure.Account.ImpersonationTarget u) =>
+            string.IsNullOrEmpty(u.Company) ? $"{u.UserName} ({u.Role})" : $"{u.UserName} ({u.Role}, {u.Company})";
+
+        private async Task<McpToolCallResult> ChiPossoImpersonareAsync(IReadOnlyDictionary<string, string?> arguments)
+        {
+            var utenti = await _accountService.UtentiImpersonabili(Argomento(arguments, "search"), MaxImpersonabili);
+            if (utenti.Count == 0)
+                return new McpToolCallResult { Success = true, Text = InfrastructureMessages.Get("McpWhoCanNone") };
+
+            var testo = new StringBuilder(InfrastructureMessages.Get("McpWhoCanList", utenti.Count));
+            foreach (var u in utenti)
+                testo.AppendLine().Append("- ").Append(Descrivi(u));
+            return new McpToolCallResult
+            {
+                Success = true,
+                Text = testo.ToString(),
+                DataJson = JsonSerializer.Serialize(utenti.Select(u => new { userName = u.UserName, role = u.Role, company = u.Company }))
+            };
+        }
+
+        private async Task<McpToolCallResult> LavoraComeAsync(IReadOnlyDictionary<string, string?> arguments)
+        {
+            string richiesto = Argomento(arguments, "user");
+            if (richiesto.Length == 0)
+                return Errore(InfrastructureMessages.Get("McpParamMissing", "user"));
+
+            var token = TokenCorrente();
+            var entity = token.Id == null ? null : await _mcpAccessTokenRepository.FindAll(x => x.Id == token.Id).FirstOrDefaultAsync();
+            if (entity == null)
+                return Errore(InfrastructureMessages.Get("McpNotAllowed"));
+
+            // stessa regola dell'applicazione: se stessi o chi sta sotto l'utente del login
+            var destinazione = await _accountService.IdentitaPerLavorareCome(richiesto);
+            if (destinazione == null)
+                return Errore(InfrastructureMessages.Get("McpWorkAsNotAllowed", richiesto));
+            if (destinazione.Id == entity.IdAspNetUsers)
+                return new McpToolCallResult { Success = true, Text = InfrastructureMessages.Get("McpWorkAsAlready", Descrivi(destinazione)) };
+
+            // identita' di partenza: quella del token prima della prima impersonificazione
+            var partenza = McpImpersonation.Read(entity.HomeIdentity) ?? new McpHomeIdentity
+            {
+                IdAspNetUsers = entity.IdAspNetUsers,
+                IdDealer = entity.IdDealer,
+                IdFinancialAdvisor = entity.IdFinancialAdvisor,
+                IdCompany = entity.IdCompany,
+                Tenant = entity.Tenant
+            };
+            if (destinazione.Id == partenza.IdAspNetUsers)
+                return await TornaIndietroAsync();
+
+            var scadenza = DateTime.Now.AddHours(McpOptions.ImpersonationHours(_configuration));
+            await _mcpAccessTokenRepository.ImpostaIdentitaAsync(entity.Id, new McpHomeIdentity
+            {
+                IdAspNetUsers = destinazione.Id,
+                IdDealer = destinazione.IdDealer,
+                IdFinancialAdvisor = destinazione.IdFinancialAdvisor,
+                IdCompany = destinazione.IdCompany,
+                Tenant = null
+            }, McpImpersonation.Write(partenza), scadenza);
+
+            Log.Information("[MCP] Token {Token}: l'utente {Login} lavora come {Target} fino a {Scadenza}", entity.Id, entity.IdAspNetUsersLogin, destinazione.Id, scadenza);
+            return new McpToolCallResult
+            {
+                Success = true,
+                Text = InfrastructureMessages.Get("McpWorkAsDone", Descrivi(destinazione), scadenza.ToString("dd/MM/yyyy HH:mm"))
+                       + " " + InfrastructureMessages.Get("McpToolsChanged")
+            };
+        }
+
+        private async Task<McpToolCallResult> TornaIndietroAsync()
+        {
+            var token = TokenCorrente();
+            var entity = token.Id == null ? null : await _mcpAccessTokenRepository.FindAll(x => x.Id == token.Id).FirstOrDefaultAsync();
+            var partenza = McpImpersonation.Read(entity?.HomeIdentity);
+            if (entity == null || partenza == null)
+                return new McpToolCallResult { Success = true, Text = InfrastructureMessages.Get("McpStopNone") };
+
+            await _mcpAccessTokenRepository.ImpostaIdentitaAsync(entity.Id, partenza, null, null);
+            string nome = await _aspNetUsersRepository.FindAll(x => x.Id == partenza.IdAspNetUsers).Select(x => x.UserName).FirstOrDefaultAsync() ?? string.Empty;
+            return new McpToolCallResult
+            {
+                Success = true,
+                Text = InfrastructureMessages.Get("McpStopDone", nome) + " " + InfrastructureMessages.Get("McpToolsChanged")
+            };
+        }
 
         // limiti di frequenza del token (MCP-21), contati sul registro delle chiamate: null = chiamata ammessa.
         // Anche le chiamate respinte finiscono nel registro e contano: un client che insiste resta fermo.

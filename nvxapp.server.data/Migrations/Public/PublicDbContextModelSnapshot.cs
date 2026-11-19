@@ -1347,6 +1347,10 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<string>("HomeIdentity")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<string>("IdAspNetUsers")
                         .IsRequired()
                         .HasMaxLength(450)
@@ -1365,6 +1369,9 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.Property<int?>("IdFinancialAdvisor")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ImpersonationExpiresAt")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Language")
                         .IsRequired()
