@@ -2202,4 +2202,12 @@
   <data name="ChatEmployeeListNoContract" xml:space="preserve">
     <value>nessun rapporto di lavoro attivo</value>
   </data>
+  <data name="ChatMcpMaxDays" xml:space="preserve">
+    <value>Tramite assistente AI un comando può riguardare al massimo {0} giorni per chiamata: il periodo dal {1} al {2} è di {3} giorni. Nessuna modifica è stata eseguita: ripeti il comando su un periodo più breve.</value>
+    <comment>{0} = numero massimo di giorni, {1} = data iniziale, {2} = data finale, {3} = giorni del periodo richiesto</comment>
+  </data>
+  <data name="ChatMcpMaxRequests" xml:space="preserve">
+    <value>Tramite assistente AI si possono approvare o rifiutare al massimo {0} richieste per chiamata: quelle trovate sono {1}. Nessuna richiesta è stata modificata: restringi il comando a un giorno o a un tipo di richiesta.</value>
+    <comment>{0} = numero massimo di richieste, {1} = richieste trovate</comment>
+  </data>
 </root>
