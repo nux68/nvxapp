@@ -29,6 +29,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
     {
         public string? Id { get; set; }
         public string? UserName { get; set; }
+
+        // Cognome e Nome dell'anagrafica dipendente (Dip_Anagrafica, schema Common) per gli utenti di tipo User:
+        // la toolbar li mostra al posto dello username durante l'impersonificazione. null se non disponibili.
+        public string? Cognome { get; set; }
+        public string? Nome { get; set; }
+
         public List<AspNetRolesModel> Roles { get; set; }
 
         // applicativi attivi per l'azienda dell'utente (vuoto per utenti senza azienda)
