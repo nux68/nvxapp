@@ -1554,4 +1554,104 @@ In allegato il rendiconto.</value>
     <value>Risultato parziale: ogni elenco dei dati è limitato a {0} righe. Restringi la richiesta (periodo, persona, filtro) per vedere il resto.</value>
     <comment>accesso AI (MCP)</comment>
   </data>
+  <data name="McpToolTwoStep" xml:space="preserve">
+    <value>Operazione in due passi: la prima chiamata non esegue, restituisce il riepilogo e un codice; per eseguire richiama lo strumento con gli stessi parametri e confirmationCode, solo dopo che l'utente ha approvato il riepilogo.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpParamConfirmationCode" xml:space="preserve">
+    <value>Codice di conferma ricevuto dalla prima chiamata. Ometti alla prima chiamata.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmRequired" xml:space="preserve">
+    <value>OPERAZIONE NON ANCORA ESEGUITA. Riepilogo: {0}. Mostra il riepilogo all'utente e chiedi conferma. Solo se l'utente conferma, richiama questo strumento con gli stessi parametri e confirmationCode = {1} (valido {2} minuti, una sola volta).</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmInvalid" xml:space="preserve">
+    <value>Codice di conferma non valido per questa operazione: i parametri devono essere identici a quelli della prima chiamata. Richiama lo strumento senza confirmationCode per avere un nuovo riepilogo.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmExpired" xml:space="preserve">
+    <value>Codice di conferma scaduto. Richiama lo strumento senza confirmationCode per avere un nuovo riepilogo.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmUsed" xml:space="preserve">
+    <value>Codice di conferma già usato: l'operazione è già stata eseguita. Per ripeterla richiama lo strumento senza confirmationCode.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWritePeriodTooLong" xml:space="preserve">
+    <value>Periodo troppo lungo: una modifica può riguardare al massimo {0} giorni per chiamata. Dividi l'operazione in più periodi.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanTitle" xml:space="preserve">
+    <value>Chi posso impersonare</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanDescription" xml:space="preserve">
+    <value>Elenca gli utenti di nvxapp come cui l'utente collegato può lavorare (solo chi sta sotto di lui: utenti della sua azienda, del suo studio o del suo centro). Usalo prima di nvx_work_as.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanParamSearch" xml:space="preserve">
+    <value>Testo da cercare nel nome utente. Obbligatorio (almeno 2 caratteri) per gli amministratori dell'installazione.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanNone" xml:space="preserve">
+    <value>Nessun utente trovato come cui puoi lavorare.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanList" xml:space="preserve">
+    <value>Puoi lavorare come ({0}):</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsSearchRequired" xml:space="preserve">
+    <value>Indica almeno 2 caratteri del nome utente da cercare.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsTitle" xml:space="preserve">
+    <value>Lavora come</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsDescription" xml:space="preserve">
+    <value>Da questo momento gli strumenti lavorano come l'utente indicato (i suoi dati, ruoli e azienda), finché non chiami nvx_stop_working_as o scade il tempo. Chiedi sempre conferma all'utente prima di chiamarlo. Dopo, richiedi di nuovo l'elenco degli strumenti.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsParamUser" xml:space="preserve">
+    <value>Nome utente (come restituito da nvx_who_can_i_work_as) dell'utente come cui lavorare.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsNotAllowed" xml:space="preserve">
+    <value>Non puoi lavorare come «{0}»: l'utente non esiste o non è tra quelli che puoi impersonare. Usa nvx_who_can_i_work_as per l'elenco.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsAlready" xml:space="preserve">
+    <value>Stai già lavorando come {0}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsDone" xml:space="preserve">
+    <value>Ora lavori come {0}, fino al {1}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopTitle" xml:space="preserve">
+    <value>Torna indietro</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopDescription" xml:space="preserve">
+    <value>Smette di lavorare come un altro utente e torna all'utente di partenza del collegamento. Dopo, richiedi di nuovo l'elenco degli strumenti.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopNone" xml:space="preserve">
+    <value>Non stai lavorando come un altro utente.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopDone" xml:space="preserve">
+    <value>Sei tornato a lavorare come {0}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpToolsChanged" xml:space="preserve">
+    <value>L'elenco degli strumenti è cambiato: richiedilo di nuovo.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkingAsReminder" xml:space="preserve">
+    <value>[Stai lavorando come {0} — azienda: {1}]</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
 </root>
