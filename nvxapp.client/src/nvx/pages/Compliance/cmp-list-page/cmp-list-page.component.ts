@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavController, ToastController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { GenericResult } from '../../../ClientServer-Service/ModelsBase/generic-result';
 import { CmpService } from '../../../ClientServer-Service/Compliance/cmp.service';
@@ -10,6 +11,7 @@ import * as M from '../../../ClientServer-Service/Compliance/Models/cmp-model';
 import { CMP_AREE, CMP_SEZIONI, CmpArea, CmpSezione, cmpOrdine, cmpValore } from '../../../Utility/Compliance/cmp-sezioni';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -23,6 +25,8 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
  Nuovo elemento con il + del fab (sezione corrente), modifica e cancellazione dalle azioni di riga; la pagina di modifica e'
  unica (cmp-edit-page) e prende i campi dalla descrizione della sezione (cmp-sezioni.ts). I permessi veri li controlla il server.
  Lo stato di navigazione { sezione, id } (scadenze, notifiche, prese visione) apre la sezione indicata.
+ Dati modificati da un comando esterno (assistente AI via MCP: corso registrato, DPI consegnato): l'avviso DataChangedNotifier
+ di Compliance rilegge la sezione corrente senza svuotare l'elenco (ANALISI_INFRASTRUCTURE_MCP.md §12quater, MCP-43).
 */
 @Component({
   selector: 'app-cmp-list-page',
@@ -48,6 +52,7 @@ export class CmpListPageComponent {
   public aziende: M.CmpStudioAziendaModel[] = [];
   public idCompany: number | null = null;
   private permessi: M.CmpPermessiAreeModel | null = null;
+  private dataChangedSub: Subscription | null = null;
 
   // in evidenza: scadute, corsi obbligatori mancanti o scaduti, violazioni non notificate oltre le 72 ore
   public readonly highlight = (x: M.CmpRiga) => !!x.scaduta
@@ -66,9 +71,14 @@ export class CmpListPageComponent {
               private collectionDialogService: CollectionDialogService,
               private languageService: LanguageService,
               private toastController: ToastController,
-              private transloco: TranslocoService) { }
+              private transloco: TranslocoService,
+              private dataChangedNotifierService: DataChangedNotifierService) { }
 
   ionViewWillEnter() {
+    // dati di Compliance modificati da un comando esterno (MCP): si rilegge la sezione corrente
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.Compliance).subscribe(() => this.aggiorna());
+
     this.area = (this.route.snapshot.data['area'] ?? '81') as CmpArea;
     this.title = this.transloco.translate('cmp.pages.list.title' + this.area);
     const state = history.state ?? {};
@@ -107,6 +117,8 @@ export class CmpListPageComponent {
   }
 
   ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
     this.fabMenuService.fabMenuItem = [];
   }
 
@@ -171,6 +183,23 @@ export class CmpListPageComponent {
     this.carica(s).subscribe(res => {
       if (this.sezione === s)
         this.items = res.success && res.data ? res.data.items : [];
+    });
+  }
+
+  /**
+   * Rilettura dei dati della sezione corrente dopo un avviso DataChangedNotifier: stessa lettura di mostra(), ma l'elenco
+   * resta a video fino alla risposta (niente attesa, restano sezione, azienda, ricerca e posizione). Se la lettura non
+   * riesce o nel frattempo e' cambiata la sezione o l'azienda, non si tocca nulla.
+   */
+  private aggiorna() {
+    const s = this.sezione;
+    const idCompany = this.idCompany;
+    // elenco non ancora caricato (lo sta gia' leggendo mostra) o studio senza azienda scelta
+    if (!s || this.items === null || (this.area === 'studio' && !idCompany))
+      return;
+    this.carica(s).subscribe(res => {
+      if (this.sezione === s && this.idCompany === idCompany && res.success && res.data)
+        this.items = res.data.items;
     });
   }
 
