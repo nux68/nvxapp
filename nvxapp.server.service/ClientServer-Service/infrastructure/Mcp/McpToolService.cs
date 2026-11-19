@@ -15,6 +15,7 @@ using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Notification;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -66,6 +67,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
      della chat (CommandSlotProcessor); gli errori tornano come testo, cosi' l'AI corregge e riprova. Ogni chiamata e'
      registrata (McpCallLog).
 
+     Avviso ai browser (MCP-26): dopo un comando di modifica riuscito parte l'evento push "DataChangedNotifier" verso gli
+     utenti dell'azienda, cosi' le pagine aperte si aggiornano come se la modifica fosse stata fatta dal web.
+
      Limiti (MCP-21): chiamate per token al minuto e al giorno (Mcp:MaxCallsPerMinute / MaxCallsPerDay), contate sul
      registro delle chiamate, quindi validi anche con piu' istanze del server; ogni elenco dei dati restituiti si ferma a
      Mcp:MaxRows righe, e il testo avvisa l'AI che il risultato e' parziale.
@@ -90,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         private readonly IMcpCompanySettingRepository _mcpCompanySettingRepository;
         private readonly IMcpAccessTokenRepository _mcpAccessTokenRepository;
         private readonly IMcpCallLogRepository _mcpCallLogRepository;
+        private readonly IDataChangeNotifier _dataChangeNotifier;
 
         public McpToolService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -104,7 +109,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                               ICompanyRepository companyRepository,
                               IMcpCompanySettingRepository mcpCompanySettingRepository,
                               IMcpAccessTokenRepository mcpAccessTokenRepository,
-                              IMcpCallLogRepository mcpCallLogRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                              IMcpCallLogRepository mcpCallLogRepository,
+                              IDataChangeNotifier dataChangeNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _handlers = handlers;
             _chatUserContext = chatUserContext;
@@ -113,6 +119,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             _mcpCompanySettingRepository = mcpCompanySettingRepository;
             _mcpAccessTokenRepository = mcpAccessTokenRepository;
             _mcpCallLogRepository = mcpCallLogRepository;
+            _dataChangeNotifier = dataChangeNotifier;
         }
 
         // ---------------------------------------------------------------------------
@@ -273,6 +280,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
                 return Errore(InfrastructureMessages.Get("McpParamMissing", string.Join(", ", mancanti)));
 
             var esito = await handler.ExecuteAsync(slots);
+
+            // comando di modifica riuscito: i browser aperti degli utenti dell'azienda vengono avvisati (push) e le pagine
+            // che mostrano quei dati si ricaricano (DataChangeNotifier, MCP-26). Le letture non avvisano nessuno.
+            if (esito.Success && def.EffectiveMcpAccess != McpAccessLevel.Read)
+                await _dataChangeNotifier.NotifyAsync(contesto.IdCompany, def.Application, def.Name, this.CurrentUserId, this.UserIdFirstConnection);
 
             var testo = new StringBuilder();
             if (!string.IsNullOrEmpty(validazione.InfoMessage))
