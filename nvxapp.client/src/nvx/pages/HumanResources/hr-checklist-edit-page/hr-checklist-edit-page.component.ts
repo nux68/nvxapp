@@ -2,10 +2,12 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AlertController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, Subscription, catchError, map, of } from 'rxjs';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { HrService, hrData } from '../../../ClientServer-Service/HumanResources/hr.service';
 import * as M from '../../../ClientServer-Service/HumanResources/Models/hr-model';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
@@ -30,6 +32,8 @@ export class HrChecklistEditPageComponent extends BasePageConfirmCancelComponent
   public dati: M.HrChecklistGetOutModel | null = null;
   public readonly data = hrData;
   private id = 0;
+  // voci completate da un comando eseguito fuori dalla pagina (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private dataChangedSub: Subscription | null = null;
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
@@ -37,8 +41,22 @@ export class HrChecklistEditPageComponent extends BasePageConfirmCancelComponent
               private service: HrService,
               private alertCtrl: AlertController,
               private collectionDialogService: CollectionDialogService,
+              private dataChangedNotifierService: DataChangedNotifierService,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
+  }
+
+  // all'avviso si rileggono solo testata e voci (ricarica): il form (note, annullata) non viene toccato,
+  // cosi' non si perde quello che l'utente sta scrivendo
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.HumanResources).subscribe(() => this.ricarica());
+  }
+
+  ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
   }
 
   get Title(): string { return this.transloco.translate('hr.pages.checklistEdit.title'); }
