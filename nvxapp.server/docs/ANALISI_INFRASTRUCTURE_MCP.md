@@ -876,7 +876,7 @@ marginalità commesse (oggi non previste dal comando). Ognuno richiede la genera
 - [x] MCP-47 Catena dei merge delle fasi 4 e 6 (19/11/2026)
 - [x] MCP-48 File di export all'assistente: dati strutturati più collegamento temporaneo firmato; report PDF delle presenze (`attendance_print_report`), sezione 12septies
 - [ ] MCP-49 Altri export con lo stesso meccanismo: cartellino PDF, turni, export paghe, quadratura, marginalità (sezione 12septies.5)
-- [ ] MCP-50b Catena dei merge di MCP-48
+- [x] MCP-50b Catena dei merge di MCP-48 (19/11/2026)
 
 ### Fase 5 – claude.ai (in sospeso, decisione dell'utente del 19/11/2026)
 
