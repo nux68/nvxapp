@@ -328,7 +328,44 @@
       "includedTitle": "Compreso in tutti i piani",
       "start": "Inizia gratis",
       "contactUs": "Contattaci",
-      "notAvailable": "I prezzi non sono disponibili in questo momento: contattaci per un preventivo."
+      "notAvailable": "I prezzi non sono disponibili in questo momento: contattaci per un preventivo.",
+      "aiIncluded": "Integrazione AI con Claude, ChatGPT e Gemini",
+      "aiNotIncluded": "Integrazione AI non inclusa"
+    },
+    "ai": {
+      "badge": "Completamente integrata con Claude, ChatGPT e Gemini",
+      "etichetta": "Intelligenza artificiale",
+      "titolo": "Lavora con il tuo assistente AI preferito",
+      "sottotitolo": "{{siteName}} è completamente integrata con Claude, ChatGPT e Gemini: colleghi l'assistente che usi già e lo fai lavorare sui dati della tua azienda, con le tue stesse autorizzazioni.",
+      "punti": {
+        "domande": {
+          "title": "Chiedi, in parole tue",
+          "text": "Fai domande in linguaggio naturale e ottieni risposte basate sui dati reali: presenze, scadenze, clienti, documenti, senza cercare tra menu e filtri."
+        },
+        "operazioni": {
+          "title": "Fai eseguire le operazioni",
+          "text": "Timbrature, richieste di ferie e permessi, attività e appuntamenti: l'assistente li prepara e li registra per te, chiedendo conferma prima di ogni modifica."
+        },
+        "report": {
+          "title": "Riepiloghi e report al volo",
+          "text": "Fatti preparare riassunti, confronti e report pronti da scaricare o da inoltrare ai colleghi."
+        },
+        "sicurezza": {
+          "title": "Sicuro e sotto controllo",
+          "text": "L'assistente vede solo quello che vedi tu. L'azienda decide se attivare l'integrazione e fino a che livello; ogni chiamata è registrata."
+        }
+      },
+      "esempiTitolo": "Qualche esempio di cosa puoi chiedere",
+      "esempi": [
+        "Chi è in ferie questa settimana?",
+        "Timbra la mia entrata adesso",
+        "Chiedi un permesso per venerdì pomeriggio",
+        "Quali documenti scadono entro fine mese?",
+        "Riassumi le attività aperte del cliente Rossi",
+        "Prepara il report presenze di ottobre in PDF"
+      ],
+      "piani": "L'integrazione con gli assistenti AI è compresa nei piani Pro.",
+      "vediPrezzi": "Vedi i piani"
     },
     "contactPage": {
       "email": "Email",

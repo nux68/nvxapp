@@ -43,6 +43,18 @@ export function voceShowcase(transloco: TranslocoService | undefined, icon: stri
   return voce;
 }
 
+/** Assistenti AI con cui l'applicativo si integra (home e pagina prezzi; loghi in assets/icon/ai). */
+export interface ShowcaseAssistenteAi {
+  nome: string;
+  logo: string;
+}
+
+export const ASSISTENTI_AI: ShowcaseAssistenteAi[] = [
+  { nome: 'Claude', logo: 'assets/icon/ai/claude.svg' },
+  { nome: 'ChatGPT', logo: 'assets/icon/ai/chatgpt.svg' },
+  { nome: 'Gemini', logo: 'assets/icon/ai/gemini.svg' }
+];
+
 /** Gruppo di voci con intestazione propria (pagina funzionalita'). */
 export interface ShowcaseGruppo {
   titolo: string;

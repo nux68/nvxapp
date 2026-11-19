@@ -89,6 +89,38 @@
   background: var(--ion-color-primary);
 }
 
+// integrazione AI nelle schede: evidenziata nel Pro, "non inclusa" negli altri piani
+.nvx-sc-plan ul li.nvx-scp-ai {
+  align-items: flex-start;
+  font-weight: 600;
+
+  ion-icon {
+    flex: none;
+    margin-top: 3px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.nvx-scp-ai-loghi {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 4px;
+  vertical-align: -2px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.nvx-sc-plan ul li.nvx-scp-no {
+  color: var(--nvx-text-muted);
+
+  ion-icon {
+    color: var(--nvx-text-muted);
+  }
+}
+
 .nvx-scp-inclusi {
   margin-top: 36px;
 
