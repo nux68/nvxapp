@@ -1479,4 +1479,104 @@ The statement is attached.</value>
     <value>Partial result: every data list is limited to {0} rows. Narrow the request (period, person, filter) to see the rest.</value>
     <comment>accesso AI (MCP)</comment>
   </data>
+  <data name="McpToolTwoStep" xml:space="preserve">
+    <value>Two-step operation: the first call does not execute, it returns a summary and a code; to execute, call the tool again with the same arguments and confirmationCode, only after the user has approved the summary.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpParamConfirmationCode" xml:space="preserve">
+    <value>Confirmation code returned by the first call. Omit it on the first call.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmRequired" xml:space="preserve">
+    <value>OPERATION NOT EXECUTED YET. Summary: {0}. Show the summary to the user and ask for confirmation. Only if the user confirms, call this tool again with the same arguments and confirmationCode = {1} (valid for {2} minutes, once).</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmInvalid" xml:space="preserve">
+    <value>Confirmation code not valid for this operation: the arguments must be identical to those of the first call. Call the tool without confirmationCode to get a new summary.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmExpired" xml:space="preserve">
+    <value>Confirmation code expired. Call the tool without confirmationCode to get a new summary.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpConfirmUsed" xml:space="preserve">
+    <value>Confirmation code already used: the operation has already been executed. To repeat it, call the tool without confirmationCode.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWritePeriodTooLong" xml:space="preserve">
+    <value>Period too long: a change can cover at most {0} days per call. Split the operation into several periods.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanTitle" xml:space="preserve">
+    <value>Who can I work as</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanDescription" xml:space="preserve">
+    <value>Lists the nvxapp users the connected user can work as (only those below them: users of their company, firm or centre). Use it before nvx_work_as.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanParamSearch" xml:space="preserve">
+    <value>Text to search in the user name. Required (at least 2 characters) for installation administrators.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanNone" xml:space="preserve">
+    <value>No user found that you can work as.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWhoCanList" xml:space="preserve">
+    <value>You can work as ({0}):</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsSearchRequired" xml:space="preserve">
+    <value>Give at least 2 characters of the user name to search.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsTitle" xml:space="preserve">
+    <value>Work as</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsDescription" xml:space="preserve">
+    <value>From now on the tools act as the given user (their data, roles and company), until you call nvx_stop_working_as or the time expires. Always ask the user for confirmation before calling it. Afterwards, request the tool list again.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsParamUser" xml:space="preserve">
+    <value>User name (as returned by nvx_who_can_i_work_as) of the user to work as.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsNotAllowed" xml:space="preserve">
+    <value>You cannot work as "{0}": the user does not exist or is not among those you can impersonate. Use nvx_who_can_i_work_as for the list.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsAlready" xml:space="preserve">
+    <value>You are already working as {0}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkAsDone" xml:space="preserve">
+    <value>You are now working as {0}, until {1}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopTitle" xml:space="preserve">
+    <value>Stop working as</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopDescription" xml:space="preserve">
+    <value>Stops working as another user and returns to the connection's original user. Afterwards, request the tool list again.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopNone" xml:space="preserve">
+    <value>You are not working as another user.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpStopDone" xml:space="preserve">
+    <value>You are back to working as {0}.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpToolsChanged" xml:space="preserve">
+    <value>The tool list has changed: request it again.</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
+  <data name="McpWorkingAsReminder" xml:space="preserve">
+    <value>[You are working as {0} — company: {1}]</value>
+    <comment>accesso AI (MCP), fasi 4 e 6</comment>
+  </data>
 </root>

@@ -27,6 +27,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         public static bool PuoAccedere(IChatUserContext ctx, Dip_AnagraficaModel dipendente) =>
             ctx.IsInRole(RuoloHR) || dipendente.IdAspNetUsers == ctx.UserId;
 
+        // ---------------------------------------------------------------------------
+        // Limiti di quantità per chiamata quando il comando è eseguito da un assistente AI esterno
+        // (IChatUserContext.ViaMcp; ANALISI_INFRASTRUCTURE_MCP.md, sezione 8.2, MCP-41). La chat interna non ha limiti.
+        // Ogni comando di modifica agisce su UN dipendente (slot employeeName, un solo nome); in più:
+        // ---------------------------------------------------------------------------
+
+        // giorni al massimo per i comandi su un periodo (RegisterJustificationPeriod, CalcolaGiorno)
+        public const int McpMaxGiorni = 31;
+
+        // richieste al massimo decise da una chiamata di ApproveRequests
+        public const int McpMaxRichieste = 20;
+
+        // Messaggio di rifiuto se il periodo supera McpMaxGiorni (estremi compresi), altrimenti null.
+        // Va chiamato prima di qualunque scrittura: oltre il limite il comando non esegue nulla.
+        public static string? McpLimitePeriodo(IChatUserContext ctx, DateTime dal, DateTime al)
+        {
+            if (!ctx.ViaMcp) return null;
+            int giorni = (al.Date - dal.Date).Days + 1;
+            return giorni > McpMaxGiorni
+                ? AttendanceTrackingMessages.Get("ChatMcpMaxDays", McpMaxGiorni, Data(dal), Data(al), giorni)
+                : null;
+        }
+
+        // Messaggio di rifiuto se le richieste da decidere superano McpMaxRichieste, altrimenti null.
+        public static string? McpLimiteRichieste(IChatUserContext ctx, int richieste) =>
+            ctx.ViaMcp && richieste > McpMaxRichieste
+                ? AttendanceTrackingMessages.Get("ChatMcpMaxRequests", McpMaxRichieste, richieste)
+                : null;
+
         public static string Nome(Dip_AnagraficaModel d) => $"{d.Cognome} {d.Nome}".Trim();
 
         public static string Data(DateTime d) => d.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);

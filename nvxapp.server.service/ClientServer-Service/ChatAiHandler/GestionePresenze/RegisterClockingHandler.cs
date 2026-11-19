@@ -210,7 +210,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 }
             };
 
-            var result = await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
+            // isSubProcess = false come UpdateClocking: e' un'azione dell'utente, non del motore di calcolo. Con true il servizio
+            // saltava il controllo dei giorni fuori dal rapporto di lavoro e dei mesi approvati (VerificaGiorniNelRapporto)
+            var result = await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, false);
 
             if (!result.Success)
                 return CommandResult.Fail(

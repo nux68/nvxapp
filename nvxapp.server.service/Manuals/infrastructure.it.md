@@ -45,6 +45,8 @@ Da qui colleghi un **assistente AI** (Claude Code o Claude Desktop) a nvxapp: l'
 > Se stai impersonando un altro utente, il token che crei lavora come quell'utente.
 > Finché l'amministratore non attiva l'accesso AI per l'azienda, l'assistente si collega ma non vede nessuno strumento.
 > Se l'azienda permette anche le modifiche personali, l'assistente può timbrare, chiedere ferie o una timbratura dimenticata, prenotare o annullare una tua prenotazione e confermare la lettura di un tuo documento: prima di farlo ti chiede sempre il permesso.
+> Se l'azienda permette tutte le modifiche, l'assistente può anche registrare o correggere dati di altri dipendenti e approvare richieste: ogni operazione di questo tipo viene prima riepilogata e parte solo dopo la tua conferma.
+> Se hai un ruolo di amministratore puoi chiedere all'assistente di **lavorare come** un utente che sta sotto di te ("lavora come Rossi"): da quel momento vede e fa ciò che può quell'utente, finché non gli dici di tornare indietro o passano alcune ore.
 > Ogni collegamento ha un limite di chiamate al minuto e al giorno; gli elenchi molto lunghi arrivano all'assistente in parte, e lui ti propone di restringere la richiesta.
 
 @@ /companypoweradmin
@@ -72,7 +74,7 @@ Qui il CompanyPowerAdmin nasconde ai CompanyAdmin e agli User le voci di menu ch
 
 @@ /aiaccesssetting
 Qui il CompanyPowerAdmin decide se gli utenti dell'azienda possono collegare un assistente AI a nvxapp. L'accesso è **spento** finché non lo attivi.
-1. Attiva **Accesso AI attivo** e scegli le **operazioni permesse** (sola lettura, oppure anche le modifiche che l'utente fa per sé).
+1. Attiva **Accesso AI attivo** e scegli le **operazioni permesse**: sola lettura, anche le modifiche che l'utente fa per sé, oppure tutte le modifiche (comprese quelle sui dati degli altri dipendenti e le approvazioni, sempre con riepilogo e conferma).
 2. Conferma: da quel momento gli assistenti collegati dagli utenti vedono gli strumenti del loro ruolo.
 > Con l'accesso attivo, i dati che l'assistente legge vengono inviati al fornitore dell'AI scelto dall'utente: valuta se indicarlo nell'informativa ai dipendenti e nel registro dei trattamenti.
 > Puoi spegnere l'accesso in qualsiasi momento: vale subito per tutti i collegamenti, anche quelli creati da chi impersona un utente dell'azienda.
