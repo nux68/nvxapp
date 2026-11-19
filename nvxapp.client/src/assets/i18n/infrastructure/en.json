@@ -328,7 +328,44 @@
       "includedTitle": "Included in every plan",
       "start": "Start for free",
       "contactUs": "Contact us",
-      "notAvailable": "Prices are not available right now: contact us for a quote."
+      "notAvailable": "Prices are not available right now: contact us for a quote.",
+      "aiIncluded": "AI integration with Claude, ChatGPT and Gemini",
+      "aiNotIncluded": "AI integration not included"
+    },
+    "ai": {
+      "badge": "Fully integrated with Claude, ChatGPT and Gemini",
+      "etichetta": "Artificial intelligence",
+      "titolo": "Work with your favourite AI assistant",
+      "sottotitolo": "{{siteName}} is fully integrated with Claude, ChatGPT and Gemini: connect the assistant you already use and let it work on your company's data, with your own permissions.",
+      "punti": {
+        "domande": {
+          "title": "Ask in your own words",
+          "text": "Ask questions in natural language and get answers based on real data: attendance, deadlines, customers, documents, without digging through menus and filters."
+        },
+        "operazioni": {
+          "title": "Let it do the work",
+          "text": "Clock-ins, holiday and leave requests, tasks and appointments: the assistant prepares and records them for you, asking for confirmation before every change."
+        },
+        "report": {
+          "title": "Instant summaries and reports",
+          "text": "Get summaries, comparisons and reports ready to download or forward to your colleagues."
+        },
+        "sicurezza": {
+          "title": "Secure and under control",
+          "text": "The assistant only sees what you see. Your company decides whether to enable the integration and up to which level; every call is logged."
+        }
+      },
+      "esempiTitolo": "A few examples of what you can ask",
+      "esempi": [
+        "Who is on holiday this week?",
+        "Clock me in now",
+        "Request leave for Friday afternoon",
+        "Which documents expire by the end of the month?",
+        "Summarise the open tasks for customer Rossi",
+        "Prepare the October attendance report as a PDF"
+      ],
+      "piani": "Integration with AI assistants is included in the Pro plans.",
+      "vediPrezzi": "See the plans"
     },
     "contactPage": {
       "email": "Email",
