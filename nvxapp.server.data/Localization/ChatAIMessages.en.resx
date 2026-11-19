@@ -202,4 +202,171 @@
   <data name="ChatCategorySettings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="ChatCategoryServices" xml:space="preserve">
+    <value>Services</value>
+  </data>
+  <data name="ChatServiceError" xml:space="preserve">
+    <value>I can't read the data: {0}</value>
+    <comment>{0} = service error</comment>
+  </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>… and {0} more</value>
+  </data>
+  <data name="ChatNumberInvalid" xml:space="preserve">
+    <value>Give a number from {0} to {1}.</value>
+  </data>
+  <data name="ChatApplication_0" xml:space="preserve">
+    <value>Common functions</value>
+  </data>
+  <data name="ChatApplication_1" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="ChatApplication_2" xml:space="preserve">
+    <value>Attendance</value>
+  </data>
+  <data name="ChatApplication_3" xml:space="preserve">
+    <value>CRM</value>
+  </data>
+  <data name="ChatApplication_4" xml:space="preserve">
+    <value>Document management</value>
+  </data>
+  <data name="ChatApplication_5" xml:space="preserve">
+    <value>Human resources</value>
+  </data>
+  <data name="ChatApplication_6" xml:space="preserve">
+    <value>Compliance</value>
+  </data>
+  <data name="ChatApplication_7" xml:space="preserve">
+    <value>Company assets</value>
+  </data>
+  <data name="ChatTicketsDisplayName" xml:space="preserve">
+    <value>Support tickets</value>
+  </data>
+  <data name="ChatTicketsDescription" xml:space="preserve">
+    <value>Lists the support tickets not yet closed: those opened by the user or, for support staff, those assigned to them or to their level; for each one state, date, subject and last reply</value>
+  </data>
+  <data name="ChatTicketsScopeQuestion" xml:space="preserve">
+    <value>Do you want the tickets you opened or the ones assigned to you?</value>
+  </data>
+  <data name="ChatTicketsScopeLabel" xml:space="preserve">
+    <value>Tickets</value>
+  </data>
+  <data name="ChatTicketsNoneMine" xml:space="preserve">
+    <value>You have no open support tickets.</value>
+  </data>
+  <data name="ChatTicketsNoneHandled" xml:space="preserve">
+    <value>There are no tickets assigned to you.</value>
+  </data>
+  <data name="ChatTicketsTitleMine" xml:space="preserve">
+    <value>Tickets you opened, not yet closed: {0}</value>
+  </data>
+  <data name="ChatTicketsTitleHandled" xml:space="preserve">
+    <value>Tickets assigned: {0}</value>
+  </data>
+  <data name="ChatTicketOpenedOn" xml:space="preserve">
+    <value>opened on {0}</value>
+  </data>
+  <data name="ChatTicketLastReplyOn" xml:space="preserve">
+    <value>last reply on {0}</value>
+  </data>
+  <data name="ChatTicketState_0" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="ChatTicketState_1" xml:space="preserve">
+    <value>Assigned</value>
+  </data>
+  <data name="ChatTicketState_2" xml:space="preserve">
+    <value>Waiting for information</value>
+  </data>
+  <data name="ChatTicketState_3" xml:space="preserve">
+    <value>Resolved</value>
+  </data>
+  <data name="ChatTicketState_4" xml:space="preserve">
+    <value>Closed</value>
+  </data>
+  <data name="ChatNotificationsDisplayName" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ChatNotificationsDescription" xml:space="preserve">
+    <value>Lists the user's latest notifications (by default only the unread ones) with date, text and application; it does not mark them as read</value>
+  </data>
+  <data name="ChatNotificationsFilterQuestion" xml:space="preserve">
+    <value>Do you want only the unread notifications or the read ones too?</value>
+  </data>
+  <data name="ChatNotificationsFilterLabel" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ChatNotificationsCountQuestion" xml:space="preserve">
+    <value>How many notifications do you want to see?</value>
+  </data>
+  <data name="ChatNotificationsCountLabel" xml:space="preserve">
+    <value>How many</value>
+  </data>
+  <data name="ChatNotificationsNoneUnread" xml:space="preserve">
+    <value>You have no unread notifications.</value>
+  </data>
+  <data name="ChatNotificationsNone" xml:space="preserve">
+    <value>You have no notifications.</value>
+  </data>
+  <data name="ChatNotificationsTitleUnread" xml:space="preserve">
+    <value>Latest {0} unread notifications (unread in total: {1}):</value>
+  </data>
+  <data name="ChatNotificationsTitle" xml:space="preserve">
+    <value>Latest {0} notifications (unread: {1}):</value>
+  </data>
+  <data name="ChatDeadlinesDisplayName" xml:space="preserve">
+    <value>Deadlines</value>
+  </data>
+  <data name="ChatDeadlinesDescription" xml:space="preserve">
+    <value>Lists the open deadlines of the common deadline schedule (of all active applications) within a number of days from today, including overdue ones, with application, subject and date; company administrators see all deadlines, other users the ones they are responsible for</value>
+  </data>
+  <data name="ChatDeadlinesDaysQuestion" xml:space="preserve">
+    <value>Within how many days?</value>
+  </data>
+  <data name="ChatDeadlinesDaysLabel" xml:space="preserve">
+    <value>Days</value>
+  </data>
+  <data name="ChatDeadlinesScopeQuestion" xml:space="preserve">
+    <value>Do you want all deadlines or only the ones you are responsible for?</value>
+  </data>
+  <data name="ChatDeadlinesScopeLabel" xml:space="preserve">
+    <value>Deadlines</value>
+  </data>
+  <data name="ChatDeadlinesNone" xml:space="preserve">
+    <value>No open deadlines within {0} days.</value>
+  </data>
+  <data name="ChatDeadlinesTitle" xml:space="preserve">
+    <value>Open deadlines within {1} days: {0} (overdue: {2})</value>
+    <comment>{0} = count, {1} = days, {2} = overdue</comment>
+  </data>
+  <data name="ChatDeadlineOverdue" xml:space="preserve">
+    <value>overdue</value>
+  </data>
+  <data name="ChatRequestsDisplayName" xml:space="preserve">
+    <value>Requests to approve</value>
+  </data>
+  <data name="ChatRequestsDescription" xml:space="preserve">
+    <value>Lists the requests to approve of all active applications (like the common requests page): for a company administrator the ones they can approve now, for a user their own still pending; with requester, type, period, detail and state</value>
+  </data>
+  <data name="ChatRequestsScopeQuestion" xml:space="preserve">
+    <value>Do you want the requests to approve or your pending requests?</value>
+  </data>
+  <data name="ChatRequestsScopeLabel" xml:space="preserve">
+    <value>Requests</value>
+  </data>
+  <data name="ChatRequestsNotAdmin" xml:space="preserve">
+    <value>Only company administrators see the requests to approve; you can ask for your pending requests.</value>
+  </data>
+  <data name="ChatRequestsNoneToApprove" xml:space="preserve">
+    <value>There are no requests to approve.</value>
+  </data>
+  <data name="ChatRequestsNoneMine" xml:space="preserve">
+    <value>You have no pending requests.</value>
+  </data>
+  <data name="ChatRequestsTitleToApprove" xml:space="preserve">
+    <value>Requests to approve: {0}</value>
+  </data>
+  <data name="ChatRequestsTitleMine" xml:space="preserve">
+    <value>Your pending requests: {0}</value>
+  </data>
 </root>

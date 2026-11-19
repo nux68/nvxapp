@@ -157,6 +157,60 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             }, isSubProcess);
         }
 
+        /*
+         Ultima risposta (l'ultimo passaggio con un testo, esclusa l'apertura) di piu' ticket in una volta, per gli elenchi
+         letti dall'assistente AI (strumento MCP dei ticket). Sola lettura; solo i ticket visibili all'utente, con le stesse
+         regole del dettaglio (VisibleTicket); al massimo TicketLastReplyMax ticket per chiamata.
+        */
+        public const int TicketLastReplyMax = 50;
+
+        public virtual async Task<GenericResult<TicketLastReplyOutModel>> TicketLastReply(GenericRequest<TicketLastReplyInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new TicketLastReplyOutModel();
+                var user = await CurrentTicketUser();
+
+                var ids = (model.Data?.Id ?? new List<int>()).Distinct().Take(TicketLastReplyMax).ToList();
+                if (ids.Count == 0)
+                    return retVal;
+
+                string me = user.UserId;
+                var inCarico = QueryInCarico(user).Select(t => t.Id);
+                var altri = QueryAltri(user).Select(t => t.Id);
+                var visibili = _ticketRepository.FindAll(t => ids.Contains(t.Id)
+                                                              && (t.IdAspNetUsersOpener == me || t.CurrentIdAspNetUsers == me
+                                                                  || inCarico.Contains(t.Id) || altri.Contains(t.Id)))
+                                                .Select(t => t.Id)
+                                                .ToList();
+                if (visibili.Count == 0)
+                    return retVal;
+
+                var ultime = _ticketCronologyRepository.FindAll(c => visibili.Contains(c.IdTicket) && c.Action != TicketAction.Apertura
+                                                                     && c.Text != null && c.Text != string.Empty)
+                                                       .GroupBy(c => c.IdTicket)
+                                                       .Select(g => g.Max(c => c.Id));
+                var righe = _ticketCronologyRepository.FindAll(c => ultime.Contains(c.Id)).ToList();
+
+                await Task.Delay(DelayAsyncMethod);
+                var names = UserNames(righe.Select(c => c.IdAspNetUsersAuthor ?? c.UserId).Where(x => !string.IsNullOrEmpty(x)).Select(x => x!));
+                retVal.Reply = righe.Select(c =>
+                {
+                    var autore = c.IdAspNetUsersAuthor ?? c.UserId;
+                    return new TicketLastReplyModel
+                    {
+                        IdTicket = c.IdTicket,
+                        Action = c.Action,
+                        Text = c.Text ?? string.Empty,
+                        AuthorName = autore != null ? names.GetValueOrDefault(autore) : null,
+                        CreationDate = c.CreationDate
+                    };
+                }).ToList();
+
+                return retVal;
+            }, isSubProcess);
+        }
+
         public virtual async Task<GenericResult<TicketOpenInfoOutModel>> TicketOpenInfo(GenericRequest<TicketOpenInfoInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1329,6 +1383,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         Task<GenericResult<TicketListOutModel>> TicketList(GenericRequest<TicketListInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketCountOutModel>> TicketCount(GenericRequest<TicketCountInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketGetOutModel>> TicketGet(GenericRequest<TicketGetInModel> model, Boolean isSubProcess);
+        // sola lettura, per l'assistente AI (nessun endpoint)
+        Task<GenericResult<TicketLastReplyOutModel>> TicketLastReply(GenericRequest<TicketLastReplyInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketOpenInfoOutModel>> TicketOpenInfo(GenericRequest<TicketOpenInfoInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketOpenOutModel>> TicketOpen(GenericRequest<TicketOpenInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketActionOutModel>> TicketExecute(GenericRequest<TicketActionInModel> model, Boolean isSubProcess);
