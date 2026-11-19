@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.Common;
 
@@ -39,6 +41,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common
         /// false se non e' piu' agganciabile (es. collegata nel frattempo da un'altra richiesta).
         /// </summary>
         Task<bool> AgganciaDip_AnagraficaAsync(int idCompany, int idDip_Anagrafica, string idAspNetUsers);
+
+        /// <summary>
+        /// Cognome e Nome dell'anagrafica dell'utente nell'azienda, in sola lettura (non crea nulla); null se l'anagrafica
+        /// non c'e' o non ha ne' Cognome ne' Nome. Legge nello schema Common dell'azienda indicata qualunque sia l'azienda
+        /// della richiesta (es. UserLoad di un utente impersonato da uno studio o da un rivenditore).
+        /// </summary>
+        Task<(string? Cognome, string? Nome)?> CognomeNomeAsync(int idCompany, string idAspNetUsers);
     }
 
     public class CommonDipendenteUtility : ICommonDipendenteUtility
@@ -46,14 +55,42 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Common
         private readonly IDip_AnagraficaCommonRepository _dip_AnagraficaRepository;
         private readonly IAspNetUsersRepository _aspNetUsersRepository;
         private readonly ICommonCompanyUtility _commonCompanyUtility;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
         public CommonDipendenteUtility(IDip_AnagraficaCommonRepository dip_AnagraficaRepository,
                                        IAspNetUsersRepository aspNetUsersRepository,
-                                       ICommonCompanyUtility commonCompanyUtility)
+                                       ICommonCompanyUtility commonCompanyUtility,
+                                       IServiceScopeFactory serviceScopeFactory)
         {
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _aspNetUsersRepository = aspNetUsersRepository;
             _commonCompanyUtility = commonCompanyUtility;
+            _serviceScopeFactory = serviceScopeFactory;
+        }
+
+        public async Task<(string? Cognome, string? Nome)?> CognomeNomeAsync(int idCompany, string idAspNetUsers)
+        {
+            if (idCompany <= 0 || string.IsNullOrEmpty(idAspNetUsers))
+                return null;
+
+            // scope nuovo: lo schema di un contesto si fissa al primo uso, quindi i repository della richiesta potrebbero
+            // essere gia' legati a un'altra azienda (o a nessuna). Qui lo schema e' quello dell'azienda dell'utente.
+            using var tenantScope = TenantScope.Use(idCompany);
+            using var scope = _serviceScopeFactory.CreateScope();
+            var commonCompanyUtility = scope.ServiceProvider.GetRequiredService<ICommonCompanyUtility>();
+            var dip_AnagraficaRepository = scope.ServiceProvider.GetRequiredService<IDip_AnagraficaCommonRepository>();
+
+            var az_Anagrafica = await commonCompanyUtility.GetAz_AnagraficaAsync(idCompany, false);
+            if (az_Anagrafica == null)
+                return null;
+
+            var ana = await dip_AnagraficaRepository.FindAll(x => x.IdAz_Anagrafica == az_Anagrafica.Id && x.IdAspNetUsers == idAspNetUsers)
+                                                    .Select(x => new { x.Cognome, x.Nome })
+                                                    .FirstOrDefaultAsync();
+            if (ana == null || (string.IsNullOrWhiteSpace(ana.Cognome) && string.IsNullOrWhiteSpace(ana.Nome)))
+                return null;
+
+            return (ana.Cognome?.Trim(), ana.Nome?.Trim());
         }
 
         public async Task<Dip_Anagrafica> GetOrCreateDip_AnagraficaAsync(int idCompany, string idAspNetUsers)
