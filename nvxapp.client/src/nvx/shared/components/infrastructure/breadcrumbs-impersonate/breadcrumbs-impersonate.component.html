@@ -4,7 +4,7 @@
     <ion-breadcrumbs >
       @for (p of userNavigationService.userCronology; track p) {
         <ion-breadcrumb
-          href="javascript:void(0)" (click)="navigateTo(p.userData.id)">{{p.userData.userName}}
+          href="javascript:void(0)" (click)="navigateTo(p.userData.id)" [title]="p.userData.userName ?? ''">{{ nomeUtente(p.userData) }}
         </ion-breadcrumb>
       }
     </ion-breadcrumbs>
