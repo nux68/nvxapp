@@ -1579,4 +1579,8 @@ The statement is attached.</value>
     <value>[You are working as {0} — company: {1}]</value>
     <comment>accesso AI (MCP), fasi 4 e 6</comment>
   </data>
+  <data name="McpDownloadLink" xml:space="preserve">
+    <value>File "{0}" ready. Download link, valid for {1} minutes (give it to the user as it is): {2}</value>
+    <comment>accesso AI (MCP): file prodotti dagli strumenti</comment>
+  </data>
 </root>
