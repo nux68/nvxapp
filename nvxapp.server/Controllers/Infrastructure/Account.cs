@@ -326,6 +326,32 @@ namespace nvxapp.server.Controllers.Infrastructure
             return PhysicalFile(filePath, contentType, info?.FileName ?? fileName);
         }
 
+        /*
+         Download di un file prodotto da uno strumento MCP (report, export) con il collegamento temporaneo dato
+         all'assistente AI (McpDownloadLink, ANALISI_INFRASTRUCTURE_MCP.md MCP-48). Niente sessione: vale il codice
+         firmato nell'indirizzo, legato a quel file e valido pochi minuti. Qualunque errore risponde "non trovato".
+        */
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("DownloadLink/{fileName}")]
+        public IActionResult DownloadLink(string fileName, [FromQuery] string? code)
+        {
+            var configuration = HttpContext.RequestServices.GetRequiredService<IConfiguration>();
+            var jwt = HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<nvxapp.server.service.ServerModels.JwtParameter>>().Value;
+            if (!nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp.McpOptions.Enabled(configuration)
+                || !NVXSystem.NomeFileJobValido(fileName)
+                || !nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp.McpDownloadLink.Check(jwt.Key, fileName, code, DateTime.UtcNow))
+                return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+
+            var filePath = Path.Combine(NVXSystem.ExportFolder, fileName);
+            if (!System.IO.File.Exists(filePath))
+                return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+
+            if (!_contentTypeProvider.TryGetContentType(fileName, out var contentType))
+                contentType = "application/octet-stream";
+            return PhysicalFile(filePath, contentType, NVXSystem.InfoFileJob(fileName)?.FileName ?? fileName);
+        }
+
         private static readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
     }
 
