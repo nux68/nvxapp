@@ -46,4 +46,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
     {
         public string JobId { get; set; } = string.Empty;
     }
+
+    // generazione immediata (ReportService.ReportGenera): contenuto del report e file PDF scritto in ExportFolder
+    public class Report_DatiOutModel : ModelResult
+    {
+        public ReportPdf? Report { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public string NomeVisibile { get; set; } = string.Empty;
+    }
 }
