@@ -1,6 +1,9 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -31,6 +34,7 @@ export class DocMinePageComponent {
               private userInterfaceService: UserInterfaceService,
               private service: DocumentManagementService,
               private collectionDialogService: CollectionDialogService,
+              private dataChangedNotifierService: DataChangedNotifierService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('documents.pages.mine.title');
     this.columns = [
@@ -60,8 +64,19 @@ export class DocMinePageComponent {
       { button: btnScarica }, { button: btnApri }];
   }
 
+  // documenti modificati da un comando eseguito fuori dalle pagine (es. presa visione fatta dall'assistente AI via MCP):
+  // il server avvisa con "DataChangedNotifier" e l'elenco si ricarica (ANALISI_INFRASTRUCTURE_MCP.md, MCP-26)
+  private dataChangedSub: Subscription | null = null;
+
   ionViewWillEnter() {
     this.load();
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.DocumentManagement).subscribe(() => this.load());
+  }
+
+  ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
   }
 
   load() {
