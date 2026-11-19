@@ -93,6 +93,22 @@
                 @for (l of limiti(p); track l) {
                   <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ l }}</li>
                 }
+                <!-- integrazione con gli assistenti AI: solo nei piani Pro (per ora solo presentazione) -->
+                @if (conAi(p)) {
+                  <li class="nvx-scp-ai">
+                    <ion-icon name="sparkles"></ion-icon>
+                    <span>
+                      {{ 'showcase.pricingPage.aiIncluded' | transloco }}
+                      <span class="nvx-scp-ai-loghi">
+                        @for (a of assistentiAi; track a.nome) {
+                          <img [src]="a.logo" [alt]="a.nome" [title]="a.nome" width="16" height="16">
+                        }
+                      </span>
+                    </span>
+                  </li>
+                } @else {
+                  <li class="nvx-scp-no"><ion-icon name="close-circle-outline"></ion-icon>{{ 'showcase.pricingPage.aiNotIncluded' | transloco }}</li>
+                }
               </ul>
               <ion-button shape="round" expand="block" [fill]="isConsigliato(p) ? 'solid' : 'outline'" (click)="scegli()">{{ cta(p) }}</ion-button>
             </div>

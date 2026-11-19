@@ -19,6 +19,53 @@
           {{ c.ctaSecondaria }}
         </ion-button>
       </div>
+      <!-- richiamo all'integrazione AI (sezione sotto) -->
+      <button type="button" class="nvx-sc-ai-badge" (click)="vaiAllaSezioneAi()">
+        @for (a of assistentiAi; track a.nome) {
+          <img [src]="a.logo" [alt]="a.nome" width="20" height="20">
+        }
+        <span>{{ 'showcase.ai.badge' | transloco }}</span>
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+    </section>
+
+    <!-- integrazione con gli assistenti AI (uguale in tutti i rami: testi in showcase.ai) -->
+    <section id="nvx-sc-ai" class="nvx-sc-section nvx-sc-ai">
+      <div class="nvx-sc-ai-testa">
+        <span class="nvx-sc-label"><ion-icon name="sparkles"></ion-icon>{{ 'showcase.ai.etichetta' | transloco }}</span>
+        <h2 class="nvx-sc-section-title">{{ 'showcase.ai.titolo' | transloco }}</h2>
+        <p class="nvx-sc-sub">{{ 'showcase.ai.sottotitolo' | transloco: sito }}</p>
+        <div class="nvx-sc-ai-loghi">
+          @for (a of assistentiAi; track a.nome) {
+            <div class="nvx-sc-ai-logo">
+              <img [src]="a.logo" [alt]="a.nome" width="44" height="44">
+              <span>{{ a.nome }}</span>
+            </div>
+          }
+        </div>
+      </div>
+      <div class="nvx-sc-grid">
+        @for (p of puntiAi; track p.title) {
+          <div class="nvx-sc-card">
+            <div class="nvx-sc-card-icon"><ion-icon [name]="p.icon"></ion-icon></div>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.text }}</p>
+          </div>
+        }
+      </div>
+      <div class="nvx-sc-ai-esempi">
+        <h3>{{ 'showcase.ai.esempiTitolo' | transloco }}</h3>
+        <ul>
+          @for (e of esempiAi; track e) {
+            <li><ion-icon name="chatbubble-ellipses-outline"></ion-icon><span>“{{ e }}”</span></li>
+          }
+        </ul>
+      </div>
+      <div class="nvx-sc-ai-piani">
+        <ion-icon name="diamond-outline"></ion-icon>
+        <span>{{ 'showcase.ai.piani' | transloco }}</span>
+        <ion-button shape="round" size="small" fill="outline" (click)="vai('/pricing')">{{ 'showcase.ai.vediPrezzi' | transloco }}</ion-button>
+      </div>
     </section>
 
     <section class="nvx-sc-section">

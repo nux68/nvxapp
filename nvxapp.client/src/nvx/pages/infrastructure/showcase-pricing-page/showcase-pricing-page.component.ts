@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { NavController } from '@ionic/angular';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
-import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { ASSISTENTI_AI, ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import {
@@ -147,6 +147,14 @@ export class ShowcasePricingPageComponent implements OnInit {
     if (tutti || this.ambito === AmbitoLicenza.DocumentManagement)
       out.push(p.maxSpazioMB == null ? t('unlimitedStorage') : t('storage', { max: this.spazio(p.maxSpazioMB) }));
     return out;
+  }
+
+  /** assistenti AI (Claude, ChatGPT, Gemini) mostrati nelle schede dei piani che li comprendono */
+  public readonly assistentiAi = ASSISTENTI_AI;
+
+  /** integrazione con gli assistenti AI: compresa solo nei piani Pro (per ora solo presentazione, nessun controllo) */
+  public conAi(p: LicensePlanModel): boolean {
+    return p.livello === LivelloLicenza.Pro;
   }
 
   private spazio(mb: number): string {
