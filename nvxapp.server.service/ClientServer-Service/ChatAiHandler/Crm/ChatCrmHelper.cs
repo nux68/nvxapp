@@ -41,6 +41,40 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.Crm
         public static TimeOnly? ParseOra(string? valore) =>
             TimeOnly.TryParseExact(valore, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var t) ? t : null;
 
+        // date dei dati strutturati (strumenti AI): ISO "2026-11-18" e "09:30"
+        public static string Iso(DateTime d) => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        public static string? Iso(DateTime? d) => d.HasValue ? Iso(d.Value) : null;
+
+        // testo lungo accorciato per le righe della chat
+        public static string Breve(string? testo, int max = 80)
+        {
+            var t = (testo ?? string.Empty).ReplaceLineEndings(" ").Trim();
+            return t.Length <= max ? t : t[..(max - 1)].TrimEnd() + "…";
+        }
+
+        // periodo massimo delle interrogazioni sullo storico (strumenti AI, MCP-32)
+        public const int MaxGiorniPeriodo = 366;
+
+        // periodo rivolto al passato dagli slot "from"/"to": senza date gli ultimi giorniPredefiniti fino a oggi, senza
+        // fine fino a oggi, senza inizio giorniPredefiniti prima della fine; errore se supera MaxGiorniPeriodo
+        public static (DateTime Dal, DateTime Al, string? Errore) PeriodoPassato(Dictionary<string, string> slots, int giorniPredefiniti)
+        {
+            var oggi = DateTime.Today;
+            var dal = ParseData(slots.GetValueOrDefault("from"), DateTime.MinValue);
+            var al = ParseData(slots.GetValueOrDefault("to"), DateTime.MinValue);
+            if (dal == DateTime.MinValue && al == DateTime.MinValue)
+                (dal, al) = (oggi.AddDays(-giorniPredefiniti), oggi);
+            else if (dal == DateTime.MinValue)
+                dal = al.AddDays(-giorniPredefiniti);
+            else if (al == DateTime.MinValue)
+                al = dal > oggi ? dal : oggi;
+            if (al < dal)
+                (dal, al) = (al, dal);
+            return (al - dal).TotalDays > MaxGiorniPeriodo
+                ? (dal, al, CrmMessages.Get("ChatPeriodTooLong", MaxGiorniPeriodo))
+                : (dal, al, null);
+        }
+
         // testo degli errori restituiti da un servizio
         public static string Errore(IEnumerable<Message>? messaggi) =>
             string.Join(" ", (messaggi ?? Enumerable.Empty<Message>()).Where(m => m.MsgType == MessageType.Exception).Select(m => m.Text));
