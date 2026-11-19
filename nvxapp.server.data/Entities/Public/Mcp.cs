@@ -73,6 +73,27 @@ namespace nvxapp.server.data.Entities.Public
         public DateTime ExpiresAt { get; set; }
         public DateTime? RevokedAt { get; set; }
         public DateTime? LastUsedAt { get; set; }
+
+        /// <summary>
+        /// Impersonificazione tramite strumenti MCP ("lavora come", fase 6 dell'analisi): identita' con cui il token e' nato
+        /// (JSON di McpHomeIdentity), salvata quando l'utente passa a lavorare come un altro; null = nessuna
+        /// impersonificazione in corso. "Torna indietro" e la scadenza la rimettono nei campi dell'identita'.
+        /// </summary>
+        [MaxLength(1000)]
+        public string? HomeIdentity { get; set; }
+
+        /// <summary>fine dell'impersonificazione in corso: dopo questo momento il token torna all'identita' di partenza</summary>
+        public DateTime? ImpersonationExpiresAt { get; set; }
+    }
+
+    /// <summary>identita' di lavoro di un token (i campi di McpAccessToken che cambiano con "lavora come")</summary>
+    public class McpHomeIdentity
+    {
+        public string IdAspNetUsers { get; set; } = string.Empty;
+        public int? IdDealer { get; set; }
+        public int? IdFinancialAdvisor { get; set; }
+        public int? IdCompany { get; set; }
+        public string? Tenant { get; set; }
     }
 
     /// <summary>

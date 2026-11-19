@@ -1,10 +1,13 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { NavController, IonSpinner } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { ApplicationType } from '../../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../../../ClientServer-Service/ModelsBase/generic-request';
 import { HrService } from '../../../../../ClientServer-Service/HumanResources/hr.service';
 import { HrEmptyInModel, HrWidgetOnboardingGetOutModel, HrWidgetVoceModel } from '../../../../../ClientServer-Service/HumanResources/Models/hr-model';
+import { DataChangedNotifierService } from '../../../../../Utility/infrastructure/data-changed-notifier.service';
 import { LanguageService } from '../../../../../Utility/infrastructure/language.service';
 
 /*
@@ -18,13 +21,27 @@ import { LanguageService } from '../../../../../Utility/infrastructure/language.
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonSpinner, TranslocoPipe]
 })
-export class HrOnboardingWidgetComponent {
+export class HrOnboardingWidgetComponent implements OnDestroy {
 
   public caricamento = true;
   public dati: HrWidgetOnboardingGetOutModel | null = null;
   private readonly oggi = new Date(new Date().setHours(0, 0, 0, 0));
 
-  constructor(private hrService: HrService, private languageService: LanguageService, private navCtrl: NavController) {
+  // voci completate da un comando eseguito fuori dalle pagine (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private readonly dataChangedSub: Subscription;
+
+  constructor(private hrService: HrService, private languageService: LanguageService, private navCtrl: NavController,
+              dataChangedNotifierService: DataChangedNotifierService) {
+    this.load();
+    this.dataChangedSub = dataChangedNotifierService.of(ApplicationType.HumanResources).subscribe(() => this.load());
+  }
+
+  ngOnDestroy(): void {
+    this.dataChangedSub.unsubscribe();
+  }
+
+  // la rilettura dopo un avviso non mostra l'attesa: i dati restano a video finche' arrivano quelli nuovi
+  private load(): void {
     this.hrService.WidgetOnboardingGet(new GenericRequest<HrEmptyInModel>(HrEmptyInModel)).subscribe({
       next: res => {
         this.dati = res.success && res.data ? res.data : null;

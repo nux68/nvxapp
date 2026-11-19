@@ -1,10 +1,13 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { HrService } from '../../../ClientServer-Service/HumanResources/hr.service';
 import * as M from '../../../ClientServer-Service/HumanResources/Models/hr-model';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -24,11 +27,14 @@ export class HrPlanListPageComponent {
   public items: M.HrPianoModel[] | null = null;
   public readonly columns: NvxListColumn<M.HrPianoModel>[];
   public readonly actions: NvxListAction<M.HrPianoModel>[];
+  // righe aggiunte al piano da un comando eseguito fuori dalla pagina (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private dataChangedSub: Subscription | null = null;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private service: HrService,
+              private dataChangedNotifierService: DataChangedNotifierService,
               private collectionDialogService: CollectionDialogService,
               private transloco: TranslocoService) {
     const t = (k: string) => this.transloco.translate(k);
@@ -50,10 +56,14 @@ export class HrPlanListPageComponent {
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('hr.pages.planList.new'), 'add-circle-outline', () => this.navCtrl.navigateForward('/hrplanedit', { state: { id: 0 } })),
     ];
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.HumanResources).subscribe(() => this.load());
   }
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
   }
 
   load() {
