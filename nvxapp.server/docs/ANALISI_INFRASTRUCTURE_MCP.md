@@ -812,7 +812,7 @@ browser; un client AI reale.
 - [ ] MCP-44 Decidere `CalcolaGiorno` (ricalcolo puro via MCP) e `DeleteClocking` (controlli nel servizio), oggi esclusi
 - [ ] MCP-45 Punti aperti della revisione dei comandi: piano di formazione riscritto per intero, doppioni, tetto agli importi, lunghezza dei testi del CRM, scadenzario e scheda opportunità in ascolto
 - [x] MCP-46 Prove delle fasi 4 e 6 su tutti i rami uniti (sezione 12sexies.3)
-- [ ] MCP-47 Catena dei merge delle fasi 4 e 6
+- [x] MCP-47 Catena dei merge delle fasi 4 e 6 (19/11/2026)
 
 ### Fase 5 – claude.ai (in sospeso, decisione dell'utente del 19/11/2026)
 
