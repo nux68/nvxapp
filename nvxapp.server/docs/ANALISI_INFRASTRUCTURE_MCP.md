@@ -11,7 +11,8 @@ personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintRep
 assistente AI" nelle richieste da approvare (MCP-22). **Notifiche push ai browser** dopo i comandi di modifica (sezione
 12quater) e **fase 3** (13 nuovi strumenti di lettura, sezione 12quinquies) implementate. **Fasi 4 e 6** (modifiche
 amministrative con conferma in due passi, impersonificazione tramite strumenti) implementate il 19/11/2026 (sezione
-12sexies); la **fase 5** (OAuth e claude.ai) è in sospeso. Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
+12sexies); la **fase 5** (OAuth e claude.ai) è in sospeso. **Export alla chat dell'assistente** (dati più collegamento per
+scaricare il file, sezione 12septies) implementato per i report PDF delle presenze. Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -371,7 +372,7 @@ un'impostazione o una riga di codice.
 | MCP-D3 | Conferma in due passi lato server per il livello 3 | ✅ adottata (19/11/2026): codice firmato, valido pochi minuti e una volta sola, sezione 12sexies.1 |
 | MCP-D4 | Accesso AI spento per impostazione predefinita, attivato dall'amministratore | ✅ adottata: lo attiva solo il CompanyPowerAdmin |
 | MCP-D5 | Nomi degli strumenti: come oggi o con prefisso del modulo | ✅ adottata: `attendance_`, `crm_`, `doc_`, `hr_`, `compliance_`, `assets_`, `nvx_` + nome del comando in minuscolo (es. `attendance_who_is_present`) |
-| MCP-D6 | Comandi che producono file (`PrintReport`) | ✅ adottata: esclusi; il meccanismo c'è (`McpAccess = Excluded`), la marcatura di `PrintReport` va fatta nel ramo presenze (MCP-23) |
+| MCP-D6 | Comandi che producono file (`PrintReport`) | ✅ rivista il 19/11/2026: dati strutturati più collegamento temporaneo per scaricare il file (sezione 12septies) |
 | MCP-D7 | Funzione inclusa o legata alla licenza | 🔍 da decidere: per ora inclusa, senza controllo di licenza |
 | MCP-D8 | Percorso dell'endpoint e versione del protocollo da supportare | ✅ adottata: `/mcp`, SDK ufficiale .NET 2.4.0, trasporto HTTP senza sessione |
 | MCP-D9 | L'interruttore AI di un'azienda blocca anche chi la impersona (SuperUser, centro, studio) | ✅ adottata e provata |
@@ -747,6 +748,66 @@ Non provato: gli strumenti amministrativi di CRM, Risorse umane e Compliance fin
 la validazione: l'azienda di prova non ha clienti, corsi né checklist); il ricaricamento visivo delle pagine in un
 browser; un client AI reale.
 
+## 12septies. File di export alla chat dell'assistente (19/11/2026)
+
+Richiesta: i file di export prodotti da nvxapp devono arrivare alla chat di Claude.
+
+### 12septies.1 Scelta
+
+Tre strade valutate; l'utente ha scelto **1 + 3**.
+
+| Strada | Esito |
+|---|---|
+| 1. Dati al posto del file: il contenuto dell'export come dati strutturati, che l'AI legge ed elabora | ✅ adottata |
+| 2. File dentro la risposta dello strumento (allegato) | non adottata: per PDF ed Excel dipende da cosa il client sa leggere (non verificato su Claude Desktop) e i file grandi consumano la conversazione |
+| 3. Collegamento temporaneo e firmato per scaricare il file originale | ✅ adottata |
+
+Sostituisce la decisione MCP-D6 ("comandi che producono file: esclusi").
+
+### 12septies.2 Come funziona
+
+- **Meccanismo comune (Infrastructure).** Un comando che produce un file, quando lo esegue un assistente
+  (`IChatUserContext.ViaMcp`), restituisce `CommandFileResult { Data, FileName, DisplayName }` in `CommandResult.Data`.
+  `McpToolService` manda all'AI i dati strutturati (con il tetto `Mcp:MaxRows`) e aggiunge al testo il collegamento.
+- **Collegamento** (`McpDownloadLink`): `<sito>/api/Account/DownloadLink/<file>?code=<scadenza>.<firma>`, firma
+  HMAC-SHA256 (chiave dell'installazione) su scadenza e nome del file. Vale `Mcp:DownloadLinkMinutes` (15) e solo per
+  quel file; non richiede la sessione dell'app, quindi **chi ha l'indirizzo scarica il file fino alla scadenza**: le
+  istruzioni del server dicono all'AI di darlo all'utente così com'è. Qualunque errore risponde "non trovato". Il
+  collegamento non è monouso (un browser può fare più richieste per lo stesso download).
+- Il file resta registrato a nome dell'utente come quelli dei lavori in background: si scarica anche dall'app
+  (`Account/Download`, solo chi lo ha prodotto) e viene cancellato dopo `Export:RetentionHours`.
+- L'indirizzo usa `App:ApiPublicUrl` / `App:PublicUrl`, altrimenti quello con cui è arrivata la richiesta: con
+  l'installazione sulla rete interna il collegamento si apre solo dalla rete interna.
+
+### 12septies.3 Primo export pubblicato: i report PDF delle presenze
+
+`attendance_print_report` (comando `PrintReport`, prima escluso) torna tra gli strumenti, **in sola lettura**: piano
+ferie, attività (totali e per dipendente), note spese (per dipendente e per tipo), per un mese, di tutti i dipendenti o
+di uno. Via assistente il report **si genera subito** (`ReportService.ReportGenera`, senza lavoro in background: un
+client AI non ha la barra dei lavori) e torna:
+
+- il testo: "Report piano ferie, novembre 2026: 1 tabelle, 2 righe…" più il collegamento al PDF;
+- i dati: `titolo`, `intestazione`, `tabelle` (`titolo`, `colonne`, `righe` con `tipo` normale / gruppo / totale e
+  `celle`), `note`: le stesse tabelle del PDF.
+
+Dalla chat interna e dal web nulla cambia (lavoro in background e barra dei lavori). I controlli di periodo, permessi
+e dipendenti visibili sono ora in un solo punto (`ReportService.PreparaAsync`), usato da entrambe le strade.
+
+### 12septies.4 Prove
+
+Database usa e getta, server dal ramo delle presenze: **24 controlli superati**. Strumento pubblicato e di sola
+lettura; tre report generati con testo, collegamento e dati; nessun lavoro in background avviato per l'assistente;
+download dal collegamento (PDF valido, nome leggibile); rifiutati codice manomesso, scadenza allungata, codice scaduto,
+codice assente, codice di un altro file, nome di file non ammesso; dall'app il file si scarica solo da chi lo ha
+chiesto; la stampa dal web avvia il lavoro e lo conclude con il file come prima; errori chiari per report non previsto
+e dipendente inesistente. L'azienda di prova aveva pochi dati: tabelle quasi vuote.
+
+### 12septies.5 Altri export (da fare, MCP-49)
+
+Lo stesso meccanismo serve per gli altri file: cartellino PDF, export dei turni, export verso le paghe
+(`TimeSheet_ExportService`: contiene dati retributivi, da valutare a parte e non in sola lettura), quadratura mensile e
+marginalità commesse (oggi non previste dal comando). Ognuno richiede la generazione immediata nel proprio servizio.
+
 ## 13. Checklist
 
 ### Analisi
@@ -813,6 +874,9 @@ browser; un client AI reale.
 - [ ] MCP-45 Punti aperti della revisione dei comandi: piano di formazione riscritto per intero, doppioni, tetto agli importi, lunghezza dei testi del CRM, scadenzario e scheda opportunità in ascolto
 - [x] MCP-46 Prove delle fasi 4 e 6 su tutti i rami uniti (sezione 12sexies.3)
 - [x] MCP-47 Catena dei merge delle fasi 4 e 6 (19/11/2026)
+- [x] MCP-48 File di export all'assistente: dati strutturati più collegamento temporaneo firmato; report PDF delle presenze (`attendance_print_report`), sezione 12septies
+- [ ] MCP-49 Altri export con lo stesso meccanismo: cartellino PDF, turni, export paghe, quadratura, marginalità (sezione 12septies.5)
+- [ ] MCP-50b Catena dei merge di MCP-48
 
 ### Fase 5 – claude.ai (in sospeso, decisione dell'utente del 19/11/2026)
 
