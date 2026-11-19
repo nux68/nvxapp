@@ -163,6 +163,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 if (al < dal) al = dal;
             }
 
+            // via assistente AI (MCP): periodo limitato, verificato prima di avviare il calcolo
+            var oltreLimite = ChatPresenzeHelper.McpLimitePeriodo(_chatUserContext, dal, al);
+            if (oltreLimite != null)
+                return CommandResult.Fail(oltreLimite);
+
             // --- Costruisci richiesta di calcolo ---
             var req = new GenericRequest<TimeSheet_CalculateInModel>
             {

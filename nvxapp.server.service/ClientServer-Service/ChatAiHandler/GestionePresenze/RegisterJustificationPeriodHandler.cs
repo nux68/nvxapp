@@ -113,6 +113,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             if (al < dal) al = dal;
 
+            // via assistente AI (MCP): periodo limitato, verificato prima di qualunque scrittura
+            var oltreLimite = McpLimitePeriodo(_chatUserContext, dal, al);
+            if (oltreLimite != null)
+                return CommandResult.Fail(oltreLimite);
+
             // rapporto di lavoro in corso all'inizio del periodo
             var rapporto = dipendente.Dip_RapportoLavoro?
                 .Where(r => (r.DataAss == null || r.DataAss.Value.Date <= dal) && (r.DataLic == null || r.DataLic.Value.Date >= dal))
