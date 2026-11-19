@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController, ModalController, AlertController, ActionSheetController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
+import { Observable, Subscription, catchError, from, map, of, switchMap } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CrmService } from '../../../ClientServer-Service/Crm/crm.service';
 import * as M from '../../../ClientServer-Service/Crm/Models/crm-model';
@@ -13,6 +13,8 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { CrmContactDialogComponent } from '../../../shared/components/Crm/crm-contact-dialog/crm-contact-dialog.component';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 
 @Component({
   selector: 'app-crm-customer-edit-page',
@@ -35,6 +37,8 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
   private nuovo = false;
   // pagina visibile: il "+" del FAB si registra solo mentre la pagina e' attiva (il caricamento e' asincrono)
   private attiva = false;
+  // dati modificati da un comando eseguito fuori dalla pagina (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private dataChangedSub: Subscription | null = null;
   public readonly dataOra = crmDataOra;
   public readonly data = crmData;
 
@@ -60,7 +64,8 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
               private collectionDialogService: CollectionDialogService,
               private actionSheetCtrl: ActionSheetController,
               public fabMenuService: FabMenuService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private dataChangedNotifierService: DataChangedNotifierService) {
     super(navCtrl, userInterfaceService, fb);
     const t = (k: string) => this.transloco.translate(k);
     const valuta = () => this.setupService.setup?.cfg.valuta ?? 'EUR';
@@ -154,9 +159,14 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
     this.attiva = true;
     this.aggiornaFab();
     super.ionViewWillEnter();
+    // solo gli elenchi della scheda (attivita', note...): ricarica() non tocca il form dei dati, che l'utente puo' avere in modifica
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.Crm).subscribe(() => { if (this.id) this.ricarica(); });
   }
 
   ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
     this.attiva = false;
     this.fabMenuService.fabMenuItem = [];
   }
