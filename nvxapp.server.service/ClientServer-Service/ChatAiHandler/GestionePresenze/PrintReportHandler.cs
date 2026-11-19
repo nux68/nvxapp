@@ -50,8 +50,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Keywords = new() { "stampa", "stampami", "pdf", "report", "print" },
                 Examples = new() { "stampa il piano ferie di novembre", "fammi il pdf delle attività di ottobre", "stampa le note spese di Rossi del mese scorso", "print the vacation plan for December" },
                 RequiresConfirmation = false,
-                // MCP: escluso, produce un file da scaricare (ANALISI_INFRASTRUCTURE_MCP.md, MCP-D6 / MCP-23)
-                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
+                // MCP: pubblicato come lettura. Via assistente AI il report si genera subito e tornano le tabelle del report
+                // piu' il collegamento temporaneo per scaricare il PDF (ANALISI_INFRASTRUCTURE_MCP.md, MCP-48)
                 Pages = new() { "/vacationplan", "/activitystatistics", "/poweradmintimesheet" },
                 Slots = BuildSlots(
                     new SlotDefinition
@@ -102,6 +102,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             else
                 utenti = (await Dipendenti(_dip_AnagraficaService)).Select(d => d.IdAspNetUsers).ToList();
 
+            if (_chatUserContext.ViaMcp)
+                return await PerAssistente(tipo, anno, mese, utenti);
+
             var res = await _reportService.ReportExportPdf(new GenericRequest<Report_InModel>
             {
                 Data = new() { Report = new ReportModel { Tipo = tipo, Year = anno, Month = mese, SelectedUserId = utenti } }
@@ -111,6 +114,38 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatPrintReportStarted",
                 AttendanceTrackingMessages.Get($"ChatReport{tipo}"), Mese(anno, mese)));
+        }
+
+        // assistente AI esterno: niente lavoro in background (non ha la barra dei job). Il report si genera subito e il
+        // comando restituisce il contenuto in forma di tabelle e il file PDF, che l'infrastruttura trasforma in un collegamento
+        private async Task<CommandResult> PerAssistente(ReportTipo tipo, int anno, int mese, List<string> utenti)
+        {
+            var res = await _reportService.ReportGenera(new GenericRequest<Report_InModel>
+            {
+                Data = new() { Report = new ReportModel { Tipo = tipo, Year = anno, Month = mese, SelectedUserId = utenti } }
+            }, false);
+            if (!res.Success || res.Data?.Report == null || string.IsNullOrEmpty(res.Data.FileName))
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatPrintReportError", string.Join(", ", (res.Messages ?? new()).Concat(res.Data?.Messages ?? new()).Select(m => m.Text))));
+
+            var report = res.Data.Report;
+            var dati = new
+            {
+                titolo = report.Titolo,
+                intestazione = report.Intestazione.GroupBy(v => v.Key).ToDictionary(g => g.Key, g => g.First().Value),
+                tabelle = report.Tabelle.Select(t => new
+                {
+                    titolo = t.Titolo,
+                    colonne = t.Colonne.Select(c => c.Titolo).ToList(),
+                    // tipo: "normale", "gruppo" (intestazione di un gruppo, es. il dipendente) o "totale"
+                    righe = t.Righe.Select(r => new { tipo = r.Tipo.ToString().ToLowerInvariant(), celle = r.Celle.Select(c => c.Testo).ToList() }).ToList()
+                }).ToList(),
+                note = report.Note
+            };
+
+            return CommandResult.Ok(
+                AttendanceTrackingMessages.Get("ChatPrintReportReady", AttendanceTrackingMessages.Get($"ChatReport{tipo}"), Mese(anno, mese),
+                    report.Tabelle.Count, report.Tabelle.Sum(t => t.Righe.Count)),
+                new CommandFileResult { Data = dati, FileName = res.Data.FileName, DisplayName = res.Data.NomeVisibile });
         }
     }
 }

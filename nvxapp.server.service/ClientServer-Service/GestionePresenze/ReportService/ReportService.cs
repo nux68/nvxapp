@@ -81,47 +81,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                 var retVal = new Report_OutModel();
                 var richiesta = model.Data.Report;
 
-                if (richiesta.Month < 1 || richiesta.Month > 12 || richiesta.Year < 2000 || richiesta.Year > 2100)
+                // periodo, permessi e dipendenti visibili: stessi controlli della generazione immediata (ReportGenera)
+                var (errore, dipendenti, reparti) = await PreparaAsync(richiesta);
+                if (errore != null)
                 {
-                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExportPdfInvalidPeriod", richiesta.Month, richiesta.Year), MessageType.Error));
+                    retVal.Messages.Add(errore);
                     return retVal;
                 }
-
-                // marginalita' commesse (AT-CDG.3): solo CompanyPowerAdmin, non dipende dai dipendenti selezionati
-                bool cdg = richiesta.Tipo == ReportTipo.MarginalitaCommesse;
-                if (cdg)
-                {
-                    if (!await HaRuolo("CompanyPowerAdmin"))
-                        throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_SoloPowerAdmin"));
-                    if (richiesta.Cdg == null)
-                        throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_PeriodoNonValido", Az_CommessaCdgService.Az_CommessaCdgService.MaxMesi));
-                }
-
-                // dipendenti richiesti, limitati a quelli che l'utente puo' vedere
-                var usersId = (richiesta.SelectedUserId ?? new List<string>()).Distinct().ToList();
-                if (!await HaRuolo("CompanyPowerAdmin"))
-                {
-                    if (!await HaRuolo("CompanyAdmin"))
-                        throw new UserMessageException(AttendanceTrackingMessages.Get("ExportPdfAdminsOnly"));
-                    var dipendentiAmministrati = DipendentiAmministrati(this.CurrentUserId);
-                    usersId = usersId.Where(u => dipendentiAmministrati.Contains(u)).ToList();
-                }
-
-                // solo i dipendenti dell'azienda, in ordine alfabetico
-                var dipendenti = (await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(usersId))
-                                     .GroupBy(d => d.IdAspNetUsers)
-                                     .Select(g => g.First())
-                                     .Select(d => new Dipendente(d.IdAspNetUsers, NomeDipendente(d.Cognome, d.Nome, d.UserName)))
-                                     .OrderBy(d => d.Nome, StringComparer.CurrentCultureIgnoreCase)
-                                     .ToList();
-                if (dipendenti.Count == 0 && !cdg)
-                {
-                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExportPdfNoEmployees"), MessageType.Warning));
-                    return retVal;
-                }
-
-                // quadratura: gruppi per reparto calcolati qui (repository della richiesta)
-                var reparti = richiesta.Tipo == ReportTipo.QuadraturaMensile ? GruppiReparto(richiesta.RepartiId, dipendenti) : new List<GruppoReparto>();
 
                 var jobId = Guid.NewGuid();
                 retVal.JobId = jobId.ToString();
@@ -163,18 +129,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                         var company = await scope.ServiceProvider.GetRequiredService<ICompanyRepository>().FindByIdAsync(idCompany);
                         var ctx = new Contesto(scope.ServiceProvider, richiesta, dipendenti, reparti, company?.Descrizione ?? string.Empty);
 
-                        ReportPdf report = richiesta.Tipo switch
-                        {
-                            ReportTipo.AttivitaTotali => await ReportAttivita(ctx, perDipendente: false),
-                            ReportTipo.AttivitaPerDipendente => await ReportAttivita(ctx, perDipendente: true),
-                            ReportTipo.PianoFerie => await ReportPianoFerie(ctx),
-                            ReportTipo.QuadraturaMensile => await ReportQuadratura(ctx),
-                            ReportTipo.NotaSpesePerTipo => await ReportNotaSpese(ctx, perDipendente: false),
-                            ReportTipo.NotaSpesePerDipendente => await ReportNotaSpese(ctx, perDipendente: true),
-                            ReportTipo.GiornateDaSistemare => await ReportGiornateDaSistemare(ctx),
-                            ReportTipo.MarginalitaCommesse => await ReportMarginalita(ctx),
-                            _ => throw new UserMessageException(T("Report_TipoNonValido"))
-                        };
+                        ReportPdf report = await CostruisciAsync(ctx);
 
                         await Notifica(80, new Message { Text = AttendanceTrackingMessages.Get("ExportPdfWriting"), MsgType = MessageType.Information });
 
@@ -198,6 +153,102 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                 return retVal;
             }, isSubProcess);
         }
+
+        /*
+         Generazione IMMEDIATA di un report (senza lavoro in background): restituisce il contenuto del report (titolo,
+         intestazione, tabelle) e scrive il PDF, registrato a nome dell'utente come quello dei job. La usa il comando
+         PrintReport quando lo esegue un assistente AI esterno, che riceve i dati e un collegamento per scaricare il PDF
+         (ANALISI_INFRASTRUCTURE_MCP.md, MCP-48). Stessi controlli di ReportExportPdf (PreparaAsync).
+        */
+        public virtual async Task<GenericResult<Report_DatiOutModel>> ReportGenera(GenericRequest<Report_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Report_DatiOutModel();
+                var richiesta = model.Data.Report;
+
+                var (errore, dipendenti, reparti) = await PreparaAsync(richiesta);
+                if (errore != null)
+                {
+                    retVal.Messages.Add(errore);
+                    return retVal;
+                }
+
+                var services = _httpContextAccessor.HttpContext?.RequestServices
+                               ?? throw new UserMessageException(AttendanceTrackingMessages.Get("JobUserNotIdentified"));
+                string owner = string.IsNullOrEmpty(this.UserIdFirstConnection) ? this.CurrentUserId : this.UserIdFirstConnection;
+                int.TryParse(this.CurrentCompany, out int idCompany);
+
+                var company = await services.GetRequiredService<ICompanyRepository>().FindByIdAsync(idCompany);
+                var ctx = new Contesto(services, richiesta, dipendenti, reparti, company?.Descrizione ?? string.Empty);
+                var report = await CostruisciAsync(ctx);
+
+                var nome = $"Report_{richiesta.Tipo}_{richiesta.Year}-{richiesta.Month:00}";
+                var fileName = ReportPdfWriter.Write(report, nome, Guid.NewGuid().ToString(), NVXSystem.ExportFolder);
+                var file = NVXSystem.RegistraFileJob(fileName, owner, nome);
+
+                retVal.Report = report;
+                retVal.FileName = fileName;
+                retVal.NomeVisibile = file.FileName;
+                return retVal;
+            }, isSubProcess);
+        }
+
+        // periodo valido, permessi (solo amministratori; marginalita' solo CompanyPowerAdmin) e dipendenti che l'utente puo' vedere.
+        // Errore valorizzato = il report non si puo' produrre (messaggio per l'utente).
+        private async Task<(Message? Errore, List<Dipendente> Dipendenti, List<GruppoReparto> Reparti)> PreparaAsync(ReportModel richiesta)
+        {
+            if (richiesta.Month < 1 || richiesta.Month > 12 || richiesta.Year < 2000 || richiesta.Year > 2100)
+                return (new Message(AttendanceTrackingMessages.Get("ExportPdfInvalidPeriod", richiesta.Month, richiesta.Year), MessageType.Error),
+                        new List<Dipendente>(), new List<GruppoReparto>());
+
+            // marginalita' commesse (AT-CDG.3): solo CompanyPowerAdmin, non dipende dai dipendenti selezionati
+            bool cdg = richiesta.Tipo == ReportTipo.MarginalitaCommesse;
+            if (cdg)
+            {
+                if (!await HaRuolo("CompanyPowerAdmin"))
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_SoloPowerAdmin"));
+                if (richiesta.Cdg == null)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("Cdg_PeriodoNonValido", Az_CommessaCdgService.Az_CommessaCdgService.MaxMesi));
+            }
+
+            // dipendenti richiesti, limitati a quelli che l'utente puo' vedere
+            var usersId = (richiesta.SelectedUserId ?? new List<string>()).Distinct().ToList();
+            if (!await HaRuolo("CompanyPowerAdmin"))
+            {
+                if (!await HaRuolo("CompanyAdmin"))
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExportPdfAdminsOnly"));
+                var dipendentiAmministrati = DipendentiAmministrati(this.CurrentUserId);
+                usersId = usersId.Where(u => dipendentiAmministrati.Contains(u)).ToList();
+            }
+
+            // solo i dipendenti dell'azienda, in ordine alfabetico
+            var dipendenti = (await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(usersId))
+                                 .GroupBy(d => d.IdAspNetUsers)
+                                 .Select(g => g.First())
+                                 .Select(d => new Dipendente(d.IdAspNetUsers, NomeDipendente(d.Cognome, d.Nome, d.UserName)))
+                                 .OrderBy(d => d.Nome, StringComparer.CurrentCultureIgnoreCase)
+                                 .ToList();
+            if (dipendenti.Count == 0 && !cdg)
+                return (new Message(AttendanceTrackingMessages.Get("ExportPdfNoEmployees"), MessageType.Warning), dipendenti, new List<GruppoReparto>());
+
+            // quadratura: gruppi per reparto calcolati qui (repository della richiesta)
+            var reparti = richiesta.Tipo == ReportTipo.QuadraturaMensile ? GruppiReparto(richiesta.RepartiId, dipendenti) : new List<GruppoReparto>();
+            return (null, dipendenti, reparti);
+        }
+
+        private static async Task<ReportPdf> CostruisciAsync(Contesto ctx) => ctx.Richiesta.Tipo switch
+        {
+            ReportTipo.AttivitaTotali => await ReportAttivita(ctx, perDipendente: false),
+            ReportTipo.AttivitaPerDipendente => await ReportAttivita(ctx, perDipendente: true),
+            ReportTipo.PianoFerie => await ReportPianoFerie(ctx),
+            ReportTipo.QuadraturaMensile => await ReportQuadratura(ctx),
+            ReportTipo.NotaSpesePerTipo => await ReportNotaSpese(ctx, perDipendente: false),
+            ReportTipo.NotaSpesePerDipendente => await ReportNotaSpese(ctx, perDipendente: true),
+            ReportTipo.GiornateDaSistemare => await ReportGiornateDaSistemare(ctx),
+            ReportTipo.MarginalitaCommesse => await ReportMarginalita(ctx),
+            _ => throw new UserMessageException(T("Report_TipoNonValido"))
+        };
 
         #region Report
 
@@ -763,5 +814,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
     public interface IReportService : IServiceBase
     {
         Task<GenericResult<Report_OutModel>> ReportExportPdf(GenericRequest<Report_InModel> model, bool isSubProcess);
+        /// <summary>genera subito il report: contenuto (tabelle) e file PDF registrato a nome dell'utente</summary>
+        Task<GenericResult<Report_DatiOutModel>> ReportGenera(GenericRequest<Report_InModel> model, bool isSubProcess);
     }
 }
