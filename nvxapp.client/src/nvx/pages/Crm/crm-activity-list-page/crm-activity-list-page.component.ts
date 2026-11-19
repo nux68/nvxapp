@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController, ModalController, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
+import { Observable, Subscription, catchError, from, map, of, switchMap } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CrmService } from '../../../ClientServer-Service/Crm/crm.service';
 import * as M from '../../../ClientServer-Service/Crm/Models/crm-model';
@@ -14,6 +14,8 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 
 export type CrmVistaAgenda = 'lista' | 'settimana' | 'mese';
 
@@ -63,6 +65,8 @@ export class CrmActivityListPageComponent {
   public periodo = '';
   public readonly maxPerGiornoMese = 3;
   private calendario: M.CrmAttivitaListModel[] = [];
+  // dati modificati da un comando eseguito fuori dalla pagina (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private dataChangedSub: Subscription | null = null;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
@@ -72,7 +76,8 @@ export class CrmActivityListPageComponent {
               private alertCtrl: AlertController,
               private transloco: TranslocoService,
               private monthNavigator: MonthNavigatorService,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private dataChangedNotifierService: DataChangedNotifierService) {
     const t = (k: string) => this.transloco.translate(k);
     this.title = t('crm.pages.activityList.title');
     this.columns = [
@@ -99,12 +104,17 @@ export class CrmActivityListPageComponent {
   async ionViewWillEnter() {
     await this.setupService.load();
     this.load();
+    // ricarica con vista, sezione e periodo correnti
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.Crm).subscribe(() => this.load());
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('crm.pages.activityList.new'), 'add-circle-outline', () => this.navCtrl.navigateForward('/crmactivityedit', { state: { id: 0 } })),
     ];
   }
 
   ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
     this.fabMenuService.fabMenuItem = [];
   }
 
