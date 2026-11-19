@@ -253,6 +253,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             new() { Success = false, Message = message };
     }
 
+    /*
+     Dati di un comando che ha prodotto un FILE (export, report), da mettere in CommandResult.Data quando il comando e'
+     eseguito da un assistente AI esterno (IChatUserContext.ViaMcp): l'assistente riceve Data (il contenuto in forma
+     strutturata, che puo' leggere ed elaborare) e un collegamento temporaneo per scaricare il file originale
+     (ANALISI_INFRASTRUCTURE_MCP.md, sezione 12septies, MCP-48). Il file deve essere gia' scritto in
+     NVXSystem.ExportFolder e registrato (NVXSystem.RegistraFileJob / SalvaFileJob).
+    */
+    public class CommandFileResult
+    {
+        /// <summary>contenuto del file in forma strutturata (tabelle, righe); null = solo il collegamento</summary>
+        public object? Data { get; set; }
+        /// <summary>nome del file su disco in NVXSystem.ExportFolder ({jobId}.{estensione})</summary>
+        public string FileName { get; set; } = string.Empty;
+        /// <summary>nome da mostrare all'utente</summary>
+        public string DisplayName { get; set; } = string.Empty;
+    }
+
     // ---------------------------------------------------------------------------
     // Ollama — Request / Response
     // ---------------------------------------------------------------------------
