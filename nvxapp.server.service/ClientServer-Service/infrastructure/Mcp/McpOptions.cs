@@ -49,6 +49,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         /// <summary>ore dopo le quali un'impersonificazione fatta con "lavora come" torna da sola all'identita' di partenza (fase 6)</summary>
         public static int ImpersonationHours(IConfiguration configuration) => Positive(configuration["Mcp:ImpersonationHours"], 8);
 
+        /// <summary>minuti di validita' del collegamento per scaricare un file prodotto da uno strumento (MCP-48)</summary>
+        public static int DownloadLinkMinutes(IConfiguration configuration) => Positive(configuration["Mcp:DownloadLinkMinutes"], 15);
+
         private static int Positive(string? value, int fallback) =>
             int.TryParse(value, out var number) && number > 0 ? number : fallback;
 
@@ -104,6 +107,42 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes("mcp-confirm:" + key));
             var firma = hmac.ComputeHash(Encoding.UTF8.GetBytes(scadenza + "|" + fingerprint));
             return Convert.ToBase64String(firma, 0, 15).Replace('+', '-').Replace('/', '_');
+        }
+    }
+
+    /*
+     Collegamento temporaneo per scaricare un file prodotto da uno strumento (ANALISI_INFRASTRUCTURE_MCP.md, MCP-48).
+     L'assistente non puo' usare il download dell'applicazione (Account/Download vuole la sessione dell'utente): riceve
+     un indirizzo con un codice "<scadenza>.<firma>", firma HMAC-SHA256 (chiave dell'installazione) su scadenza e nome
+     del file. Chi ha l'indirizzo scarica QUEL file fino alla scadenza (Mcp:DownloadLinkMinutes): va dato solo
+     all'utente. Non si salva nulla: funziona con piu' istanze del server.
+    */
+    public static class McpDownloadLink
+    {
+        public const string Route = "api/Account/DownloadLink/";
+
+        public static string Code(string key, string fileName, DateTime expiresUtc)
+        {
+            string scadenza = new DateTimeOffset(expiresUtc, TimeSpan.Zero).ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return scadenza + "." + Firma(key, scadenza, fileName);
+        }
+
+        public static bool Check(string key, string fileName, string? code, DateTime nowUtc)
+        {
+            var parti = (code ?? string.Empty).Trim().Split('.');
+            if (parti.Length != 2 || !long.TryParse(parti[0], out var secondi))
+                return false;
+            var attesa = Encoding.ASCII.GetBytes(Firma(key, parti[0], fileName));
+            var ricevuta = Encoding.ASCII.GetBytes(parti[1]);
+            return CryptographicOperations.FixedTimeEquals(attesa, ricevuta)
+                   && DateTimeOffset.FromUnixTimeSeconds(secondi).UtcDateTime >= nowUtc;
+        }
+
+        private static string Firma(string key, string scadenza, string fileName)
+        {
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes("mcp-download:" + key));
+            var firma = hmac.ComputeHash(Encoding.UTF8.GetBytes(scadenza + "|" + fileName));
+            return Convert.ToBase64String(firma, 0, 24).Replace('+', '-').Replace('/', '_');
         }
     }
 
