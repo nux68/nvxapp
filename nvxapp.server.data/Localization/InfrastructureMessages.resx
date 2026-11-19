@@ -1654,4 +1654,8 @@ In allegato il rendiconto.</value>
     <value>[Stai lavorando come {0} — azienda: {1}]</value>
     <comment>accesso AI (MCP), fasi 4 e 6</comment>
   </data>
+  <data name="McpDownloadLink" xml:space="preserve">
+    <value>File «{0}» pronto. Collegamento per scaricarlo, valido {1} minuti (da dare all'utente così com'è): {2}</value>
+    <comment>accesso AI (MCP): file prodotti dagli strumenti</comment>
+  </data>
 </root>
