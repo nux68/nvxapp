@@ -2140,4 +2140,66 @@
   <data name="TurniReport_NessunRapporto" xml:space="preserve">
     <value>Nessun rapporto di lavoro nel periodo scelto.</value>
   </data>
+  <data name="ChatEmployeeTimeSheetDisplayName" xml:space="preserve">
+    <value>Cartellino del dipendente</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetDescription" xml:space="preserve">
+    <value>cartellino di un dipendente in un periodo (default: io, mese corrente; al massimo {0} giorni): per ogni giorno ore lavorate e previste, timbrature, giustificativi, causali e anomalie.</value>
+    <comment>{0} = giorni massimi del periodo</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetPeriodInvalid" xml:space="preserve">
+    <value>La data finale non può precedere quella iniziale.</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetPeriodTooLong" xml:space="preserve">
+    <value>Il periodo del cartellino può essere al massimo di {0} giorni.</value>
+    <comment>{0} = giorni massimi</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetTitle" xml:space="preserve">
+    <value>Cartellino di {0} dal {1} al {2}: {3} ore lavorate su {4} previste (fino a oggi).</value>
+    <comment>{0} = dipendente, {1} = dal, {2} = al, {3} = ore lavorate, {4} = ore previste</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetJustifications" xml:space="preserve">
+    <value>Giustificativi: {0}.</value>
+    <comment>{0} = elenco "descrizione (giorni)"</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetNoAnomalies" xml:space="preserve">
+    <value>Nessuna giornata da sistemare.</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetAnomalies" xml:space="preserve">
+    <value>Giornate da sistemare: {0}</value>
+    <comment>{0} = numero di giornate</comment>
+  </data>
+  <data name="ChatEmployeeListDisplayName" xml:space="preserve">
+    <value>Elenco dipendenti</value>
+  </data>
+  <data name="ChatEmployeeListDescription" xml:space="preserve">
+    <value>elenco dei dipendenti con reparto, sede e rapporto di lavoro attivo (contratto, ore settimanali, profilo orario e orario di oggi), filtrabile per nome o matricola e per reparto o sede.</value>
+  </data>
+  <data name="ChatEmployeeListSearchQuestion" xml:space="preserve">
+    <value>Quale dipendente cerchi?</value>
+  </data>
+  <data name="ChatEmployeeListSearchLabel" xml:space="preserve">
+    <value>Ricerca</value>
+  </data>
+  <data name="ChatEmployeeListDepartmentQuestion" xml:space="preserve">
+    <value>Di quale reparto o sede?</value>
+  </data>
+  <data name="ChatEmployeeListDepartmentLabel" xml:space="preserve">
+    <value>Reparto o sede</value>
+  </data>
+  <data name="ChatEmployeeListNone" xml:space="preserve">
+    <value>Nessun dipendente trovato ({0}).</value>
+    <comment>{0} = filtri indicati</comment>
+  </data>
+  <data name="ChatEmployeeListTitle" xml:space="preserve">
+    <value>Dipendenti: {0}</value>
+    <comment>{0} = numero di dipendenti</comment>
+  </data>
+  <data name="ChatEmployeeListTitleFiltered" xml:space="preserve">
+    <value>Dipendenti trovati per "{1}": {0}</value>
+    <comment>{0} = numero di dipendenti, {1} = filtri indicati</comment>
+  </data>
+  <data name="ChatEmployeeListNoContract" xml:space="preserve">
+    <value>nessun rapporto di lavoro attivo</value>
+  </data>
 </root>

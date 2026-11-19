@@ -22,6 +22,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManag
 
         public static string Data(DateTime d) => d.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
+        // date nei dati strutturati per l'AI esterna (MCP)
+        public static string? Iso(DateTime? d) => d?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
         public static string Errore(IEnumerable<Message>? messaggi) =>
             string.Join(" ", (messaggi ?? Enumerable.Empty<Message>()).Where(m => m.MsgType == MessageType.Exception).Select(m => m.Text));
 
@@ -150,6 +153,64 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.DocumentManag
 
         public static DateTime? ParseMese(string? valore) =>
             DateTime.TryParseExact(valore, "MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) ? d : null;
+
+        public static DateTime? ParseData(string? valore) =>
+            DateTime.TryParseExact(valore, SlotNormalizers.DateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) ? d : null;
+
+        // data: il LLM copia l'espressione, la converte SlotNormalizers (tipo "dd/MM/yyyy")
+        public static SlotDefinition SlotData(string name, string question, string label, string significato)
+        {
+            var sb = new StringBuilder();
+            sb.Append(significato).Append(". ");
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Data_Oggi(sb);
+            return new SlotDefinition
+            {
+                Name = name,
+                Type = SlotNormalizers.DateFormat,
+                Required = false,
+                PromptDescription = sb.ToString(),
+                Question = question,
+                Label = label,
+                Validator = v => ParseData(v) != null
+                    ? null
+                    : SlotValidationResult.Failed(SlotValidationError.InvalidFormat, DocumentManagementMessages.Get("ChatInvalidDate", v), name)
+            };
+        }
+
+        // stato delle firme: "toSign" (da firmare), "signed" (firmate), "all"
+        public const string FirmeDaFare = "toSign";
+        public const string FirmeFatte = "signed";
+        public const string FirmeTutte = "all";
+
+        public static SlotDefinition SlotStatoFirma() => new()
+        {
+            Name = "status",
+            Type = "string",
+            Required = false,
+            Default = FirmeTutte,
+            PromptDescription = $"quali firme: '{FirmeDaFare}' = da firmare, ancora da fare; '{FirmeFatte}' = già firmate; '{FirmeTutte}' = tutte (default)",
+            Question = DocumentManagementMessages.Get("ChatSignStatusQuestion"),
+            Label = DocumentManagementMessages.Get("ChatSignStatusLabel"),
+            Normalizer = NormalizzaStatoFirma,
+            Validator = v => v is FirmeDaFare or FirmeFatte or FirmeTutte
+                ? null
+                : SlotValidationResult.Failed(SlotValidationError.InvalidFormat, DocumentManagementMessages.Get("ChatSignStatusQuestion"), "status")
+        };
+
+        // "da firmare", "non firmati", "mancanti" -> toSign; "firmati", "già firmati" -> signed; "tutte" -> all
+        public static string? NormalizzaStatoFirma(string valore)
+        {
+            var t = ChatAIKeywords.Normalize(valore);
+            if (t.Length == 0) return null;
+            if (t == ChatAIKeywords.Normalize(FirmeDaFare) || t.Contains("da firmar") || t.Contains("non firmat") || t.Contains("mancant")
+                || t.Contains("in attesa") || t.Contains("pending") || t.Contains("to sign") || t.Contains("unsigned") || t.Contains("not signed"))
+                return FirmeDaFare;
+            if (t == ChatAIKeywords.Normalize(FirmeFatte) || t.Contains("firmat") || t.Contains("signed") || t.Contains("fatte"))
+                return FirmeFatte;
+            if (t == ChatAIKeywords.Normalize(FirmeTutte) || t.Contains("tutt") || t.Contains("all") || t.Contains("stato") || t.Contains("status"))
+                return FirmeTutte;
+            return null;
+        }
 
         // ---------------------------------------------------------------------------
         // Ricerca

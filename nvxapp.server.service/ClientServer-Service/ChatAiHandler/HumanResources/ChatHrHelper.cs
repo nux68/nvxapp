@@ -25,6 +25,10 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.HumanResource
 
         public static string Data(DateTime d) => d.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
+        // data nei dati strutturati restituiti all'AI (strumenti MCP): yyyy-MM-dd
+        public static string DataIso(DateTime d) => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        public static string? DataIso(DateTime? d) => d.HasValue ? DataIso(d.Value) : null;
+
         // "10/2026" oppure "2026" (CU)
         public static string Periodo(int anno, int? mese) =>
             mese.HasValue ? $"{mese:D2}/{anno}" : anno.ToString(CultureInfo.InvariantCulture);
