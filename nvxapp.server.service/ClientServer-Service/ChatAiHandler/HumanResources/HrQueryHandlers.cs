@@ -4,6 +4,8 @@ using nvxapp.server.service.ClientServer_Service.HumanResources;
 using nvxapp.server.service.ClientServer_Service.HumanResources.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.CommonOrganizzazioneService;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.CommonOrganizzazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Deadline;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Deadline.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -427,5 +429,273 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.HumanResource
 
             return CommandResult.Ok(Elenco(HumanResourcesMessages.Get("ChatMyPayslipsTitle", documenti.Count, filtro), righe));
         }
+    }
+
+    // R6 — organigramma (ANALISI_INFRASTRUCTURE_MCP.md, MCP-34): sedi e reparti ad albero dell'azienda, anche di una sola
+    // sede o reparto con i suoi sottoreparti. Fonte: tabelle comuni Az_Sedi / Az_SediReparto lette da CommonOrganizzazioneService
+    // (limitato all'azienda della richiesta). Risorse Umane non registra responsabili né l'assegnazione delle persone ai reparti
+    // (l'assegnazione è delle presenze): l'organigramma è la struttura, e i dati lo dicono all'AI (Nota).
+    public class HrOrgChartHandler : BaseCommandHandler
+    {
+        // oltre questa profondità l'albero si ferma (protezione da reparti padre circolari)
+        private const int ProfonditaMassima = 20;
+
+        private readonly ICommonOrganizzazioneService _organizzazioneService;
+        private readonly IntentDefinition _intentDefinition;
+
+        public HrOrgChartHandler(ICommonOrganizzazioneService organizzazioneService)
+        {
+            _organizzazioneService = organizzazioneService;
+            _intentDefinition = new IntentDefinition
+            {
+                Name = "HrOrgChart",
+                Application = ApplicationType.HumanResources,
+                Category = HumanResourcesMessages.Get("ChatCategory"),
+                CategoryOrder = CategoryOrder,
+                DisplayName = HumanResourcesMessages.Get("ChatOrgChartDisplayName"),
+                Description = HumanResourcesMessages.Get("ChatOrgChartDescription"),
+                Usable4Role = RuoliUfficio,
+                Keywords = new()
+                {
+                    "organigramma", "struttura aziendale", "struttura dell'azienda", "reparti", "sottoreparti", "sedi dell'azienda", "unità organizzative",
+                    "org chart", "organization chart", "organisation chart", "departments", "company structure"
+                },
+                Examples = new()
+                {
+                    "mostrami l'organigramma", "che reparti ha la sede di Milano?", "com'è organizzato il reparto produzione?",
+                    "show the org chart", "which departments are there?"
+                },
+                RequiresConfirmation = false,
+                Pages = new() { "/hremployeelist" },
+                Slots = BuildSlots(SlotTesto("unit", false,
+                    "nome della sede o del reparto se detto (es. 'della sede di Milano' -> 'Milano', 'il reparto produzione' -> 'produzione'); ometti per tutta l'azienda",
+                    HumanResourcesMessages.Get("ChatUnitQuestion"), HumanResourcesMessages.Get("ChatUnitLabel")))
+            };
+        }
+
+        public override IntentDefinition IntentDefinition => _intentDefinition;
+
+        public override async Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        {
+            var res = await _organizzazioneService.SediGetAll(new GenericRequest<CommonOrganizzazione_SediGetAll_InModel>(new CommonOrganizzazione_SediGetAll_InModel()), false);
+            if (!res.Success || res.Data == null) return Fallito(res);
+
+            // albero appiattito in ordine di visita: sede, poi i suoi reparti con i sottoreparti
+            var unita = new List<HrUnitaOrganizzativa>();
+            foreach (var sede in res.Data.Az_Sedi)
+            {
+                var nodoSede = new HrUnitaOrganizzativa
+                {
+                    Id = sede.Id, Tipo = HrUnitaOrganizzativa.TipoSede, Nome = sede.Descrizione ?? string.Empty, Sede = sede.Descrizione ?? string.Empty,
+                    Percorso = sede.Descrizione ?? string.Empty, Livello = 0, NumeroReparti = sede.Az_SediReparto.Count
+                };
+                unita.Add(nodoSede);
+                foreach (var r in sede.Az_SediReparto)
+                    AggiungiReparto(unita, r, nodoSede, 1);
+            }
+            if (unita.Count == 0)
+                return CommandResult.Ok(HumanResourcesMessages.Get("ChatOrgChartNone"));
+
+            string? filtro = null;
+            if (slots.TryGetValue("unit", out var nome) && !string.IsNullOrWhiteSpace(nome))
+            {
+                var trovate = Trova(unita, nome, u => u.Nome);
+                if (trovate.Count == 0) trovate = Trova(unita, nome, u => u.Percorso);
+                if (trovate.Count == 0)
+                    return CommandResult.Ok(HumanResourcesMessages.Get("ChatOrgChartNotFound", nome.Trim()));
+                if (trovate.Count > 1)
+                    return CommandResult.Ok(HumanResourcesMessages.Get("ChatAmbiguous", trovate.Count, nome.Trim(), string.Join(", ", trovate.Take(8).Select(u => u.Percorso))));
+
+                // l'unità scelta e tutto ciò che le sta sotto: nell'ordine di visita sono le unità che seguono
+                // con livello maggiore, fino alla prima di livello uguale o minore
+                var scelta = trovate[0];
+                var inizio = unita.IndexOf(scelta);
+                unita = unita.Skip(inizio).TakeWhile((u, i) => i == 0 || u.Livello > scelta.Livello).ToList();
+                filtro = scelta.Percorso;
+            }
+
+            var sedi = unita.Count(u => u.Tipo == HrUnitaOrganizzativa.TipoSede);
+            var reparti = unita.Count - sedi;
+            var nota = HumanResourcesMessages.Get("ChatOrgChartNote");
+            var titolo = HumanResourcesMessages.Get("ChatOrgChartTitle", Filtro(new[] { filtro }), sedi, reparti);
+            var testo = Elenco(titolo, unita.Select(u => u.Percorso), 20) + Environment.NewLine + nota;
+
+            return CommandResult.Ok(testo, new HrOrganigrammaDati { Sedi = sedi, Reparti = reparti, Unita = unita, Nota = nota });
+        }
+
+        private const string Separatore = " / ";
+
+        private static void AggiungiReparto(List<HrUnitaOrganizzativa> unita, Az_SediRepartoCommonModel r, HrUnitaOrganizzativa padre, int livello)
+        {
+            if (livello > ProfonditaMassima) return;
+            var nodo = new HrUnitaOrganizzativa
+            {
+                Id = r.Id, Tipo = HrUnitaOrganizzativa.TipoReparto, Nome = r.Descrizione ?? string.Empty, Sede = padre.Sede,
+                IdPadre = padre.Id, TipoPadre = padre.Tipo, Padre = padre.Nome,
+                Percorso = padre.Percorso + Separatore + r.Descrizione, Livello = livello, NumeroReparti = r.Az_SediReparto_Sub.Count
+            };
+            unita.Add(nodo);
+            foreach (var sub in r.Az_SediReparto_Sub)
+                AggiungiReparto(unita, sub, nodo, livello + 1);
+        }
+    }
+
+    // R7 — contratti in scadenza (ANALISI_INFRASTRUCTURE_MCP.md, MCP-34): dipendenti con la fine del rapporto di lavoro
+    // (data di cessazione della scheda HR) entro N giorni, più quelli ancora attivi con la data già passata.
+    // Risorse Umane non gestisce tipi di contratto (tempo determinato, prova, apprendistato: sono nei rapporti di lavoro
+    // delle presenze): la data è quella che le presenze tengono allineata con l'ultimo rapporto (Dip_Anagrafica).
+    // Stessa visibilità della pagina Dipendenti di Risorse Umane (Hr_DipendenteList: amministratore dell'azienda).
+    public class HrContractExpiriesHandler : BaseCommandHandler
+    {
+        private const int GiorniPredefiniti = 60;
+        private const int GiorniMassimi = 365;
+
+        private readonly IHr_DipendenteService _dipendenteService;
+        private readonly IntentDefinition _intentDefinition;
+
+        public HrContractExpiriesHandler(IHr_DipendenteService dipendenteService)
+        {
+            _dipendenteService = dipendenteService;
+            _intentDefinition = new IntentDefinition
+            {
+                Name = "HrContractExpiries",
+                Application = ApplicationType.HumanResources,
+                Category = HumanResourcesMessages.Get("ChatCategory"),
+                CategoryOrder = CategoryOrder,
+                DisplayName = HumanResourcesMessages.Get("ChatContractExpiriesDisplayName"),
+                Description = HumanResourcesMessages.Get("ChatContractExpiriesDescription"),
+                Usable4Role = RuoliUfficio,
+                Keywords = new()
+                {
+                    "contratti in scadenza", "contratti scaduti", "contratti che scadono", "scadenza contratto", "scadenza dei contratti", "fine contratto",
+                    "cessazioni previste", "chi cessa", "rapporti in scadenza",
+                    "expiring contracts", "contract expiry", "contracts ending", "end of contract", "upcoming terminations"
+                },
+                Examples = new()
+                {
+                    "quali contratti scadono nei prossimi 60 giorni?", "contratti in scadenza entro tre mesi", "chi finisce il contratto questo mese?",
+                    "which contracts expire in the next 90 days?", "show the expiring contracts"
+                },
+                RequiresConfirmation = false,
+                Pages = new() { "/hremployeelist", "/hremployeeedit" },
+                Slots = BuildSlots(new SlotDefinition
+                {
+                    Name = "days",
+                    Type = "int",
+                    Required = false,
+                    PromptDescription = $"entro quanti giorni (es. 'nei prossimi 90 giorni' -> '90', 'entro tre mesi' -> 'tre mesi'); copia l'espressione; ometti se non detto ({GiorniPredefiniti} giorni, massimo {GiorniMassimi})",
+                    Question = HumanResourcesMessages.Get("ChatDaysQuestion"),
+                    Label = HumanResourcesMessages.Get("ChatDaysLabel"),
+                    Normalizer = NormalizzaGiorni,
+                    Validator = v => int.TryParse(v, out var g) && g > 0 && g <= GiorniMassimi
+                        ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat, HumanResourcesMessages.Get("ChatContractDaysInvalid", GiorniMassimi), "days")
+                })
+            };
+        }
+
+        public override IntentDefinition IntentDefinition => _intentDefinition;
+
+        public override async Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        {
+            var giorni = int.TryParse(slots.GetValueOrDefault("days"), out var g) && g > 0 ? Math.Min(g, GiorniMassimi) : GiorniPredefiniti;
+
+            var res = await _dipendenteService.Hr_DipendenteList(new GenericRequest<Hr_DipendenteListInModel>(new Hr_DipendenteListInModel { SoloAttivi = false }), false);
+            if (!res.Success || res.Data == null) return Fallito(res);
+
+            var oggi = DateTime.Today;
+            var limite = oggi.AddDays(giorni);
+            // in scadenza: fine entro il periodo; già passata: solo chi risulta ancora attivo (scheda da sistemare)
+            var righe = res.Data.Dipendenti
+                .Where(d => d.DataCessazione.HasValue
+                            && ((d.DataCessazione.Value.Date >= oggi && d.DataCessazione.Value.Date <= limite)
+                                || (d.DataCessazione.Value.Date < oggi && d.Attivo)))
+                .OrderBy(d => d.DataCessazione)
+                .ThenBy(d => d.Cognome).ThenBy(d => d.Nome)
+                .Select(d => new HrContrattoInScadenza
+                {
+                    IdDipendente = d.Id,
+                    Dipendente = NomeDipendente(d.Cognome, d.Nome),
+                    Matricola = string.IsNullOrWhiteSpace(d.Matricola) ? null : d.Matricola,
+                    Attivo = d.Attivo,
+                    DataAssunzione = DataIso(d.DataAssunzione),
+                    DataFine = DataIso(d.DataCessazione!.Value),
+                    GiorniAllaFine = (int)(d.DataCessazione.Value.Date - oggi).TotalDays,
+                    Scaduto = d.DataCessazione.Value.Date < oggi
+                })
+                .ToList();
+
+            var dati = new HrContrattiInScadenzaDati { Giorni = giorni, Dal = DataIso(oggi), Al = DataIso(limite), Contratti = righe };
+            if (righe.Count == 0)
+                return CommandResult.Ok(HumanResourcesMessages.Get("ChatContractExpiriesNone", giorni), dati);
+
+            var scaduti = righe.Where(r => r.Scaduto).ToList();
+            var prossimi = righe.Where(r => !r.Scaduto).ToList();
+            var sb = new StringBuilder();
+            if (scaduti.Count > 0)
+                sb.AppendLine(Elenco(HumanResourcesMessages.Get("ChatContractExpiriesOverdue", scaduti.Count), scaduti.Select(Riga), 10));
+            if (prossimi.Count > 0)
+            {
+                if (sb.Length > 0) sb.AppendLine();
+                sb.AppendLine(Elenco(HumanResourcesMessages.Get("ChatContractExpiriesTitle", prossimi.Count, giorni), prossimi.Select(Riga)));
+            }
+            return CommandResult.Ok(sb.ToString().TrimEnd(), dati);
+        }
+
+        private static string Riga(HrContrattoInScadenza c)
+        {
+            var data = DateTime.ParseExact(c.DataFine, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            return $"{Data(data)} — {c.Dipendente}" + (c.Matricola != null ? $" ({c.Matricola})" : string.Empty);
+        }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Dati strutturati restituiti dagli strumenti di lettura (CommandResult.Data, fase 3 MCP): date yyyy-MM-dd
+    // ---------------------------------------------------------------------------
+
+    public class HrOrganigrammaDati
+    {
+        public int Sedi { get; set; }
+        public int Reparti { get; set; }
+        // in ordine di albero: sede, reparti, sottoreparti
+        public List<HrUnitaOrganizzativa> Unita { get; set; } = new();
+        public string Nota { get; set; } = string.Empty;
+    }
+
+    public class HrUnitaOrganizzativa
+    {
+        public const string TipoSede = "sede";
+        public const string TipoReparto = "reparto";
+
+        public int Id { get; set; }
+        public string Tipo { get; set; } = TipoSede;          // "sede" | "reparto"
+        public string Nome { get; set; } = string.Empty;
+        public string Sede { get; set; } = string.Empty;      // sede a cui appartiene
+        public int? IdPadre { get; set; }                     // sede o reparto padre (null per le sedi)
+        public string? TipoPadre { get; set; }
+        public string? Padre { get; set; }
+        public string Percorso { get; set; } = string.Empty;  // "Sede / Reparto / Sottoreparto"
+        public int Livello { get; set; }                      // 0 = sede
+        public int NumeroReparti { get; set; }                // reparti diretti sotto questa unità
+    }
+
+    public class HrContrattiInScadenzaDati
+    {
+        public int Giorni { get; set; }
+        public string Dal { get; set; } = string.Empty;
+        public string Al { get; set; } = string.Empty;
+        public List<HrContrattoInScadenza> Contratti { get; set; } = new();
+    }
+
+    public class HrContrattoInScadenza
+    {
+        public int IdDipendente { get; set; }
+        public string Dipendente { get; set; } = string.Empty;
+        public string? Matricola { get; set; }
+        public bool Attivo { get; set; }
+        public string? DataAssunzione { get; set; }
+        public string DataFine { get; set; } = string.Empty;  // data di cessazione della scheda HR
+        public int GiorniAllaFine { get; set; }               // negativo se già passata
+        public bool Scaduto { get; set; }
     }
 }

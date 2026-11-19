@@ -484,4 +484,46 @@
   <data name="ChatOpenChecklistLabel" xml:space="preserve">
     <value>HR checklist</value>
   </data>
+  <data name="ChatOrgChartDisplayName" xml:space="preserve">
+    <value>Organization chart</value>
+  </data>
+  <data name="ChatOrgChartDescription" xml:space="preserve">
+    <value>Company structure: sites and departments with their sub-departments, for the whole company or for one site or department. Human resources does not record managers or the people of each department</value>
+  </data>
+  <data name="ChatUnitQuestion" xml:space="preserve">
+    <value>Which site or department?</value>
+  </data>
+  <data name="ChatUnitLabel" xml:space="preserve">
+    <value>Site or department</value>
+  </data>
+  <data name="ChatOrgChartNone" xml:space="preserve">
+    <value>No sites or departments are registered for the company.</value>
+  </data>
+  <data name="ChatOrgChartNotFound" xml:space="preserve">
+    <value>I could not find the site or department "{0}".</value>
+  </data>
+  <data name="ChatOrgChartTitle" xml:space="preserve">
+    <value>Organization chart{0}: {1} sites and {2} departments:</value>
+  </data>
+  <data name="ChatOrgChartNote" xml:space="preserve">
+    <value>Human resources does not record managers or the assignment of people to departments.</value>
+  </data>
+  <data name="ChatContractExpiriesDisplayName" xml:space="preserve">
+    <value>Expiring contracts</value>
+  </data>
+  <data name="ChatContractExpiriesDescription" xml:space="preserve">
+    <value>Employees whose employment ends (end date in the HR record) within some days, 60 if not said and at most 365, plus those still active with the date already passed. The contract type is not managed in human resources</value>
+  </data>
+  <data name="ChatContractDaysInvalid" xml:space="preserve">
+    <value>Give a number of days from 1 to {0}.</value>
+  </data>
+  <data name="ChatContractExpiriesNone" xml:space="preserve">
+    <value>No employment ends within {0} days.</value>
+  </data>
+  <data name="ChatContractExpiriesOverdue" xml:space="preserve">
+    <value>{0} employees still active with the end date already passed:</value>
+  </data>
+  <data name="ChatContractExpiriesTitle" xml:space="preserve">
+    <value>{0} employments end in the next {1} days:</value>
+  </data>
 </root>
