@@ -2,7 +2,7 @@
 // http://ionicframework.com/docs/theming/
 
 // Stile "chat AI moderna": superfici neutre quasi monocromatiche, bordi sottili al posto delle ombre,
-// angoli arrotondati; colore di accento usato con parsimonia: blu (#1E90FF) in chiaro,
+// angoli arrotondati; colore di accento usato con parsimonia: azzurro (#418DD2) in chiaro,
 // arancione acceso (#FF7300) in scuro.
 // Variabili --nvx-*: token dell'applicazione (global.scss, app.component.scss, componenti condivisi).
 
@@ -95,13 +95,19 @@
   // --ion-color-primary-contrast-rgb: 0,0,0;
   // --ion-color-primary-shade: #4e80ae;
   // --ion-color-primary-tint: #6a9dcc;
-  // stessa tonalita' di #5992C6, piu' satura (piu' accesa)
-  --ion-color-primary: #418DD2;
-  --ion-color-primary-rgb: 65,141,210;
+  // --ion-color-primary: #418DD2;
+  // --ion-color-primary-rgb: 65,141,210;
+  // --ion-color-primary-contrast: #000000;
+  // --ion-color-primary-contrast-rgb: 0,0,0;
+  // --ion-color-primary-shade: #397CB9;
+  // --ion-color-primary-tint: #5498D6;
+  // arancione acceso solo nel tema scuro (nel chiaro resta l'azzurro #418DD2)
+  --ion-color-primary: #FF7300;
+  --ion-color-primary-rgb: 255,115,0;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0,0,0;
-  --ion-color-primary-shade: #397CB9;
-  --ion-color-primary-tint: #5498D6;
+  --ion-color-primary-shade: #E06500;
+  --ion-color-primary-tint: #FF811A;
   --ion-color-secondary: #00A8FF;
 
   --ion-background-color: #212121;
