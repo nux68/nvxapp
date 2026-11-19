@@ -1,11 +1,14 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CmpService } from '../../../ClientServer-Service/Compliance/cmp.service';
 import * as M from '../../../ClientServer-Service/Compliance/Models/cmp-model';
 import { CMP_SEZIONI, CmpColonna, cmpOrdine, cmpValore } from '../../../Utility/Compliance/cmp-sezioni';
 import { NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -16,6 +19,8 @@ type CmpMiaSezione = 'formazione' | 'visite' | 'consegne' | 'nomine';
  "I miei adempimenti" (CMP-81, ANALISI_COMPLIANCE_APPLICATIVO.md §3): il dipendente vede i propri corsi, le visite (solo tipo,
  data, esito di idoneita' e scadenza: mai limitazioni di dettaglio o dati sanitari), i DPI ricevuti e le nomine, con lo stato
  della presa visione. La conferma si da' nella pagina comune delle prese visione (bottone in basso).
+ Corso registrato o DPI consegnato da un comando esterno (assistente AI via MCP): l'avviso DataChangedNotifier di Compliance
+ rilegge i dati lasciando la sezione e la ricerca correnti (ANALISI_INFRASTRUCTURE_MCP.md §12quater, MCP-43).
 */
 @Component({
   selector: 'app-cmp-mine-page',
@@ -36,6 +41,7 @@ export class CmpMinePageComponent {
   public readonly buttonbar: ButtonItem[];
   public readonly highlight = (x: M.CmpRiga) => !!x.scaduta;
   public readonly isDisabled = (x: M.CmpRiga) => !!x.rinnovata;
+  private dataChangedSub: Subscription | null = null;
 
   // colonne mostrate al dipendente (sottoinsieme di quelle delle sezioni)
   private readonly colonne: Record<CmpMiaSezione, string[]> = {
@@ -50,7 +56,8 @@ export class CmpMinePageComponent {
               private userInterfaceService: UserInterfaceService,
               private service: CmpService,
               private languageService: LanguageService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private dataChangedNotifierService: DataChangedNotifierService) {
     this.title = this.transloco.translate('cmp.pages.mine.title');
     // pagina comune delle prese visione, dove si confermano consegne DPI e nomine
     const btnApri = userInterfaceService.Btn_Apri;
@@ -66,7 +73,22 @@ export class CmpMinePageComponent {
       this.sezione = 'consegne';
     else if (this.sezioni.includes(state.sezione))
       this.sezione = state.sezione;
+    // dati di Compliance modificati da un comando esterno (MCP): si rileggono i propri adempimenti
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.Compliance).subscribe(() => this.carica(true));
+    this.carica();
+  }
+
+  ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
+  }
+
+  /** i propri adempimenti; aggiornamento = rilettura dopo un avviso: se non riesce restano i dati a video */
+  private carica(aggiornamento = false) {
     this.service.Mine(new GenericRequest<M.CmpListInModel>(M.CmpListInModel)).subscribe(res => {
+      if (aggiornamento && !(res.success && res.data))
+        return;
       this.dati = res.success && res.data ? res.data : new M.CmpMineOutModel();
       this.mostra();
     });
