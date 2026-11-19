@@ -80,6 +80,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
      sessione: l'identita' scelta resta sul token e scade da sola (Mcp:ImpersonationHours). Finche' dura, ogni risposta
      ricorda per chi si sta lavorando.
 
+     File (MCP-48): un comando che produce un file (report, export) restituisce CommandFileResult; all'AI arrivano i dati
+     strutturati del contenuto e un collegamento temporaneo e firmato per scaricare il file (Account/DownloadLink).
+
      Limiti (MCP-21): chiamate per token al minuto e al giorno (Mcp:MaxCallsPerMinute / MaxCallsPerDay), contate sul
      registro delle chiamate, quindi validi anche con piu' istanze del server; ogni elenco dei dati restituiti si ferma a
      Mcp:MaxRows righe, e il testo avvisa l'AI che il risultato e' parziale.
@@ -386,7 +389,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
             if (esito.Success)
             {
                 int maxRighe = McpOptions.MaxRows(_configuration);
-                (dati, bool troncati) = Dati(esito.Data, maxRighe);
+                // comando che ha prodotto un file: all'AI vanno il contenuto strutturato e il collegamento per scaricarlo
+                object? datiComando = esito.Data;
+                if (esito.Data is CommandFileResult file)
+                {
+                    datiComando = file.Data;
+                    testo.AppendLine().Append(CollegamentoFile(file));
+                }
+                (dati, bool troncati) = Dati(datiComando, maxRighe);
                 if (troncati)
                     testo.AppendLine().Append(InfrastructureMessages.Get("McpRowsTruncated", maxRighe));
             }
@@ -400,6 +410,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Mcp
         }
 
         private static McpToolCallResult Errore(string messaggio) => new() { Success = false, Text = messaggio };
+
+        // collegamento temporaneo e firmato per scaricare il file prodotto dal comando (McpDownloadLink, MCP-48)
+        private string CollegamentoFile(CommandFileResult file)
+        {
+            if (!NVXSystem.NomeFileJobValido(file.FileName))
+                return string.Empty;
+            int minuti = McpOptions.DownloadLinkMinutes(_configuration);
+            string codice = McpDownloadLink.Code(_jwtParameter.Key, file.FileName, DateTime.UtcNow.AddMinutes(minuti));
+            string indirizzo = nvxapp.server.service.ClientServer_Service.Infrastructure.Site.SiteUrl.ApiBase(_configuration, _httpContextAccessor)
+                               + "/" + McpDownloadLink.Route + file.FileName + "?code=" + Uri.EscapeDataString(codice);
+            return InfrastructureMessages.Get("McpDownloadLink", string.IsNullOrEmpty(file.DisplayName) ? file.FileName : file.DisplayName, minuti, indirizzo);
+        }
 
         // ---------------------------------------------------------------------------
         // Modifiche amministrative: conferma in due passi (MCP-40) e limite del periodo (MCP-41)

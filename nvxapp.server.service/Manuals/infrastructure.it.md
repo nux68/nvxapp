@@ -47,6 +47,7 @@ Da qui colleghi un **assistente AI** (Claude Code o Claude Desktop) a nvxapp: l'
 > Se l'azienda permette anche le modifiche personali, l'assistente può timbrare, chiedere ferie o una timbratura dimenticata, prenotare o annullare una tua prenotazione e confermare la lettura di un tuo documento: prima di farlo ti chiede sempre il permesso.
 > Se l'azienda permette tutte le modifiche, l'assistente può anche registrare o correggere dati di altri dipendenti e approvare richieste: ogni operazione di questo tipo viene prima riepilogata e parte solo dopo la tua conferma.
 > Se hai un ruolo di amministratore puoi chiedere all'assistente di **lavorare come** un utente che sta sotto di te ("lavora come Rossi"): da quel momento vede e fa ciò che può quell'utente, finché non gli dici di tornare indietro o passano alcune ore.
+> Puoi chiedere all'assistente un report (per esempio "fammi il piano ferie di novembre"): riceve i dati del report, su cui puoi fargli domande, e ti dà un collegamento per scaricare il PDF, valido per pochi minuti.
 > Ogni collegamento ha un limite di chiamate al minuto e al giorno; gli elenchi molto lunghi arrivano all'assistente in parte, e lui ti propone di restringere la richiesta.
 
 @@ /companypoweradmin
