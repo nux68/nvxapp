@@ -680,7 +680,7 @@ server e client compilati (controllo dei tipi del client senza errori): **16 con
 - [x] MCP-33 DocumentManagement: ricerca documenti in elenco, stato firme
 - [x] MCP-34 HumanResources: organigramma (sedi e reparti), rapporti di lavoro in scadenza
 - [x] MCP-35 Prove della fase 3 e delle notifiche push su tutti i rami uniti (sezione 12quinquies)
-- [ ] MCP-36 Catena dei merge della fase 3 e delle notifiche push
+- [x] MCP-36 Catena dei merge della fase 3 e delle notifiche push (19/11/2026)
 - [ ] MCP-37 Verifica dei nuovi strumenti con dati reali e del ricaricamento delle pagine in un browser
 
 ### Fase 4 – Scrittura amministrativa
