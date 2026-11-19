@@ -54,7 +54,7 @@
     <!-- utente collegato (quello del login); durante l'impersonificazione anche l'utente impersonato -->
     @if (showUser && loggedUserName) {
       <ion-buttons slot="end">
-        <div class="nvx-logged-user" [title]="impersonatedUserName ? loggedUserName + ' → ' + impersonatedUserName : loggedUserName">
+        <div class="nvx-logged-user" [title]="userTooltip">
           <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
           <span class="ion-hide-sm-down">{{ loggedUserName }}</span>
           @if (impersonatedUserName) {

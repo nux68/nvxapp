@@ -18,6 +18,10 @@ export class UserDataModel  {
 
   public userName: string | null;
 
+  // Cognome e Nome dell'anagrafica dipendente (solo utenti di tipo User; null se non disponibili)
+  public cognome?: string | null;
+  public nome?: string | null;
+
   public roles: RolesModel[] = [];
 
   // applicativi attivi per l'azienda dell'utente (valori di ApplicationType)
@@ -90,4 +94,12 @@ export enum ApplicationType {
   Compliance = 6,
   Assets = 7,
   // Administration = 8: riservato (Amministrazione, piu' avanti)
+}
+
+/** Nome da mostrare per l'utente: "Cognome Nome" dell'anagrafica se disponibili, altrimenti lo username. */
+export function nomeUtente(userData: UserDataModel | null | undefined): string | null {
+  if (!userData)
+    return null;
+  const nome = [userData.cognome, userData.nome].map(x => (x ?? '').trim()).filter(x => x !== '').join(' ');
+  return nome !== '' ? nome : userData.userName ?? null;
 }

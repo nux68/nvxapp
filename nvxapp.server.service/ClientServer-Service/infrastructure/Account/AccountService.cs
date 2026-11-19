@@ -552,6 +552,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             retVal.UserData.Id = model.Data.Id;
                             retVal.UserData.UserName = applicationUser.UserName;
 
+                            // utente di tipo User: Cognome e Nome dell'anagrafica dipendente (la toolbar li mostra al posto dello username);
+                            // non disponibili o errore di lettura: resta lo username, l'accesso non si blocca
+                            if (roles.Contains("User") && int.TryParse(company, out var idCompanyUser))
+                            {
+                                try
+                                {
+                                    var cognomeNome = await _commonDipendenteUtility.CognomeNomeAsync(idCompanyUser, applicationUser.Id);
+                                    retVal.UserData.Cognome = cognomeNome?.Cognome;
+                                    retVal.UserData.Nome = cognomeNome?.Nome;
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Warning(ex, "UserLoad: Cognome e Nome dell'utente {UserId} non letti", applicationUser.Id);
+                                }
+                            }
+
                             // applicativi abilitati dello studio dell'utente (funzioni lato studio, es. area studio del documentale)
                             // con il sistema licenze acceso restano solo quelli coperti da licenza (ANALISI_INFRASTRUCTURE_LICENZE.md §15.6)
                             if (int.TryParse(financialAdvisor, out var idFinancialAdvisorActive))
