@@ -37,6 +37,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Examples = new() { "cancella la timbratura di Rossi delle 8 di ieri", "elimina l'uscita di Bianchi delle 17:30", "annulla l'ultima timbratura", "delete Rossi's 9 am clocking" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatDeleteClockingSummary"),
                 Pages = new() { "/poweradmintimesheet" },
+                // MCP: escluso. La cancellazione e' fisica e il servizio non controlla rapporto di lavoro e mese approvato
+                // (ANALISI_INFRASTRUCTURE_MCP.md, sezione 12sexies, MCP-44)
+                McpAccess = nvxapp.server.data.Entities.Public.McpAccessLevel.Excluded,
                 Slots = BuildSlots(
                     EmployeeNameSlot,
                     SlotOrario("time", true, AttendanceTrackingMessages.Get("ChatClockingWhichQuestion"), AttendanceTrackingMessages.Get("ChatTimeLabel"),
