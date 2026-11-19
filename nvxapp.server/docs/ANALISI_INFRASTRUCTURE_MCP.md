@@ -9,7 +9,9 @@ Stato al 18/11/2026: **fase 0 (verifiche) e fase 1 implementate e portate su tut
 manuale. **Collegamento provato con Claude Desktop** (MCP-A8). **Fase 2 implementata** (sezione 12ter): modifiche
 personali (livello 2), limiti di chiamate per token, tetto alle righe, `PrintReport` escluso, nota "tramite
 assistente AI" nelle richieste da approvare (MCP-22). **Notifiche push ai browser** dopo i comandi di modifica (sezione
-12quater) e **fase 3** (13 nuovi strumenti di lettura, sezione 12quinquies) implementate. Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
+12quater) e **fase 3** (13 nuovi strumenti di lettura, sezione 12quinquies) implementate. **Fasi 4 e 6** (modifiche
+amministrative con conferma in due passi, impersonificazione tramite strumenti) implementate il 19/11/2026 (sezione
+12sexies); la **fase 5** (OAuth e claude.ai) è in sospeso. Cosa è stato costruito e come è stato provato: sezioni 12bis e 12ter. Checklist: sezione 13.
 
 > **Corretto il 18/11/2026** (punto MCP-A7b, sezione 7.1): `Account/UserLoad` emetteva il token di qualunque utente
 > indicato senza controllare, lato server, se chi chiama può impersonarlo. Ora vale la regola "solo chi sta sotto".
@@ -366,7 +368,7 @@ un'impostazione o una riga di codice.
 |---|---|---|
 | MCP-D1 | Partire da sola lettura o includere subito la scrittura | ✅ adottata: livello 1 in fase 1; dalla fase 2 `Mcp:MaxLevel` = 2 (modifiche personali, se l'azienda le sceglie) |
 | MCP-D2 | Token personale subito e OAuth dopo, oppure OAuth subito | ✅ adottata: token personale |
-| MCP-D3 | Conferma in due passi lato server per il livello 3 | 🔍 proposta sì (fase 4). Fino ad allora il livello 3 non è attivabile nemmeno da configurazione |
+| MCP-D3 | Conferma in due passi lato server per il livello 3 | ✅ adottata (19/11/2026): codice firmato, valido pochi minuti e una volta sola, sezione 12sexies.1 |
 | MCP-D4 | Accesso AI spento per impostazione predefinita, attivato dall'amministratore | ✅ adottata: lo attiva solo il CompanyPowerAdmin |
 | MCP-D5 | Nomi degli strumenti: come oggi o con prefisso del modulo | ✅ adottata: `attendance_`, `crm_`, `doc_`, `hr_`, `compliance_`, `assets_`, `nvx_` + nome del comando in minuscolo (es. `attendance_who_is_present`) |
 | MCP-D6 | Comandi che producono file (`PrintReport`) | ✅ adottata: esclusi; il meccanismo c'è (`McpAccess = Excluded`), la marcatura di `PrintReport` va fatta nel ramo presenze (MCP-23) |
@@ -572,8 +574,7 @@ servizio non avvisa nessuno, o esclude chi ha avviato l'operazione. Via MCP ques
 ### 12quater.4 Non coperto
 
 - La pagina "Timbratura" (`/timeclockuser`) non ascolta nulla: è un modulo di inserimento, non mostra l'elenco.
-- Le pagine di CRM, Risorse umane e Compliance non ascoltano `DataChangedNotifier`: da aggiungere quando i loro comandi
-  di modifica saranno pubblicati (fase 4, MCP-43).
+- Le pagine di CRM, Risorse umane e Compliance: in ascolto dalla fase 4 (sezione 12sexies.1).
 - La chat interna non manda `DataChangedNotifier`: si potrà chiamare lo stesso `IDataChangeNotifier` da `ChatAIService`.
 - `RegisterJustificationPeriod` manda un avviso `GiustificativiNotifier` per ogni giorno (comportamento precedente).
 
@@ -626,6 +627,125 @@ server e client compilati (controllo dei tipi del client senza errori): **16 con
   una lettura non manda avvisi; `attendance_clock_now` manda `DataChangedNotifier` a entrambi con applicativo e comando
   corretti; la fine del ricalcolo (`JobNotifierAsync`) arriva anche a chi ha avviato il comando.
 - Non provato in un browser vero: il ricaricamento visivo delle pagine (cartellino, prenotazioni, documenti).
+
+## 12sexies. Fasi 4 e 6 (19/11/2026). Fase 5 in sospeso
+
+Su indicazione dell'utente: fasi 4 e 6 implementate, **fase 5 (OAuth e claude.ai) lasciata in sospeso**.
+
+### 12sexies.1 Fase 4: modifiche amministrative (livello 3)
+
+**Conferma in due passi lato server (MCP-40, decisione MCP-D3 adottata).** Uno strumento di livello 3 ha in più il
+parametro `confirmationCode`. La prima chiamata **non esegue**: valida i parametri e risponde "OPERAZIONE NON ANCORA
+ESEGUITA" con il riepilogo (la frase del comando, `SummaryTemplate`) e un codice. La seconda chiamata, con gli stessi
+parametri e il codice, esegue. Il codice (`McpConfirmation`):
+
+- non si salva: è `<scadenza>.<firma>`, con firma HMAC-SHA256 (chiave dell'installazione) su scadenza, token, utente di
+  lavoro, strumento e parametri; funziona con più istanze del server;
+- vale solo per quella operazione: parametri diversi, altro strumento, altro token o altro utente lo rendono non valido;
+- dura `Mcp:ConfirmMinutes` (5) e si usa **una volta sola** (verifica sul registro delle chiamate);
+- l'avviso push `DataChangedNotifier` parte solo dopo l'esecuzione.
+
+Il server non può sapere se l'utente ha davvero letto il riepilogo: quello resta compito del client (che per gli
+strumenti di modifica chiede il permesso) e delle istruzioni del server ("Never confirm on your own"). I due passi
+garantiscono però che nessuna modifica amministrativa parta con una sola chiamata, che il riepilogo sia quello dei
+parametri realmente eseguiti e che una chiamata ripetuta per errore non scriva due volte.
+
+**Livello 3 attivabile (MCP-41).** `Mcp:MaxLevel` = 3: il CompanyPowerAdmin può scegliere "lettura e tutte le
+modifiche" (la pagina e i testi c'erano già). Limiti di quantità per chiamata:
+
+- Infrastructure: un periodo (slot di inizio con `PeriodEndSlot`) non oltre `Mcp:MaxWriteDays` (31) giorni;
+- Presenze, solo via MCP: 31 giorni per `RegisterJustificationPeriod`, 20 richieste per `ApproveRequests`
+  (`ChatPresenzeHelper.McpMaxGiorni` / `McpMaxRichieste`); nessun comando accetta più di un dipendente per chiamata;
+- gli altri comandi agiscono su un solo record.
+
+Strumenti di livello 3 pubblicati (14): presenze `register_clocking`, `update_clocking`, `register_justification`,
+`register_justification_amount`, `register_justification_period`, `register_causale`, `approve_requests`; CRM
+`new_activity`, `add_note`, `complete_activity`; Risorse umane `complete_checklist_item`, `add_plan_course`; Compliance
+`register_training`, `ppe_delivery`.
+
+**Esclusi per prudenza (MCP-44, da decidere):**
+
+| Comando | Motivo | Per riammetterlo |
+|---|---|---|
+| `CalcolaGiorno` | il ricalcolo passa al motore anche "approva richieste di timbratura / giustificativo" e "genera timbrature e giustificativi mancanti": approva richieste in attesa senza elencarle nel riepilogo e senza il controllo dei permessi delle approvazioni | un ricalcolo puro (le quattro opzioni a falso) quando arriva da MCP |
+| `DeleteClocking` | cancellazione fisica, e il servizio non controlla rapporto di lavoro né mese approvato | lo stesso controllo di `Put` (`VerificaGiorniNelRapporto`) in `Dip_GG_TimbraturaDelete` |
+
+**Revisione dei comandi di modifica** (agenti per modulo, nessun altro comando da escludere). Esito e punti aperti:
+
+- i permessi sono verificati nei servizi per CRM, Risorse umane, Compliance e per `ApproveRequests`; per gli altri
+  comandi delle presenze il ruolo (CompanyPowerAdmin) è verificato dall'elenco degli strumenti (`Usable4Role`), non dal
+  servizio;
+- **corretto**: `RegisterClocking` chiamava il servizio come sotto-processo e saltava il controllo su rapporto di
+  lavoro e mese approvato (accettava timbrature prima dell'assunzione o in un mese chiuso). Ora lo esegue, **anche
+  dalla chat interna**;
+- `HrAddPlanCourse` rilegge e riscrive l'intero piano: una riga aggiunta nello stesso istante da un altro utente si
+  perde (vale anche tra due utenti del web). Servirebbe un metodo che aggiunge una sola riga;
+- `CmpRegisterTraining` / `CmpPpeDelivery`, `RegisterJustification`: nessun controllo dei doppioni (l'uso unico del
+  codice evita il doppione da chiamata ripetuta);
+- `RegisterJustificationAmount`: nessun tetto ragionevole all'importo;
+- testi liberi di CRM (`CrmAddNote`, oggetto, esito) oltre la lunghezza della colonna: errore tecnico invece di un
+  messaggio; sono anche il vettore principale delle istruzioni nascoste (una nota scritta da un assistente viene
+  riletta da un altro);
+- `CrmNewActivity` e `CrmCompleteActivity` agiscono solo sulle attività dell'utente: candidati a "modifica personale"
+  (livello 2), non cambiati.
+
+**Pagine in ascolto delle notifiche push (MCP-43).** `DataChangedNotifier` ricarica ora anche: CRM (agenda, scheda
+cliente, elenco clienti, report), Risorse umane (elenco e dettaglio checklist, piani di formazione, widget assunzioni),
+Compliance (elenchi delle sezioni, "I miei adempimenti", tre widget). Le pagine di modifica con un form aperto non si
+ricaricano. Non in ascolto: scheda dell'opportunità CRM, modifica del piano di formazione, scadenzario comune.
+
+**Istruzioni nascoste nei dati (MCP-42): non chiuso.** Lato server valgono i due passi, l'uso unico, i limiti di
+quantità e l'esclusione dei comandi più pericolosi. La resistenza di un modello vero a un testo malevolo letto dai dati
+(nota CRM, descrizione di un ticket) va provata con un client reale: non è stata fatta.
+
+### 12sexies.2 Fase 6: impersonificazione tramite strumenti
+
+Tre strumenti fissi, elencati solo a chi ha un ruolo sopra User:
+
+| Strumento | Cosa fa |
+|---|---|
+| `nvx_who_can_i_work_as` (`search`) | utenti che l'utente del login può impersonare, con ruolo e azienda. Per SuperUser, PowerAdmin e Admin la ricerca è obbligatoria (possono impersonare chiunque) |
+| `nvx_work_as` (`user`) | da quel momento gli strumenti lavorano come l'utente indicato |
+| `nvx_stop_working_as` | torna all'utente di partenza del collegamento |
+| `nvx_whoami` (già esistente) | "chi sono": utente di lavoro, utente del login, azienda, livello |
+
+- **Stessa regola dell'applicazione** ("solo chi sta sotto", `AccountService.PuoLavorareCome`), verificata lato server
+  sull'utente del **login**: funzionano le catene e il ritorno.
+- **Identità sul token, non sulla sessione** (differenza rispetto alla proposta della sezione 7.1): il trasporto MCP è
+  senza sessione, quindi "lavora come" cambia l'utente di lavoro del token personale e salva l'identità di partenza
+  (`McpAccessToken.HomeIdentity`, `ImpersonationExpiresAt`; migrazione `AddMcpImpersonation`). Scade da sola dopo
+  `Mcp:ImpersonationHours` (8). Vale per tutte le conversazioni che usano quel token.
+- **Avviso del cambio degli strumenti**: senza sessione il server non può mandare `tools/list_changed`; la risposta di
+  `nvx_work_as` e `nvx_stop_working_as` dice al client di richiedere di nuovo l'elenco (MCP-61, in parte).
+- **Ogni risposta ricorda per chi si lavora** ("[Stai lavorando come X — azienda: Y]").
+- **Interruttore dell'azienda impersonata** (MCP-62): con l'accesso AI spento non si vedono gli strumenti dei suoi dati;
+  resta disponibile "torna indietro".
+- **Mai bloccati**: se l'utente impersonato viene eliminato, scollegato o disabilitato, il token torna all'utente di
+  partenza invece di smettere di funzionare.
+- **Registro**: ogni chiamata riporta utente del login e utente di lavoro (MCP-63).
+- "Torna indietro" riporta sempre all'identità con cui il token è nato (non segue la pila di navigazione
+  dell'interfaccia).
+
+### 12sexies.3 Prove
+
+Database usa e getta, `AllFunction_Dev` più i cinque rami di lavoro uniti (merge di prova senza conflitti), server con
+`MaxLevel=3`, client con controllo dei tipi senza errori. **40 controlli superati** (un 41° era un errore della lista
+di controllo dello script, non del programma):
+
+- livelli: a livello 2 nessuno strumento amministrativo; a livello 3 compaiono, con `confirmationCode`, descrizione dei
+  due passi e marcatura di modifica; gli esclusi restano fuori;
+- due passi su `attendance_register_clocking`: il primo passo non scrive e non manda avvisi; codice inventato, codice
+  con parametri diversi e codice usato da un altro token rifiutati; il secondo passo registra la timbratura e manda
+  l'avviso push; il riuso del codice è rifiutato;
+- periodo di 90 giorni rifiutato;
+- impersonificazione: elenco dei candidati per l'utente di studio; SuperUser rifiutato; "lavora come" il PowerAdmin
+  dell'azienda cambia strumenti, `nvx_whoami` e promemoria; doppia identità nel registro; interruttore dell'azienda
+  rispettato; ritorno; scadenza (forzata sul database) e utente disabilitato riportano alla partenza; il CompanyAdmin
+  non può impersonare il PowerAdmin, il contrario sì.
+
+Non provato: gli strumenti amministrativi di CRM, Risorse umane e Compliance fino all'esecuzione (solo il primo passo o
+la validazione: l'azienda di prova non ha clienti, corsi né checklist); il ricaricamento visivo delle pagine in un
+browser; un client AI reale.
 
 ## 13. Checklist
 
@@ -685,12 +805,16 @@ server e client compilati (controllo dei tipi del client senza errori): **16 con
 
 ### Fase 4 – Scrittura amministrativa
 
-- [ ] MCP-40 Conferma in due passi lato server
-- [ ] MCP-41 Abilitazione degli strumenti di livello 3 con limiti di quantità per chiamata
-- [ ] MCP-42 Prove di resistenza alle istruzioni nascoste nei dati
-- [ ] MCP-43 Pagine di CRM, Risorse umane e Compliance in ascolto di `DataChangedNotifier` (sezione 12quater.4)
+- [x] MCP-40 Conferma in due passi lato server
+- [x] MCP-41 Abilitazione degli strumenti di livello 3 con limiti di quantità per chiamata
+- [ ] MCP-42 Prove di resistenza alle istruzioni nascoste nei dati: protezioni lato server fatte, prova con un modello reale da fare (sezione 12sexies.1)
+- [x] MCP-43 Pagine di CRM, Risorse umane e Compliance in ascolto di `DataChangedNotifier`
+- [ ] MCP-44 Decidere `CalcolaGiorno` (ricalcolo puro via MCP) e `DeleteClocking` (controlli nel servizio), oggi esclusi
+- [ ] MCP-45 Punti aperti della revisione dei comandi: piano di formazione riscritto per intero, doppioni, tetto agli importi, lunghezza dei testi del CRM, scadenzario e scheda opportunità in ascolto
+- [x] MCP-46 Prove delle fasi 4 e 6 su tutti i rami uniti (sezione 12sexies.3)
+- [ ] MCP-47 Catena dei merge delle fasi 4 e 6
 
-### Fase 5 – claude.ai
+### Fase 5 – claude.ai (in sospeso, decisione dell'utente del 19/11/2026)
 
 - [ ] MCP-50 Login OAuth per i client MCP
 - [ ] MCP-51 Prova del connettore personalizzato su claude.ai verso l'installazione pubblica
@@ -698,7 +822,7 @@ server e client compilati (controllo dei tipi del client senza errori): **16 con
 
 ### Fase 6 – Impersonificazione tramite strumenti
 
-- [ ] MCP-60 Strumenti "chi sono", "chi posso impersonare", "lavora come …", "torna indietro"
-- [ ] MCP-61 Identità impersonata legata alla sessione MCP, con avviso al client del cambio dell'elenco strumenti
-- [ ] MCP-62 Rispetto dell'interruttore AI dell'azienda impersonata (MCP-D9)
-- [ ] MCP-63 Registro delle chiamate con entrambe le identità e prove con SuperUser, centro e studio
+- [x] MCP-60 Strumenti "chi sono", "chi posso impersonare", "lavora come …", "torna indietro"
+- [x] MCP-61 Identità impersonata legata al token (il trasporto è senza sessione) con scadenza; il cambio dell'elenco strumenti è detto nella risposta, non con una notifica del protocollo
+- [x] MCP-62 Rispetto dell'interruttore AI dell'azienda impersonata (MCP-D9)
+- [x] MCP-63 Registro delle chiamate con entrambe le identità; provato con utente di studio e di azienda (SuperUser e centro: stessa regola, non provati dal vivo)
