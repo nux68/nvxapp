@@ -45,6 +45,8 @@ From here you connect an **AI assistant** (Claude Code or Claude Desktop) to nvx
 > If you are impersonating another user, the token you create works as that user.
 > Until the administrator enables AI access for the company, the assistant connects but sees no tools.
 > If the company also allows personal changes, the assistant can clock in or out, request leave or a forgotten clocking, book or cancel one of your bookings and confirm reading one of your documents: it always asks your permission first.
+> If the company allows all changes, the assistant can also record or correct other employees' data and approve requests: each such operation is summarised first and runs only after you confirm.
+> If you have an administrator role you can ask the assistant to **work as** a user below you ("work as Rossi"): from then on it sees and does what that user can, until you tell it to go back or a few hours pass.
 > Each connection has a limit of calls per minute and per day; very long lists reach the assistant only in part, and it suggests narrowing the request.
 
 @@ /companypoweradmin
@@ -72,7 +74,7 @@ Here the CompanyPowerAdmin hides from CompanyAdmins and Users the menu items the
 
 @@ /aiaccesssetting
 Here the CompanyPowerAdmin decides whether the company's users can connect an AI assistant to nvxapp. Access is **off** until you enable it.
-1. Turn on **AI access enabled** and choose the **allowed operations** (read only, or also the changes users make for themselves).
+1. Turn on **AI access enabled** and choose the **allowed operations** (read only, also the changes users make for themselves, or all changes, including other employees' data and approvals, always with a summary and confirmation).
 2. Confirm: from then on the assistants connected by users see the tools of their role.
 > With access enabled, the data the assistant reads is sent to the AI provider chosen by the user: consider mentioning it in the employee privacy notice and in the record of processing activities.
 > You can turn access off at any time: it applies immediately to all connections, including those created by someone impersonating a user of the company.
