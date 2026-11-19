@@ -40,6 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
     public class Doc_DocumentoService : ServiceBase, IDoc_DocumentoService
     {
         private const int MaxRighe = 500;
+        // periodo massimo dell'elenco delle firme (Doc_FirmaList)
+        public const int MaxGiorniFirme = 366;
         private const int MaxTesto = 200_000;   // il vettore di ricerca di PostgreSQL ha un limite di dimensione
 
         private static readonly HashSet<string> _estensioni = new(StringComparer.OrdinalIgnoreCase)
@@ -536,6 +538,87 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
             }, isSubProcess);
         }
 
+        /*
+         Stato delle firme richieste (sola lettura, nessun registro; ANALISI_INFRASTRUCTURE_MCP.md MCP-33): una riga per destinatario
+         a cui e' chiesta la firma, con l'invio nel periodo (al massimo MaxGiorniFirme giorni). Stessa visibilita' delle pagine:
+            - le firme richieste all'utente corrente, sui documenti che vede ("I miei documenti");
+            - quelle degli altri destinatari solo sui documenti che l'utente puo' modificare (il dettaglio mostra i destinatari a loro).
+         Una nuova versione azzera la firma: la riga torna "da firmare". Non ci sono firme rifiutate o scadute.
+        */
+        public virtual async Task<GenericResult<Doc_FirmaListOutModel>> Doc_FirmaList(GenericRequest<Doc_FirmaListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ctx = await _utility.ContestoAsync();
+                var f = model.Data;
+                var al = (f.Al ?? DateTime.Today).Date;
+                var dal = (f.Dal ?? al.AddDays(-365)).Date;
+                if (dal > al)
+                    throw new UserMessageException(DocumentManagementMessages.Get("SignListPeriodInvalid"));
+                if ((al - dal).TotalDays > MaxGiorniFirme)
+                    throw new UserMessageException(DocumentManagementMessages.Get("SignListPeriodTooLong", MaxGiorniFirme));
+                var alEscluso = al.AddDays(1);
+
+                var idUtente = ctx.IdUtente;
+                var idDip = ctx.IdDip_Anagrafica;
+                bool caricaPersonale = ctx.CaricaPersonale;
+                bool amministraArchivio = ctx.AmministraArchivio;
+                var visibili = _utility.Visibili(ctx).Where(d => !d.NelCestino).Select(d => d.Id);
+
+                var q = _destinatarioRepository.FindAll(r => r.FirmaRichiesta && visibili.Contains(r.IdDoc_Documento)
+                                                             && r.CreationDate >= dal && r.CreationDate < alEscluso);
+                if (f.Miei)
+                    q = q.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip));
+                else
+                    q = q.Where(r => r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip)
+                                     // stessa regola di PuoModificare
+                                     || ((r.Doc_DocumentoNavigation!.Doc_Par_TipoNavigation!.Categoria == Doc_Categoria.Personale || r.Doc_DocumentoNavigation.IdDip_Anagrafica != null)
+                                         ? caricaPersonale
+                                         : amministraArchivio));
+                if (f.Firmati == true) q = q.Where(r => r.DataFirma != null);
+                else if (f.Firmati == false) q = q.Where(r => r.DataFirma == null);
+
+                var righe = await q.OrderByDescending(r => r.CreationDate).ThenByDescending(r => r.Id)
+                    .Select(r => new
+                    {
+                        r.IdAspNetUsers,
+                        r.IdDip_Anagrafica,
+                        DipDestinatario = r.Dip_AnagraficaNavigation != null ? (r.Dip_AnagraficaNavigation.Cognome + " " + r.Dip_AnagraficaNavigation.Nome) : null,
+                        Firma = new Doc_FirmaModel
+                        {
+                            IdDoc_Documento = r.IdDoc_Documento,
+                            Titolo = r.Doc_DocumentoNavigation!.Titolo,
+                            Tipo = r.Doc_DocumentoNavigation.Doc_Par_TipoNavigation!.Descrizione,
+                            Dipendente = r.Doc_DocumentoNavigation.Dip_AnagraficaNavigation != null
+                                ? (r.Doc_DocumentoNavigation.Dip_AnagraficaNavigation.Cognome + " " + r.Doc_DocumentoNavigation.Dip_AnagraficaNavigation.Nome) : null,
+                            Cliente = r.Doc_DocumentoNavigation.Az_ClienteNavigation != null ? r.Doc_DocumentoNavigation.Az_ClienteNavigation.Descrizione : null,
+                            DataDocumento = r.Doc_DocumentoNavigation.DataDocumento,
+                            Anno = r.Doc_DocumentoNavigation.Anno,
+                            Mese = r.Doc_DocumentoNavigation.Mese,
+                            DataScadenza = r.Doc_DocumentoNavigation.DataScadenza,
+                            VersioneCorrente = r.Doc_DocumentoNavigation.VersioneCorrente,
+                            DataRichiesta = r.CreationDate,
+                            DataFirma = r.DataFirma,
+                            FirmaVersione = r.FirmaVersione
+                        }
+                    })
+                    .Take(MaxRighe + 1).ToListAsync();
+
+                // nominativo: il dipendente, altrimenti l'utente (tabella comune: lettura a parte, come nel dettaglio)
+                var idUtenti = righe.Where(r => r.DipDestinatario == null && r.IdAspNetUsers != null).Select(r => r.IdAspNetUsers).Distinct().ToList();
+                var nomi = await _usersRepository.FindAll(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
+
+                var retVal = new Doc_FirmaListOutModel { Dal = dal, Al = al, Troncato = righe.Count > MaxRighe };
+                foreach (var r in righe.Take(MaxRighe))
+                {
+                    r.Firma.Destinatario = (r.DipDestinatario ?? nomi.FirstOrDefault(n => n.Id == r.IdAspNetUsers)?.UserName ?? string.Empty).Trim();
+                    r.Firma.Mia = r.IdAspNetUsers == idUtente || (idDip != null && r.IdDip_Anagrafica == idDip);
+                    retVal.Firme.Add(r.Firma);
+                }
+                return retVal;
+            }, isSubProcess);
+        }
+
         // ---------------------------------------------------------------------------
         // Supporto
 
@@ -951,5 +1034,6 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Docu
         Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoPresaVisione(GenericRequest<Doc_DocumentoIdInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_DocumentoIdOutModel>> Doc_DocumentoFirma(GenericRequest<Doc_DocumentoFirmaInModel> model, Boolean isSubProcess);
         Task<GenericResult<Doc_LogListOutModel>> Doc_LogList(GenericRequest<Doc_LogListInModel> model, Boolean isSubProcess);
+        Task<GenericResult<Doc_FirmaListOutModel>> Doc_FirmaList(GenericRequest<Doc_FirmaListInModel> model, Boolean isSubProcess);
     }
 }

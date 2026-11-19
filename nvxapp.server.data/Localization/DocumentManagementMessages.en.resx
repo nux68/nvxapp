@@ -389,4 +389,65 @@
   <data name="AckPdfHowAcknowledge" xml:space="preserve">
     <value>The acknowledgement is confirmed in the application, in "My documents".</value>
   </data>
+  <data name="ChatListDisplayName" xml:space="preserve">
+    <value>Document list</value>
+  </data>
+  <data name="ChatListDescription" xml:space="preserve">
+    <value>list of documents by type, employee or customer, text, year or month, with date, period, expiry, status, read confirmation and signature of each one (does not open pages)</value>
+  </data>
+  <data name="ChatSignDisplayName" xml:space="preserve">
+    <value>Signature status</value>
+  </data>
+  <data name="ChatSignDescription" xml:space="preserve">
+    <value>documents with a signature request, to be signed and already signed: mine or (for those who manage documents) the recipients' ones, by person, type and sending period (default last 12 months)</value>
+  </data>
+  <data name="ChatSignStatusQuestion" xml:space="preserve">
+    <value>Which signatures: to be signed, already signed or all?</value>
+  </data>
+  <data name="ChatSignStatusLabel" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ChatFromQuestion" xml:space="preserve">
+    <value>From which date?</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ChatToQuestion" xml:space="preserve">
+    <value>Up to which date?</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>Invalid date: {0}</value>
+  </data>
+  <data name="ChatSignPeriod" xml:space="preserve">
+    <value>from {0} to {1}</value>
+  </data>
+  <data name="ChatSignNone" xml:space="preserve">
+    <value>No signature requested{0} {1}.</value>
+    <comment>{0}: filters in brackets (may be empty); {1}: sending period (ChatSignPeriod)</comment>
+  </data>
+  <data name="ChatSignToSignTitle" xml:space="preserve">
+    <value>{0} documents to be signed{1}, sent {2}:</value>
+  </data>
+  <data name="ChatSignSignedTitle" xml:space="preserve">
+    <value>{0} signed documents{1}, sent {2}:</value>
+  </data>
+  <data name="ChatSignSentOn" xml:space="preserve">
+    <value>sent on {0}</value>
+  </data>
+  <data name="ChatSignSignedOn" xml:space="preserve">
+    <value>signed on {0}</value>
+  </data>
+  <data name="ChatSignTruncated" xml:space="preserve">
+    <value>(list limited to the most recent requests: narrow the period)</value>
+  </data>
+  <data name="SignListPeriodInvalid" xml:space="preserve">
+    <value>The start date of the period is after the end date.</value>
+  </data>
+  <data name="SignListPeriodTooLong" xml:space="preserve">
+    <value>The period can be at most {0} days: narrow it.</value>
+  </data>
 </root>

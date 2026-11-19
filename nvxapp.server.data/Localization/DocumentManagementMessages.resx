@@ -389,4 +389,65 @@
   <data name="AckPdfHowAcknowledge" xml:space="preserve">
     <value>La presa visione si conferma nell'applicazione, in "I miei documenti".</value>
   </data>
+  <data name="ChatListDisplayName" xml:space="preserve">
+    <value>Elenco documenti</value>
+  </data>
+  <data name="ChatListDescription" xml:space="preserve">
+    <value>elenco dei documenti per tipo, dipendente o cliente, testo, anno o mese, con data, competenza, scadenza, stato, presa visione e firma di ciascuno (non apre pagine)</value>
+  </data>
+  <data name="ChatSignDisplayName" xml:space="preserve">
+    <value>Stato delle firme</value>
+  </data>
+  <data name="ChatSignDescription" xml:space="preserve">
+    <value>documenti con firma richiesta, da firmare e già firmati: i miei, oppure (per chi gestisce i documenti) quelli dei destinatari, per persona, tipo e periodo dell'invio (default ultimi 12 mesi)</value>
+  </data>
+  <data name="ChatSignStatusQuestion" xml:space="preserve">
+    <value>Quali firme: da firmare, già firmate o tutte?</value>
+  </data>
+  <data name="ChatSignStatusLabel" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="ChatFromQuestion" xml:space="preserve">
+    <value>Da che data?</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>Dal</value>
+  </data>
+  <data name="ChatToQuestion" xml:space="preserve">
+    <value>Fino a che data?</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>Al</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>Data non valida: {0}</value>
+  </data>
+  <data name="ChatSignPeriod" xml:space="preserve">
+    <value>dal {0} al {1}</value>
+  </data>
+  <data name="ChatSignNone" xml:space="preserve">
+    <value>Nessuna firma richiesta{0} {1}.</value>
+    <comment>{0}: filtri tra parentesi (può essere vuoto); {1}: periodo dell'invio (ChatSignPeriod)</comment>
+  </data>
+  <data name="ChatSignToSignTitle" xml:space="preserve">
+    <value>{0} documenti da firmare{1}, inviati {2}:</value>
+  </data>
+  <data name="ChatSignSignedTitle" xml:space="preserve">
+    <value>{0} documenti firmati{1}, inviati {2}:</value>
+  </data>
+  <data name="ChatSignSentOn" xml:space="preserve">
+    <value>inviato il {0}</value>
+  </data>
+  <data name="ChatSignSignedOn" xml:space="preserve">
+    <value>firmato il {0}</value>
+  </data>
+  <data name="ChatSignTruncated" xml:space="preserve">
+    <value>(elenco limitato alle richieste più recenti: restringi il periodo)</value>
+  </data>
+  <data name="SignListPeriodInvalid" xml:space="preserve">
+    <value>La data di inizio del periodo è successiva alla data di fine.</value>
+  </data>
+  <data name="SignListPeriodTooLong" xml:space="preserve">
+    <value>Il periodo può essere al massimo di {0} giorni: restringilo.</value>
+  </data>
 </root>
