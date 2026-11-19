@@ -291,6 +291,148 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             return livello;
         }
 
+        // ---------------------------------------------------------------------------
+        // Impersonificazione tramite strumenti MCP (ANALISI_INFRASTRUCTURE_MCP.md, fase 6): stessa regola di UserLoad
+        // ("solo chi sta sotto", PuoLavorareCome), ma senza emettere un token dell'applicazione: McpToolService cambia
+        // l'utente di lavoro del token personale.
+        // ---------------------------------------------------------------------------
+
+        /// <summary>vero se l'utente del login ha un ruolo sopra User: puo' avere qualcuno sotto di se' da impersonare</summary>
+        public virtual async Task<bool> PuoImpersonareQualcuno()
+        {
+            string login = string.IsNullOrEmpty(this.UserIdFirstConnection) ? this.CurrentUserId : this.UserIdFirstConnection;
+            if (string.IsNullOrEmpty(login))
+                return false;
+            var utenteLogin = await _userManager.FindByIdAsync(login);
+            return utenteLogin != null && LivelloRuolo(await _userManager.GetRolesAsync(utenteLogin)) > (int)RoleCode.User;
+        }
+
+        /// <summary>
+        /// Utenti che l'utente del login puo' impersonare (regola di PuoLavorareCome), filtrati per nome utente.
+        /// SuperUser, PowerAdmin e Admin possono impersonare chiunque: per loro la ricerca e' obbligatoria (almeno 2 caratteri).
+        /// </summary>
+        public virtual async Task<List<ImpersonationTarget>> UtentiImpersonabili(string? search, int max)
+        {
+            var risultato = new List<ImpersonationTarget>();
+            string login = string.IsNullOrEmpty(this.UserIdFirstConnection) ? this.CurrentUserId : this.UserIdFirstConnection;
+            var utenteLogin = string.IsNullOrEmpty(login) ? null : await _userManager.FindByIdAsync(login);
+            if (utenteLogin == null)
+                return risultato;
+            int livelloLogin = LivelloRuolo(await _userManager.GetRolesAsync(utenteLogin));
+            if (livelloLogin <= (int)RoleCode.User)
+                return risultato;
+
+            string testo = (search ?? string.Empty).Trim().ToUpperInvariant();
+            var query = _aspNetUsersRepository.FindAll(x => x.Id != login);
+            if (livelloLogin >= (int)RoleCode.Admin)
+            {
+                if (testo.Length < 2)
+                    throw new UserMessageException(InfrastructureMessages.Get("McpWorkAsSearchRequired"));
+            }
+            else
+            {
+                // ramo dell'utente del login, come in PuoLavorareCome
+                var centri = await _userDealerRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdDealer).ToListAsync();
+                var studi = await _userFinancialAdvisorRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdFinancialAdvisor).ToListAsync();
+                if (centri.Count > 0)
+                    studi.AddRange(await _financialAdvisorRepository.FindAll(x => centri.Contains(x.IdDealer)).Select(x => x.Id).ToListAsync());
+                var aziende = await _userCompanyRepository.FindAll(x => x.IdAspNetUsers == login && !x.Disabled).Select(x => x.IdCompany).ToListAsync();
+                if (studi.Count > 0)
+                    aziende.AddRange(await _companyRepository.FindAll(x => studi.Contains(x.IdFinancialAdvisor)).Select(x => x.Id).ToListAsync());
+
+                var ids = new HashSet<string>();
+                if (centri.Count > 0)
+                    ids.UnionWith(await _userDealerRepository.FindAll(x => centri.Contains(x.IdDealer)).Select(x => x.IdAspNetUsers).ToListAsync());
+                if (studi.Count > 0)
+                    ids.UnionWith(await _userFinancialAdvisorRepository.FindAll(x => studi.Contains(x.IdFinancialAdvisor)).Select(x => x.IdAspNetUsers).ToListAsync());
+                if (aziende.Count > 0)
+                    ids.UnionWith(await _userCompanyRepository.FindAll(x => aziende.Contains(x.IdCompany) && !x.Disabled).Select(x => x.IdAspNetUsers).ToListAsync());
+                var lista = ids.Where(x => !string.IsNullOrEmpty(x)).ToList();
+                query = query.Where(x => lista.Contains(x.Id));
+            }
+            if (testo.Length > 0)
+                query = query.Where(x => x.NormalizedUserName != null && x.NormalizedUserName.Contains(testo));
+
+            // i ruoli si leggono utente per utente: si guarda un numero limitato di candidati
+            var candidati = await query.OrderBy(x => x.UserName).Select(x => x.Id).Take(Math.Max(max, 1) * 4).ToListAsync();
+            foreach (var id in candidati)
+            {
+                if (risultato.Count >= max)
+                    break;
+                var utente = await _userManager.FindByIdAsync(id);
+                if (utente == null)
+                    continue;
+                var ruoli = await _userManager.GetRolesAsync(utente);
+                int livello = LivelloRuolo(ruoli);
+                if (livello < 0 || livello >= livelloLogin)
+                    continue;
+                risultato.Add(await IdentitaDi(utente, ruoli));
+            }
+            return risultato;
+        }
+
+        /// <summary>
+        /// Identita' di lavoro (utente, centro, studio, azienda) dell'utente indicato per id o per nome utente, se l'utente
+        /// del login puo' lavorare come lui; null = utente inesistente o non ammesso
+        /// </summary>
+        public virtual async Task<ImpersonationTarget?> IdentitaPerLavorareCome(string idONomeUtente)
+        {
+            string chiave = (idONomeUtente ?? string.Empty).Trim();
+            if (chiave.Length == 0)
+                return null;
+            var utente = await _userManager.FindByIdAsync(chiave) ?? await _userManager.FindByNameAsync(chiave);
+            if (utente == null || !await PuoLavorareCome(utente.Id))
+            {
+                if (utente != null)
+                    Log.Warning("MCP lavora come rifiutato: l'utente {Login} non puo' lavorare come {Target}", this.UserIdFirstConnection, utente.Id);
+                return null;
+            }
+            return await IdentitaDi(utente, await _userManager.GetRolesAsync(utente));
+        }
+
+        // centro, studio e azienda dell'utente: la stessa regola con cui UserLoad compila il token dell'applicazione
+        private async Task<ImpersonationTarget> IdentitaDi(ApplicationUser utente, IList<string> ruoli)
+        {
+            var identita = new ImpersonationTarget
+            {
+                Id = utente.Id,
+                UserName = utente.UserName ?? string.Empty,
+                Role = ruoli.Count > 0 ? ruoli[0] : string.Empty
+            };
+
+            switch (identita.Role)
+            {
+                case "DealerPowerAdmin":
+                case "DealerAdmin":
+                    identita.IdDealer = await _userDealerRepository.FindAll(x => x.IdAspNetUsers == utente.Id).Select(x => (int?)x.IdDealer).FirstOrDefaultAsync();
+                    break;
+
+                case "FinancialAdvisorPowerAdmin":
+                case "FinancialAdvisorAdmin":
+                    identita.IdFinancialAdvisor = await _userFinancialAdvisorRepository.FindAll(x => x.IdAspNetUsers == utente.Id).Select(x => (int?)x.IdFinancialAdvisor).FirstOrDefaultAsync();
+                    if (identita.IdFinancialAdvisor != null)
+                        identita.IdDealer = await _financialAdvisorRepository.FindAll(x => x.Id == identita.IdFinancialAdvisor).Select(x => (int?)x.IdDealer).FirstOrDefaultAsync();
+                    break;
+
+                case "CompanyPowerAdmin":
+                case "CompanyAdmin":
+                case "User":
+                    identita.IdCompany = await _userCompanyRepository.FindAll(x => x.IdAspNetUsers == utente.Id).Select(x => (int?)x.IdCompany).FirstOrDefaultAsync();
+                    if (identita.IdCompany != null)
+                    {
+                        var azienda = await _companyRepository.FindAll(x => x.Id == identita.IdCompany).Select(x => new { x.Descrizione, x.IdFinancialAdvisor }).FirstOrDefaultAsync();
+                        if (azienda != null)
+                        {
+                            identita.Company = azienda.Descrizione ?? string.Empty;
+                            identita.IdFinancialAdvisor = azienda.IdFinancialAdvisor;
+                            identita.IdDealer = await _financialAdvisorRepository.FindAll(x => x.Id == azienda.IdFinancialAdvisor).Select(x => (int?)x.IdDealer).FirstOrDefaultAsync();
+                        }
+                    }
+                    break;
+            }
+            return identita;
+        }
+
         public virtual async Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1801,8 +1943,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         }
     }
 
+    /// <summary>utente che si puo' impersonare tramite gli strumenti MCP, con centro, studio e azienda della sua identita' di lavoro</summary>
+    public class ImpersonationTarget
+    {
+        public string Id { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
+        public int? IdDealer { get; set; }
+        public int? IdFinancialAdvisor { get; set; }
+        public int? IdCompany { get; set; }
+        /// <summary>descrizione dell'azienda, se l'utente e' di un'azienda</summary>
+        public string Company { get; set; } = string.Empty;
+    }
+
     public interface IAccountService : IServiceBase
     {
+        // impersonificazione tramite strumenti MCP (fase 6 dell'analisi MCP)
+        public Task<bool> PuoImpersonareQualcuno();
+        public Task<List<ImpersonationTarget>> UtentiImpersonabili(string? search, int max);
+        public Task<ImpersonationTarget?> IdentitaPerLavorareCome(string idONomeUtente);
+
         public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
