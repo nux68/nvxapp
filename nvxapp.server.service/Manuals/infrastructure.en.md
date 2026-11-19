@@ -47,6 +47,7 @@ From here you connect an **AI assistant** (Claude Code or Claude Desktop) to nvx
 > If the company also allows personal changes, the assistant can clock in or out, request leave or a forgotten clocking, book or cancel one of your bookings and confirm reading one of your documents: it always asks your permission first.
 > If the company allows all changes, the assistant can also record or correct other employees' data and approve requests: each such operation is summarised first and runs only after you confirm.
 > If you have an administrator role you can ask the assistant to **work as** a user below you ("work as Rossi"): from then on it sees and does what that user can, until you tell it to go back or a few hours pass.
+> You can ask the assistant for a report (for example "give me the November vacation plan"): it receives the report data, which you can ask questions about, and gives you a link to download the PDF, valid for a few minutes.
 > Each connection has a limit of calls per minute and per day; very long lists reach the assistant only in part, and it suggests narrowing the request.
 
 @@ /companypoweradmin
