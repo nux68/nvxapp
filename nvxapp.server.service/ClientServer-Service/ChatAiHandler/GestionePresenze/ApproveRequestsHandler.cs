@@ -133,6 +133,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return SlotValidationResult.Failed(SlotValidationError.BusinessRuleViolation,
                     AttendanceTrackingMessages.Get("ChatApproveNone", Nome(dipendente), string.Empty), "employeeName");
 
+            // via assistente AI (MCP): oltre il limite si rifiuta già qui, prima del riepilogo e della conferma
+            var oltreLimite = McpLimiteRichieste(_chatUserContext, richieste.Count);
+            if (oltreLimite != null)
+                return SlotValidationResult.Failed(SlotValidationError.BusinessRuleViolation, oltreLimite, "employeeName");
+
             var nomi = Giustificativi(_par_GiustificativiService).GetAwaiter().GetResult()
                 .ToDictionary(g => g.Id, g => g.Descrizione ?? g.Codice ?? string.Empty);
             var elenco = string.Join("; ", richieste.Select(r => ChatRichiesteHelper.Descrivi(r, dipendente, nomi)));
@@ -154,6 +159,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             if (ids.Count == 0)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatApproveNone", Nome(dipendente),
                     giorno != null ? " " + AttendanceTrackingMessages.Get("ChatOnDate", Data(giorno.Value)) : string.Empty));
+
+            // via assistente AI (MCP): numero di richieste limitato; oltre il limite non se ne decide nessuna
+            var oltreLimite = McpLimiteRichieste(_chatUserContext, ids.Count);
+            if (oltreLimite != null)
+                return CommandResult.Fail(oltreLimite);
 
             var res = await _dip_GG_RichiestaService.SetState(new GenericRequest<Dip_GG_Richiesta_SetState_InModel>
             {

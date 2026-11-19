@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController, ModalController, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
-import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
+import { Observable, Subscription, catchError, from, map, of, switchMap } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CrmService } from '../../../ClientServer-Service/Crm/crm.service';
 import * as M from '../../../ClientServer-Service/Crm/Models/crm-model';
@@ -12,6 +12,8 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
+import { ApplicationType } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 
 @Component({
   selector: 'app-crm-customer-list-page',
@@ -33,13 +35,16 @@ export class CrmCustomerListPageComponent {
   public readonly actions: NvxListAction<M.CrmClienteListModel>[];
   public readonly isDisabled = (x: M.CrmClienteListModel) => !x.attivo;
   public readonly sort = (a: M.CrmClienteListModel, b: M.CrmClienteListModel) => a.descrizione.localeCompare(b.descrizione);
+  // dati modificati da un comando eseguito fuori dalla pagina (assistente AI via MCP): ANALISI_INFRASTRUCTURE_MCP.md, MCP-43
+  private dataChangedSub: Subscription | null = null;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private service: CrmService,
               public setupService: CrmSetupService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private dataChangedNotifierService: DataChangedNotifierService) {
     const t = (k: string) => this.transloco.translate(k);
     this.title = t('crm.pages.customerList.title');
     const valuta = () => this.setupService.setup?.cfg.valuta ?? 'EUR';
@@ -60,6 +65,9 @@ export class CrmCustomerListPageComponent {
   async ionViewWillEnter() {
     await this.setupService.load();
     this.load();
+    // la colonna "prossima attivita'" cambia con le attivita' create o chiuse da un comando
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = this.dataChangedNotifierService.of(ApplicationType.Crm).subscribe(() => this.load());
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem(this.transloco.translate('crm.pages.customerList.new'), 'add-circle-outline', () => this.navCtrl.navigateForward('/crmcustomeredit', { state: { id: 0 } })),
       new FabMenuItem(this.transloco.translate('crm.pages.customerList.export'), 'download-outline', () => this.esporta()),
@@ -67,6 +75,8 @@ export class CrmCustomerListPageComponent {
   }
 
   ionViewWillLeave() {
+    this.dataChangedSub?.unsubscribe();
+    this.dataChangedSub = null;
     this.fabMenuService.fabMenuItem = [];
   }
 

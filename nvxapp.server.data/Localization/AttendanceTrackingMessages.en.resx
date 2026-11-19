@@ -2198,4 +2198,12 @@
   <data name="ChatEmployeeListNoContract" xml:space="preserve">
     <value>no active employment</value>
   </data>
+  <data name="ChatMcpMaxDays" xml:space="preserve">
+    <value>Through an AI assistant a command can cover at most {0} days per call: the period from {1} to {2} is {3} days. Nothing has been changed: repeat the command on a shorter period.</value>
+    <comment>{0} = maximum number of days, {1} = start date, {2} = end date, {3} = days in the requested period</comment>
+  </data>
+  <data name="ChatMcpMaxRequests" xml:space="preserve">
+    <value>Through an AI assistant at most {0} requests can be approved or rejected per call: {1} were found. No request has been changed: narrow the command to a day or a request type.</value>
+    <comment>{0} = maximum number of requests, {1} = requests found</comment>
+  </data>
 </root>

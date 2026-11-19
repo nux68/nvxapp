@@ -1,15 +1,20 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { NavController, IonSpinner } from '@ionic/angular';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { ApplicationType } from '../../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../../../ClientServer-Service/ModelsBase/generic-request';
 import { CmpListInModel } from '../../../../../ClientServer-Service/Compliance/Models/cmp-model';
 import { CmpService } from '../../../../../ClientServer-Service/Compliance/cmp.service';
+import { DataChangedNotifierService } from '../../../../../Utility/infrastructure/data-changed-notifier.service';
 import { cmpApriSezione } from '../cmp-widget-nav';
 
 /*
  Widget "Formazione obbligatoria" (ANALISI_COMPLIANCE_WIDGET.md §3): dalla situazione della formazione (Cmp_FormazioneStato:
  corsi richiesti dalle mansioni attive dei dipendenti attivi) conta i corsi mancanti, scaduti e in scadenza e i dipendenti
  non in regola. Apre la sezione "Situazione formazione" di Sicurezza sul lavoro. Solo amministratori.
+ I dati si rileggono all'avviso DataChangedNotifier di Compliance (comando di un assistente AI via MCP,
+ ANALISI_INFRASTRUCTURE_MCP.md MCP-43): il widget non ha ionViewWillEnter, la sottoscrizione vive con il componente.
 */
 @Component({
   selector: 'app-cmp-training-widget',
@@ -18,7 +23,7 @@ import { cmpApriSezione } from '../cmp-widget-nav';
   changeDetection: ChangeDetectionStrategy.Eager,
   imports: [IonSpinner, TranslocoPipe]
 })
-export class CmpTrainingWidgetComponent {
+export class CmpTrainingWidgetComponent implements OnDestroy {
 
   public caricamento = true;
   public errore = false;
@@ -28,8 +33,19 @@ export class CmpTrainingWidgetComponent {
   public inScadenza = 0;
   public dipendenti = 0;
   public nonInRegola = 0;
+  private readonly dataChangedSub: Subscription;
 
-  constructor(private cmpService: CmpService, private navCtrl: NavController) {
+  constructor(private cmpService: CmpService, private navCtrl: NavController, dataChangedNotifierService: DataChangedNotifierService) {
+    this.carica();
+    this.dataChangedSub = dataChangedNotifierService.of(ApplicationType.Compliance).subscribe(() => this.carica());
+  }
+
+  ngOnDestroy(): void {
+    this.dataChangedSub.unsubscribe();
+  }
+
+  /** lettura dei dati (alla creazione e a ogni avviso di modifica) */
+  private carica(): void {
     this.cmpService.FormazioneStato(new GenericRequest<CmpListInModel>(CmpListInModel)).subscribe({
       next: res => {
         if (res.success && res.data) {
@@ -41,6 +57,7 @@ export class CmpTrainingWidgetComponent {
           this.inScadenza = items.filter(x => x['stato'] === 2).length;
           this.dipendenti = new Set(items.map(x => x['idDip_Anagrafica'])).size;
           this.nonInRegola = new Set(items.filter(x => x['stato'] === 0 || x['stato'] === 3).map(x => x['idDip_Anagrafica'])).size;
+          this.errore = false;
         }
         else
           this.errore = true;
