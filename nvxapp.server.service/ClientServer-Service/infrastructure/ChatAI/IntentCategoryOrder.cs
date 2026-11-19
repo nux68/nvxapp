@@ -4,6 +4,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     // prima gli argomenti degli applicativi (da 100 a 799, es. le presenze), poi i comandi comuni.
     public static class IntentCategoryOrder
     {
+        // servizi comuni: ticket, notifiche, scadenzario, richieste da approvare
+        public const int Services = 780;
         public const int Navigation = 800;
         public const int Settings = 900;
     }
