@@ -2136,4 +2136,66 @@
   <data name="TurniReport_NessunRapporto" xml:space="preserve">
     <value>No employment in the chosen period.</value>
   </data>
+  <data name="ChatEmployeeTimeSheetDisplayName" xml:space="preserve">
+    <value>Employee time sheet</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetDescription" xml:space="preserve">
+    <value>time sheet of an employee in a period (default: me, current month; at most {0} days): for each day hours worked and expected, clockings, justifications, causals and anomalies.</value>
+    <comment>{0} = maximum days in the period</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetPeriodInvalid" xml:space="preserve">
+    <value>The end date cannot be earlier than the start date.</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetPeriodTooLong" xml:space="preserve">
+    <value>The time sheet period can be at most {0} days.</value>
+    <comment>{0} = maximum days</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetTitle" xml:space="preserve">
+    <value>Time sheet of {0} from {1} to {2}: {3} hours worked out of {4} expected (up to today).</value>
+    <comment>{0} = employee, {1} = from, {2} = to, {3} = hours worked, {4} = expected hours</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetJustifications" xml:space="preserve">
+    <value>Justifications: {0}.</value>
+    <comment>{0} = list "description (days)"</comment>
+  </data>
+  <data name="ChatEmployeeTimeSheetNoAnomalies" xml:space="preserve">
+    <value>No days to fix.</value>
+  </data>
+  <data name="ChatEmployeeTimeSheetAnomalies" xml:space="preserve">
+    <value>Days to fix: {0}</value>
+    <comment>{0} = number of days</comment>
+  </data>
+  <data name="ChatEmployeeListDisplayName" xml:space="preserve">
+    <value>Employee list</value>
+  </data>
+  <data name="ChatEmployeeListDescription" xml:space="preserve">
+    <value>list of employees with department, site and active employment (contract, weekly hours, working time profile and today's schedule), filterable by name or employee number and by department or site.</value>
+  </data>
+  <data name="ChatEmployeeListSearchQuestion" xml:space="preserve">
+    <value>Which employee are you looking for?</value>
+  </data>
+  <data name="ChatEmployeeListSearchLabel" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="ChatEmployeeListDepartmentQuestion" xml:space="preserve">
+    <value>Which department or site?</value>
+  </data>
+  <data name="ChatEmployeeListDepartmentLabel" xml:space="preserve">
+    <value>Department or site</value>
+  </data>
+  <data name="ChatEmployeeListNone" xml:space="preserve">
+    <value>No employees found ({0}).</value>
+    <comment>{0} = filters given</comment>
+  </data>
+  <data name="ChatEmployeeListTitle" xml:space="preserve">
+    <value>Employees: {0}</value>
+    <comment>{0} = number of employees</comment>
+  </data>
+  <data name="ChatEmployeeListTitleFiltered" xml:space="preserve">
+    <value>Employees found for "{1}": {0}</value>
+    <comment>{0} = number of employees, {1} = filters given</comment>
+  </data>
+  <data name="ChatEmployeeListNoContract" xml:space="preserve">
+    <value>no active employment</value>
+  </data>
 </root>
