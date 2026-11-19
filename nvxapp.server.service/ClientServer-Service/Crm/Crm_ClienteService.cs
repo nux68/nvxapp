@@ -309,6 +309,152 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
             };
         }
 
+        // limiti delle letture per gli strumenti AI (MCP-32)
+        public const int MaxRisultatiCerca = 50;
+        public const int MaxEventiStorico = 200;
+        public const int MaxGiorniStorico = 366;
+
+        /*
+         Ricerca per testo sui clienti visibili (strumenti AI, ANALISI_INFRASTRUCTURE_MCP.md MCP-32): ogni parola (al massimo
+         cinque) deve comparire, senza distinguere maiuscole, in ragione sociale, citta', partita IVA, codice fiscale, telefono,
+         email, referente oppure in cognome / nome / email / telefono di un contatto del cliente. Sola lettura.
+        */
+        public virtual async Task<GenericResult<Crm_ClienteCercaOutModel>> Crm_ClienteCerca(GenericRequest<Crm_ClienteCercaInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ctx = await _utility.ContestoAsync();
+                var parole = (model.Data.Testo ?? string.Empty)
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(p => p.Replace("%", string.Empty).Replace("_", string.Empty))
+                    .Where(p => p.Length > 0).Distinct().Take(5).ToList();
+                if (parole.Count == 0)
+                    throw new UserMessageException(CrmMessages.Get("SearchTextRequired"));
+                var max = Math.Clamp(model.Data.Max, 1, MaxRisultatiCerca);
+
+                // sottoquery dai repository in variabili locali (come ElencoAsync)
+                var q = _utility.ClientiVisibili(ctx);
+                var contatti = _Az_ClienteContatto.FindAll(_ => true);
+                foreach (var parola in parole)
+                {
+                    var t = "%" + parola + "%";
+                    q = q.Where(c => EF.Functions.ILike(c.Descrizione, t)
+                                     || (c.Citta != null && EF.Functions.ILike(c.Citta, t))
+                                     || (c.PartitaIva != null && EF.Functions.ILike(c.PartitaIva, t))
+                                     || (c.CodiceFiscale != null && EF.Functions.ILike(c.CodiceFiscale, t))
+                                     || (c.Telefono != null && EF.Functions.ILike(c.Telefono, t))
+                                     || (c.Email != null && EF.Functions.ILike(c.Email, t))
+                                     || (c.Referente != null && EF.Functions.ILike(c.Referente, t))
+                                     || contatti.Any(x => x.IdAz_Cliente == c.Id
+                                                          && ((x.Cognome != null && EF.Functions.ILike(x.Cognome, t))
+                                                              || (x.Nome != null && EF.Functions.ILike(x.Nome, t))
+                                                              || (x.Email != null && EF.Functions.ILike(x.Email, t))
+                                                              || (x.Telefono != null && EF.Functions.ILike(x.Telefono, t))
+                                                              || (x.Cellulare != null && EF.Functions.ILike(x.Cellulare, t)))));
+                }
+
+                var totale = await q.CountAsync();
+                var dati = _Crm_ClienteDati.FindAll(_ => true);
+                var righe = await q.AsNoTracking()
+                    .OrderBy(c => c.Descrizione)
+                    .Take(max)
+                    .Select(c => new
+                    {
+                        c.Id, c.Descrizione, c.Tipo, c.Attivo, c.Citta, c.Provincia, c.PartitaIva, c.Telefono, c.Email,
+                        Dati = dati.Where(d => d.IdAz_Cliente == c.Id).Select(d => new { d.Stato, d.IdAspNetUsersResponsabile }).FirstOrDefault(),
+                    })
+                    .ToListAsync();
+
+                var ids = righe.Select(r => r.Id).ToList();
+                var elencoContatti = (await _Az_ClienteContatto.FindAll(x => ids.Contains(x.IdAz_Cliente)).AsNoTracking()
+                                                               .OrderByDescending(x => x.Principale).ThenBy(x => x.Cognome).ThenBy(x => x.Nome)
+                                                               .ToListAsync())
+                                     .Select(CrmLists.Contatto).ToList();
+                var nomi = await _utility.NomiAsync(righe.Select(r => r.Dati?.IdAspNetUsersResponsabile));
+
+                bool Corrisponde(Crm_ContattoModel x) => parole.Any(p =>
+                    new[] { x.Cognome, x.Nome, x.Email, x.Telefono, x.Cellulare }.Any(v => v != null && v.Contains(p, StringComparison.OrdinalIgnoreCase)));
+
+                return new Crm_ClienteCercaOutModel
+                {
+                    Totale = totale,
+                    Clienti = righe.Select(c =>
+                    {
+                        var suoi = elencoContatti.Where(x => x.IdAz_Cliente == c.Id).ToList();
+                        var responsabile = c.Dati?.IdAspNetUsersResponsabile;
+                        return new Crm_ClienteCercaModel
+                        {
+                            Id = c.Id, Descrizione = c.Descrizione, Tipo = (int)c.Tipo, Attivo = c.Attivo, Citta = c.Citta, Provincia = c.Provincia,
+                            PartitaIva = c.PartitaIva, Telefono = c.Telefono, Email = c.Email, Stato = c.Dati?.Stato ?? Crm_StatoCliente.Prospect,
+                            Responsabile = responsabile != null && nomi.TryGetValue(responsabile, out var n) ? n : null,
+                            ContattoPrincipale = suoi.FirstOrDefault(),
+                            ContattiTrovati = suoi.Where(Corrisponde).Take(5).ToList(),
+                        };
+                    }).ToList()
+                };
+            }, isSubProcess);
+        }
+
+        /*
+         Storico di un cliente visibile (MCP-32): attivita' visibili (per data di inizio) e note (per data di creazione) del
+         periodo, dalla piu' recente. Periodo al massimo MaxGiorniStorico giorni, al massimo Max eventi. Sola lettura.
+        */
+        public virtual async Task<GenericResult<Crm_ClienteStoricoOutModel>> Crm_ClienteStorico(GenericRequest<Crm_ClienteStoricoInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var ctx = await _utility.ContestoAsync();
+                var f = model.Data;
+                var c = await _utility.ClienteAsync(ctx, f.IdAz_Cliente); // visibile
+                var dal = f.Dal.Date;
+                var al = f.Al.Date;
+                if (al < dal)
+                    (dal, al) = (al, dal);
+                if ((al - dal).TotalDays > MaxGiorniStorico)
+                    throw new UserMessageException(CrmMessages.Get("PeriodTooLong", MaxGiorniStorico));
+                var fine = al.AddDays(1);
+                var max = Math.Clamp(f.Max, 1, MaxEventiStorico);
+
+                var attivita = await _utility.AttivitaVisibili(ctx)
+                    .Where(a => a.IdAz_Cliente == c.Id && a.Inizio >= dal && a.Inizio < fine)
+                    .AsNoTracking()
+                    .OrderByDescending(a => a.Inizio)
+                    .Take(max)
+                    .Select(a => new
+                    {
+                        a.Inizio, Tipo = a.Crm_Par_TipoAttivitaNavigation!.Descrizione, a.Stato, a.Oggetto, a.Descrizione, a.Esito,
+                        Utente = a.IdAspNetUsersAssegnatario,
+                        Contatto = a.Az_ClienteContattoNavigation != null ? ((a.Az_ClienteContattoNavigation.Cognome ?? "") + " " + (a.Az_ClienteContattoNavigation.Nome ?? "")).Trim() : null,
+                        Opportunita = a.Crm_OpportunitaNavigation != null ? a.Crm_OpportunitaNavigation.Titolo : null,
+                    })
+                    .ToListAsync();
+                var totaleAttivita = await _utility.AttivitaVisibili(ctx).CountAsync(a => a.IdAz_Cliente == c.Id && a.Inizio >= dal && a.Inizio < fine);
+
+                var qNote = _Crm_Nota.FindAll(n => n.IdAz_Cliente == c.Id && n.CreationDate >= dal && n.CreationDate < fine);
+                var note = await qNote.AsNoTracking().OrderByDescending(n => n.CreationDate).Take(max)
+                                      .Select(n => new { n.CreationDate, n.Testo, n.IdAspNetUsersAutore }).ToListAsync();
+                var totaleNote = await qNote.CountAsync();
+
+                var nomi = await _utility.NomiAsync(attivita.Select(a => (string?)a.Utente).Concat(note.Select(n => n.IdAspNetUsersAutore)));
+                string? Nome(string? id) => id != null && nomi.TryGetValue(id, out var n) ? n : null;
+
+                var eventi = attivita.Select(a => new Crm_ClienteStoricoModel
+                {
+                    Data = a.Inizio, Nota = false, Tipo = a.Tipo, Stato = a.Stato, Oggetto = a.Oggetto, Descrizione = a.Descrizione, Esito = a.Esito,
+                    Utente = Nome(a.Utente), Contatto = string.IsNullOrEmpty(a.Contatto) ? null : a.Contatto, Opportunita = a.Opportunita
+                })
+                .Concat(note.Select(n => new Crm_ClienteStoricoModel
+                {
+                    Data = n.CreationDate ?? dal, Nota = true, Oggetto = n.Testo, Utente = Nome(n.IdAspNetUsersAutore)
+                }))
+                .OrderByDescending(e => e.Data)
+                .Take(max)
+                .ToList();
+
+                return new Crm_ClienteStoricoOutModel { Eventi = eventi, Totale = totaleAttivita + totaleNote };
+            }, isSubProcess);
+        }
+
         // ------------------------------------------------------------------------------------------------ utilita'
         private async Task<List<Crm_ClienteListModel>> ElencoAsync(CrmContesto ctx, Crm_ClienteListInModel f)
         {
@@ -373,5 +519,7 @@ namespace nvxapp.server.service.ClientServer_Service.Crm
         Task<GenericResult<Crm_ContattoPutOutModel>> Crm_ContattoPut(GenericRequest<Crm_ContattoPutInModel> model, Boolean isSubProcess);
         Task<GenericResult<Crm_IdOutModel>> Crm_ContattoDelete(GenericRequest<Crm_IdInModel> model, Boolean isSubProcess);
         Task<Crm_FileDownload> Crm_ClienteExport(Crm_ClienteListInModel filtri);
+        Task<GenericResult<Crm_ClienteCercaOutModel>> Crm_ClienteCerca(GenericRequest<Crm_ClienteCercaInModel> model, Boolean isSubProcess);
+        Task<GenericResult<Crm_ClienteStoricoOutModel>> Crm_ClienteStorico(GenericRequest<Crm_ClienteStoricoInModel> model, Boolean isSubProcess);
     }
 }

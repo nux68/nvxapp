@@ -739,4 +739,144 @@ Cordiali saluti
     <value>richieste di assistenza del CRM: {0}</value>
     <comment>CRM-ASS</comment>
   </data>
+  <data name="SearchTextRequired" xml:space="preserve">
+    <value>Indica il testo da cercare.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="PeriodTooLong" xml:space="preserve">
+    <value>Il periodo può essere al massimo di {0} giorni.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatPeriodTooLong" xml:space="preserve">
+    <value>Il periodo può essere al massimo di {0} giorni: indicane uno più breve.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatPartialList" xml:space="preserve">
+    <value>(mostrati {0} di {1})</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType0" xml:space="preserve">
+    <value>cliente</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType1" xml:space="preserve">
+    <value>fornitore</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType2" xml:space="preserve">
+    <value>cliente e fornitore</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState0" xml:space="preserve">
+    <value>bozza</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState1" xml:space="preserve">
+    <value>inviato</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState2" xml:space="preserve">
+    <value>accettato</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState3" xml:space="preserve">
+    <value>rifiutato</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState4" xml:space="preserve">
+    <value>scaduto</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState0" xml:space="preserve">
+    <value>da fare</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState1" xml:space="preserve">
+    <value>fatta</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState2" xml:space="preserve">
+    <value>annullata</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchDisplayName" xml:space="preserve">
+    <value>Ricerca clienti e contatti</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchDescription" xml:space="preserve">
+    <value>cerca tra i clienti del CRM per ragione sociale, città, partita IVA, recapiti o nome / email di un contatto; restituisce l'elenco con tipo, città, contatto principale e recapiti</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTextQuestion" xml:space="preserve">
+    <value>Cosa devo cercare?</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTextLabel" xml:space="preserve">
+    <value>Testo da cercare</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchNone" xml:space="preserve">
+    <value>Nessun cliente trovato per "{0}".</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTitle" xml:space="preserve">
+    <value>{0} clienti trovati per "{1}":</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchContact" xml:space="preserve">
+    <value>contatto: {0}</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesDisplayName" xml:space="preserve">
+    <value>Preventivi</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesDescription" xml:space="preserve">
+    <value>elenco dei preventivi (offerte) con numero, data, cliente, importo e stato, filtrabile per cliente, stato e periodo (in mancanza gli ultimi 12 mesi)</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusQuestion" xml:space="preserve">
+    <value>In che stato sono i preventivi?</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusLabel" xml:space="preserve">
+    <value>Stato</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusInvalid" xml:space="preserve">
+    <value>Stato del preventivo "{0}" non riconosciuto: usa bozza, inviato, accettato, rifiutato, scaduto oppure aperti.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesNone" xml:space="preserve">
+    <value>Nessun preventivo{0}.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesTitle" xml:space="preserve">
+    <value>{0} preventivi{1}, totale {2}:</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryDisplayName" xml:space="preserve">
+    <value>Storico del cliente</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryDescription" xml:space="preserve">
+    <value>storico di un cliente del CRM: attività (chiamate, appuntamenti, email...) con esito e note in un periodo, dalla più recente (in mancanza gli ultimi 90 giorni)</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryNone" xml:space="preserve">
+    <value>Nessuna attività o nota per {0} {1}.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryTitle" xml:space="preserve">
+    <value>{0} attività e note per {1} {2}:</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatHistoryNote" xml:space="preserve">
+    <value>Nota</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatHistoryOutcome" xml:space="preserve">
+    <value>esito: {0}</value>
+    <comment>MCP-32</comment>
+  </data>
 </root>

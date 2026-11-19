@@ -739,4 +739,144 @@ Best regards
     <value>CRM support requests: {0}</value>
     <comment>CRM-ASS</comment>
   </data>
+  <data name="SearchTextRequired" xml:space="preserve">
+    <value>Enter the text to search for.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="PeriodTooLong" xml:space="preserve">
+    <value>The period can be at most {0} days long.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatPeriodTooLong" xml:space="preserve">
+    <value>The period can be at most {0} days long: choose a shorter one.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatPartialList" xml:space="preserve">
+    <value>(showing {0} of {1})</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType0" xml:space="preserve">
+    <value>customer</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType1" xml:space="preserve">
+    <value>supplier</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerType2" xml:space="preserve">
+    <value>customer and supplier</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState0" xml:space="preserve">
+    <value>draft</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState1" xml:space="preserve">
+    <value>sent</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState2" xml:space="preserve">
+    <value>accepted</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState3" xml:space="preserve">
+    <value>rejected</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatOfferState4" xml:space="preserve">
+    <value>expired</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState0" xml:space="preserve">
+    <value>to do</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState1" xml:space="preserve">
+    <value>done</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatActivityState2" xml:space="preserve">
+    <value>cancelled</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchDisplayName" xml:space="preserve">
+    <value>Customer and contact search</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchDescription" xml:space="preserve">
+    <value>search CRM customers by company name, city, VAT number, phone / email or the name / email of a contact; returns the list with type, city, main contact and contact details</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTextQuestion" xml:space="preserve">
+    <value>What should I search for?</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTextLabel" xml:space="preserve">
+    <value>Search text</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchNone" xml:space="preserve">
+    <value>No customers found for "{0}".</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchTitle" xml:space="preserve">
+    <value>{0} customers found for "{1}":</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerSearchContact" xml:space="preserve">
+    <value>contact: {0}</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesDisplayName" xml:space="preserve">
+    <value>Quotes</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesDescription" xml:space="preserve">
+    <value>list of quotes (offers) with number, date, customer, amount and status, filtered by customer, status and period (default: the last 12 months)</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusQuestion" xml:space="preserve">
+    <value>What status are the quotes in?</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusLabel" xml:space="preserve">
+    <value>Status</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuoteStatusInvalid" xml:space="preserve">
+    <value>Quote status "{0}" not recognised: use draft, sent, accepted, rejected, expired or open.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesNone" xml:space="preserve">
+    <value>No quotes{0}.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatQuotesTitle" xml:space="preserve">
+    <value>{0} quotes{1}, total {2}:</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryDisplayName" xml:space="preserve">
+    <value>Customer history</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryDescription" xml:space="preserve">
+    <value>history of a CRM customer: activities (calls, appointments, emails...) with outcome and notes in a period, most recent first (default: the last 90 days)</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryNone" xml:space="preserve">
+    <value>No activities or notes for {0} {1}.</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatCustomerHistoryTitle" xml:space="preserve">
+    <value>{0} activities and notes for {1} {2}:</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatHistoryNote" xml:space="preserve">
+    <value>Note</value>
+    <comment>MCP-32</comment>
+  </data>
+  <data name="ChatHistoryOutcome" xml:space="preserve">
+    <value>outcome: {0}</value>
+    <comment>MCP-32</comment>
+  </data>
 </root>

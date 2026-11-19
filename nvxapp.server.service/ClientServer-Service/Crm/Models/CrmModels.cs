@@ -123,6 +123,69 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
     }
     public class Crm_ClienteListOutModel : ModelResult { public List<Crm_ClienteListModel> Clienti { get; set; } = new(); }
 
+    // ricerca per testo su clienti e contatti (strumenti AI, ANALISI_INFRASTRUCTURE_MCP.md MCP-32): ogni parola deve
+    // comparire in ragione sociale, citta', partita IVA, codice fiscale, recapiti, referente o in un contatto
+    public class Crm_ClienteCercaInModel
+    {
+        public string Testo { get; set; } = string.Empty;
+        public int Max { get; set; } = 20;
+    }
+
+    public class Crm_ClienteCercaModel
+    {
+        public int Id { get; set; }
+        public string Descrizione { get; set; } = string.Empty;
+        public int Tipo { get; set; }
+        public bool Attivo { get; set; }
+        public string? Citta { get; set; }
+        public string? Provincia { get; set; }
+        public string? PartitaIva { get; set; }
+        public string? Telefono { get; set; }
+        public string? Email { get; set; }
+        public Crm_StatoCliente Stato { get; set; }
+        public string? Responsabile { get; set; }
+        // contatto principale (o il primo), e i contatti che corrispondono al testo cercato
+        public Crm_ContattoModel? ContattoPrincipale { get; set; }
+        public List<Crm_ContattoModel> ContattiTrovati { get; set; } = new();
+    }
+    public class Crm_ClienteCercaOutModel : ModelResult
+    {
+        public List<Crm_ClienteCercaModel> Clienti { get; set; } = new();
+        // clienti trovati in tutto (l'elenco si ferma a Max)
+        public int Totale { get; set; }
+    }
+
+    // storico di un cliente: attivita' e note in un periodo, dalla piu' recente (MCP-32)
+    public class Crm_ClienteStoricoInModel
+    {
+        public int IdAz_Cliente { get; set; }
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+        public int Max { get; set; } = 50;
+    }
+
+    public class Crm_ClienteStoricoModel
+    {
+        public DateTime Data { get; set; }
+        // true = nota, false = attivita'
+        public bool Nota { get; set; }
+        // tipo dell'attivita' (chiamata, appuntamento...)
+        public string? Tipo { get; set; }
+        public Crm_StatoAttivita? Stato { get; set; }
+        public string Oggetto { get; set; } = string.Empty;
+        public string? Descrizione { get; set; }
+        public string? Esito { get; set; }
+        public string? Utente { get; set; }
+        public string? Contatto { get; set; }
+        public string? Opportunita { get; set; }
+    }
+    public class Crm_ClienteStoricoOutModel : ModelResult
+    {
+        public List<Crm_ClienteStoricoModel> Eventi { get; set; } = new();
+        // eventi del periodo in tutto (l'elenco si ferma a Max)
+        public int Totale { get; set; }
+    }
+
     // anagrafica comune + dati del CRM
     public class Crm_ClienteModel
     {
@@ -362,7 +425,15 @@ namespace nvxapp.server.service.ClientServer_Service.Crm.Models
     public class Crm_AttivitaCompletaInModel { public int Id { get; set; } public string? Esito { get; set; } public bool Annullata { get; set; } }
 
     // ------------------------------------------------------------------------------------------------ offerte
-    public class Crm_OffertaListInModel { public int? IdAz_Cliente { get; set; } public int? IdCrm_Opportunita { get; set; } }
+    public class Crm_OffertaListInModel
+    {
+        public int? IdAz_Cliente { get; set; }
+        public int? IdCrm_Opportunita { get; set; }
+        // filtri facoltativi (strumenti AI, MCP-32): stato e periodo sulla data dell'offerta
+        public Crm_StatoOfferta? Stato { get; set; }
+        public DateTime? Dal { get; set; }
+        public DateTime? Al { get; set; }
+    }
 
     public class Crm_OffertaListModel
     {
