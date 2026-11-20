@@ -1,23 +1,19 @@
 // Pillole del cartellino (timbrature, giustificativi, causali) nei calendari utente, admin e poweradmin.
-// Niente sfondo pieno ne' contorno: un blocco con fondo neutro, testo nel colore normale e una barra
-// a sinistra nel colore dello stato (TimeSheetService.get_*_borderColor, passato in --nvx-pill-color).
+// Niente sfondo ne' contorno: testo nel colore normale e una barra a sinistra nel colore dello stato
+// (TimeSheetService.get_*_borderColor, passato in --nvx-pill-color), angoli squadrati.
 // Attive (selezionabili) = barra spessa, disabilitate = barra sottile.
 // La barra e' un'ombra interna e il rientro del testo e' fisso: lo spessore non cambia la misura
 // della pillola e la barra non copre il testo (anche col padding ridotto da mobile).
 ion-chip.nvx-pill {
   --nvx-pill-w: 3px;
-  --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
+  --background: transparent;
   --color: var(--ion-text-color);
-  background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
+  background: transparent;
   color: var(--ion-text-color);
   padding-left: 13px !important;
+  // !important: vale anche sui pezzi delle richieste su piu' giorni (_richiesta-segmenti)
+  border-radius: 0 !important;
   box-shadow: inset var(--nvx-pill-w) 0 0 0 var(--nvx-pill-color, var(--ion-color-medium));
-}
-
-// angoli quasi squadrati, cosi' la barra resta dritta; specificita' zero (:where) per lasciare
-// ai pezzi delle richieste su piu' giorni (_richiesta-segmenti) i loro angoli
-:where(ion-chip.nvx-pill) {
-  border-radius: 4px;
 }
 
 ion-chip.nvx-pill.nvx-pill-attiva {
@@ -26,8 +22,8 @@ ion-chip.nvx-pill.nvx-pill-attiva {
 
 @media (any-hover: hover) {
   ion-chip.nvx-pill.nvx-pill-attiva:hover {
-    --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.12);
-    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.12);
+    --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
+    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
   }
 }
 
