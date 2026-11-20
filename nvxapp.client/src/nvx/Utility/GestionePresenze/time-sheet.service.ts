@@ -808,8 +808,8 @@ export class TimeSheetService {
 
   }
 
-  // Pillole del cartellino disegnate solo con il bordo (vedi _pillole-cartellino.scss):
-  // il bordo prende il colore che la pillola avrebbe come sfondo (richiesta in attesa)
+  // Pillole del cartellino con la barra colorata a sinistra (vedi _pillole-cartellino.scss):
+  // la barra prende il colore che la pillola avrebbe come sfondo (richiesta in attesa)
   // oppure come testo (timbratura/giustificativo approvato o diretto).
   get_Dip_GG_Giustificativi_borderColor(ggJust: Dip_GG_GiustificativiModel): string {
     return this.get_Dip_GG_Giustificativi_backColor(ggJust) || this.get_Dip_GG_Giustificativi_txtColor(ggJust) || null;

@@ -1,31 +1,39 @@
 // Pillole del cartellino (timbrature, giustificativi, causali) nei calendari utente, admin e poweradmin.
-// Niente sfondo pieno: solo il bordo nel colore dello stato (TimeSheetService.get_*_borderColor,
-// passato in --nvx-pill-color) e il testo nel colore normale, leggibile anche sulle pillole disabilitate.
-// Attive (selezionabili) = bordo spesso, disabilitate = bordo sottile.
-// Il bordo e' un'ombra interna: lo spessore diverso non cambia la misura della pillola.
+// Niente sfondo pieno ne' contorno: un blocco con fondo neutro, testo nel colore normale e una barra
+// a sinistra nel colore dello stato (TimeSheetService.get_*_borderColor, passato in --nvx-pill-color).
+// Attive (selezionabili) = barra spessa, disabilitate = barra sottile.
+// La barra e' un'ombra interna e il rientro del testo e' fisso: lo spessore non cambia la misura
+// della pillola e la barra non copre il testo (anche col padding ridotto da mobile).
 ion-chip.nvx-pill {
-  --nvx-pill-w: 1px;
-  --background: transparent;
+  --nvx-pill-w: 3px;
+  --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
   --color: var(--ion-text-color);
-  background: transparent;
+  background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
   color: var(--ion-text-color);
-  box-shadow: inset 0 0 0 var(--nvx-pill-w) var(--nvx-pill-color, var(--ion-color-medium));
+  padding-left: 13px !important;
+  box-shadow: inset var(--nvx-pill-w) 0 0 0 var(--nvx-pill-color, var(--ion-color-medium));
+}
+
+// angoli quasi squadrati, cosi' la barra resta dritta; specificita' zero (:where) per lasciare
+// ai pezzi delle richieste su piu' giorni (_richiesta-segmenti) i loro angoli
+:where(ion-chip.nvx-pill) {
+  border-radius: 4px;
 }
 
 ion-chip.nvx-pill.nvx-pill-attiva {
-  --nvx-pill-w: 2.5px;
+  --nvx-pill-w: 7px;
 }
 
 @media (any-hover: hover) {
   ion-chip.nvx-pill.nvx-pill-attiva:hover {
-    --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
-    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
+    --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.12);
+    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.12);
   }
 }
 
 // evidenziazione della richiesta su piu' giorni (_richiesta-segmenti): l'anello nel colore del testo
-// si aggiunge all'interno del bordo colorato invece di sostituirlo
+// si aggiunge alla barra invece di sostituirla
 ion-chip.nvx-pill.nvx-seg-attiva {
-  box-shadow: inset 0 0 0 var(--nvx-pill-w) var(--nvx-pill-color, var(--ion-color-medium)),
-              inset 0 0 0 calc(var(--nvx-pill-w) + 2px) var(--ion-text-color);
+  box-shadow: inset var(--nvx-pill-w) 0 0 0 var(--nvx-pill-color, var(--ion-color-medium)),
+              inset 0 0 0 2px var(--ion-text-color);
 }
