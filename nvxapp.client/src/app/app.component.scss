@@ -124,7 +124,7 @@ ion-menu ion-list#nvx-list ion-item {
 }
 
 ion-menu ion-list#nvx-list ion-item.selected {
-  --background: var(--nvx-surface-soft);
+  --background: var(--nvx-sidebar-selected);
   --color: var(--ion-text-color);
 
   ion-icon {
