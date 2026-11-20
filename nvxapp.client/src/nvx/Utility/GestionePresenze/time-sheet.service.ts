@@ -808,6 +808,21 @@ export class TimeSheetService {
 
   }
 
+  // Pillole del cartellino disegnate solo con il bordo (vedi _pillole-cartellino.scss):
+  // il bordo prende il colore che la pillola avrebbe come sfondo (richiesta in attesa)
+  // oppure come testo (timbratura/giustificativo approvato o diretto).
+  get_Dip_GG_Giustificativi_borderColor(ggJust: Dip_GG_GiustificativiModel): string {
+    return this.get_Dip_GG_Giustificativi_backColor(ggJust) || this.get_Dip_GG_Giustificativi_txtColor(ggJust) || null;
+  }
+
+  get_Dip_GG_Timbratura_borderColor(record: Dip_GG_TimbraturaModel): string {
+    return this.get_Dip_GG_Timbratura_backColor(record) || this.get_Dip_GG_Timbratura_txtColor(record) || null;
+  }
+
+  get_Dip_GG_Causali_borderColor(ggCau: Dip_GG_CausaliModel): string {
+    return this.get_Dip_GG_Causali_backColor(ggCau) || null;
+  }
+
 
 
 
