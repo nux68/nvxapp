@@ -15,6 +15,7 @@ import { UserNotifierService } from '../nvx/Utility/infrastructure/user-notifier
 import { NotificationNotifierService } from '../nvx/Utility/infrastructure/notification-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
+import { MenuLayoutService } from '../nvx/Utility/infrastructure/menu-layout.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
 import { ApplicationType, LivelloLicenza } from '../nvx/ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
@@ -89,6 +90,7 @@ export class AppComponent implements OnInit {
               private notificationNotifierService: NotificationNotifierService,
               private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
               public showcaseService: ShowcaseService,
+              public menuLayoutService: MenuLayoutService, // menu desktop fisso o chiuso
               titleService: Title
               )
   {
