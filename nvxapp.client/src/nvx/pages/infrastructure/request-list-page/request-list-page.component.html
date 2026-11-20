@@ -45,11 +45,11 @@
         [searchText]="searchText"
         [sort]="sortByDal"
         [emptyText]="(admin ? 'pages.requestList.emptyAdmin' : 'pages.requestList.empty') | transloco">
-        <!-- dettaglio con la barra colorata a sinistra come le pillole del cartellino: spessa se si puo' agire sulla richiesta -->
+        <!-- dettaglio con la barra colorata a sinistra come le pillole del cartellino: spessa se in attesa di approvazione -->
         <ng-template nvxCell="dettaglio" let-item>
           @if (item.dettaglio) {
             <span class="nvx-req-dettaglio"
-              [class.nvx-req-dettaglio-attiva]="item.canApprove || item.canReject || item.canCancel"
+              [class.nvx-req-dettaglio-in-attesa]="inAttesa(item)"
               [style.--nvx-req-colore]="item.colore">{{ item.dettaglio }}</span>
           }
         </ng-template>
