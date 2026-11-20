@@ -114,7 +114,7 @@ ion-searchbar.md {
 ion-content > ion-card {
   max-width: var(--nvx-content-max);
   margin: 20px auto;
-  border: 1px solid var(--nvx-border);
+  border: 1px solid var(--nvx-box-border);
   border-radius: var(--nvx-radius-lg);
   box-shadow: none;
   background: var(--nvx-surface);
@@ -313,7 +313,7 @@ ion-button.button-outline {
 // tutti i riquadri: bordo sottile al posto dell'ombra
 ion-card {
   box-shadow: none;
-  border: 1px solid var(--nvx-border);
+  border: 1px solid var(--nvx-box-border);
   border-radius: var(--nvx-radius-md);
   background: var(--nvx-surface);
 }
