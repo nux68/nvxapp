@@ -81,6 +81,23 @@ ion-header {
   }
 }
 
+// pagine (area a destra del menu): fondo grigio come il menu nel tema chiaro (--nvx-page-bg);
+// i riquadri con i dati restano su --nvx-surface. Modali e popup sono fuori da #main-content.
+#main-content {
+  ion-content {
+    --background: var(--nvx-page-bg);
+  }
+
+  ion-header ion-toolbar,
+  ion-footer ion-toolbar {
+    --background: var(--nvx-page-bg);
+  }
+
+  ion-header ion-searchbar.md {
+    --background: var(--nvx-page-field);
+  }
+}
+
 // ricerca a pillola (classe .md per superare lo stile del modo md di Ionic)
 ion-searchbar.md {
   --border-radius: 999px;

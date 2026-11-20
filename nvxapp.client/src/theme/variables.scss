@@ -51,7 +51,11 @@
   --ion-card-background: var(--nvx-surface);
   --ion-border-color: var(--nvx-border);
 
-  --nvx-sidebar-bg: #f9f9f9;
+  // --nvx-sidebar-bg: #f9f9f9;      // colore precedente
+  --nvx-sidebar-bg: #dcdcdc;        // menu laterale, leggermente piu' scuro
+  --nvx-sidebar-selected: #cbcbcb;  // voce di menu selezionata
+  --nvx-page-bg: #e8e8e8;          // fondo delle pagine: grigio un po' piu' chiaro del menu
+  --nvx-page-field: #ffffff;        // ricerca nella barra della pagina (sul fondo grigio)
   --nvx-surface: #ffffff;           // riquadri di pagina
   --nvx-surface-soft: #f4f4f4;      // campi, bolle chat, voce di menu selezionata
   --nvx-hover: rgba(0,0,0,0.04);
@@ -120,6 +124,9 @@
   --ion-border-color: var(--nvx-border);
 
   --nvx-sidebar-bg: #171717;
+  --nvx-sidebar-selected: var(--nvx-surface-soft);
+  --nvx-page-bg: var(--ion-background-color);   // invariato nel tema scuro
+  --nvx-page-field: var(--nvx-surface-soft);
   --nvx-surface: #262626;
   --nvx-surface-soft: #303030;
   --nvx-hover: rgba(255,255,255,0.05);
