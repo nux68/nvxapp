@@ -1485,6 +1485,10 @@
       "empty": "Nessun elemento",
       "actions": "Azioni"
     },
+    "mainMenu": {
+      "showMenu": "Mostra il menu",
+      "hideMenu": "Nascondi il menu"
+    },
     "pageToolbar": {
       "jobRunning": "Elaborazione in corso",
       "jobDone": "Completato",
