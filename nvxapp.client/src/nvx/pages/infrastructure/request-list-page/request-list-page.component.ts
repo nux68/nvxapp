@@ -50,6 +50,8 @@ export class RequestListPageComponent {
   public actions: NvxListAction<RequestItemModel>[] = [];
   public readonly highlight = (item: RequestItemModel) => item.canApprove || item.canReject;
   public readonly iconOf = (item: RequestItemModel) => RequestListPageComponent.icona(item.stato);
+  /** richiesta ancora da decidere: barra del dettaglio spessa */
+  public readonly inAttesa = (item: RequestItemModel) => item.stato === RequestState.InAttesa || item.stato === RequestState.InApprovazione;
   public readonly sortByDal = (a: RequestItemModel, b: RequestItemModel) => (b.dal ?? '').localeCompare(a.dal ?? '');
 
   private changedSub: Subscription | null = null;
