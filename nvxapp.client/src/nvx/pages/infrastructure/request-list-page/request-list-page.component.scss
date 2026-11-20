@@ -4,7 +4,7 @@ ion-segment {
 }
 
 // colonna dettaglio: barra a sinistra nel colore dato dal modulo (RequestItemModel.colore), come le pillole
-// del cartellino delle presenze; 3px = nessuna azione possibile, 7px = si puo' approvare/rifiutare/annullare.
+// del cartellino delle presenze; 7px = in attesa di approvazione, 3px = tutti gli altri stati.
 // La barra e' un'ombra interna con rientro fisso: lo spessore non sposta il testo.
 .nvx-req-dettaglio {
   --nvx-req-w: 3px;
@@ -13,6 +13,6 @@ ion-segment {
   box-shadow: inset var(--nvx-req-w) 0 0 0 var(--nvx-req-colore, var(--ion-color-medium));
 }
 
-.nvx-req-dettaglio-attiva {
+.nvx-req-dettaglio-in-attesa {
   --nvx-req-w: 7px;
 }
