@@ -46,19 +46,17 @@
                     @if (getGiustificativiForDay(slot, day); as giust) {
                       @if (giust.length > 0) {
                         @for (g of giust; track g) {
-                          <ion-chip
+                          <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="CanOpenMenuActionGiustificativi(slot,g)"
                               [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
                               [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
                               (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
                               (mouseleave)="richiestaEvidenziata = null"
                               [ngStyle]="{
-                                'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
-                                'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
-                                'font-size': '0.8em',
+                                '--nvx-pill-color': timeSheetService.get_Dip_GG_Giustificativi_borderColor(g),
+                                'font-size': '0.9em',
                                 'margin-bottom': '0px',
                                 'margin-top': '0px',
-                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default',
-                                'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
+                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default'
                               }"
                             (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
                             [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
@@ -113,19 +111,17 @@
                       @if (giust.length > 0) {
                         <div class="vg-chips-stack">
                           @for (g of giust; track g) {
-                            <ion-chip
+                            <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="CanOpenMenuActionGiustificativi(slot,g)"
                               [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
                               [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
                               (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
                               (mouseleave)="richiestaEvidenziata = null"
                               [ngStyle]="{
-                                'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
-                                'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
-                                'font-size':  '0.75em',
+                                '--nvx-pill-color': timeSheetService.get_Dip_GG_Giustificativi_borderColor(g),
+                                'font-size':  '0.85em',
                                 'margin':     '1px 0px',
                                 'height':     '18px',
-                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default',
-                                'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
+                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default'
                               }"
                               (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
                               [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
