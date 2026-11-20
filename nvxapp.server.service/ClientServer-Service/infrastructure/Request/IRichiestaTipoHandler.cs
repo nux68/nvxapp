@@ -91,6 +91,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Request
 
         public string? Dettaglio { get; set; }
 
+        /// <summary>
+        /// colore della barra a sinistra del dettaglio (facoltativo, dato dal modulo come nel suo calendario):
+        /// un colore CSS, anche una variabile del tema es. "var(--ion-color-secondary)"; null = grigio
+        /// </summary>
+        public string? Colore { get; set; }
+
         public RequestState Stato { get; set; }
 
         public string StatoTesto { get; set; } = string.Empty;
