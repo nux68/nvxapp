@@ -61,6 +61,8 @@
   --nvx-hover: rgba(0,0,0,0.04);
   --nvx-border: rgba(0,0,0,0.09);
   --nvx-border-strong: rgba(0,0,0,0.16);
+  --nvx-box-border: rgba(var(--ion-color-primary-rgb), 0.25); // bordo dei riquadri: lieve colore primario (come il riquadro AI della home)
+  --nvx-section-border: var(--nvx-box-border); // sezioni su fondo tenue (fascia finale dello showcase)
   --nvx-text-muted: #6b6b6b;
 
   // forme
@@ -132,6 +134,8 @@
   --nvx-hover: rgba(255,255,255,0.05);
   --nvx-border: rgba(255,255,255,0.09);
   --nvx-border-strong: rgba(255,255,255,0.16);
+  --nvx-box-border: var(--nvx-border); // tema scuro: bordo dei riquadri neutro, invariato
+  --nvx-section-border: transparent;   // tema scuro: sezioni senza bordo, invariato
   --nvx-text-muted: #a3a3a3;
   --nvx-shadow-soft: 0 8px 30px rgba(0,0,0,0.45);
 }
