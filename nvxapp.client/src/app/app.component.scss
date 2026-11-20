@@ -17,19 +17,47 @@ ion-menu ion-content {
   --padding-bottom: 20px;
 }
 
+// testata del menu: nome dell'applicazione fisso sopra le voci che scorrono
+ion-menu ion-header.nvx-menu-header {
+  background: var(--nvx-sidebar-bg);
+  border-bottom: 0;
+  padding: 10px 10px 0 10px;
+}
+
 // nome dell'applicazione
 .nvx-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px 18px 10px;
+  padding: 10px 10px 8px 10px;
   font-size: 17px;
   font-weight: 650;
   letter-spacing: -0.01em;
 
-  ion-icon {
+  > ion-icon {
     font-size: 22px;
     color: var(--ion-color-primary);
+  }
+
+  .nvx-brand-nome {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // freccia per chiudere/aprire il menu (solo desktop)
+  .nvx-menu-collapse {
+    --color: var(--nvx-text-muted);
+    --padding-start: 6px;
+    --padding-end: 6px;
+    margin: 0;
+    height: 32px;
+
+    ion-icon {
+      font-size: 18px;
+    }
   }
 }
 
