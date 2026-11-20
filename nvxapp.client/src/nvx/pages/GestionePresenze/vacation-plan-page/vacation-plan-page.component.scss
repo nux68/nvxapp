@@ -1,4 +1,5 @@
 @use '../richiesta-segmenti';
+@use '../pillole-cartellino';
 
 .no-data {
   color: var(--ion-color-medium, #bbb);
@@ -223,4 +224,10 @@
 .vg-mobile-empty {
   color: var(--ion-color-medium, #ccc);
   font-size: 0.85em;
+}
+
+// pillole con la barra a sinistra (_pillole-cartellino): nelle celle da 40px il rientro del testo
+// si riduce, la barra da 7px delle attive resta comunque libera
+.vg-chips-stack ion-chip.nvx-pill {
+  padding-left: 10px !important;
 }
