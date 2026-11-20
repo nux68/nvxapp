@@ -1,14 +1,27 @@
 <ion-app>
-  <ion-split-pane contentId="main-content">
+  <!-- desktop: menu fisso a sinistra o chiuso (MenuLayoutService); su mobile sempre a scomparsa -->
+  <ion-split-pane contentId="main-content" [when]="menuLayoutService.splitPaneWhen">
 
     <ion-menu contentId="main-content" type="overlay">
-      <ion-content>
 
-        <!-- nome dell'applicazione in testa al menu (dai contenuti dello showcase, ridefinibili dal ramo) -->
+      <!-- nome dell'applicazione in testa al menu (dai contenuti dello showcase, ridefinibili dal ramo):
+           fuori da ion-content, resta fermo quando le voci scorrono -->
+      <ion-header class="nvx-menu-header">
         <div class="nvx-brand">
           <ion-icon [name]="showcaseService.Contenuti.brand.icon" aria-hidden="true"></ion-icon>
-          <span>{{ showcaseService.Contenuti.brand.nome }}</span>
+          <span class="nvx-brand-nome">{{ showcaseService.Contenuti.brand.nome }}</span>
+          <!-- solo desktop: chiude/apre il menu fisso -->
+          @if (menuLayoutService.isDesktop()) {
+            <ion-button fill="clear" class="nvx-menu-collapse" (click)="menuLayoutService.toggle()"
+              [title]="(menuLayoutService.desktopMenuOpen() ? 'components.mainMenu.hideMenu' : 'components.mainMenu.showMenu') | transloco"
+              [attr.aria-label]="(menuLayoutService.desktopMenuOpen() ? 'components.mainMenu.hideMenu' : 'components.mainMenu.showMenu') | transloco">
+              <ion-icon slot="icon-only" [name]="menuLayoutService.desktopMenuOpen() ? 'chevron-back-outline' : 'chevron-forward-outline'"></ion-icon>
+            </ion-button>
+          }
         </div>
+      </ion-header>
+
+      <ion-content>
 
         <!-- prima del login: solo le voci dello showcase (ShowcaseService); dopo il login i menu per ruolo -->
         @if (authService.Token == null) {
