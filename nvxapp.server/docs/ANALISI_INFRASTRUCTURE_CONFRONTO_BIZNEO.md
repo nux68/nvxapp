@@ -150,6 +150,44 @@ Per area: **Tempo** e **documenti/buste paga** sono quasi alla pari; i buchi si 
 **Talento** (performance, obiettivi, compensation), **Reclutamento**, **Gestione del team**
 (chat, sondaggi, 1:1) e nella **piattaforma** (app mobile, API REST, SSO, report builder).
 
+### 2.9 Distacco da Bizneo (copertura pesata)
+
+Peso: ✅ = 1 · 🟡 = 0,5 · 🔍 = 0,5 · ❌ = 0, sulle 70 funzioni di §2.1–2.7.
+
+| Area Bizneo | Righe | ✅ | 🟡 | 🔍 | ❌ | Copertura |
+|---|---|---|---|---|---|---|
+| Rilevazione presenze (§2.2) | 16 | 9 | 6 | 0 | 1 | **75%** |
+| Assenze e ferie (§2.1) | 7 | 3 | 1 | 3 | 0 | **71%** |
+| Turni e banca ore (§2.3) | 9 | 3 | 2 | 3 | 1 | **61%** |
+| Finanza, documenti, piattaforma (§2.7) | 17 | 6 | 8 | 0 | 3 | **59%** |
+| Reclutamento, formazione, onboarding (§2.6) | 7 | 3 | 1 | 0 | 3 | **50%** |
+| Gestione del team (§2.4) | 7 | 0 | 4 | 0 | 3 | **29%** |
+| Talento (§2.5) | 7 | 0 | 2 | 0 | 5 | **14%** |
+| **Totale** | **70** | **24** | **24** | **6** | **16** | **≈ 56%** |
+
+**Lettura**
+- **Presenze, ferie e documenti:** il nucleo per cui di solito si compra un gestionale HR è quasi alla pari.
+  Il distacco qui è fatto di rifiniture (buoni pasto, maturazione ferie, turni generati in automatico),
+  non di moduli interi.
+- **Talento, gestione del team e reclutamento:** qui sta il ritardo vero. Mancano moduli interi:
+  valutazioni, obiettivi, sondaggi, chat, ATS.
+- **Piattaforma:** per il cliente il segnale più visibile è l'assenza di un'app negli store.
+  Bizneo la mette in primo piano.
+
+**Proiezione della copertura completando la checklist (§7)**
+
+| Traguardo | Copertura stimata |
+|---|---|
+| Oggi | ≈ 56% |
+| Completati i punti P1 (BIZ-01…08) | ≈ 66% |
+| Completati anche i punti P2 (BIZ-09…19) | ≈ 81% |
+| Completati anche i punti P3 (BIZ-20…28) | ≈ 95–100% |
+
+**Considerazione sul perimetro:** la percentuale misura solo le funzioni di Bizneo. Non conta ciò che
+nvxapp ha e Bizneo no (§3): CRM, Compliance 81/08 e GDPR, risorse aziendali, gestione centro → studio
+→ aziende, chat AI vocale, MCP, controllo di gestione. Confrontate come suite per **studi paghe e PMI**,
+anziché come HR "puro", le due offerte risultano molto più equilibrate.
+
 ## 3. Dove nvxapp è più avanti di Bizneo
 
 | Area | nvxapp | Bizneo |
