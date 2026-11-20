@@ -33,14 +33,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_RichiestaService _service;
         private readonly IAz_CfgService _az_CfgService;
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
         public AtRichiestaTipoHandler(IDip_GG_RichiestaService service,
                                       IAz_CfgService az_CfgService,
-                                      IPar_GiustificativiRepository par_GiustificativiRepository)
+                                      IPar_GiustificativiRepository par_GiustificativiRepository,
+                                      IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository)
         {
             _service = service;
             _az_CfgService = az_CfgService;
             _par_GiustificativiRepository = par_GiustificativiRepository;
+            _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
 
         public ApplicationType Application => ApplicationType.AttendanceTracking;
@@ -71,11 +74,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 .ToDictionary(x => x.Id, x => x.BackgroundColor!)
                 ?? new Dictionary<int, string>();
 
+            // verso delle timbrature generate dalle richieste dirette/approvate (il colore dipende da entrata/uscita)
+            var idTimbratureDecise = righe
+                .Where(x => x.Richiesta.RichiestaTipo == TipoRichiesta.Timbratura && TimbraturaDecisa(x.Richiesta.RichiestaStato))
+                .Select(x => x.Richiesta.Id).ToList();
+            var versiTimbrature = idTimbratureDecise.Count == 0
+                ? new Dictionary<int, TipoTimbratura>()
+                : (await _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta != null && idTimbratureDecise.Contains(x.IdDip_GG_Richiesta.Value))
+                      .Select(x => new { IdRichiesta = x.IdDip_GG_Richiesta!.Value, x.TimbraturaTipo }).AsNoTracking().ToListAsync())
+                  .GroupBy(x => x.IdRichiesta).ToDictionary(g => g.Key, g => g.First().TimbraturaTipo);
+
             foreach (var (r, item) in righe)
             {
                 item.TipoTesto = AttendanceTrackingMessages.Get("RequestType_" + r.RichiestaTipo);
                 item.Dettaglio = ConProvenienza(r, Dettaglio(r, giustificativi));
-                item.Colore = Colore(r, coloriGiustificativi);
+                item.Colore = Colore(r, coloriGiustificativi, versiTimbrature);
                 // testo comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)")
                 item.StatoTesto = RichiestaRegole.TestoStato(r);
                 item.SoloData = true;
@@ -131,26 +144,42 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             return string.IsNullOrWhiteSpace(dettaglio) ? nota : $"{dettaglio} · {nota}";
         }
 
-        // colore della barra del dettaglio nella pagina delle richieste, come le pillole del cartellino
-        // (TimeSheetService.get_Dip_GG_*_borderColor del client): giustificativo = il suo colore,
-        // timbratura = giallo del tema come la timbratura in attesa; gli altri tipi restano grigi
-        private static string? Colore(Dip_GG_Richiesta r, IReadOnlyDictionary<int, string> coloriGiustificativi)
+        // colore della barra del dettaglio nella pagina delle richieste, con gli stessi criteri delle pillole del cartellino
+        // (TimeSheetService.get_Dip_GG_*_borderColor del client = colore di sfondo, se no colore del testo):
+        //   giustificativo: il suo colore se diretto/approvato/in attesa, altrimenti grigio (null)
+        //   timbratura: in attesa = giallo; diretta/approvata = entrata blu, uscita grigia, senza verso gialla;
+        //               altri stati = colore del testo
+        private static string? Colore(Dip_GG_Richiesta r, IReadOnlyDictionary<int, string> coloriGiustificativi,
+                                      IReadOnlyDictionary<int, TipoTimbratura> versiTimbrature)
         {
             switch (r.RichiestaTipo)
             {
                 case TipoRichiesta.Giustificativo:
                 {
+                    if (r.RichiestaStato is not (StatoRichiesta.Diretta or StatoRichiesta.Approvata or StatoRichiesta.Immessa))
+                        return null;
                     JObject? dati = null;
                     try { dati = string.IsNullOrEmpty(r.Dati) ? null : JObject.Parse(r.Dati); } catch { }
                     var id = dati?.GetValue("idPar_Giustificativi", StringComparison.OrdinalIgnoreCase)?.ToString();
                     return int.TryParse(id, out var idG) ? coloriGiustificativi.GetValueOrDefault(idG) : null;
                 }
                 case TipoRichiesta.Timbratura:
-                    return "var(--ion-color-secondary)";
+                    if (r.RichiestaStato == StatoRichiesta.Immessa)
+                        return "var(--ion-color-secondary)";
+                    if (!TimbraturaDecisa(r.RichiestaStato))
+                        return "var(--ion-text-color)";
+                    return versiTimbrature.TryGetValue(r.Id, out var verso) ? verso switch
+                    {
+                        TipoTimbratura.Entrata => "var(--ion-color-primary)",
+                        TipoTimbratura.Uscita => "var(--ion-color-medium)",
+                        _ => "var(--ion-color-secondary)"
+                    } : "var(--ion-color-secondary)";
                 default:
                     return null;
             }
         }
+
+        private static bool TimbraturaDecisa(StatoRichiesta stato) => stato is StatoRichiesta.Diretta or StatoRichiesta.Approvata;
 
         // come TimeSheetUtilityService.getDatitext del client
         private static string? Dettaglio(Dip_GG_Richiesta r, IReadOnlyDictionary<int, string> giustificativi)

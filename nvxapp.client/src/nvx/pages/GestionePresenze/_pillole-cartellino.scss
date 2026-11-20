@@ -1,7 +1,7 @@
 // Pillole del cartellino (timbrature, giustificativi, causali) nei calendari utente, admin e poweradmin.
 // Niente sfondo ne' contorno: testo nel colore normale e una barra a sinistra nel colore dello stato
 // (TimeSheetService.get_*_borderColor, passato in --nvx-pill-color), angoli squadrati.
-// Attive (selezionabili) = barra spessa, disabilitate = barra sottile.
+// In attesa di approvazione = barra spessa (TimeSheetService.inAttesaApprovazione), altri stati = barra sottile.
 // La barra e' un'ombra interna e il rientro del testo e' fisso: lo spessore non cambia la misura
 // della pillola e la barra non copre il testo (anche col padding ridotto da mobile).
 ion-chip.nvx-pill {
@@ -16,15 +16,8 @@ ion-chip.nvx-pill {
   box-shadow: inset var(--nvx-pill-w) 0 0 0 var(--nvx-pill-color, var(--ion-color-medium));
 }
 
-ion-chip.nvx-pill.nvx-pill-attiva {
+ion-chip.nvx-pill.nvx-pill-in-attesa {
   --nvx-pill-w: 7px;
-}
-
-@media (any-hover: hover) {
-  ion-chip.nvx-pill.nvx-pill-attiva:hover {
-    --background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
-    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
-  }
 }
 
 // evidenziazione della richiesta su piu' giorni (_richiesta-segmenti): l'anello nel colore del testo

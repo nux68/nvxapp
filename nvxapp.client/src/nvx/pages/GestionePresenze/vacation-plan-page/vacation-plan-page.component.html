@@ -46,7 +46,7 @@
                     @if (getGiustificativiForDay(slot, day); as giust) {
                       @if (giust.length > 0) {
                         @for (g of giust; track g) {
-                          <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="CanOpenMenuActionGiustificativi(slot,g)"
+                          <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(g)"
                               [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
                               [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
                               (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
@@ -111,7 +111,7 @@
                       @if (giust.length > 0) {
                         <div class="vg-chips-stack">
                           @for (g of giust; track g) {
-                            <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="CanOpenMenuActionGiustificativi(slot,g)"
+                            <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(g)"
                               [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
                               [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
                               (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
