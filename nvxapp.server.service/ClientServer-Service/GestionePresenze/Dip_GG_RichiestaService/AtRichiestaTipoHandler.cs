@@ -60,15 +60,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
         public async Task CompletaAsync(List<(Dip_GG_Richiesta Richiesta, RequestItem Item)> righe, RequestScope scope)
         {
-            var giustificativi = righe.Any(x => x.Richiesta.RichiestaTipo == TipoRichiesta.Giustificativo)
-                ? (await _par_GiustificativiRepository.FindAll(x => true).Select(x => new { x.Id, x.Codice, x.Descrizione }).AsNoTracking().ToListAsync())
-                      .ToDictionary(x => x.Id, x => string.IsNullOrWhiteSpace(x.Descrizione) ? (x.Codice ?? string.Empty) : $"{x.Codice} - {x.Descrizione}")
-                : new Dictionary<int, string>();
+            var parGiustificativi = righe.Any(x => x.Richiesta.RichiestaTipo == TipoRichiesta.Giustificativo)
+                ? await _par_GiustificativiRepository.FindAll(x => true).Select(x => new { x.Id, x.Codice, x.Descrizione, x.BackgroundColor }).AsNoTracking().ToListAsync()
+                : null;
+            var giustificativi = parGiustificativi?
+                .ToDictionary(x => x.Id, x => string.IsNullOrWhiteSpace(x.Descrizione) ? (x.Codice ?? string.Empty) : $"{x.Codice} - {x.Descrizione}")
+                ?? new Dictionary<int, string>();
+            var coloriGiustificativi = parGiustificativi?
+                .Where(x => !string.IsNullOrWhiteSpace(x.BackgroundColor))
+                .ToDictionary(x => x.Id, x => x.BackgroundColor!)
+                ?? new Dictionary<int, string>();
 
             foreach (var (r, item) in righe)
             {
                 item.TipoTesto = AttendanceTrackingMessages.Get("RequestType_" + r.RichiestaTipo);
                 item.Dettaglio = ConProvenienza(r, Dettaglio(r, giustificativi));
+                item.Colore = Colore(r, coloriGiustificativi);
                 // testo comune a tutti i tipi di richiesta (es. "Approvata (annullamento respinto)")
                 item.StatoTesto = RichiestaRegole.TestoStato(r);
                 item.SoloData = true;
@@ -122,6 +129,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 return dettaglio;
             var nota = InfrastructureMessages.Get("RequestViaAi");
             return string.IsNullOrWhiteSpace(dettaglio) ? nota : $"{dettaglio} · {nota}";
+        }
+
+        // colore della barra del dettaglio nella pagina delle richieste, come le pillole del cartellino
+        // (TimeSheetService.get_Dip_GG_*_borderColor del client): giustificativo = il suo colore,
+        // timbratura = giallo del tema come la timbratura in attesa; gli altri tipi restano grigi
+        private static string? Colore(Dip_GG_Richiesta r, IReadOnlyDictionary<int, string> coloriGiustificativi)
+        {
+            switch (r.RichiestaTipo)
+            {
+                case TipoRichiesta.Giustificativo:
+                {
+                    JObject? dati = null;
+                    try { dati = string.IsNullOrEmpty(r.Dati) ? null : JObject.Parse(r.Dati); } catch { }
+                    var id = dati?.GetValue("idPar_Giustificativi", StringComparison.OrdinalIgnoreCase)?.ToString();
+                    return int.TryParse(id, out var idG) ? coloriGiustificativi.GetValueOrDefault(idG) : null;
+                }
+                case TipoRichiesta.Timbratura:
+                    return "var(--ion-color-secondary)";
+                default:
+                    return null;
+            }
         }
 
         // come TimeSheetUtilityService.getDatitext del client
