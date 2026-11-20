@@ -43,6 +43,8 @@ export class RequestItemModel {
   /** dal/al sono solo date */
   public soloData = false;
   public dettaglio: string | null = null;
+  /** colore CSS della barra a sinistra del dettaglio (dato dal modulo); null = grigio */
+  public colore: string | null = null;
   public stato: RequestState = RequestState.InAttesa;
   public statoTesto = '';
   public canApprove = false;
