@@ -2,7 +2,18 @@
 <ion-header [translucent]="true">
   <ion-toolbar [color]="headerColor">
     <ion-buttons slot="start">
-      <ion-menu-button></ion-menu-button>
+      @if (showMenuButton) {
+        @if (menuLayoutService.showReopen) {
+          <!-- desktop con il menu laterale chiuso: freccia per riaprirlo fisso -->
+          <ion-button (click)="menuLayoutService.setOpen(true)"
+            [title]="'components.mainMenu.showMenu' | transloco"
+            [attr.aria-label]="'components.mainMenu.showMenu' | transloco">
+            <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+          </ion-button>
+        } @else {
+          <ion-menu-button></ion-menu-button>
+        }
+      }
       <!-- scorciatoia alla dashboard, solo con un login attivo -->
       @if (isLoggedIn) {
         <ion-button (click)="goToDashboard()"
