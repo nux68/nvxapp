@@ -10,6 +10,7 @@ import { nomeUtente } from '../../../../ClientServer-Service/Infrastructure/Acco
 import { TranslocoService } from '@jsverse/transloco';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
 import { HoverPopupData } from '../hover-popup/hover-popup.component';
+import { MenuLayoutService } from '../../../../Utility/infrastructure/menu-layout.service';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -30,6 +31,8 @@ export class PageToolbarComponent {
   @Input() title: string;
   /** utente collegato a destra del titolo (false nei dialog: azienda e utente vanno nel corpo del messaggio) */
   @Input() showUser: boolean = true;
+  /** pulsante del menu laterale (false nei dialog) */
+  @Input() showMenuButton: boolean = true;
   public queryText: string;
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
@@ -41,7 +44,8 @@ export class PageToolbarComponent {
               private navCtrl: NavController,
               private platform: Platform,
               private http: HttpClient,
-              private transloco: TranslocoService)
+              private transloco: TranslocoService,
+              public menuLayoutService: MenuLayoutService)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
   }
