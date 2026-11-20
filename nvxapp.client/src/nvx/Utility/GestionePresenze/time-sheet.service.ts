@@ -823,6 +823,11 @@ export class TimeSheetService {
     return this.get_Dip_GG_Causali_backColor(ggCau) || null;
   }
 
+  // pillola in attesa di approvazione (barra spessa, classe nvx-pill-in-attesa); gli altri stati hanno la barra sottile
+  inAttesaApprovazione(x: { richiestaStato?: StatoRichiesta } | null | undefined): boolean {
+    return !!x && [StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata].includes(x.richiestaStato);
+  }
+
 
 
 

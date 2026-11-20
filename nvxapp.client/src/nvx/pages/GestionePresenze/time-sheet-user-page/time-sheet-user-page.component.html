@@ -82,7 +82,7 @@
                         <div class="justifications">
                           @if (day.dip_GG_Giustificativi?.length > 0) {
                             @for (just of day.dip_GG_Giustificativi; track just) {
-                              <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="ShowActionSheet(just.idDip_GG_Richiesta)"
+                              <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(just)"
                                   [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
                                   [class.nvx-seg-attiva]="segmenti.has(just) && just.idDip_GG_Richiesta === richiestaEvidenziata"
                                   (mouseenter)="richiestaEvidenziata = segmenti.has(just) ? just.idDip_GG_Richiesta : null"
@@ -110,7 +110,7 @@
                         <div class="timestamps">
                           @if (day.dip_GG_Timbratura?.length > 0) {
                             @for (record of day.dip_GG_Timbratura; track record) {
-                              <ion-chip class="nvx-pill" [class.nvx-pill-attiva]="ShowActionSheet(record.idDip_GG_Richiesta)"
+                              <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(record)"
                                   [ngStyle]="{
                                                '--nvx-pill-color': timeSheetService.get_Dip_GG_Timbratura_borderColor(record),
                                                'font-size': '0.9em',
