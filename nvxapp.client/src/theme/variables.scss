@@ -51,9 +51,16 @@
   --ion-card-background: var(--nvx-surface);
   --ion-border-color: var(--nvx-border);
 
-  // --nvx-sidebar-bg: #f9f9f9;      // colore precedente
-  --nvx-sidebar-bg: #dcdcdc;        // menu laterale, leggermente piu' scuro
-  --nvx-sidebar-selected: #cbcbcb;  // voce di menu selezionata
+  // menu laterale: colori precedenti
+  // --nvx-sidebar-bg: #f9f9f9;      // grigio chiarissimo (prima versione)
+  // menu GRIGIO (versione precedente al celeste): per ripristinarlo sostituire le tre righe attive sotto con
+  // --nvx-sidebar-bg: #dcdcdc;
+  // --nvx-sidebar-selected: #cbcbcb;
+  // --nvx-sidebar-accent: var(--ion-color-primary);
+  // menu CELESTE (attuale)
+  --nvx-sidebar-bg: #B5D4E3;        // menu laterale: celeste chiaro poco saturo
+  --nvx-sidebar-selected: #97C2D8;  // voce di menu selezionata
+  --nvx-sidebar-accent: #134F82;    // intestazioni e icone del menu: blu scuro, leggibile sul celeste
   --nvx-page-bg: #e8e8e8;          // fondo delle pagine: grigio un po' piu' chiaro del menu
   --nvx-page-field: #ffffff;        // ricerca nella barra della pagina (sul fondo grigio)
   --nvx-surface: #ffffff;           // riquadri di pagina
@@ -127,6 +134,7 @@
 
   --nvx-sidebar-bg: #171717;
   --nvx-sidebar-selected: var(--nvx-surface-soft);
+  --nvx-sidebar-accent: var(--ion-color-primary);   // invariato nel tema scuro
   --nvx-page-bg: var(--ion-background-color);   // invariato nel tema scuro
   --nvx-page-field: var(--nvx-surface-soft);
   --nvx-surface: #262626;
