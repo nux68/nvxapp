@@ -250,17 +250,67 @@ Conseguenze da accettare: il codice di tutti i clienti viaggia nello stesso rila
 
 ### 7.3 Integrazione nelle pagine esistenti (punti di estensione)
 
-Stesso principio dei widget del cruscotto, applicato alle pagine:
+Stesso principio dei widget del cruscotto (`dashboard-page.component.html:46`), applicato alle pagine: la pagina comune dichiara dei **punti di aggancio** vuoti, la personalizzazione dichiara "ho una sezione per quel punto". A pagina aperta, il punto di aggancio chiede al registro quali sezioni esistono per l'utente collegato e le disegna. **Senza personalizzazioni non disegna nulla** e la pagina resta identica a oggi.
 
-- nelle pagine standard si inserisce un segnaposto: `<nvx-extension-slot name="crm.cliente.edit.sezioni" [context]="model">`;
-- un registro (`ExtensionSlotService`) raccoglie le sezioni dichiarate dalle personalizzazioni (`{ slot, customization, component, ordine, ruoli }`) e le filtra con `hasCustomization`;
-- il segnaposto disegna le sezioni con `*ngComponentOutlet`; **senza personalizzazioni non disegna nulla**, quindi la pagina standard resta identica;
-- la sezione implementa un contratto semplice (`carica(contesto)`, `valida()`, `salva(contesto)`) e `BasePageConfirmCancelComponent` la chiama dopo il salvataggio principale;
-- la sezione legge e scrive i propri dati con le **proprie API** (`api/custom/<codice>/...`), usando l'Id del record standard. Il codice standard non sa che la sezione esiste.
+La pagina comune va toccata **una sola volta**, con poche righe che non nominano nessun cliente.
 
-Limite noto: salvataggio standard e salvataggio della sezione sono due chiamate separate, non un'unica transazione. Se la seconda fallisce, la pagina lo segnala e i dati standard restano salvati.
+#### 7.3.1 Componenti del meccanismo
 
-Tipi di punto previsti: sezioni aggiuntive in una pagina di modifica (prima fase), pulsanti aggiuntivi nella barra, colonne aggiuntive negli elenchi (fasi successive). I segnaposto si aggiungono alle pagine quando una personalizzazione li richiede.
+- **Punto di aggancio** nella pagina comune: `<nvx-extension-slot slot="..." [contesto]="...">` (e `<nvx-extension-tabs>` per le linguette).
+- **Registro** (`ExtensionSlotService`): raccoglie le sezioni dichiarate dalle personalizzazioni (`{ slot, customization, chiave, etichetta, ordine, ruoli, carica }`) e le filtra con `hasCustomization`.
+- **Sezione**: componente nella cartella della personalizzazione, caricato solo quando serve (il suo codice non viene scaricato dagli altri clienti). Implementa un contratto semplice: `carica(contesto)`, `valida()`, `salva(contesto)`.
+- **Dati**: la sezione legge e scrive con le **proprie API** (`api/custom/<codice>/...`), nelle **proprie tabelle** dello schema del cliente, usando l'Id del record standard. Il codice standard non sa che la sezione esiste e le tabelle standard non vengono toccate (§5.3).
+
+#### 7.3.2 Esempio: sezione "Commesse" nella scheda cliente del CRM per il cliente ACME01
+
+La scheda cliente (`pages/Crm/crm-customer-edit-page`) oggi ha le linguette Dati, Contatti, Opportunita', Attivita', Offerte, Assistenza, Note, Allegati.
+
+1. **Nella pagina comune** (branch CRM, una volta sola) si aggiungono due agganci:
+
+```html
+<!-- tra le linguette -->
+<nvx-extension-tabs slot="crm.cliente.sezioni" [(selezionata)]="sezione"></nvx-extension-tabs>
+
+<!-- nel corpo della pagina -->
+<nvx-extension-slot slot="crm.cliente.sezioni" [selezionata]="sezione"
+                    [contesto]="{ id: id, modello: _editModel }"></nvx-extension-slot>
+```
+
+2. **Nella cartella della personalizzazione** (`custom/acme01/extensions/`) ci sono il componente della sezione e la sua dichiarazione:
+
+```ts
+{ slot: 'crm.cliente.sezioni', customization: 'ACME01',
+  chiave: 'acme01.commesse', etichetta: 'Commesse', ordine: 100,
+  carica: () => import('./commesse-section.component') }
+```
+
+3. **Risultato**: l'utente di ACME01 vede una nona linguetta "Commesse"; tutti gli altri vedono le otto di sempre.
+
+#### 7.3.3 Due tipi di sezione
+
+| Tipo | Come appare | Complessita' |
+|---|---|---|
+| **Linguetta o blocco autonomo** (elenco commesse, documenti, storico) | Nuova linguetta, o un riquadro in fondo alla pagina | Bassa: la sezione vive per conto suo, con i propri pulsanti |
+| **Campi aggiuntivi dentro la scheda** (es. "Codice gestionale", "Categoria interna" sotto i dati fiscali) | Campi in piu' nel form, salvati con il pulsante Conferma della pagina | Media: richiede l'aggancio al salvataggio (§7.3.4) |
+
+#### 7.3.4 Salvataggio dei campi aggiuntivi
+
+Per salvare tutto con un solo Conferma si modifica una volta la base comune (`BasePageConfirmCancelComponent`, `ButtonConfirmClickEv`):
+
+1. alla pressione di Conferma valida anche le sezioni presenti (se una non e' valida, non salva);
+2. salva i dati standard come oggi (`SaveData`);
+3. chiede a ogni sezione di salvare i propri dati, passando l'Id del record;
+4. solo alla fine torna indietro (`AfterSave`).
+
+Se non ci sono sezioni, i passi 1 e 3 non fanno nulla. `SaveData` oggi restituisce solo l'esito: le pagine con agganci devono rendere disponibile l'Id del record salvato (la scheda cliente lo fa gia', valorizzando `this.id`).
+
+#### 7.3.5 Limiti
+
+- **Due salvataggi, non una transazione unica.** Se il salvataggio standard riesce e quello della sezione fallisce, i dati standard restano salvati e la pagina mostra l'errore senza chiudersi.
+- **Record nuovo.** L'Id esiste solo dopo il primo salvataggio. I campi aggiuntivi vengono salvati al passo 3 con l'Id appena creato; le linguette con elenchi restano disattivate finche' il record non e' salvato, come gia' fa la scheda cliente con le sue.
+- **Gli agganci vanno messi pagina per pagina.** Una sezione si puo' aggiungere solo dove la pagina comune ha un punto di aggancio. Si aggiungono quando una personalizzazione li richiede, nel branch del modulo.
+- **La sezione puo' aggiungere, non modificare.** Non puo' nascondere, spostare o cambiare il comportamento dei campi standard. Se un cliente chiede questo, e' una modifica alla pagina comune e va trattata come tale.
+- **Elenchi, ricerche, esportazioni e stampe.** I campi aggiuntivi non vi compaiono da soli: servono agganci dedicati (colonne aggiuntive, pulsanti aggiuntivi nella barra), previsti come fase successiva.
 
 ## 8. Comandi chat e vocali
 
@@ -351,10 +401,11 @@ Legenda: ⏳ da fare · 🔄 in corso · ✅ fatto · 🔍 da decidere
 - ⏳ `PERS-COD.7` Guida "come si crea una personalizzazione" (aggiornando anche `GENERAZIONE_TABELLE_GUIDA_COMPLETA.md`, oggi non allineata ai contesti per applicativo)
 
 #### `PERS-EXT` – Integrazione nelle pagine esistenti
-- ⏳ `PERS-EXT.1` `nvx-extension-slot`, `ExtensionSlotService`, contratto della sezione
-- ⏳ `PERS-EXT.2` Aggancio in `BasePageConfirmCancelComponent` (carica, valida, salva)
-- ⏳ `PERS-EXT.3` Primo segnaposto in una pagina standard, come riferimento
-- ⏳ `PERS-EXT.4` Pulsanti e colonne aggiuntive (fase successiva)
+- ⏳ `PERS-EXT.1` `nvx-extension-slot`, `nvx-extension-tabs`, `ExtensionSlotService`, contratto della sezione (§7.3.1)
+- ⏳ `PERS-EXT.2` Aggancio al salvataggio in `BasePageConfirmCancelComponent`: valida, salva standard, salva sezioni, esito (§7.3.4); Id del record disponibile dopo il salvataggio
+- ⏳ `PERS-EXT.3` Primo aggancio in una pagina standard, come riferimento: linguetta aggiuntiva nella scheda cliente del CRM (§7.3.2), nel branch CRM
+- ⏳ `PERS-EXT.4` Campi aggiuntivi dentro una scheda, salvati con Conferma (§7.3.3), compreso il caso del record nuovo
+- ⏳ `PERS-EXT.6` Pulsanti aggiuntivi nella barra e colonne aggiuntive in elenchi, ricerche, esportazioni (fase successiva)
 - 🔍 `PERS-EXT.5` Campi extra senza codice (D7)
 
 #### `PERS-CMD` – Comandi chat e vocali
