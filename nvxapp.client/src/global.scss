@@ -88,7 +88,11 @@ ion-header {
     --background: var(--nvx-page-bg);
   }
 
-  ion-header ion-toolbar,
+  // barra in alto: --nvx-toolbar-bg (tema chiaro: azzurro chiarissimo); barra dei pulsanti in basso: fondo pagina
+  ion-header ion-toolbar {
+    --background: var(--nvx-toolbar-bg);
+  }
+
   ion-footer ion-toolbar {
     --background: var(--nvx-page-bg);
   }
