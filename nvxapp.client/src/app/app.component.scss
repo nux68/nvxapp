@@ -36,7 +36,7 @@ ion-menu ion-header.nvx-menu-header {
 
   > ion-icon {
     font-size: 22px;
-    color: var(--ion-color-primary);
+    color: var(--nvx-sidebar-accent);
   }
 
   .nvx-brand-nome {
@@ -93,7 +93,7 @@ ion-accordion-group {
 
 // voci principali del menu (primo livello: Accesso, Amministrazione, applicativi, Assistenza) in colore primario
 ion-accordion-group.nvx-menu-root > ion-accordion > ion-item[slot='header'] {
-  --color: var(--ion-color-primary);
+  --color: var(--nvx-sidebar-accent);
   font-size: 13px;
   font-weight: 700;
 }
@@ -104,7 +104,7 @@ ion-accordion-group ion-accordion.nvx-menu-application {
   padding-top: 4px;
 
   > ion-item[slot='header'] {
-    --color: var(--ion-color-primary);
+    --color: var(--nvx-sidebar-accent);
     --min-height: 40px;
     font-size: 13px;
     font-weight: 700;
@@ -156,7 +156,7 @@ ion-menu ion-list#nvx-list ion-item.selected {
   --color: var(--ion-text-color);
 
   ion-icon {
-    color: var(--ion-color-primary);
+    color: var(--nvx-sidebar-accent);
   }
 
   ion-label {
