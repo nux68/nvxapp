@@ -62,6 +62,8 @@
   --nvx-sidebar-selected: #97C2D8;  // voce di menu selezionata
   --nvx-sidebar-accent: #134F82;    // intestazioni e icone del menu: blu scuro, leggibile sul celeste
   --nvx-page-bg: #e8e8e8;          // fondo delle pagine: grigio un po' piu' chiaro del menu
+  // barra in alto delle pagine; prima: var(--nvx-page-bg) (stesso grigio della pagina), da rimettere insieme al menu GRIGIO
+  --nvx-toolbar-bg: #D3E5EE;        // azzurro chiarissimo, stessa tonalita' del menu celeste
   --nvx-page-field: #ffffff;        // ricerca nella barra della pagina (sul fondo grigio)
   --nvx-surface: #ffffff;           // riquadri di pagina
   --nvx-surface-soft: #f4f4f4;      // campi, bolle chat, voce di menu selezionata
@@ -136,6 +138,7 @@
   --nvx-sidebar-selected: var(--nvx-surface-soft);
   --nvx-sidebar-accent: var(--ion-color-primary);   // invariato nel tema scuro
   --nvx-page-bg: var(--ion-background-color);   // invariato nel tema scuro
+  --nvx-toolbar-bg: var(--nvx-page-bg);         // invariato nel tema scuro
   --nvx-page-field: var(--nvx-surface-soft);
   --nvx-surface: #262626;
   --nvx-surface-soft: #303030;
