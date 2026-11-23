@@ -4,6 +4,7 @@ import { IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NvxActionsMenuComponent } from '../nvx-actions-menu/nvx-actions-menu.component';
+import { HoverPopupDirective } from '../hover-popup/hover-popup.directive';
 
 /** Colonna della lista: in tabella (desktop) e' una colonna, nella riga mobile titolo / sottotitolo / nota. */
 export interface NvxListColumn<T = any> {
@@ -33,6 +34,9 @@ export interface NvxListAction<T = any> {
   /** solo desktop: l'azione non e' un bottone in riga ma un'opzione del menu "altre azioni" (tre puntini),
       messo in fondo, dopo i bottoni in riga. Su mobile resta un'opzione a scorrimento. */
   inMenu?: boolean;
+  /** solo desktop: bottone con la sola icona, il testo compare nel popup al passaggio del mouse
+      (es. Modifica accanto al menu "altre azioni"). Su mobile l'opzione a scorrimento ha sempre il testo. */
+  iconOnly?: boolean;
 }
 
 /** elemento della colonna azioni in tabella: bottone in riga oppure menu "altre azioni" */
@@ -69,7 +73,7 @@ const MOBILE_OPTION_CLASS: Record<string, string> = {
   styleUrls: ['./nvx-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote, TranslocoPipe, NvxActionsMenuComponent]
+  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote, TranslocoPipe, NvxActionsMenuComponent, HoverPopupDirective]
 })
 export class NvxListComponent<T = any> {
 
