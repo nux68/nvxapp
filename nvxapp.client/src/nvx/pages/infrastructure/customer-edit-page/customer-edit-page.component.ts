@@ -51,7 +51,7 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
     btnEdit.event = (x: Az_ClienteContattoModel) => this.editContatto(x);
     const btnDelete = userInterfaceService.Btn_Cancella;
     btnDelete.event = (x: Az_ClienteContattoModel) => this.deleteContatto(x);
-    this.azioniContatti = [{ button: btnDelete }, { button: btnEdit }];
+    this.azioniContatti = [{ button: btnDelete, inMenu: true }, { button: btnEdit }];
   }
 
   public readonly tipi = [TipoCliente.Cliente, TipoCliente.Fornitore, TipoCliente.Entrambi];
