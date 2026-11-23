@@ -75,7 +75,7 @@ describe('NvxListComponent', () => {
     }
   });
 
-  it('su desktop raccoglie le azioni inMenu in un unico menu, al posto della prima', () => {
+  it('su desktop raccoglie le azioni inMenu in un unico menu, in fondo', () => {
     const del = new ButtonItem('Cancella', 'trash-outline', 'danger');
     const other = new ButtonItem('Altro', 'flash-outline', 'medium');
     const edit = new ButtonItem('Modifica', 'create-outline', 'medium');
@@ -87,11 +87,11 @@ describe('NvxListComponent', () => {
     fixture.componentRef.setInput('actions', actions);
 
     const d1 = component.desktopActions(items[0]);
-    expect(d1.map(d => d.kind)).toEqual(['menu', 'button']);
-    expect(d1[0].kind === 'menu' ? d1[0].buttons : []).toEqual([del, other]);
+    expect(d1.map(d => d.kind)).toEqual(['button', 'menu']);
+    expect(d1[1].kind === 'menu' ? d1[1].buttons : []).toEqual([del, other]);
 
     const d3 = component.desktopActions(items[2]);
-    expect(d3[0].kind === 'menu' ? d3[0].buttons : []).toEqual([del]);
+    expect(d3[1].kind === 'menu' ? d3[1].buttons : []).toEqual([del]);
     // su mobile restano tutte opzioni a scorrimento
     expect(component.visibleActions(items[0]).length).toBe(3);
   });
