@@ -1,5 +1,6 @@
 <ion-button class="nvx-actions-menu-trigger" size="small" fill="outline" shape="round" color="secondary"
-  [attr.aria-label]="label()" [title]="label()" aria-haspopup="menu" [attr.aria-expanded]="isOpen()"
+  [attr.aria-label]="label()" [appHoverPopup]="{ content: label() }" [appHoverPopupEnabled]="!isOpen()"
+  aria-haspopup="menu" [attr.aria-expanded]="isOpen()"
   [disabled]="allDisabled()" (click)="open($event)">
   <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
 </ion-button>

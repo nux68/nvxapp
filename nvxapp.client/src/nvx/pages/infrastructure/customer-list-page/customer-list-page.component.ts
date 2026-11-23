@@ -54,7 +54,7 @@ export class CustomerListPageComponent {
     const btnDelete = userInterfaceService.Btn_Cancella;
     btnDelete.event = (x: Az_ClienteModel) => this.delete(x);
     // desktop: Cancella sta nel menu "altre azioni" (tre puntini) a destra di Modifica
-    this.actions = [{ button: btnDelete, inMenu: true }, { button: btnEdit }];
+    this.actions = [{ button: btnDelete, inMenu: true }, { button: btnEdit, iconOnly: true }];
   }
 
   ionViewWillEnter() {
