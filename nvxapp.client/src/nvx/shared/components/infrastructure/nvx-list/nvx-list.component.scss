@@ -80,7 +80,9 @@
       white-space: nowrap;
     }
 
-    ion-button + ion-button {
+    ion-button + ion-button,
+    ion-button + nvx-actions-menu,
+    nvx-actions-menu + ion-button {
       margin-left: 6px;
     }
   }
