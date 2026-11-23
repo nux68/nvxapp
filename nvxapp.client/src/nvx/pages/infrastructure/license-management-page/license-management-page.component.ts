@@ -13,6 +13,7 @@ import {
   LicenseStatusGetInModel, LicenseStatusGetOutModel, LicenseSubscriptionModel, MetodoPagamento, StatoAbbonamento, StatoPagamento, TipoSoggettoLicenza
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { StatoLicenza } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 /*
  Gestione licenze dell'azienda o dello studio (ANALISI_INFRASTRUCTURE_LICENZE.md §4.3, §6, §10):
@@ -43,6 +44,11 @@ export class LicenseManagementPageComponent {
   public readonly Fonte = FonteCopertura;
   public readonly Stato = StatoLicenza;
   public readonly StatoAbbonamento = StatoAbbonamento;
+  // bottoni della libreria; su desktop Rinnova e Cambia piano sono solo icona (testo nel popup), Disdici sta nel menu "altre azioni"
+  public readonly btnRinnova: ButtonItem;
+  public readonly btnDisdici: ButtonItem;
+  public readonly btnSottoscrivi: ButtonItem;
+  public readonly btnCambiaPiano: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private licenseService: LicenseService,
@@ -50,8 +56,17 @@ export class LicenseManagementPageComponent {
               private userNavigationService: UserNavigationService,
               private checkout: ProviderCheckoutService,
               private toastCtrl: ToastController,
+              public ui: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('pages.licenseManagement.title');
+    this.btnRinnova = ui.Btn_Rinnova;
+    this.btnRinnova.event = (a: LicenseSubscriptionModel) => this.rinnova(a);
+    this.btnDisdici = ui.Btn_Disdici;
+    this.btnDisdici.event = (a: LicenseSubscriptionModel) => this.disdici(a);
+    this.btnSottoscrivi = ui.Btn_Sottoscrivi;
+    this.btnSottoscrivi.event = (ambito: AmbitoLicenza) => this.sottoscrivi(ambito);
+    this.btnCambiaPiano = ui.Btn_CambiaPiano;
+    this.btnCambiaPiano.event = (ambito: AmbitoLicenza) => this.sottoscrivi(ambito);
   }
 
   ionViewWillEnter() {
