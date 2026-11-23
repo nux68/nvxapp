@@ -107,7 +107,7 @@ export class AstBookingPageComponent {
       { button: bRitiraAnnullamento, visible: x => x.ritirabile && x.annullamentoRichiesto },
       { button: bChiedi, visible: x => x.annullamentoChiedibile },
       { button: bAnnulla, visible: x => x.modificabile, inMenu: true },
-      { button: bEdit, visible: x => x.modificabile },
+      { button: bEdit, visible: x => x.modificabile, iconOnly: true },
     ];
     const bCal = userInterfaceService.Btn_Calendario;
     bCal.event = () => this.navCtrl.navigateForward('/calendarfeed');
