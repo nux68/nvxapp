@@ -113,9 +113,9 @@
                   <ion-col size="2" class="ion-hide-sm-down">
                   </ion-col>
                   <ion-col size="2" class="ion-hide-sm-down">
-                    <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-                      <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                      &nbsp;{{btnEdit.text}}
+                    <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}"
+                      [attr.aria-label]="btnEdit.text" [appHoverPopup]="{ content: btnEdit.text ?? '' }">
+                      <ion-icon slot="icon-only" name="{{btnEdit.image}}"></ion-icon>
                     </ion-button>
                     @if (!item.default) {
                       <nvx-actions-menu [buttons]="[btnDelete]" [param]="item"></nvx-actions-menu>
