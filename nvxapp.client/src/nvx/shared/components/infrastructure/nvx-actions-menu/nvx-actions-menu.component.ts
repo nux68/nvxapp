@@ -2,6 +2,8 @@ import { Component, ChangeDetectionStrategy, computed, inject, input, output, si
 import { IonButton, IonIcon, IonItem, IonLabel, IonList, IonPopover } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
+import { HoverPopupDirective } from '../hover-popup/hover-popup.directive';
+import { HoverPopupService } from '../hover-popup/hover-popup.service';
 
 /*
  Bottone "altre azioni" (tre puntini in verticale): premuto apre un menu a discesa con le opzioni ricevute.
@@ -15,7 +17,7 @@ import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.se
   styleUrls: ['./nvx-actions-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [IonButton, IonIcon, IonItem, IonLabel, IonList, IonPopover]
+  imports: [IonButton, IonIcon, IonItem, IonLabel, IonList, IonPopover, HoverPopupDirective]
 })
 export class NvxActionsMenuComponent {
 
@@ -29,6 +31,7 @@ export class NvxActionsMenuComponent {
   readonly ev_Click = output<{ button: ButtonItem; param: any }>();
 
   readonly isOpen = signal(false);
+  private readonly hoverPopup = inject(HoverPopupService);
   /** evento del click: il popover si apre allineato al bottone premuto */
   openEvent: Event | null = null;
 
@@ -37,6 +40,7 @@ export class NvxActionsMenuComponent {
 
   open(ev: Event): void {
     ev.stopPropagation();
+    this.hoverPopup.hide();   // il popup del passaggio del mouse non resta sopra il menu
     this.openEvent = ev;
     this.isOpen.set(true);
   }
