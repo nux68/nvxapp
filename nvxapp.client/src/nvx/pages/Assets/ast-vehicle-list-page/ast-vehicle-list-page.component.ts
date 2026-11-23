@@ -52,7 +52,7 @@ export class AstVehicleListPageComponent {
     bEdit.event = (x: F.AstVeicoloListModel) => this.navCtrl.navigateForward('/astvehicleedit', { state: { id: x.id } });
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: F.AstVeicoloListModel) => this.elimina(x);
-    this.actions = [{ button: bDel }, { button: bEdit }];
+    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit }];
   }
 
   ionViewWillEnter() {

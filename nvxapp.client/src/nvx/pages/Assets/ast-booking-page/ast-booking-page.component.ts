@@ -106,7 +106,7 @@ export class AstBookingPageComponent {
       { button: bRitira, visible: x => x.ritirabile && !x.annullamentoRichiesto },
       { button: bRitiraAnnullamento, visible: x => x.ritirabile && x.annullamentoRichiesto },
       { button: bChiedi, visible: x => x.annullamentoChiedibile },
-      { button: bAnnulla, visible: x => x.modificabile },
+      { button: bAnnulla, visible: x => x.modificabile, inMenu: true },
       { button: bEdit, visible: x => x.modificabile },
     ];
     const bCal = userInterfaceService.Btn_Calendario;
