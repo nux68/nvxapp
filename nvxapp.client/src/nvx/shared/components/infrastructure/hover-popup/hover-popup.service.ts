@@ -20,11 +20,15 @@ export class HoverPopupService {
     });
 
     this.componentRef.instance.data = data;
-    this.componentRef.instance.style = this.calculatePosition(x, y);
+    // primo disegno nascosto, per misurare le dimensioni reali del popup
+    this.componentRef.instance.style = { top: '0px', left: '0px', visibility: 'hidden' };
 
     this.appRef.attachView(this.componentRef.hostView);
     document.body.appendChild(this.componentRef.location.nativeElement);
     // chiamato anche fuori da Angular (HoverPopupDirective): il popup si disegna subito
+    this.componentRef.changeDetectorRef.detectChanges();
+
+    this.componentRef.instance.style = this.calculatePosition(x, y);
     this.componentRef.changeDetectorRef.detectChanges();
   }
 
@@ -35,15 +39,22 @@ export class HoverPopupService {
     }
   }
 
+  // accanto al cursore; se non ci sta a destra/sotto va a sinistra/sopra. Si usano le dimensioni reali del popup:
+  // con quelle fisse (320x160) un popup corto vicino al bordo destro (bottoni delle liste) finiva lontano dal mouse
   private calculatePosition(x: number, y: number): Record<string, string> {
     const offset = 12;
-    const popupWidth = 320;
-    const popupHeight = 160;
+    const margin = 4;
+    const el = this.componentRef?.location.nativeElement.querySelector('.nvx-hover-popup') as HTMLElement | null;
+    const rect = el?.getBoundingClientRect();
+    const popupWidth = rect?.width || 320;
+    const popupHeight = rect?.height || 160;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    const left = (x + offset + popupWidth > vw) ? x - popupWidth - offset : x + offset;
-    const top  = (y + offset + popupHeight > vh) ? y - popupHeight - offset : y + offset;
+    let left = (x + offset + popupWidth > vw) ? x - popupWidth - offset : x + offset;
+    let top  = (y + offset + popupHeight > vh) ? y - popupHeight - offset : y + offset;
+    left = Math.max(margin, left);
+    top = Math.max(margin, top);
 
     return {
       top: `${top}px`,
