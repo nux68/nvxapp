@@ -53,7 +53,7 @@ export class CustomerListPageComponent {
     btnEdit.event = (x: Az_ClienteModel) => this.navCtrl.navigateForward('/customeredit', { state: { id: x.id } });
     const btnDelete = userInterfaceService.Btn_Cancella;
     btnDelete.event = (x: Az_ClienteModel) => this.delete(x);
-    // desktop: Cancella sta nel menu "altre azioni" (tre puntini) accanto a Modifica
+    // desktop: Cancella sta nel menu "altre azioni" (tre puntini) a destra di Modifica
     this.actions = [{ button: btnDelete, inMenu: true }, { button: btnEdit }];
   }
 
