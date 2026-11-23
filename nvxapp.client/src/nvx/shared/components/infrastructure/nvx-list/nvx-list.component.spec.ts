@@ -95,4 +95,20 @@ describe('NvxListComponent', () => {
     // su mobile restano tutte opzioni a scorrimento
     expect(component.visibleActions(items[0]).length).toBe(3);
   });
+
+  it('su desktop il bottone a tre puntini risulta allineato al bottone solo icona accanto', async () => {
+    if (component.ui.isMobile) return;
+    fixture.componentRef.setInput('actions', [
+      { button: new ButtonItem('Modifica', 'create-outline', 'medium'), iconOnly: true },
+      { button: new ButtonItem('Cancella', 'trash-outline', 'danger'), inMenu: true },
+    ] as NvxListAction<Row>[]);
+    fixture.detectChanges();
+    await customElements.whenDefined('ion-button');
+    await new Promise(r => setTimeout(r, 300));
+    const td: HTMLElement = fixture.nativeElement.querySelector('td.actions');
+    const [edit, menu] = Array.from(td.querySelectorAll('ion-button')).map(b => b.getBoundingClientRect());
+    expect(menu).toBeTruthy();
+    expect(Math.abs(edit.top - menu.top)).toBeLessThanOrEqual(1);
+    expect(Math.abs(edit.height - menu.height)).toBeLessThanOrEqual(1);
+  });
 });

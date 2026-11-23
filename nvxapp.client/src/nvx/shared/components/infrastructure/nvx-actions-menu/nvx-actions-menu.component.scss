@@ -1,12 +1,9 @@
+// allineato come gli ion-button accanto: Ionic li mette vertical-align: top con il margine di default
+// (con margin 0 e vertical-align: middle il bottone a tre puntini risultava piu' in alto/basso degli altri);
+// stessa dimensione di un bottone "solo icona" (es. Modifica)
 :host {
   display: inline-block;
-  vertical-align: middle;
-}
-
-.nvx-actions-menu-trigger {
-  margin: 0;
-  --padding-start: 6px;
-  --padding-end: 6px;
+  vertical-align: top;
 }
 
 ion-popover {
