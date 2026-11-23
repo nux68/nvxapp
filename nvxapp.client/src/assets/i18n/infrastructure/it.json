@@ -1485,6 +1485,9 @@
       "empty": "Nessun elemento",
       "actions": "Azioni"
     },
+    "nvxActionsMenu": {
+      "more": "Altre azioni"
+    },
     "mainMenu": {
       "showMenu": "Mostra il menu",
       "hideMenu": "Nascondi il menu"
