@@ -62,7 +62,7 @@ export class AiDocumentListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
     this.actions = [
-      { button: this.btnEdit },
+      { button: this.btnEdit, iconOnly: true },
       { button: this.btnDelete, visible: () => this.scope?.canEdit ?? false, inMenu: true },
     ];
   }
