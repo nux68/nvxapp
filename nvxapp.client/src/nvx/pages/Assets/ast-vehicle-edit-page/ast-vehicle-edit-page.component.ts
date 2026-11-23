@@ -95,12 +95,12 @@ export class AstVehicleEditPageComponent extends BasePageConfirmCancelComponent<
       b.event = (x: T) => this.elimina(kind, x);
       return b;
     };
-    this.actAssegnazione = [{ button: cancella('assegnazione') }, { button: modifica('assegnazione') }];
-    this.actScadenza = [{ button: cancella('scadenza') }, { button: modifica('scadenza') }];
-    this.actCosto = [{ button: cancella('costo') }, { button: modifica('costo') }];
+    this.actAssegnazione = [{ button: cancella('assegnazione'), inMenu: true }, { button: modifica('assegnazione') }];
+    this.actScadenza = [{ button: cancella('scadenza'), inMenu: true }, { button: modifica('scadenza') }];
+    this.actCosto = [{ button: cancella('costo'), inMenu: true }, { button: modifica('costo') }];
     const bNotifica = userInterfaceService.Btn_Invia;
     bNotifica.event = (x: F.AstMultaModel) => this.notificaMulta(x);
-    this.actMulta = [{ button: cancella('multa') }, { button: bNotifica, visible: x => x.stato === F.AstStatoMulta.DaNotificare && !!x.idDip_Anagrafica }, { button: modifica('multa') }];
+    this.actMulta = [{ button: cancella('multa'), inMenu: true }, { button: bNotifica, visible: x => x.stato === F.AstStatoMulta.DaNotificare && !!x.idDip_Anagrafica }, { button: modifica('multa') }];
   }
 
   get Title(): string { return this.transloco.translate(this.id ? 'ast.pages.vehicleEdit.title' : 'ast.pages.vehicleEdit.titleNew'); }

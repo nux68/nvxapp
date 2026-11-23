@@ -42,7 +42,7 @@ export class DocFolderListPageComponent {
     btnEdit.event = (x: DocCartellaModel) => this.navCtrl.navigateForward('/docfolderedit', { state: { item: { ...x }, setup: this.setup } });
     const btnDelete = userInterfaceService.Btn_Cancella;
     btnDelete.event = (x: DocCartellaModel) => this.elimina(x);
-    this.actions = [{ button: btnDelete, visible: (x: DocCartellaModel) => !x.diSistema && x.documenti === 0 }, { button: btnEdit }];
+    this.actions = [{ button: btnDelete, visible: (x: DocCartellaModel) => !x.diSistema && x.documenti === 0, inMenu: true }, { button: btnEdit }];
   }
 
   private setup: any = null;

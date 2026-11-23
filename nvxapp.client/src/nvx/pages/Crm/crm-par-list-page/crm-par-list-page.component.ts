@@ -46,7 +46,7 @@ export class CrmParListPageComponent {
     bEdit.event = (x: M.CrmParModel) => this.navCtrl.navigateForward('/crmparedit', { state: { item: { ...x } } });
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: M.CrmParModel) => this.elimina(x);
-    this.actions = [{ button: bDel }, { button: bEdit }];
+    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit }];
   }
 
   async ionViewWillEnter() {

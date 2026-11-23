@@ -92,6 +92,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   public btnEdit_Dip_ProfiloOrario: ButtonItem;
   public btnDelete_Dip_ProfiloOrario: ButtonItem;
+  // profili formule: Cancella nel menu "altre azioni" accanto a Modifica
+  public btnDelete_Dip_ProfiloFormule: ButtonItem;
 
   public btnDelete_Dip_Competenza: ButtonItem;
 
@@ -131,6 +133,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     this.btnDelete_Dip_ProfiloOrario = userInterfaceService.Btn_Cancella;
     this.btnDelete_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_DeleteClick;
+
+    this.btnDelete_Dip_ProfiloFormule = userInterfaceService.Btn_Cancella;
+    this.btnDelete_Dip_ProfiloFormule.event = (item: Dip_ProfiloFormuleModel) => this.Dip_ProfiloFormule_Delete(item);
 
     this.btnDelete_Dip_Competenza = userInterfaceService.Btn_Cancella;
     this.btnDelete_Dip_Competenza.event = this.handleButton_Dip_Competenza_DeleteClick;

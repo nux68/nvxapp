@@ -65,7 +65,7 @@ export class ProfiloFormuleEditPageComponent extends BasePageConfirmCancelCompon
     this.btnEdit.event = (r: Par_ProfiloFormuleDettModel) => this.apriRiga(r);
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.cancellaRiga;
-    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, inMenu: true }, { button: this.btnEdit }];
   }
 
   get Title(): string { return this.transloco.translate('attendance.pages.profiloFormuleEdit.title'); }
