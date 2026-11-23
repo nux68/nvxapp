@@ -31,7 +31,7 @@ export interface NvxListAction<T = any> {
   /** classe dell'ion-item-option (default dal colore del bottone) */
   mobileClass?: string;
   /** solo desktop: l'azione non e' un bottone in riga ma un'opzione del menu "altre azioni" (tre puntini),
-      che prende il posto della prima azione spostata. Su mobile resta un'opzione a scorrimento. */
+      messo in fondo, dopo i bottoni in riga. Su mobile resta un'opzione a scorrimento. */
   inMenu?: boolean;
 }
 
@@ -206,19 +206,12 @@ export class NvxListComponent<T = any> {
     return this.actions().filter(a => !a.visible || a.visible(item));
   }
 
-  /** colonna azioni in tabella: le azioni inMenu sono raccolte in un unico menu, messo dove compare la prima */
+  /** colonna azioni in tabella: bottoni in riga, poi le azioni inMenu raccolte in un unico menu in fondo */
   desktopActions(item: T): NvxListDesktopAction<T>[] {
     const acts = this.visibleActions(item);
+    const result: NvxListDesktopAction<T>[] = acts.filter(a => !a.inMenu).map(a => ({ kind: 'button', action: a }));
     const menu = acts.filter(a => a.inMenu).map(a => a.button);
-    const result: NvxListDesktopAction<T>[] = [];
-    let menuAdded = false;
-    for (const a of acts) {
-      if (!a.inMenu) result.push({ kind: 'button', action: a });
-      else if (!menuAdded) {
-        result.push({ kind: 'menu', buttons: menu });
-        menuAdded = true;
-      }
-    }
+    if (menu.length > 0) result.push({ kind: 'menu', buttons: menu });
     return result;
   }
 
