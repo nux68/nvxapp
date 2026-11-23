@@ -48,7 +48,7 @@ export class AstResourceListPageComponent {
     bEdit.event = (x: P.AstRisorsaModel) => this.apri(x);
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: P.AstRisorsaModel) => this.elimina(x);
-    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit }];
+    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit, iconOnly: true }];
   }
 
   ionViewWillEnter() {

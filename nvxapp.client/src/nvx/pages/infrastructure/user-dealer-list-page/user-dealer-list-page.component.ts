@@ -63,7 +63,7 @@ export class UserDealerListPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
 
 
-    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && this.deleteEnabled && !this.isAdminPrincipale(item), inMenu: true }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && this.deleteEnabled && !this.isAdminPrincipale(item), inMenu: true }, { button: this.btnEdit, iconOnly: true }];
   }
 
   ionViewWillEnter() {
