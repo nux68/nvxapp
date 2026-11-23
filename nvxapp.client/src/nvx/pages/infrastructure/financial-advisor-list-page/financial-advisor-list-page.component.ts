@@ -61,7 +61,7 @@ export class FinancialAdvisorListPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
 
 
-    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete && this.deleteEnabled, inMenu: true }, { button: this.btnImpersona }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete && this.deleteEnabled, inMenu: true }, { button: this.btnImpersona }, { button: this.btnEdit, iconOnly: true }];
 
   }
 
