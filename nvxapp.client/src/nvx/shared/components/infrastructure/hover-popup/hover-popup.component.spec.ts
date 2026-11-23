@@ -9,13 +9,13 @@ describe('HoverPopupComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HoverPopupComponent ],
       providers: [provideIonicAngular()],
-      imports: []
+      imports: [ HoverPopupComponent ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HoverPopupComponent);
     component = fixture.componentInstance;
+    component.data = { content: 'Modifica' };
     fixture.detectChanges();
   }));
 
