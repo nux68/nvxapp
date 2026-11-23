@@ -58,7 +58,11 @@
       "regenerate": "Nuovo indirizzo",
       "revoke": "Revoca",
       "calendar": "Calendario",
-      "generateNow": "Genera ora"
+      "generateNow": "Genera ora",
+      "renew": "Rinnova",
+      "unsubscribe": "Disdici",
+      "subscribe": "Sottoscrivi",
+      "changePlan": "Cambia piano"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
