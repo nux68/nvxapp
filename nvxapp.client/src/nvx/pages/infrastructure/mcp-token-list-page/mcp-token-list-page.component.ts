@@ -78,7 +78,8 @@ export class McpTokenListPageComponent {
     const btnRevoca = userInterfaceService.Btn_Revoca;
     btnRevoca.event = (item: McpTokenModel) => this.revoca(item);
     this.actions = [
-      { button: btnRevoca, visible: t => t.state === 'active' },
+      // desktop: solo icona, il testo compare nel popup al passaggio del mouse
+      { button: btnRevoca, visible: t => t.state === 'active', iconOnly: true },
     ];
 
     this.btnNuovo = userInterfaceService.Btn_Aggiungi;
