@@ -1,0 +1,29 @@
+:host {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.nvx-actions-menu-trigger {
+  margin: 0;
+  --padding-start: 6px;
+  --padding-end: 6px;
+}
+
+ion-popover {
+  --width: auto;
+  --min-width: 160px;
+}
+
+.nvx-actions-menu-list {
+  padding: 4px 0;
+
+  ion-item {
+    --min-height: 40px;
+    font-size: 0.95rem;
+  }
+
+  ion-icon[slot='start'] {
+    margin-inline-end: 12px;
+    font-size: 1.15em;
+  }
+}
