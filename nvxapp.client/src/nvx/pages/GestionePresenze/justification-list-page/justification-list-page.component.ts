@@ -57,7 +57,7 @@ export class JustificationListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default, inMenu: true }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default, inMenu: true }, { button: this.btnEdit, iconOnly: true }];
 
     //TODO DISAB SHARED DATA
     //this.sharedParameterGestionePresenzeService.Par_Giustificativi$.subscribe(res => {
