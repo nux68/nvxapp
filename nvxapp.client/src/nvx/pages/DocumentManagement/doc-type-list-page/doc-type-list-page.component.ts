@@ -45,7 +45,7 @@ export class DocTypeListPageComponent {
     btnEdit.event = (x: DocTipoModel) => this.navCtrl.navigateForward('/doctypeedit', { state: { item: { ...x }, setup: this.setup } });
     const btnDelete = userInterfaceService.Btn_Cancella;
     btnDelete.event = (x: DocTipoModel) => this.elimina(x);
-    this.actions = [{ button: btnDelete, visible: (x: DocTipoModel) => x.active, inMenu: true }, { button: btnEdit }];
+    this.actions = [{ button: btnDelete, visible: (x: DocTipoModel) => x.active, inMenu: true }, { button: btnEdit, iconOnly: true }];
   }
 
   private setup: any = null;

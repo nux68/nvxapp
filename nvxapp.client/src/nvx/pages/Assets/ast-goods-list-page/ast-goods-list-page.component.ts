@@ -84,7 +84,7 @@ export class AstGoodsListPageComponent {
     bEditBene.event = (x: B.AstBeneListModel) => this.navCtrl.navigateForward('/astgoodedit', { state: { id: x.id } });
     const bDelBene = userInterfaceService.Btn_Cancella;
     bDelBene.event = (x: B.AstBeneListModel) => this.eliminaBene(x);
-    this.actBene = [{ button: bDelBene, visible: x => x.stato !== B.AstStatoBene.Assegnato, inMenu: true }, { button: bEditBene }];
+    this.actBene = [{ button: bDelBene, visible: x => x.stato !== B.AstStatoBene.Assegnato, inMenu: true }, { button: bEditBene, iconOnly: true }];
 
     const bApri = userInterfaceService.Btn_Apri;
     bApri.event = (x: B.AstDaRestituireModel) => this.navCtrl.navigateForward(x.tipo === 'veicolo' ? '/astvehicleedit' : '/astgoodedit', { state: { id: x.idOggetto } });
@@ -94,7 +94,7 @@ export class AstGoodsListPageComponent {
     bEditCat.event = (x: B.AstCategoriaModel) => this.navCtrl.navigateForward('/astgooditemedit', { state: { kind: 'categoria', item: { ...x } } });
     const bDelCat = userInterfaceService.Btn_Cancella;
     bDelCat.event = (x: B.AstCategoriaModel) => this.eliminaCategoria(x);
-    this.actCategoria = [{ button: bDelCat, visible: x => x.numeroBeni === 0, inMenu: true }, { button: bEditCat }];
+    this.actCategoria = [{ button: bDelCat, visible: x => x.numeroBeni === 0, inMenu: true }, { button: bEditCat, iconOnly: true }];
 
     this.btnVerifica = userInterfaceService.Btn_Esegui;
     this.btnVerifica.text = t('ast.pages.goodsList.checkNow');

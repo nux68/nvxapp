@@ -400,9 +400,9 @@
                           <ion-col size="2" class="ion-hide-sm-down">
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
-                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}">
-                              <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
-                              &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
+                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}"
+                              [attr.aria-label]="btnEdit_Dip_ProfiloOrario.text" [appHoverPopup]="{ content: btnEdit_Dip_ProfiloOrario.text ?? '' }">
+                              <ion-icon slot="icon-only" name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                             </ion-button>
                             @if (!item.default) {
                               <nvx-actions-menu [buttons]="[btnDelete_Dip_ProfiloOrario]" [param]="item"></nvx-actions-menu>
@@ -429,7 +429,8 @@
                             <h3>{{ nomeProfiloFormule(item.idPar_ProfiloFormule) }}</h3>
                             <p>{{ item.dal | date:'dd/MM/yyyy' }} - {{ item.al | date:'dd/MM/yyyy' }}</p>
                           </ion-label>
-                          <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="EditDipProfiloFormuleDialog_Open(item.id)">
+                          <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="EditDipProfiloFormuleDialog_Open(item.id)"
+                            [attr.aria-label]="btnEdit_Dip_ProfiloOrario.text" [appHoverPopup]="{ content: btnEdit_Dip_ProfiloOrario.text ?? '' }">
                             <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                           </ion-button>
                           <!-- desktop: Cancella nel menu "altre azioni"; mobile: bottone come prima -->
@@ -489,9 +490,9 @@
                           <ion-col size="2" class="ion-hide-sm-down">
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
-                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_RapportoAutovetture.event(item)" color="{{btnEdit_Dip_RapportoAutovetture.color}}">
-                              <ion-icon name="{{btnEdit_Dip_RapportoAutovetture.image}}"></ion-icon>
-                              &nbsp;{{btnEdit_Dip_RapportoAutovetture.text}}
+                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_RapportoAutovetture.event(item)" color="{{btnEdit_Dip_RapportoAutovetture.color}}"
+                              [attr.aria-label]="btnEdit_Dip_RapportoAutovetture.text" [appHoverPopup]="{ content: btnEdit_Dip_RapportoAutovetture.text ?? '' }">
+                              <ion-icon slot="icon-only" name="{{btnEdit_Dip_RapportoAutovetture.image}}"></ion-icon>
                             </ion-button>
                             <nvx-actions-menu [buttons]="[btnDelete_Dip_RapportoAutovetture]" [param]="item"></nvx-actions-menu>
                           </ion-col>
