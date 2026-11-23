@@ -389,12 +389,6 @@
                               }
                             </ion-col>
                             <ion-col size="2" class="ion-hide-sm-down">
-                              @if (last && idx > 0) {
-                                <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(idxDay+1)" color="{{btnDelete.color}}">
-                                  <ion-icon name="{{btnDelete.image}}"></ion-icon>
-                                  &nbsp;{{btnDelete.text}}
-                                </ion-button>
-                              }
                               @if (idx === 0) {
                                 <ion-button size="small" fill="outline" shape="round" (click)="btnAdd.event(idxDay+1)" color="{{btnAdd.color}}">
                                   <ion-icon name="{{btnAdd.image}}"></ion-icon>
@@ -407,6 +401,9 @@
                                 <ion-icon name="{{btnEdit.image}}"></ion-icon>
                                 &nbsp;{{btnEdit.text}}
                               </ion-button>
+                              @if (last && idx > 0) {
+                                <nvx-actions-menu [buttons]="[btnDelete]" [param]="idxDay+1"></nvx-actions-menu>
+                              }
                             </ion-col>
                           </ion-row>
                         }
