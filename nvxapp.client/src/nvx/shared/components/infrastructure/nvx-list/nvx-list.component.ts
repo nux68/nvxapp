@@ -3,6 +3,7 @@ import { NgTemplateOutlet } from '@angular/common';
 import { IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { NvxActionsMenuComponent } from '../nvx-actions-menu/nvx-actions-menu.component';
 
 /** Colonna della lista: in tabella (desktop) e' una colonna, nella riga mobile titolo / sottotitolo / nota. */
 export interface NvxListColumn<T = any> {
@@ -29,7 +30,15 @@ export interface NvxListAction<T = any> {
   visible?: (item: T) => boolean;
   /** classe dell'ion-item-option (default dal colore del bottone) */
   mobileClass?: string;
+  /** solo desktop: l'azione non e' un bottone in riga ma un'opzione del menu "altre azioni" (tre puntini),
+      che prende il posto della prima azione spostata. Su mobile resta un'opzione a scorrimento. */
+  inMenu?: boolean;
 }
+
+/** elemento della colonna azioni in tabella: bottone in riga oppure menu "altre azioni" */
+export type NvxListDesktopAction<T = any> =
+  | { kind: 'button'; action: NvxListAction<T> }
+  | { kind: 'menu'; buttons: ButtonItem[] };
 
 /** Cella personalizzata: <ng-template nvxCell="key" let-item>...</ng-template> */
 @Directive({ selector: 'ng-template[nvxCell]', standalone: true })
@@ -60,7 +69,7 @@ const MOBILE_OPTION_CLASS: Record<string, string> = {
   styleUrls: ['./nvx-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote, TranslocoPipe]
+  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote, TranslocoPipe, NvxActionsMenuComponent]
 })
 export class NvxListComponent<T = any> {
 
@@ -195,6 +204,22 @@ export class NvxListComponent<T = any> {
 
   visibleActions(item: T): NvxListAction<T>[] {
     return this.actions().filter(a => !a.visible || a.visible(item));
+  }
+
+  /** colonna azioni in tabella: le azioni inMenu sono raccolte in un unico menu, messo dove compare la prima */
+  desktopActions(item: T): NvxListDesktopAction<T>[] {
+    const acts = this.visibleActions(item);
+    const menu = acts.filter(a => a.inMenu).map(a => a.button);
+    const result: NvxListDesktopAction<T>[] = [];
+    let menuAdded = false;
+    for (const a of acts) {
+      if (!a.inMenu) result.push({ kind: 'button', action: a });
+      else if (!menuAdded) {
+        result.push({ kind: 'menu', buttons: menu });
+        menuAdded = true;
+      }
+    }
+    return result;
   }
 
   optionClass(action: NvxListAction<T>): string {
