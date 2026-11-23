@@ -63,7 +63,7 @@ export class AiDocumentListPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
     this.actions = [
       { button: this.btnEdit },
-      { button: this.btnDelete, visible: () => this.scope?.canEdit ?? false },
+      { button: this.btnDelete, visible: () => this.scope?.canEdit ?? false, inMenu: true },
     ];
   }
 
