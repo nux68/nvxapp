@@ -44,7 +44,7 @@ export class HrChecklistTemplateListPageComponent {
     bEdit.event = (x: M.HrModelloModel) => this.navCtrl.navigateForward('/hrchecklisttemplateedit', { state: { id: x.id } });
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: M.HrModelloModel) => this.elimina(x);
-    this.actions = [{ button: bDel }, { button: bEdit }];
+    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit }];
   }
 
   ionViewWillEnter() {

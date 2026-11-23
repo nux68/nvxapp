@@ -48,7 +48,7 @@ export class HrPlanListPageComponent {
     bEdit.event = (x: M.HrPianoModel) => this.navCtrl.navigateForward('/hrplanedit', { state: { id: x.id } });
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: M.HrPianoModel) => this.elimina(x);
-    this.actions = [{ button: bDel }, { button: bEdit }];
+    this.actions = [{ button: bDel, inMenu: true }, { button: bEdit }];
   }
 
   ionViewWillEnter() {
