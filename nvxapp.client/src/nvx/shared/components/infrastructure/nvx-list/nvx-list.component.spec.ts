@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideIonicAngular } from '@ionic/angular';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 
-import { NvxListColumn, NvxListComponent } from './nvx-list.component';
+import { NvxListAction, NvxListColumn, NvxListComponent } from './nvx-list.component';
+import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
 interface Row { id: number; descrizione: string; codice?: string; disabled?: boolean; }
 
@@ -21,7 +23,7 @@ describe('NvxListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NvxListComponent],
+      imports: [TranslocoTestingModule.forRoot({ langs: {} }), NvxListComponent],
       providers: [provideIonicAngular()]
     }).compileComponents();
 
@@ -71,5 +73,26 @@ describe('NvxListComponent', () => {
       expect(el.querySelectorAll('table tbody tr').length).toBe(3);
       expect(el.querySelector('ion-item-sliding')).toBeNull();
     }
+  });
+
+  it('su desktop raccoglie le azioni inMenu in un unico menu, al posto della prima', () => {
+    const del = new ButtonItem('Cancella', 'trash-outline', 'danger');
+    const other = new ButtonItem('Altro', 'flash-outline', 'medium');
+    const edit = new ButtonItem('Modifica', 'create-outline', 'medium');
+    const actions: NvxListAction<Row>[] = [
+      { button: del, inMenu: true },
+      { button: edit },
+      { button: other, inMenu: true, visible: r => r.id !== 3 },
+    ];
+    fixture.componentRef.setInput('actions', actions);
+
+    const d1 = component.desktopActions(items[0]);
+    expect(d1.map(d => d.kind)).toEqual(['menu', 'button']);
+    expect(d1[0].kind === 'menu' ? d1[0].buttons : []).toEqual([del, other]);
+
+    const d3 = component.desktopActions(items[2]);
+    expect(d3[0].kind === 'menu' ? d3[0].buttons : []).toEqual([del]);
+    // su mobile restano tutte opzioni a scorrimento
+    expect(component.visibleActions(items[0]).length).toBe(3);
   });
 });
