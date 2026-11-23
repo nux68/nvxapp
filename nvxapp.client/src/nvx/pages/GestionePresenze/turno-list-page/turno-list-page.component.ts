@@ -49,7 +49,7 @@ export class TurnoListPageComponent {
     this.btnEdit.event = (item: Par_TurnoModel) => this.navCtrl.navigateForward('/turnoedit', { state: { id: item.id } });
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
-    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, inMenu: true }, { button: this.btnEdit }];
   }
 
   private loadData() {

@@ -398,18 +398,15 @@
                             </ion-label>
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
-                            @if (!item.default) {
-                              <ion-button size="small" fill="outline" shape="round" (click)="btnDelete_Dip_ProfiloOrario.event(item)" color="{{btnDelete_Dip_ProfiloOrario.color}}">
-                                <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
-                                &nbsp;{{btnDelete_Dip_ProfiloOrario.text}}
-                              </ion-button>
-                            }
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
                             <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}">
                               <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                               &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
                             </ion-button>
+                            @if (!item.default) {
+                              <nvx-actions-menu [buttons]="[btnDelete_Dip_ProfiloOrario]" [param]="item"></nvx-actions-menu>
+                            }
                           </ion-col>
                         </ion-row>
                       }
@@ -435,7 +432,9 @@
                           <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="EditDipProfiloFormuleDialog_Open(item.id)">
                             <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                           </ion-button>
-                          <ion-button slot="end" size="small" fill="outline" shape="round" color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="Dip_ProfiloFormule_Delete(item)">
+                          <!-- desktop: Cancella nel menu "altre azioni"; mobile: bottone come prima -->
+                          <nvx-actions-menu slot="end" class="ion-hide-sm-down" [buttons]="[btnDelete_Dip_ProfiloFormule]" [param]="item"></nvx-actions-menu>
+                          <ion-button slot="end" class="ion-hide-sm-up" size="small" fill="outline" shape="round" color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="Dip_ProfiloFormule_Delete(item)">
                             <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
                           </ion-button>
                         </ion-item>
@@ -488,16 +487,13 @@
                             <ion-label>{{ 'attendance.pages.userDepartmentEdit.mileageRateValue' | transloco: { valore: rimborsoKMTesto(item.rimborsoKM) } }}</ion-label>
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
-                            <ion-button size="small" fill="outline" shape="round" (click)="btnDelete_Dip_RapportoAutovetture.event(item)" color="{{btnDelete_Dip_RapportoAutovetture.color}}">
-                              <ion-icon name="{{btnDelete_Dip_RapportoAutovetture.image}}"></ion-icon>
-                              &nbsp;{{btnDelete_Dip_RapportoAutovetture.text}}
-                            </ion-button>
                           </ion-col>
                           <ion-col size="2" class="ion-hide-sm-down">
                             <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_RapportoAutovetture.event(item)" color="{{btnEdit_Dip_RapportoAutovetture.color}}">
                               <ion-icon name="{{btnEdit_Dip_RapportoAutovetture.image}}"></ion-icon>
                               &nbsp;{{btnEdit_Dip_RapportoAutovetture.text}}
                             </ion-button>
+                            <nvx-actions-menu [buttons]="[btnDelete_Dip_RapportoAutovetture]" [param]="item"></nvx-actions-menu>
                           </ion-col>
                         </ion-row>
                       } @empty {
