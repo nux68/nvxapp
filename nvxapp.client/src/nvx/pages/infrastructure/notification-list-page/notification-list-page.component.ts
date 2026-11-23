@@ -71,7 +71,8 @@ export class NotificationListPageComponent {
     btnApri.event = (item: NotificationModel) => this.apri(item);
     const btnCancella = userInterfaceService.Btn_Cancella;
     btnCancella.event = (item: NotificationModel) => this.cancella([item.id], false);
-    this.actions = [{ button: btnApri }, { button: btnCancella }];
+    // desktop: Apri solo icona (testo nel popup), Cancella nel menu "altre azioni" (tre puntini)
+    this.actions = [{ button: btnApri, iconOnly: true }, { button: btnCancella, inMenu: true }];
 
     const btnSegnaTutte = userInterfaceService.Btn_SegnaTutteLette;
     btnSegnaTutte.event = () => this.segnaTutteLette();
