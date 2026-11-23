@@ -47,7 +47,7 @@ export class HrCourseListPageComponent {
     bEdit.event = (x: M.HrCorsoModel) => this.navCtrl.navigateForward('/hrcourseedit', { state: { id: x.id } });
     const bDel = userInterfaceService.Btn_Cancella;
     bDel.event = (x: M.HrCorsoModel) => this.elimina(x);
-    this.actions = [{ button: bDel, visible: x => x.numeroEdizioni === 0, inMenu: true }, { button: bEdit }];
+    this.actions = [{ button: bDel, visible: x => x.numeroEdizioni === 0, inMenu: true }, { button: bEdit, iconOnly: true }];
   }
 
   ionViewWillEnter() {
