@@ -55,7 +55,7 @@ export class AccordiSwListPageComponent {
     this.btnEdit.event = (item: Dip_AccordoSWModel) => this.navCtrl.navigateForward('/accordoswedit', { state: { id: item.id } });
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.elimina;
-    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, inMenu: true }, { button: this.btnEdit }];
   }
 
   ionViewWillEnter() {

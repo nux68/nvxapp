@@ -58,7 +58,7 @@ export class ExportCauListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, inMenu: true }, { button: this.btnEdit }];
   }
 
 

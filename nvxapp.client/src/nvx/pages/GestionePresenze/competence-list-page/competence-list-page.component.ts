@@ -56,7 +56,7 @@ export class CompetenceListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default, inMenu: true }, { button: this.btnEdit }];
   }
 
 
