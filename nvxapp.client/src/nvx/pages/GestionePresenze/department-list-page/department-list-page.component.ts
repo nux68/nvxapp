@@ -65,7 +65,7 @@ export class DepartmentListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => !item.default, inMenu: true }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default, inMenu: true }, { button: this.btnEdit, iconOnly: true }];
 
 
   }
