@@ -101,11 +101,17 @@
             }
             @if (hasActions()) {
               <td class="actions">
-                @for (a of visibleActions(item); track a.button.text) {
-                  <ion-button size="small" fill="outline" shape="round" [color]="a.button.color" [disabled]="a.button.disabled" (click)="a.button.event(item)">
-                    <ion-icon slot="start" [name]="a.button.image"></ion-icon>
-                    {{ a.button.text }}
-                  </ion-button>
+                @for (d of desktopActions(item); track $index) {
+                  @if (d.kind === 'button') {
+                    <ion-button size="small" fill="outline" shape="round" [color]="d.action.button.color" [disabled]="d.action.button.disabled" (click)="d.action.button.event(item)">
+                      <ion-icon slot="start" [name]="d.action.button.image"></ion-icon>
+                      {{ d.action.button.text }}
+                    </ion-button>
+                  }
+                  @else {
+                    <!-- azioni inMenu: bottone a tre puntini con le opzioni (es. Cancella) -->
+                    <nvx-actions-menu [buttons]="d.buttons" [param]="item"></nvx-actions-menu>
+                  }
                 }
               </td>
             }
