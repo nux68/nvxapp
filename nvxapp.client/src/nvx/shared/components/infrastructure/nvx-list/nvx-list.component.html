@@ -103,10 +103,20 @@
               <td class="actions">
                 @for (d of desktopActions(item); track $index) {
                   @if (d.kind === 'button') {
-                    <ion-button size="small" fill="outline" shape="round" [color]="d.action.button.color" [disabled]="d.action.button.disabled" (click)="d.action.button.event(item)">
-                      <ion-icon slot="start" [name]="d.action.button.image"></ion-icon>
-                      {{ d.action.button.text }}
-                    </ion-button>
+                    @if (d.action.iconOnly) {
+                      <!-- solo icona: il testo compare nel popup passando con il mouse -->
+                      <ion-button size="small" fill="outline" shape="round" [color]="d.action.button.color" [disabled]="d.action.button.disabled"
+                        [attr.aria-label]="d.action.button.text" [appHoverPopup]="{ content: d.action.button.text ?? '' }"
+                        (click)="d.action.button.event(item)">
+                        <ion-icon slot="icon-only" [name]="d.action.button.image"></ion-icon>
+                      </ion-button>
+                    }
+                    @else {
+                      <ion-button size="small" fill="outline" shape="round" [color]="d.action.button.color" [disabled]="d.action.button.disabled" (click)="d.action.button.event(item)">
+                        <ion-icon slot="start" [name]="d.action.button.image"></ion-icon>
+                        {{ d.action.button.text }}
+                      </ion-button>
+                    }
                   }
                   @else {
                     <!-- azioni inMenu: bottone a tre puntini con le opzioni (es. Cancella) -->
