@@ -1,0 +1,21 @@
+<ion-button class="nvx-actions-menu-trigger" size="small" fill="clear" shape="round" color="medium"
+  [attr.aria-label]="label()" [title]="label()" aria-haspopup="menu" [attr.aria-expanded]="isOpen()"
+  [disabled]="allDisabled()" (click)="open($event)">
+  <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
+</ion-button>
+
+<ion-popover #popover [isOpen]="isOpen()" [event]="openEvent" side="bottom" alignment="end"
+  [showBackdrop]="false" (didDismiss)="isOpen.set(false)">
+  <ng-template>
+    <ion-list class="nvx-actions-menu-list" lines="none" role="menu">
+      @for (b of buttons(); track $index) {
+        <ion-item button role="menuitem" [detail]="false" [disabled]="b.disabled" (click)="select(popover, b)">
+          @if (b.image) {
+            <ion-icon slot="start" [name]="b.image" [color]="b.color" aria-hidden="true"></ion-icon>
+          }
+          <ion-label [color]="b.color === 'danger' ? 'danger' : null">{{ b.text }}</ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  </ng-template>
+</ion-popover>
