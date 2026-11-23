@@ -160,7 +160,7 @@ export class CmpListPageComponent {
       bDel.event = (x: M.CmpRiga) => this.elimina(x);
       const bEdit = this.userInterfaceService.Btn_Modifica;
       bEdit.event = (x: M.CmpRiga) => this.apri(s.key, { ...x });
-      azioni.push({ button: bDel }, { button: bEdit });
+      azioni.push({ button: bDel, inMenu: true }, { button: bEdit });
     }
     if (s.speciale === 'stato') {
       // corso mancante, in scadenza o scaduto: si registra il corso svolto
