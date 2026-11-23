@@ -77,7 +77,7 @@ export class CrmCustomerEditPageComponent extends BasePageConfirmCancelComponent
     ];
     const b1 = userInterfaceService.Btn_Modifica; b1.event = (x: M.CrmContattoModel) => this.contatto(x);
     const b2 = userInterfaceService.Btn_Cancella; b2.event = (x: M.CrmContattoModel) => this.eliminaContatto(x);
-    this.azContatti = [{ button: b2 }, { button: b1 }];
+    this.azContatti = [{ button: b2, inMenu: true }, { button: b1 }];
     this.colOpportunita = [
       { key: 'titolo', title: t('crm.fields.titolo'), mobile: 'title' },
       { key: 'fase', title: t('crm.fields.fase'), mobile: 'subtitle' },
