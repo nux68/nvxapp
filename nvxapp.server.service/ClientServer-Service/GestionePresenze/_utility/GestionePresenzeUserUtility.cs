@@ -454,6 +454,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             await _az_CfgRepository.UpsertAsync(az_Cfg);
         }
 
+        private const string ClienteDefaultDescrizione = "Default";
+
+        /*
+         Cliente predefinito delle presenze, creato solo se l'azienda non ne ha gia' uno.
+         Il cliente sta nello schema Common, che la disdetta della licenza non elimina (§15.9 di ANALISI_INFRASTRUCTURE_LICENZE.md):
+         alla riattivazione Az_Cfg e' nuova (IdAz_ClienteDefault vuoto) ma il cliente "Default" esiste ancora e va riusato,
+         altrimenti ogni abilitazione dopo una disdetta ne aggiunge uno.
+         Ordine: quello indicato in Az_Cfg, poi il primo cliente "Default" dell'azienda, altrimenti uno nuovo.
+        */
+        private async Task<Az_Cliente> GetOrCreateClienteDefault(Az_Cfg? az_Cfg, int idAz_Anagrafica)
+        {
+            Az_Cliente? cliente = az_Cfg?.IdAz_ClienteDefault is int idClienteDefault
+                ? await _az_ClienteRepository.FindAll(c => c.Id == idClienteDefault && c.IdAz_Anagrafica == idAz_Anagrafica).FirstOrDefaultAsync()
+                : null;
+
+            cliente ??= await _az_ClienteRepository.FindAll(c => c.IdAz_Anagrafica == idAz_Anagrafica && c.Descrizione == ClienteDefaultDescrizione)
+                                                   .OrderBy(c => c.Id)
+                                                   .FirstOrDefaultAsync();
+
+            cliente ??= await _az_ClienteRepository.UpsertAsync(new Az_Cliente
+            {
+                IdAz_Anagrafica = idAz_Anagrafica,
+                Descrizione = ClienteDefaultDescrizione
+            });
+
+            await ImpostaClienteDefault(az_Cfg, cliente.Id);
+            return cliente;
+        }
+
+        // Competenza di default (schema Common, sopravvive alla disdetta come il cliente): creata solo se manca
+        private async Task<Par_Competenza> GetOrCreateCompetenzaDefault(int idAz_Anagrafica)
+        {
+            return GetCompetenzaDefault(idAz_Anagrafica)
+                   ?? await _par_CompetenzaRepository.UpsertAsync(new Par_Competenza()
+                   {
+                       IdAz_Anagrafica = idAz_Anagrafica,
+                       Default = true,
+                       Descrizione = "Default"
+                   });
+        }
+
         public async Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany)
         {
             Get_Az_SubCommessaAttivita_Default_OutModel retVal = new Get_Az_SubCommessaAttivita_Default_OutModel();
@@ -465,19 +506,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 int idAz = company_DATA.az_Anagrafica.Id;
 
                 // 1. Cliente predefinito delle presenze (Az_Cfg.IdAz_ClienteDefault; il cliente e' nella tabella comune)
-                var cliente = company_DATA.az_Cfg?.IdAz_ClienteDefault is int idClienteDefault
-                    ? await _az_ClienteRepository.FindAll(c => c.Id == idClienteDefault && c.IdAz_Anagrafica == idAz).FirstOrDefaultAsync()
-                    : null;
-
-                if (cliente == null)
-                {
-                    cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente
-                    {
-                        IdAz_Anagrafica = idAz,
-                        Descrizione = "Default"
-                    });
-                    await ImpostaClienteDefault(company_DATA.az_Cfg, cliente.Id);
-                }
+                var cliente = await GetOrCreateClienteDefault(company_DATA.az_Cfg, idAz);
 
                 // ?? 2. Commessa default ??????????????????????????????????????????
                 var commessa = (await _az_CommessaRepository.FindAll())
@@ -774,13 +803,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         {
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
             {
-                // Inizializzazione Par_Competenza per l'azienda
-                var par_Competenza = await _par_CompetenzaRepository.UpsertAsync(new Par_Competenza()
-                {
-                    IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
-                    Default = true,
-                    Descrizione = "Default"
-                });
+                // Par_Competenza di default (Common: riusata se l'azienda l'ha gia', es. riattivazione dopo una disdetta)
+                var par_Competenza = await GetOrCreateCompetenzaDefault(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id);
 
                 var par_Attivita = await _par_AttivitaRepository.UpsertAsync(new Par_Attivita()
                 {
@@ -798,12 +822,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     });
 
 
-                    var az_Cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente()
-                    {
-                        IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
-                        Descrizione = "Default",
-                    });
-                    await ImpostaClienteDefault(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg, az_Cliente.Id);
+                    // cliente Common: riusato se esiste gia' (riattivazione dopo una disdetta)
+                    var az_Cliente = await GetOrCreateClienteDefault(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg,
+                                                                     company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id);
 
 
                     var az_Commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa()
