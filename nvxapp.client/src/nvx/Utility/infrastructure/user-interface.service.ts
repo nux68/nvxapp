@@ -482,6 +482,58 @@ export class UserInterfaceService {
     return button;
   }
 
+  // rinnovo di un abbonamento / licenza per un nuovo periodo
+  get Btn_Rinnova(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.renew'),
+      'refresh-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Rinnova cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
+  // disdetta di un abbonamento / licenza
+  get Btn_Disdici(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.unsubscribe'),
+      'close-circle-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Disdici cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
+  // sottoscrizione di un abbonamento / licenza
+  get Btn_Sottoscrivi(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.subscribe'),
+      'cart-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Sottoscrivi cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
+  // cambio del piano di un abbonamento / licenza gia sottoscritto
+  get Btn_CambiaPiano(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.changePlan'),
+      'cart-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_CambiaPiano cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
   get Btn_Calendario(): ButtonItem {
     const button = new ButtonItem(
       this.transloco.translate('common.buttons.calendar'),
