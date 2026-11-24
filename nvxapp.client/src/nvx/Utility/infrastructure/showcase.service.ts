@@ -5,6 +5,9 @@ import { ShowcaseInfrastructureService } from './showcase-infrastructure.service
 import { ShowcaseAttendanceTrackingService } from './showcase-attendance-tracking.service';
 import { ShowcaseCrmService } from './showcase-crm.service';
 import { ShowcaseDocumentManagementService } from './showcase-document-management.service';
+import { ShowcaseHumanResourcesService } from './showcase-human-resources.service';
+import { ShowcaseComplianceService } from './showcase-compliance.service';
+import { ShowcaseAssetsService } from './showcase-assets.service';
 import { ShowcaseAllFunctionService } from './showcase-all-function.service';
 import { ShowcaseContenuti, ShowcaseContenutiRidefiniti } from './showcase.model';
 import { showcaseGuard } from '../../pages/RoleGuard/infrastructure/showcase-guard';
@@ -17,8 +20,10 @@ import { showcaseGuard } from '../../pages/RoleGuard/infrastructure/showcase-gua
   - sezione dei contenuti           -> sostituita per intero da quella del ramo (stesse pagine, altri testi)
  A differenza delle pagine degli applicativi, lo showcase non dipende dagli applicativi attivi
  (non c'e' ancora un utente): vale quella del ramo in cui gira il codice. Ogni ramo applicativo (presenze, CRM,
- documentale) riempie la propria ridefinizione; il ramo AllFunction riempie quella dell'applicativo completo, con
- tutti gli applicativi. Ordine di precedenza (l'ultima vince): presenze, CRM, documentale, applicativo completo.
+ documentale, risorse umane, compliance, risorse aziendali) riempie la propria ridefinizione (in Infrastructure sono
+ vuote); il ramo AllFunction riempie quella dell'applicativo completo, con tutti gli applicativi.
+ Ordine di precedenza (l'ultima vince): presenze, CRM, documentale, risorse umane, compliance, risorse aziendali,
+ applicativo completo (sempre per ultimo).
 */
 interface ShowcaseRamo {
   readonly Pages: MainMenuItem[];
@@ -35,11 +40,16 @@ export class ShowcaseService {
               private showcaseAttendanceTrackingService: ShowcaseAttendanceTrackingService,
               private showcaseCrmService: ShowcaseCrmService,
               private showcaseDocumentManagementService: ShowcaseDocumentManagementService,
+              private showcaseHumanResourcesService: ShowcaseHumanResourcesService,
+              private showcaseComplianceService: ShowcaseComplianceService,
+              private showcaseAssetsService: ShowcaseAssetsService,
               private showcaseAllFunctionService: ShowcaseAllFunctionService) { }
 
   // ridefinizioni dei rami, in ordine di precedenza crescente
   private get rami(): ShowcaseRamo[] {
-    return [this.showcaseAttendanceTrackingService, this.showcaseCrmService, this.showcaseDocumentManagementService, this.showcaseAllFunctionService];
+    return [this.showcaseAttendanceTrackingService, this.showcaseCrmService, this.showcaseDocumentManagementService,
+            this.showcaseHumanResourcesService, this.showcaseComplianceService, this.showcaseAssetsService,
+            this.showcaseAllFunctionService];
   }
 
   public get Pages(): MainMenuItem[] {
