@@ -8,18 +8,38 @@
 
   <ion-card>
     <ion-card-content>
-      <p class="nvx-nota-disabled">{{ 'pages.licenseCatalogList.note' | transloco }}</p>
-      <nvx-list
-        [items]="listini"
-        [columns]="columns"
-        [actions]="actions"
-        trackKey="id"
-        icon="pricetag-outline"
-        [searchText]="searchText"
-        [rowDisabled]="isDisabled"
-        [disabledToggleLabel]="'pages.licenseCatalogList.showDisabled' | transloco">
-      </nvx-list>
+      <!-- opzioni della lista (Mostra disattivati, nota): valgono per tutte le sezioni -->
+      <nvx-list-options
+        [showDisabledLabel]="'pages.licenseCatalogList.showDisabled' | transloco"
+        [(showDisabled)]="showDisabled"
+        [note]="'pages.licenseCatalogList.note' | transloco">
+      </nvx-list-options>
+      @if (listini && !visibleSections().length) {
+        <p class="nvx-nota-disabled">{{ 'components.nvxList.empty' | transloco }}</p>
+      }
     </ion-card-content>
   </ion-card>
+
+  <!-- una sezione per applicativo (ambito), nell'ordine di AMBITI_LICENZA -->
+  @for (section of visibleSections(); track section.ambito) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ ('pages.license.function' + section.ambito) | transloco }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <nvx-list
+          [items]="section.listini"
+          [columns]="columns"
+          [actions]="actions"
+          trackKey="id"
+          icon="pricetag-outline"
+          [searchText]="searchText"
+          [rowDisabled]="isDisabled"
+          [disabledToggleExternal]="true"
+          [(showDisabled)]="showDisabled">
+        </nvx-list>
+      </ion-card-content>
+    </ion-card>
+  }
 
 </ion-content>
