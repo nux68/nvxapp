@@ -349,6 +349,239 @@
         "none": "Nessuna restituzione in sospeso",
         "open": "Vai ai beni"
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Veicoli, beni e spazi della tua azienda, in cloud."
+      },
+      "home": {
+        "etichetta": "Risorse aziendali in cloud",
+        "titolo": "Veicoli, beni e sale: sai sempre chi li ha e quando",
+        "sottotitolo": "Flotta, inventario dei beni assegnati e prenotazioni in un’unica app: scadenze sotto controllo, verbali confermati e nessuna doppia prenotazione.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "flotta": {
+            "title": "Flotta sotto controllo",
+            "text": "Veicoli, assegnazioni, fringe benefit, multe e costi in un solo posto."
+          },
+          "scadenze": {
+            "title": "Nessuna scadenza dimenticata",
+            "text": "Bollo, assicurazione, revisione, contratti e garanzie nello scadenzario, con preavviso."
+          },
+          "beni": {
+            "title": "Beni e verbali",
+            "text": "PC, telefoni e attrezzature consegnati con verbale confermato dal dipendente."
+          },
+          "prenotazioni": {
+            "title": "Prenotazioni senza sovrapposizioni",
+            "text": "Postazioni, sale e auto in pool prenotate in autonomia, anche dal calendario."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l’azienda",
+            "text": "Le risorse aziendali sono attive da subito, con dipendenti e reparti già pronti."
+          },
+          "censisci": {
+            "title": "Censisci le risorse",
+            "text": "Inserisci veicoli, beni e risorse prenotabili e assegnali ai dipendenti."
+          },
+          "lavora": {
+            "title": "Lascia fare all’app",
+            "text": "Scadenze nello scadenzario, verbali da confermare e prenotazioni in autonomia."
+          }
+        },
+        "chiusuraTitolo": "Basta fogli Excel per auto e attrezzature",
+        "chiusuraTesto": "Registra la tua azienda e prova la gestione delle risorse aziendali con i tuoi dipendenti."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve per gestire veicoli, beni e spazi dell’azienda: chi li ha, quando scadono, chi li prenota.",
+        "sezioni": {
+          "vocale": {
+            "title": "Comandi vocali e chat",
+            "text": "Chiedi all’assistente cosa hai in dotazione, quali risorse sono libere o prenota una sala, a voce o per iscritto.",
+            "dettaglio": {
+              "intro": "L’assistente esegue le operazioni più frequenti sulle risorse aziendali senza passare dal menu: si parla al microfono o si scrive in chat, con parole proprie.",
+              "punti": [
+                "Prenota una postazione, una sala o un’auto in pool indicando giorno e orario",
+                "Annulla una tua prenotazione",
+                "Chiedi le tue prenotazioni e le risorse libere in una fascia oraria",
+                "Chiedi i beni e il veicolo che hai in dotazione",
+                "Per chi gestisce: scadenze della flotta scadute o in arrivo",
+                "Apre la scheda di un veicolo o di un bene, o la pagina che ti serve",
+                "Prima di salvare mostra il riepilogo e chiede conferma"
+              ]
+            }
+          },
+          "flotta": {
+            "title": "Flotta",
+            "text": "Veicoli, assegnazione ai dipendenti e fringe benefit, collegati ai rimborsi chilometrici delle presenze.",
+            "dettaglio": {
+              "intro": "Per chi gestisce i veicoli aziendali: anagrafica, assegnazioni e fringe benefit, collegati alle note spese delle Presenze.",
+              "punti": [
+                "Veicoli con targa, marca, modello, alimentazione e possesso: proprietà, noleggio o leasing",
+                "Uso assegnato a un dipendente o in pool prenotabile",
+                "Ogni assegnazione aggiorna l'auto del dipendente usata per i rimborsi chilometrici",
+                "Fringe benefit calcolato dal costo chilometrico ACI e dalle emissioni",
+                "Il dipendente vede il veicolo assegnato e il fringe dell'anno",
+                "Veicoli dismessi nascosti dall'elenco ma conservati"
+              ]
+            }
+          },
+          "scadenzeVeicoli": {
+            "title": "Scadenze dei veicoli",
+            "text": "Bollo, assicurazione, revisione, tagliando e contratti di noleggio o leasing nello scadenzario.",
+            "dettaglio": {
+              "intro": "Le scadenze di ogni veicolo finiscono nello scadenzario comune, con il preavviso scelto nelle impostazioni.",
+              "punti": [
+                "Bollo, assicurazione, revisione, tagliando e altre scadenze",
+                "La scadenza si chiude indicando la data di esecuzione",
+                "Contratto di noleggio o leasing con fornitore, canone e km inclusi",
+                "Scadenza del contratto nello scadenzario",
+                "Widget con le scadenze della flotta scadute o in arrivo"
+              ]
+            }
+          },
+          "multe": {
+            "title": "Multe e costi",
+            "text": "Il conducente si ricava dal periodo di assegnazione e riceve l'avviso della multa.",
+            "dettaglio": {
+              "intro": "Per registrare multe e spese di ogni veicolo e sapere chi era alla guida il giorno dell'infrazione.",
+              "punti": [
+                "Multa con data e ora, numero del verbale, luogo e importo",
+                "Conducente proposto da chi aveva il veicolo il giorno dell'infrazione",
+                "Notifica della multa al conducente dall'elenco",
+                "Stato: da notificare, notificata, pagata o contestata",
+                "Costi per tipo, dal carburante ai pedaggi, con il totale dell'anno",
+                "Il dipendente vede le sue multe in \"Le mie risorse\""
+              ]
+            }
+          },
+          "beni": {
+            "title": "Beni assegnati",
+            "text": "PC, telefoni, badge e attrezzature con categorie e garanzia in scadenza.",
+            "dettaglio": {
+              "intro": "L'inventario dei beni dati in uso ai dipendenti, per sapere sempre cosa c'è, dove si trova e quando scade la garanzia.",
+              "punti": [
+                "Categorie dei beni definite dall'azienda",
+                "Codice inventario, marca e modello, numero di serie, acquisto e valore",
+                "Stato: disponibile, consegnato, in riparazione o dismesso",
+                "Fine della garanzia nello scadenzario comune",
+                "Storico delle consegne di ogni bene"
+              ]
+            }
+          },
+          "consegne": {
+            "title": "Consegna e restituzione",
+            "text": "Verbale firmato alla consegna e alla restituzione; alla cessazione l'elenco di cosa va restituito.",
+            "dettaglio": {
+              "intro": "Ogni consegna e restituzione di beni ha il suo verbale confermato dal dipendente; alla cessazione si sa cosa deve rientrare.",
+              "punti": [
+                "Verbale di consegna e di restituzione da confermare nelle prese visione",
+                "Con il Documentale attivo il verbale si firma",
+                "Stato del bene annotato al rientro",
+                "Elenco di beni e veicoli ancora in mano a dipendenti in cessazione",
+                "Controllo notturno con avviso agli amministratori e restituzione nello scadenzario",
+                "Il dipendente vede i beni in carico e i verbali da confermare"
+              ]
+            }
+          },
+          "prenotazioni": {
+            "title": "Prenotazioni",
+            "text": "Postazioni, sale e auto in pool senza sovrapposizioni, anche nel calendario personale.",
+            "dettaglio": {
+              "intro": "Per prenotare postazioni, sale e auto in pool in autonomia, senza doppie prenotazioni sulla stessa risorsa.",
+              "punti": [
+                "Risorse prenotabili per tipo, con il numero di posti",
+                "Vista settimanale, filtrabile per risorsa o sulle sole proprie prenotazioni",
+                "Una risorsa già prenotata nell'orario non si può prenotare",
+                "Durata massima e anticipo massimo scelti nelle impostazioni",
+                "Approvazione dell'amministratore facoltativa per singola risorsa",
+                "Prenotazioni anche nel calendario personale e nel widget"
+              ]
+            }
+          },
+          "mieRisorse": {
+            "title": "Le mie risorse",
+            "text": "Ogni dipendente vede in una pagina veicolo, beni in carico, multe, prenotazioni e verbali da confermare.",
+            "dettaglio": {
+              "intro": "Una pagina personale per sapere cosa si ha in dotazione dall’azienda, senza chiedere all’ufficio.",
+              "punti": [
+                "Veicolo assegnato e fringe benefit dell’anno",
+                "Beni in carico con codice inventario e data di consegna",
+                "Multe a proprio nome con stato e importo",
+                "Prenotazioni future di postazioni, sale e auto",
+                "Verbali di consegna e restituzione da confermare"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Si parte gratis: scegli il piano quando sei pronto, tutte le funzioni sono comprese.",
+        "inclusi": {
+          "flotta": "Flotta, multe e costi",
+          "beni": "Inventario e verbali dei beni",
+          "prenotazioni": "Prenotazioni di postazioni, sale e auto",
+          "tutteLeFunzioni": "Tutte le funzioni"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "installare": {
+            "domanda": "I dipendenti devono installare qualcosa?",
+            "risposta": "No: prenotano, vedono le loro risorse e confermano i verbali dal browser dello smartphone o del computer."
+          },
+          "scadenze": {
+            "domanda": "Come vengo avvisato delle scadenze?",
+            "risposta": "Bollo, assicurazione, revisione, contratti e garanzie finiscono nello scadenzario comune, con il preavviso scelto nelle impostazioni e le notifiche agli amministratori."
+          },
+          "presenze": {
+            "domanda": "Si collega alla gestione presenze?",
+            "risposta": "Sì: se usi anche le Presenze, il veicolo assegnato diventa l’auto usata per i rimborsi chilometrici delle note spese."
+          },
+          "consulente": {
+            "domanda": "Sono un consulente: posso gestire più aziende?",
+            "risposta": "Sì: con i piani per gli studi gestisci le aziende clienti ed entri per loro conto quando serve."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a uffici del personale, amministrazioni e aziende.",
+        "paragrafo1": "Conosciamo da vicino il lavoro di chi gestisce auto e attrezzature aziendali: fogli da aggiornare, scadenze ricordate all’ultimo, beni di cui non si sa più chi li ha.",
+        "paragrafo2": "{{siteName}} nasce per togliere questo lavoro: ogni risorsa ha il suo responsabile, le scadenze arrivano da sole e i dipendenti vedono quello che hanno in carico.",
+        "valori": {
+          "semplice": {
+            "title": "Semplice per i dipendenti",
+            "text": "Prenotare una sala o confermare un verbale richiede pochi secondi."
+          },
+          "ordinato": {
+            "title": "Ordinato per l’amministrazione",
+            "text": "Assegnazioni, consegne e costi sempre tracciati."
+          },
+          "vicino": {
+            "title": "Vicino a chi gestisce",
+            "text": "Funzioni pensate con chi segue flotte e inventari ogni giorno."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l’account della tua azienda: le risorse aziendali sono subito attive.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "attiva": "Risorse aziendali già attive",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l’informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e le risorse aziendali saranno subito pronte.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta con le risorse aziendali attive. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
     }
   }
 }
