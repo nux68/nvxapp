@@ -66,7 +66,7 @@ export class ShowcaseInfrastructureService {
     return {
       brand: {
         nome: SITE_NAME,
-        icon: 'calendar-clear-outline',
+        icon: 'apps-outline',
         slogan: t('brand.slogan')
       },
       home: {
