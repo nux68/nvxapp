@@ -14,7 +14,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 /*
  Elenchi di Compliance (ANALISI_COMPLIANCE_APPLICATIVO.md), una sezione alla volta (segmenti), area dalla rotta (data.area):
@@ -45,7 +45,6 @@ export class CmpListPageComponent {
   public items: M.CmpRiga[] | null = null;
   public columns: NvxListColumn<M.CmpRiga>[] = [];
   public actions: NvxListAction<M.CmpRiga>[] = [];
-  public buttonbar: ButtonItem[] = [];
   public showDisabled = false;
 
   // lato studio: aziende dello studio con Compliance attivo e azienda scelta
@@ -108,12 +107,6 @@ export class CmpListPageComponent {
     else
       this.imposta(CMP_AREE['gdpr'].map(k => CMP_SEZIONI[k]), richiesta);
 
-    // export del registro GDPR (job): il file si scarica dalla barra dei job quando e' pronto
-    if (this.area !== '81') {
-      const btnExcel = this.userInterfaceService.Btn_Excel;
-      btnExcel.event = () => this.export();
-      this.buttonbar = [btnExcel];
-    }
   }
 
   ionViewWillLeave() {
@@ -172,9 +165,15 @@ export class CmpListPageComponent {
     this.actions = azioni;
 
     const studioSenzaAzienda = this.area === 'studio' && !this.idCompany;
-    this.fabMenuService.fabMenuItem = s.campi.length > 0 && s.nuovo && !studioSenzaAzienda ? [
+    const fab: FabMenuItem[] = s.campi.length > 0 && s.nuovo && !studioSenzaAzienda ? [
       new FabMenuItem(t('cmp.pages.list.new') + ': ' + t('cmp.sections.' + s.key), 'add-circle-outline', () => this.apri(s.key, s.nuovo!())),
     ] : [];
+    // export del registro GDPR (job) nel menu del FAB: il file si scarica dalla barra dei job quando e' pronto
+    if (this.area !== '81') {
+      const btnExcel = this.userInterfaceService.Btn_Excel;
+      fab.push(new FabMenuItem(btnExcel.text, btnExcel.image, () => this.export()));
+    }
+    this.fabMenuService.fabMenuItem = fab;
 
     if (studioSenzaAzienda) {
       this.items = [];
