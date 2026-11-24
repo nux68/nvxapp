@@ -10,6 +10,7 @@ import { NvxListAction, NvxListColumn } from '../../../shared/components/infrast
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 // periodo del documento: "Ottobre 2026", "Tredicesima 2026", "CU 2026"
 export function hrPeriodo(transloco: TranslocoService, tipo: number, anno: number, mese: number | null): string {
@@ -47,6 +48,7 @@ export class HrPayslipListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private service: HrService,
               private longJobNotifierService: LongJobNotifierService,
+              private collectionDialogService: CollectionDialogService,
               private transloco: TranslocoService) {
     const t = (k: string) => this.transloco.translate(k);
     this.title = t('hr.pages.payslipList.title');
@@ -62,7 +64,10 @@ export class HrPayslipListPageComponent {
     ];
     const bOpen = userInterfaceService.Btn_Apri;
     bOpen.event = (x: M.HrCaricamentoModel) => this.navCtrl.navigateForward(this.studio ? '/hrstudiopayslipdetail' : '/hrpayslipdetail', { state: { id: x.id, idCompany: this.idCompany } });
-    this.actions = [{ button: bOpen, iconOnly: true }];
+    // cancellazione del caricamento (prima nel dettaglio): solo finche' non e' pubblicato, nel menu "altre azioni"
+    const bDel = userInterfaceService.Btn_Cancella;
+    bDel.event = (x: M.HrCaricamentoModel) => this.elimina(x);
+    this.actions = [{ button: bDel, visible: x => this.cancellabile(x), inMenu: true }, { button: bOpen, iconOnly: true }];
   }
 
   ionViewWillEnter() {
@@ -100,6 +105,18 @@ export class HrPayslipListPageComponent {
     const request = new GenericRequest<M.HrCaricamentoListInModel>(M.HrCaricamentoListInModel);
     request.data.idCompany = this.studio ? this.idCompany : null;
     this.service.CaricamentoList(request).subscribe(res => this.items = res.success && res.data ? res.data.caricamenti : []);
+  }
+
+  cancellabile(x: M.HrCaricamentoModel): boolean {
+    return x.stato === M.HrStatoCaricamento.DaPubblicare || x.stato === M.HrStatoCaricamento.DaVerificare || x.stato === M.HrStatoCaricamento.Errore;
+  }
+
+  private async elimina(x: M.HrCaricamentoModel) {
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('hr.pages.payslipDetail.confirmDelete')))
+      return;
+    const request = new GenericRequest<M.HrCedIdInModel>(M.HrCedIdInModel);
+    request.data = { idCompany: this.idCompany, id: x.id };
+    this.service.CaricamentoDelete(request).subscribe(res => { if (res.success) this.load(); });
   }
 
   Filter(CurrFilter: any) {
