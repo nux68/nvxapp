@@ -45,7 +45,7 @@ export class HrEmployeeListPageComponent {
     ];
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: M.HrDipendenteModel) => this.navCtrl.navigateForward('/hremployeeedit', { state: { id: x.id } });
-    this.actions = [{ button: bEdit }];
+    this.actions = [{ button: bEdit, iconOnly: true }];
   }
 
   ionViewWillEnter() {
