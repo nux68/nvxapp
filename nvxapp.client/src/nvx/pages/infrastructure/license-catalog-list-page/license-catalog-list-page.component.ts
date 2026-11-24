@@ -8,14 +8,21 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { LicenseService } from '../../../ClientServer-Service/Infrastructure/License/license.service';
 import {
-  LicenseCatalogDeleteInModel, LicenseCatalogListInModel, LicenseCatalogModel
+  AMBITI_LICENZA, AmbitoLicenza, LicenseCatalogDeleteInModel, LicenseCatalogListInModel, LicenseCatalogModel
 } from '../../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
  Listini delle licenze (ANALISI_INFRASTRUCTURE_LICENZE.md §4, §10.2): SuperUser (listini globali e dei centri) e utenti del centro
  (listini globali in sola lettura, propri modificabili dal DealerPowerAdmin se il centro e' abilitato).
  Un listino usato da licenze non si elimina: il server lo disattiva. Dal menu della pagina (SuperUser): impostazioni.
+ I listini sono divisi in sezioni, una per applicativo (ambito), nell'ordine di AMBITI_LICENZA; la casella
+ "mostra disattivati" e la ricerca valgono per tutte le sezioni.
 */
+export interface LicenseCatalogSection {
+  ambito: AmbitoLicenza;
+  listini: LicenseCatalogModel[];
+}
+
 @Component({
   selector: 'app-license-catalog-list-page',
   templateUrl: './license-catalog-list-page.component.html',
@@ -28,6 +35,8 @@ export class LicenseCatalogListPageComponent {
   public title: string;
   public searchText!: string;
   public listini: LicenseCatalogModel[] | null = null;
+  public sections: LicenseCatalogSection[] = [];
+  public showDisabled = false;
   public canCreate = false;
   public isSuperUser = false;
   public readonly columns: NvxListColumn<LicenseCatalogModel>[];
@@ -50,8 +59,6 @@ export class LicenseCatalogListPageComponent {
         value: l => l.dealer ?? this.transloco.translate('pages.licenseCatalogList.global') },
       { key: 'tipoSoggetto', title: this.transloco.translate('pages.licenseCatalogList.columnSubject'),
         value: l => this.transloco.translate('pages.license.subject' + l.tipoSoggetto) },
-      { key: 'ambito', title: this.transloco.translate('pages.licenseCatalogList.columnFunction'),
-        value: l => this.transloco.translate('pages.license.function' + l.ambito) },
       { key: 'prezzi', title: this.transloco.translate('pages.licenseCatalogList.columnPrices'), searchable: false, sortable: false,
         value: l => l.piano.map(p => p.codice + ' ' + p.prezzoMensile.toFixed(2)).join(' · ') },
       { key: 'abbonamenti', title: this.transloco.translate('pages.licenseCatalogList.columnSubscriptions'), align: 'end', mobile: 'note' },
@@ -75,6 +82,7 @@ export class LicenseCatalogListPageComponent {
   private load() {
     this.licenseService.LicenseCatalogList(new GenericRequest<LicenseCatalogListInModel>(LicenseCatalogListInModel)).subscribe(res => {
       this.listini = res.success && res.data ? res.data.listino : [];
+      this.sections = this.buildSections(this.listini);
       this.canCreate = !!res.data?.canCreate;
       this.isSuperUser = !!res.data?.isSuperUser;
 
@@ -89,6 +97,22 @@ export class LicenseCatalogListPageComponent {
         }));
       this.fabMenuService.fabMenuItem = fab;
     });
+  }
+
+  /** raggruppa i listini per applicativo: prima gli ambiti noti nell'ordine di AMBITI_LICENZA, poi eventuali altri */
+  private buildSections(listini: LicenseCatalogModel[]): LicenseCatalogSection[] {
+    const byAmbito = new Map<AmbitoLicenza, LicenseCatalogModel[]>();
+    for (const l of listini) {
+      const list = byAmbito.get(l.ambito);
+      if (list) list.push(l); else byAmbito.set(l.ambito, [l]);
+    }
+    const order = [...AMBITI_LICENZA, ...[...byAmbito.keys()].filter(a => !AMBITI_LICENZA.includes(a))];
+    return order.filter(a => byAmbito.has(a)).map(a => ({ ambito: a, listini: byAmbito.get(a)! }));
+  }
+
+  /** sezioni da mostrare: senza "mostra disattivati" si nascondono quelle con soli listini disattivati */
+  visibleSections(): LicenseCatalogSection[] {
+    return this.showDisabled ? this.sections : this.sections.filter(s => s.listini.some(l => l.attivo));
   }
 
   handleButtonEditClick = (item: LicenseCatalogModel) => {
