@@ -309,6 +309,262 @@
         "responsabile": "External processor",
         "violazione": "Data breach"
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Workplace safety and privacy for your company, in the cloud."
+      },
+      "home": {
+        "etichetta": "Compliance in the cloud",
+        "titolo": "Workplace safety and GDPR, with every deadline under control",
+        "sottotitolo": "Mandatory training, medical checks, PPE, appointments and the processing register in one app: deadlines reach the deadline calendar before it is too late.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "formazione": {
+            "title": "Mandatory training",
+            "text": "Required courses come from job roles: see at once who is compliant, who is expiring and who still has to attend."
+          },
+          "visite": {
+            "title": "Medical checks and PPE",
+            "text": "Fitness results with the next check, and PPE handed over with the employee's confirmation."
+          },
+          "gdpr": {
+            "title": "GDPR register",
+            "text": "Processing activities, external processors and data breaches, with Excel export of the register."
+          },
+          "scadenze": {
+            "title": "All deadlines in one place",
+            "text": "Courses, medical checks, appointments, risk assessments, contracts and the 72 hours for breaches in the deadline calendar."
+          }
+        },
+        "passi": {
+          "registra": {
+            "title": "Register your company",
+            "text": "Compliance is active right away, with employees already in the shared master data."
+          },
+          "configura": {
+            "title": "Set roles and courses",
+            "text": "Job roles with risk level, mandatory courses and the PPE catalogue."
+          },
+          "controlla": {
+            "title": "Stay compliant",
+            "text": "Record courses, checks and deliveries: deadlines update by themselves."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "chiusuraTitolo": "No more spreadsheets for deadlines",
+        "chiusuraTesto": "Register your company and try Compliance with your employees."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything you need for workplace safety (Italian Legislative Decree 81/08) and the GDPR register, with deadlines always in sight.",
+        "sezioni": {
+          "corsi": {
+            "title": "Mandatory training (81/08)",
+            "text": "Courses per job role, completed courses and renewals: the training status of every employee.",
+            "dettaglio": {
+              "intro": "For whoever handles workplace safety: required courses come from employees' job roles and you immediately see who is compliant.",
+              "punti": [
+                "Job roles with risk level and mandatory courses with validity in months",
+                "Job roles assigned to employees, with dates",
+                "Completed courses with type, date, provider, hours and certificate",
+                "The latest course renews the previous ones and puts the expiry in the deadline calendar",
+                "Status per employee: missing, valid, expiring or expired courses"
+              ]
+            }
+          },
+          "visite": {
+            "title": "Medical checks and fitness",
+            "text": "Results and deadlines for administrators; health data encrypted and visible only to authorised users.",
+            "dettaglio": {
+              "intro": "Employees' medical checks with result and next due date; health data stays reserved to the company doctor or authorised users.",
+              "punti": [
+                "Pre-employment, periodic, role change, return to work and termination checks",
+                "Fitness result, with prescriptions or limitations useful to organise work",
+                "Next check due date in the deadline calendar",
+                "Encrypted health data, visible only to users authorised in the settings",
+                "Health data never in the AI chat or in exports"
+              ]
+            }
+          },
+          "dpi": {
+            "title": "PPE delivery",
+            "text": "Equipment handed over with a delivery note and the employee's acknowledgement.",
+            "dettaglio": {
+              "intro": "To record the personal protective equipment given to employees and get their confirmation of receipt.",
+              "punti": [
+                "PPE catalogue with category",
+                "Delivery with date, quantity and size",
+                "Employees with a user confirm the delivery in their acknowledgements",
+                "With Document Management active the PPE delivery note can be signed",
+                "Employees see the PPE received and those still to confirm"
+              ]
+            }
+          },
+          "nomine": {
+            "title": "Appointments and risk assessment",
+            "text": "Safety officers, workers' representatives, supervisors and emergency staff with the appointee's acknowledgement; risk assessment documents and their deadlines.",
+            "dettaglio": {
+              "intro": "Safety appointments and risk assessment documents in one place, with end and review dates under control.",
+              "punti": [
+                "Safety officer, deputy, workers' representative, supervisors, emergency and first aid staff, company doctor",
+                "Appointment of an employee with acknowledgement, or of an external person",
+                "Appointment per site, with its end date in the deadline calendar",
+                "Risk assessments, emergency plans, interference assessments and procedures with version, review and expiry",
+                "Reference to the document in the archive or in Document Management"
+              ]
+            }
+          },
+          "gdpr": {
+            "title": "Record of processing activities",
+            "text": "The GDPR register with Excel export, appointments and external processors with contract expiry.",
+            "dettaglio": {
+              "intro": "The company's record of processing activities, with external processors and their contracts, always up to date and exportable.",
+              "punti": [
+                "Processing activities with purpose, legal basis, categories of data subjects and data",
+                "Recipients, transfers outside the EU, erasure terms and security measures",
+                "External processors, sub-processors, DPO and joint controllers with the activities entrusted to them",
+                "Processor contract expiry in the deadline calendar",
+                "Excel export of the register, ready in the jobs bar"
+              ]
+            }
+          },
+          "violazioni": {
+            "title": "Data breach register",
+            "text": "Every breach with its 72-hour deadline in the calendar and an alert to administrators.",
+            "dettaglio": {
+              "intro": "To record personal data breaches and never miss the 72-hour deadline to notify the supervisory authority.",
+              "punti": [
+                "Date of the breach and of its discovery, from which the 72 hours run",
+                "Notification deadline in the calendar until it is recorded",
+                "Alert to administrators for every new breach",
+                "Risk level: with unlikely risk no notification is due",
+                "Data subjects, consequences, measures taken and reasons for any delay"
+              ]
+            }
+          },
+          "scadenze": {
+            "title": "Deadlines and dashboard",
+            "text": "All safety and privacy deadlines in the shared deadline calendar and in the dashboard widgets.",
+            "dettaglio": {
+              "intro": "Dates you must not forget arrive by themselves: courses, checks, appointments, documents, contracts and breaches go into the deadline calendar, with the notice period you choose.",
+              "punti": [
+                "Shared deadline calendar with open and expired deadlines",
+                "Notice days set in the module configuration",
+                "“Compliance deadlines”, “Mandatory training” and “GDPR register” widgets for administrators",
+                "Notifications of deadlines and new breaches, also by email",
+                "PPE and appointment acknowledgements collected in a single page"
+              ]
+            }
+          },
+          "adempimenti": {
+            "title": "My compliance",
+            "text": "Every employee sees their courses, next medical check, PPE received and appointments.",
+            "dettaglio": {
+              "intro": "A personal page for everyone in the company: their own safety status at a glance, without asking the office.",
+              "punti": [
+                "Completed courses with their expiry",
+                "Date of the next medical check, never the result",
+                "PPE received and deliveries to confirm",
+                "Appointments and roles received",
+                "“My compliance” widget on the dashboard"
+              ]
+            }
+          },
+          "vocale": {
+            "title": "Voice commands and chat",
+            "text": "Ask the assistant for safety deadlines, or record a course or a PPE delivery in your own words.",
+            "dettaglio": {
+              "intro": "The assistant answers and records without going through the menu: speak into the microphone or type in the chat, in your own words.",
+              "punti": [
+                "“What are the safety deadlines?”, “who hasn't done the mandatory courses?”",
+                "Breaches to notify and status of the GDPR register",
+                "Record a completed course or a PPE delivery, with summary and confirmation",
+                "Opens the right section: medical checks, risk assessment, safety officer appointment, GDPR register",
+                "Employees ask when their check is due or which PPE they received",
+                "Health data excluded from the chat"
+              ]
+            }
+          },
+          "studio": {
+            "title": "Managed by your advisor",
+            "text": "The advisor keeps the GDPR register and deadlines on behalf of their companies.",
+            "dettaglio": {
+              "intro": "For the advisor or firm that follows several companies: from their own access they work on each company's GDPR register.",
+              "punti": [
+                "List of the firm's companies with Compliance active",
+                "Open and expired deadlines of each company at a glance",
+                "Full GDPR register managed on behalf of the chosen company",
+                "The company's Compliance deadlines in read-only mode",
+                "No access to employees' workplace safety data"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "Start for free; all workplace safety and GDPR features are always included.",
+        "inclusi": {
+          "sicurezza": "Workplace safety (81/08)",
+          "gdpr": "GDPR register and breaches",
+          "scadenzario": "Deadline calendar and notifications",
+          "tutteLeFunzioni": "All features"
+        },
+        "nota": "Prices exclude VAT. No commitment: cancel whenever you like.",
+        "domande": {
+          "sanitari": {
+            "domanda": "Who can see the health data of medical checks?",
+            "risposta": "Only users authorised in the settings, for example the company doctor: data is encrypted and never ends up in the AI chat or in exports."
+          },
+          "dipendenti": {
+            "domanda": "Do employees have to do anything?",
+            "risposta": "Only confirm PPE deliveries and appointments from their acknowledgements; on the “My compliance” page they see courses, checks and PPE."
+          },
+          "export": {
+            "domanda": "Can I export the record of processing activities?",
+            "risposta": "Yes: the GDPR register is exported to Excel and the file is ready in the jobs bar."
+          },
+          "consulente": {
+            "domanda": "I am an advisor: can I manage several companies?",
+            "risposta": "Yes: with the plans for firms you manage your client companies' GDPR register and see their deadlines."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "We have worked for years alongside advisors, safety officers and HR offices.",
+        "paragrafo1": "We know how much time is lost chasing certificates, expiring medical checks and external processors' contracts scattered across folders and spreadsheets.",
+        "paragrafo2": "{{siteName}} brings workplace safety and privacy together in one place: record once, deadlines arrive by themselves and everyone sees only what concerns them.",
+        "valori": {
+          "chiaro": {
+            "title": "Clear",
+            "text": "Who is compliant and what is expiring, at a glance."
+          },
+          "riservato": {
+            "title": "Confidential",
+            "text": "Health data encrypted and visible only to authorised users."
+          },
+          "vicino": {
+            "title": "Close to advisors",
+            "text": "Your firm keeps the GDPR register of its companies."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company account: Compliance is active right away for workplace safety and the GDPR register.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "attiva": "Compliance already active",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We have sent you an email with the link to activate your account: open it and Compliance will be ready right away.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready with Compliance active. These are the users created: sign in with the password you chose."
+      }
     }
   }
 }
