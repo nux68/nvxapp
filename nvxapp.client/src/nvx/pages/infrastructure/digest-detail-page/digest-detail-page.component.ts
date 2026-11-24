@@ -31,9 +31,9 @@ export class DigestDetailPageComponent {
               private digestService: DigestService,
               private languageService: LanguageService,
               private transloco: TranslocoService) {
-    const elenco = this.userInterfaceService.Btn_Elenco;
-    elenco.event = () => this.navCtrl.navigateBack('/digests');
-    this.buttonbar = [elenco];
+    const annulla = this.userInterfaceService.Btn_Annulla;
+    annulla.event = () => this.navCtrl.navigateBack('/digests');
+    this.buttonbar = [annulla];
   }
 
   get title(): string {
