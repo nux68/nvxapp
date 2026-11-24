@@ -46,6 +46,7 @@ export class CalendarFeedPageComponent {
 
     this.btnCrea = userInterfaceService.Btn_Aggiungi;
     this.btnCrea.text = this.transloco.translate('pages.calendarFeed.create');
+    this.btnCrea.fill = 'outline';   // azione della pagina, non quella principale: solo bordo, senza colore di sfondo
     this.btnCrea.event = () => this.load(true);
 
     this.btnCopia = userInterfaceService.Btn_Copia;
