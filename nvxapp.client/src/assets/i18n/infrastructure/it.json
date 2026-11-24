@@ -336,7 +336,8 @@
       "contactUs": "Contattaci",
       "notAvailable": "I prezzi non sono disponibili in questo momento: contattaci per un preventivo.",
       "aiIncluded": "Integrazione AI con Claude, ChatGPT e Gemini",
-      "aiNotIncluded": "Integrazione AI non inclusa"
+      "aiNotIncluded": "Integrazione AI non inclusa",
+      "allFunctions": "tutte le funzioni"
     },
     "ai": {
       "badge": "Completamente integrata con Claude, ChatGPT e Gemini",
