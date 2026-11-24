@@ -424,55 +424,180 @@
         "sezioni": {
           "clienti": {
             "title": "Customers and contacts",
-            "text": "Single company registry with sales status, owner, source, tags and contact persons."
+            "text": "Single company registry with sales status, owner, source, tags and contact persons.",
+            "dettaglio": {
+              "intro": "A single registry for customers and prospects, with everything salespeople need: details, people to contact and the history of the relationship.",
+              "punti": [
+                "Customer card with contacts, opportunities, activities, offers, notes and attachments",
+                "Sales status: prospect, customer, former customer or not interested",
+                "Sales owner, source and tags for each customer",
+                "Industry, estimated turnover, number of employees and website",
+                "Contact people with role, phone, email and main contact"
+              ]
+            }
           },
           "lead": {
             "title": "Leads",
-            "text": "Not yet qualified contacts, converted into a customer with one click together with the opportunity."
+            "text": "Not yet qualified contacts, converted into a customer with one click together with the opportunity.",
+            "dettaglio": {
+              "intro": "New contacts (website, trade fair, word of mouth) stay separate from customers until they are qualified.",
+              "punti": [
+                "Lead with name, company, email, phone, source and notes",
+                "Activities recorded on the lead too, before conversion",
+                "Conversion into a new customer or an existing one",
+                "On conversion the person becomes a contact of the customer and an opportunity can be created at once",
+                "The lead's activities and notes move to the customer after conversion"
+              ]
+            }
           },
           "pipeline": {
             "title": "Opportunities and pipeline",
-            "text": "Value, probability and expected close; the history of every phase change."
+            "text": "Value, probability and expected close; the history of every phase change.",
+            "dettaglio": {
+              "intro": "Ongoing deals, split by stage: salespeople move them forward, managers see at a glance what each stage is worth.",
+              "punti": [
+                "Column view with cards you drag from one stage to another",
+                "List view as an alternative to columns",
+                "Value, probability and expected close date for each opportunity",
+                "Loss reason required when an opportunity is closed as lost",
+                "History of every stage change in the opportunity card",
+                "Stages set by the company, of type open, won and lost"
+              ]
+            }
           },
           "agenda": {
             "title": "Activity agenda",
-            "text": "Today, overdue and upcoming: calls, emails, meetings, with the outcome recorded."
+            "text": "Today, overdue and upcoming: calls, emails, meetings, with the outcome recorded.",
+            "dettaglio": {
+              "intro": "Every salesperson's activities in one agenda: calls, emails and meetings linked to customers, leads and opportunities.",
+              "punti": [
+                "Today's, overdue, upcoming and done or cancelled activities",
+                "Filter to show only the activities assigned to you",
+                "Outcome recorded when the activity is marked as done",
+                "Assigned activities shown in your personal calendar through an .ics feed",
+                "Activity types configurable in the CRM tables"
+              ]
+            }
           },
           "promemoria": {
             "title": "Reminders",
-            "text": "A pop-up notice before each activity, with the button to open it."
+            "text": "A pop-up notice before each activity, with the button to open it.",
+            "dettaglio": {
+              "intro": "No forgotten appointments: whoever is signed in to the application gets a notice shortly before each activity.",
+              "punti": [
+                "Pop-up notice before each assigned activity starts",
+                "Notice time set by the company in the CRM settings (30 minutes by default)",
+                "Button in the notice to open the activity straight away",
+                "Sent only to the user the activity is assigned to"
+              ]
+            }
           },
           "offerte": {
             "title": "Offers",
-            "text": "Numbering per year, price-list products, PDF with your terms and sending by email."
+            "text": "Numbering per year, price-list products, PDF with your terms and sending by email.",
+            "dettaglio": {
+              "intro": "Offers prepared in a few steps from the price list, with calculated totals and a PDF ready to send to the customer.",
+              "punti": [
+                "Lines with products and services from the price list, quantity, price and discount",
+                "Taxable amount, VAT and total calculated automatically",
+                "Yearly numbering with prefix and default validity",
+                "PDF with the company's terms, sent by email as an attachment",
+                "A sent offer stays in the deadlines until its validity date, then expires without an outcome",
+                "Accepted offer: the linked opportunity moves to the won stage with its value"
+              ]
+            }
           },
           "note": {
             "title": "Notes and attachments",
-            "text": "Pinned notes and files on customers, opportunities and offers."
+            "text": "Pinned notes and files on customers, opportunities and offers.",
+            "dettaglio": {
+              "intro": "What you know about a customer or a deal stays written in its card, available to the whole sales team.",
+              "punti": [
+                "Free notes on customers and opportunities, with author and date",
+                "Important notes pinned at the top",
+                "Attachments on customers, opportunities and offers, up to 20 MB per file",
+                "CRM attachments do not use document management storage"
+              ]
+            }
           },
           "visibilita": {
             "title": "Sales rep visibility",
-            "text": "Each sales rep sees their own customers, or everyone sees everything: the company decides."
+            "text": "Each sales rep sees their own customers, or everyone sees everything: the company decides.",
+            "dettaglio": {
+              "intro": "The company decides what each salesperson sees, with a single setting.",
+              "punti": [
+                "Salespeople see only their own customers, or all customers",
+                "With own only: also customers without an owner and those they are involved in",
+                "Administrators always see everything",
+                "The same rule applies to opportunities, leads and activities"
+              ]
+            }
           },
           "report": {
             "title": "Reports",
-            "text": "Pipeline by phase and owner, won and lost by reason, lead conversion, activities per user."
+            "text": "Pipeline by phase and owner, won and lost by reason, lead conversion, activities per user.",
+            "dettaglio": {
+              "intro": "Sales figures for a chosen period, to see how the pipeline and the salespeople's work are going.",
+              "punti": [
+                "Opportunities won and lost in the period and win rate",
+                "Open pipeline by stage and by owner, including the weighted value",
+                "Won by owner and lost by reason",
+                "Leads created and converted in the period",
+                "Activities done by user"
+              ]
+            }
           },
           "riassegna": {
             "title": "Reassignment",
-            "text": "When a sales rep leaves, their customers and deals move to a colleague in one go."
+            "text": "When a sales rep leaves, their customers and deals move to a colleague in one go.",
+            "dettaglio": {
+              "intro": "When a salesperson changes role or leaves the company, their work moves to a colleague without editing records one by one.",
+              "punti": [
+                "Customers, opportunities, leads and pending activities reassigned in one go",
+                "Data moved to another user or left without an owner",
+                "If the user is removed their customers are not lost: they are left without an owner",
+                "Their pending activities are cancelled on removal"
+              ]
+            }
           },
           "export": {
             "title": "Excel export",
-            "text": "The customer list with the chosen filters, ready in Excel."
+            "text": "The customer list with the chosen filters, ready in Excel.",
+            "dettaglio": {
+              "intro": "The customer list goes to Excel just as you see it on screen, ready for analysis or mailings.",
+              "punti": [
+                "Excel export of the customer list",
+                "Uses the same filters set on the page",
+                "With status, owner, contact details, tags and open opportunities",
+                "No manual copying of data"
+              ]
+            }
           },
           "gdpr": {
             "title": "Privacy consent",
-            "text": "Consent to marketing communications with its date, on customers and leads."
+            "text": "Consent to marketing communications with its date, on customers and leads.",
+            "dettaglio": {
+              "intro": "Consent to marketing communications is stored with the contact's details, together with the date it was given.",
+              "punti": [
+                "Marketing consent with date on the customer card",
+                "Marketing consent with date on leads too",
+                "Visible at a glance before contacting someone",
+                "Access to data limited by the salespeople visibility rule"
+              ]
+            }
           },
           "integrato": {
             "title": "Integrated",
-            "text": "The same customers as attendance and document management, without duplicate registries."
+            "text": "The same customers as attendance and document management, without duplicate registries.",
+            "dettaglio": {
+              "intro": "The CRM works on the same customer registry as the other applications: no duplicate records.",
+              "punti": [
+                "The same customers as attendance tracking and document management",
+                "Sales data is added to the shared customer card",
+                "A customer used by opportunities, offers, activities or attachments cannot be deleted by mistake",
+                "Enabled per company together with the other applications, with a single sign-in"
+              ]
+            }
           }
         }
       },
