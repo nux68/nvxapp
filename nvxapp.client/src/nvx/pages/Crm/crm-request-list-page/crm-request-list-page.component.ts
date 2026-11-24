@@ -53,7 +53,7 @@ export class CrmRequestListPageComponent {
     ];
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: M.CrmRichiestaListModel) => this.navCtrl.navigateForward('/crmrequestedit', { state: { id: x.id } });
-    this.actions = [{ button: bEdit }];
+    this.actions = [{ button: bEdit, iconOnly: true }];
   }
 
   async ionViewWillEnter() {

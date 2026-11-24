@@ -49,7 +49,8 @@ export class CrmOfferListPageComponent {
     bPdf.event = (x: M.CrmOffertaListModel) => this.setupService.pdfOfferta(x.id);
     const bEdit = userInterfaceService.Btn_Modifica;
     bEdit.event = (x: M.CrmOffertaListModel) => this.navCtrl.navigateForward('/crmofferedit', { state: { id: x.id } });
-    this.actions = [{ button: bPdf }, { button: bEdit }];
+    // desktop: PDF e Modifica solo icona, il testo compare nel popup al passaggio del mouse
+    this.actions = [{ button: bPdf, iconOnly: true }, { button: bEdit, iconOnly: true }];
   }
 
   async ionViewWillEnter() {
