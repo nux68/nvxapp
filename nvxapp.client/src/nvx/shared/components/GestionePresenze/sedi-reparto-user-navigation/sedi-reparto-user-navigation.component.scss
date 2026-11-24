@@ -6,10 +6,18 @@
 ion-select {
   width: 100%;
   min-height: 0;
+  // Ionic dentro un item usa flex: 1 1 0 => la select si schiaccia (17px), il contenuto esce dal campo
+  // e, chiusa la lista, il focus fa scorrere il campo: etichetta e valore si spostano. Altezza dal contenuto.
+  flex: 0 0 auto;
   --padding-top: 0;
-  --padding-bottom: 8px;     // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
-  margin-bottom: 4px;
-  font-size: 0.9em;
+  --padding-bottom: 5px;    // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
+  margin-bottom: 0;
+  font-size: 0.95em;
+}
+
+// campi con combo (anno/mese/sede/reparto): un po' piu' alti del campo dipendente
+ion-item:has(ion-select) {
+  --min-height: 42px;
 }
 
 // i campi prendono lo stile "riquadro" da global.scss; qui versione compatta (altezza e spazio interno)
