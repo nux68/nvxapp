@@ -315,6 +315,223 @@
         "confirmRequestAgain": "La presa visione è già stata chiesta: chiederla di nuovo?",
         "note": "Le voci con il documento si completano quando il dipendente conferma la presa visione; quelle con l'azione sull'account quando l'azione è fatta."
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Cedolini, formazione, assunzioni e cessazioni della tua azienda, in cloud."
+      },
+      "home": {
+        "etichetta": "Risorse umane in cloud",
+        "titolo": "Il fascicolo dei tuoi dipendenti, ordinato e sempre a portata di mano",
+        "sottotitolo": "Cedolini e CU divisi e pubblicati da soli, formazione con le scadenze dei rinnovi, checklist di assunzione e cessazione: l’ufficio del personale lavora meno e il dipendente trova tutto nell’app.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "cedolini": {
+            "title": "Cedolini senza smistamento",
+            "text": "Carichi un solo PDF: il sistema lo divide per dipendente e lo pubblica nella sua area."
+          },
+          "presaVisione": {
+            "title": "Presa visione tracciata",
+            "text": "Ogni dipendente riceve la notifica e conferma; tu vedi chi ha confermato e chi no."
+          },
+          "formazione": {
+            "title": "Formazione sotto controllo",
+            "text": "Corsi, attestati e competenze, con i rinnovi in scadenza nello scadenzario."
+          },
+          "checklist": {
+            "title": "Ingressi e uscite guidati",
+            "text": "Checklist generate dalle date del rapporto, con documenti da consegnare e account dell’app."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l’azienda",
+            "text": "Risorse Umane è attiva da subito, con i modelli di checklist pronti da adattare."
+          },
+          "carica": {
+            "title": "Carica i dipendenti",
+            "text": "Anagrafiche con codice fiscale e matricola: servono a riconoscere i cedolini."
+          },
+          "pubblica": {
+            "title": "Pubblica e controlla",
+            "text": "Carichi i cedolini del mese, verifichi le pagine dubbie e segui le prese visione."
+          }
+        },
+        "chiusuraTitolo": "Basta cedolini via email",
+        "chiusuraTesto": "Registra la tua azienda: i documenti arrivano al dipendente giusto e la presa visione resta tracciata."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve all’ufficio del personale e allo studio paghe, oltre alle presenze.",
+        "sezioni": {
+          "cedolini": {
+            "title": "Cedolini e CU in un passaggio",
+            "text": "Lo studio o l'azienda carica il PDF unico: il sistema lo divide per codice fiscale o matricola e segnala le pagine da assegnare.",
+            "dettaglio": {
+              "intro": "Per l'ufficio del personale e per lo studio paghe: si carica un solo PDF con i cedolini o le CU e il sistema prepara il documento di ogni dipendente.",
+              "punti": [
+                "Caricamento del PDF unico da parte dell'azienda o dello studio per le sue aziende",
+                "Divisione in background per codice fiscale, poi per matricola, con l'avanzamento nella barra dei lavori",
+                "Pagine non riconosciute da verificare, con il dipendente proposto da cognome e nome",
+                "Ogni pagina da verificare si assegna al dipendente giusto oppure si ignora",
+                "Pubblicazione anche con pagine ancora da verificare: quelle assegnate dopo escono subito",
+                "Cedolini per mese, tredicesima compresa, e CU dell'anno"
+              ]
+            }
+          },
+          "portale": {
+            "title": "Area del dipendente",
+            "text": "\"I miei cedolini\": notifica a ogni nuovo documento, presa visione e report di chi ha confermato.",
+            "dettaglio": {
+              "intro": "Lo spazio del dipendente con il proprio account: trova i cedolini e le CU pubblicati e conferma di averli visti, mentre l'azienda sa chi l'ha fatto.",
+              "punti": [
+                "Pagina \"I miei cedolini\" con i documenti pubblicati dall'ufficio del personale o dallo studio",
+                "Notifica a ogni nuovo documento, nel canale scelto da ogni utente",
+                "Download del PDF e conferma della presa visione",
+                "Widget con l'ultimo cedolino e i documenti da confermare",
+                "Report per caricamento: confermati, in attesa e dipendenti senza account"
+              ]
+            }
+          },
+          "formazione": {
+            "title": "Formazione e competenze",
+            "text": "Catalogo dei corsi, attestati e competenze acquisite, con le scadenze dei rinnovi nello scadenzario.",
+            "dettaglio": {
+              "intro": "Per chi organizza la formazione aziendale: catalogo dei corsi, edizioni con i partecipanti e attestati, con le scadenze dei rinnovi sotto controllo.",
+              "punti": [
+                "Catalogo dei corsi con durata, ente, corsi obbligatori e validità in mesi",
+                "Edizioni con date, luogo, docente, partecipanti ed esito",
+                "Attestati caricati per ogni partecipante",
+                "Competenza acquisita dal dipendente quando supera il corso",
+                "Scadenza dell'attestato calcolata dalla validità e registrata nello scadenzario",
+                "Piani di formazione annuali con l'avanzamento per dipendente"
+              ]
+            }
+          },
+          "onboarding": {
+            "title": "Assunzioni e cessazioni",
+            "text": "Checklist di ingresso e uscita generate dalle date del rapporto, con i passi in scadenza.",
+            "dettaglio": {
+              "intro": "Per l'ufficio del personale: ingressi e uscite seguono una checklist che parte da sola dalle date del rapporto di lavoro, così nessun passo resta indietro.",
+              "punti": [
+                "Modelli di checklist di assunzione e di cessazione con le loro voci",
+                "Il modello predefinito genera la checklist dalla data di assunzione o cessazione",
+                "Ogni voce ha un responsabile e una data, anche prima del giorno di ingresso",
+                "Le scadenze delle voci finiscono nello scadenzario comune",
+                "Checklist creata anche a mano scegliendo il modello",
+                "Widget con le checklist aperte e le voci scadute o in arrivo"
+              ]
+            }
+          },
+          "consegne": {
+            "title": "Documenti da consegnare o firmare",
+            "text": "Le voci della checklist con un file si chiudono quando il dipendente conferma o firma.",
+            "dettaglio": {
+              "intro": "I documenti da dare al dipendente all'ingresso o all'uscita fanno parte della checklist: si allega il file e la voce si chiude con la sua conferma.",
+              "punti": [
+                "Voci della checklist con il documento da consegnare",
+                "Caricamento del file e richiesta di presa visione al dipendente",
+                "La voce si completa quando il dipendente conferma",
+                "Con il Documentale attivo il dipendente firma il documento",
+                "Richiesta ripetibile se serve una nuova conferma"
+              ]
+            }
+          },
+          "account": {
+            "title": "Account dell'app",
+            "text": "Creazione dell'accesso all'assunzione e disattivazione alla cessazione, direttamente dalla checklist.",
+            "dettaglio": {
+              "intro": "L'accesso del dipendente all'app si gestisce dalla stessa checklist di assunzione o cessazione, senza passare da altre pagine.",
+              "punti": [
+                "Voce della checklist con l'azione \"Crea account\" o \"Disattiva account\"",
+                "Nome utente, email e password chiesti al momento della creazione",
+                "Account con ruolo User, collegato all'anagrafica del dipendente già presente",
+                "L'account conta nel limite utenti della licenza",
+                "Alla cessazione l'account si disattiva e il dipendente non accede più",
+                "La voce si completa quando l'azione è fatta"
+              ]
+            }
+          },
+          "studio": {
+            "title": "Lavoro dello studio paghe",
+            "text": "Il consulente carica i cedolini delle aziende clienti dalla propria area e li pubblica per loro conto.",
+            "dettaglio": {
+              "intro": "Per i consulenti del lavoro che gestiscono più aziende: i cedolini si caricano dallo studio, senza entrare in ogni azienda.",
+              "punti": [
+                "Pagina \"Cedolini delle aziende\" nell’area dello studio",
+                "Scelta dell’azienda cliente e caricamento del PDF unico del mese",
+                "Stessa divisione automatica e stessa verifica delle pagine dell’azienda",
+                "I documenti pubblicati arrivano ai dipendenti dell’azienda cliente",
+                "L’azienda vede i caricamenti dello studio e le prese visione"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Scegli il piano adatto alla tua azienda: si parte gratis e tutte le funzioni sono sempre incluse.",
+        "inclusi": {
+          "divisioneCedolini": "Divisione automatica di cedolini e CU",
+          "presaVisione": "Notifiche e presa visione",
+          "modelliChecklist": "Modelli di checklist pronti",
+          "tutteLeFunzioni": "Tutte le funzioni"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "installare": {
+            "domanda": "I dipendenti devono installare qualcosa?",
+            "risposta": "No: trovano i cedolini e confermano la presa visione dal browser dello smartphone o del computer."
+          },
+          "riconoscimento": {
+            "domanda": "Come vengono riconosciuti i cedolini?",
+            "risposta": "Per codice fiscale e, se manca, per matricola. Le pagine non riconosciute restano da verificare e si assegnano con un clic."
+          },
+          "senzaAccount": {
+            "domanda": "E i dipendenti senza account?",
+            "risposta": "Il report del caricamento li indica: l’account si può creare anche dalla checklist di assunzione."
+          },
+          "consulente": {
+            "domanda": "Sono un consulente del lavoro: posso gestire più aziende?",
+            "risposta": "Sì: con i piani per gli studi carichi i cedolini delle aziende clienti dalla tua area."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a consulenti del lavoro, uffici del personale e aziende.",
+        "paragrafo1": "Conosciamo da vicino il lavoro dell’ufficio del personale: cedolini da smistare uno per uno, email con gli allegati, attestati in scadenza scoperti all’ultimo momento.",
+        "paragrafo2": "{{siteName}} nasce per togliere questo lavoro: i documenti arrivano da soli al dipendente giusto e ogni passaggio resta tracciato.",
+        "valori": {
+          "semplice": {
+            "title": "Semplice per i dipendenti",
+            "text": "Cedolini e documenti sempre nell’app, con una conferma."
+          },
+          "ordinato": {
+            "title": "Ordinato per l’ufficio del personale",
+            "text": "Scadenze, checklist e prese visione in un unico posto."
+          },
+          "vicino": {
+            "title": "Vicino ai consulenti",
+            "text": "Caricamenti dallo studio pensati con chi elabora le paghe."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l’account della tua azienda: Risorse Umane è subito attiva, con i modelli di checklist pronti.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "attiva": "Risorse Umane già attiva",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l’informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e Risorse Umane sarà subito pronta.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta con Risorse Umane attiva. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
     }
   }
 }

@@ -170,7 +170,7 @@ HR, Compliance e Assets **non hanno limiti** mostrati (non esistono `maxXxx` per
 - [x] Infrastructure_Dev: icona brand neutra nella vetrina generica (`apps-outline`)
 - [x] Infrastructure_Dev: testo “comprende” del Cumulativo non legato ai 6 applicativi fissi (funzioni di `pricing.ambiti`, altrimenti `showcase.pricingPage.allFunctions`)
 - [x] Infrastructure_Dev: `limiti()` per HR/Compliance/Assets — non necessario (nessun limite, vedi sopra)
-- [ ] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `humanresources.showcase.*` (it/en)
+- [x] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `humanresources.showcase.*` (it/en)
 - [ ] Compliance_Dev: `ShowcaseComplianceService` pieno + chiavi `compliance.showcase.*` (it/en)
 - [ ] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `assets.showcase.*` (it/en)
 - [x] CRM_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
