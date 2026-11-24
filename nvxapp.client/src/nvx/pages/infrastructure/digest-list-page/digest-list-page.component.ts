@@ -58,7 +58,8 @@ export class DigestListPageComponent {
 
     const btnDettaglio = userInterfaceService.Btn_Dettaglio;
     btnDettaglio.event = (item: DigestModel) => this.navCtrl.navigateForward('/digestdetail', { state: { id: item.id } });
-    this.actions = [{ button: btnDettaglio }];
+    // desktop: solo icona, il testo compare nel popup al passaggio del mouse
+    this.actions = [{ button: btnDettaglio, iconOnly: true }];
   }
 
   ionViewWillEnter() {
