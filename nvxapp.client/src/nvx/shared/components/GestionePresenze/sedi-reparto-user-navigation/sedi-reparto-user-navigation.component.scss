@@ -7,7 +7,8 @@ ion-select {
   width: 100%;
   min-height: 0;
   --padding-top: 0;
-  --padding-bottom: 3px;
+  --padding-bottom: 8px;     // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
+  margin-bottom: 4px;
   font-size: 0.9em;
 }
 
@@ -24,7 +25,7 @@ ion-item {
   font-size: 0.9em;
   color: var(--ion-text-color);
   padding-top: 0;
-  padding-bottom: 3px;       // nome del dipendente staccato dal bordo inferiore del campo
+  padding-bottom: 7px;       // nome del dipendente staccato dal bordo inferiore del campo
 }
 
 ion-col {
