@@ -49,7 +49,7 @@ export class CrmLeadListPageComponent {
     ];
     const btnEdit = userInterfaceService.Btn_Modifica;
     btnEdit.event = (x: M.CrmLeadModel) => this.navCtrl.navigateForward('/crmleadedit', { state: { id: x.id } });
-    this.actions = [{ button: btnEdit }];
+    this.actions = [{ button: btnEdit, iconOnly: true }];
   }
 
   async ionViewWillEnter() {

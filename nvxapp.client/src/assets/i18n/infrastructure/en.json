@@ -62,7 +62,9 @@
       "renew": "Renew",
       "unsubscribe": "Cancel subscription",
       "subscribe": "Subscribe",
-      "changePlan": "Change plan"
+      "changePlan": "Change plan",
+      "download": "Download",
+      "restore": "Restore"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",
