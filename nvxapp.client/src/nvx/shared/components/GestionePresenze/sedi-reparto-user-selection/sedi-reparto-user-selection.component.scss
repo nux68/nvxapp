@@ -1,40 +1,60 @@
+// stesso aspetto compatto di sedi-reparto-user-navigation
+// contenitore: spazio interno ridotto rispetto a ion-padding (16px)
+.nvx-nav-compatta {
+  padding: 2px 8px;
+}
+
 ion-select {
   width: 100%;
+  min-height: 0;
+  // Ionic dentro un item usa flex: 1 1 0 => la select si schiaccia (17px), il contenuto esce dal campo
+  // e, chiusa la lista, il focus fa scorrere il campo: etichetta e valore si spostano. Altezza dal contenuto.
+  flex: 0 0 auto;
+  --padding-top: 0;
+  --padding-bottom: 5px;    // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
+  margin-bottom: 0;
+  font-size: 0.95em;
 }
 
-// i campi prendono lo stile "riquadro" da global.scss; qui altezza e spazio interno
+// campi con combo (anno/mese/sede/reparto): un po' piu' alti del campo dipendente
+ion-item:has(ion-select) {
+  --min-height: 42px;
+}
+
+// i campi prendono lo stile "riquadro" da global.scss; qui versione compatta (altezza e spazio interno)
 ion-item {
-  --min-height: 54px;
-  --padding-start: 18px;
-  --inner-padding-end: 14px;
-  margin: 6px 0 2px 0 !important;
-}
-
-ion-col {
-  padding: 2px 5px;
+  --min-height: 34px;
+  --padding-start: 12px;
+  --inner-padding-end: 10px;
+  margin: 2px 0 0 0 !important;
 }
 
 .nvx-user-label {
   display: block;            // il padding verticale vale solo su un blocco
-  font-size: 0.95em;
+  font-size: 0.9em;
   color: var(--ion-text-color);
-  padding-top: 4px;
-  padding-bottom: 12px;      // nome del dipendente staccato dal bordo inferiore del campo
+  padding-top: 0;
+  padding-bottom: 7px;       // nome del dipendente staccato dal bordo inferiore del campo
 }
+
+ion-col {
+  padding: 1px 4px;
+}
+
 ion-row {
-  --ion-grid-column-padding: 2px;
+  --ion-grid-column-padding: 1px;
 }
 
 ion-label {
-  font-size: 0.80em !important;
-  margin-top: 8px !important;   // distanza dell'etichetta dal bordo superiore
-  margin-bottom: 2px !important;
+  font-size: 0.72em !important;
+  margin-top: 2px !important;   // distanza dell'etichetta dal bordo superiore
+  margin-bottom: 0 !important;
 }
 
 // frecce di navigazione: pulsanti tondi (colore primary dal template)
 ion-button {
-  height: 38px;
-  width: 38px;
+  height: 28px;
+  width: 28px;
   --padding-top: 0;
   --padding-bottom: 0;
   --padding-start: 0;
