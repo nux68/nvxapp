@@ -1,41 +1,50 @@
-ion-select {
-  width: 100%;
+// contenitore: spazio interno ridotto rispetto a ion-padding (16px)
+.nvx-nav-compatta {
+  padding: 4px 10px;
 }
 
-// i campi prendono lo stile "riquadro" da global.scss; qui altezza e spazio interno
+ion-select {
+  width: 100%;
+  min-height: 0;
+  --padding-top: 2px;
+  --padding-bottom: 6px;
+  font-size: 0.95em;
+}
+
+// i campi prendono lo stile "riquadro" da global.scss; qui versione compatta (altezza e spazio interno)
 ion-item {
-  --min-height: 54px;
-  --padding-start: 18px;
-  --inner-padding-end: 14px;
-  margin: 6px 0 2px 0 !important;
+  --min-height: 40px;
+  --padding-start: 14px;
+  --inner-padding-end: 12px;
+  margin: 3px 0 1px 0 !important;
 }
 
 .nvx-user-label {
   display: block;            // il padding verticale vale solo su un blocco
   font-size: 0.95em;
   color: var(--ion-text-color);
-  padding-top: 4px;
-  padding-bottom: 12px;      // nome del dipendente staccato dal bordo inferiore del campo
+  padding-top: 2px;
+  padding-bottom: 6px;       // nome del dipendente staccato dal bordo inferiore del campo
 }
 
 ion-col {
-  padding: 2px 5px;
+  padding: 1px 5px;
 }
 
 ion-row {
-  --ion-grid-column-padding: 2px;
+  --ion-grid-column-padding: 1px;
 }
 
 ion-label {
-  font-size: 0.80em !important;
-  margin-top: 8px !important;   // distanza dell'etichetta dal bordo superiore
-  margin-bottom: 2px !important;
+  font-size: 0.78em !important;
+  margin-top: 4px !important;   // distanza dell'etichetta dal bordo superiore
+  margin-bottom: 0 !important;
 }
 
 // frecce di navigazione: pulsanti tondi (colore primary dal template)
 ion-button {
-  height: 38px;
-  width: 38px;
+  height: 32px;
+  width: 32px;
   --padding-top: 0;
   --padding-bottom: 0;
   --padding-start: 0;
