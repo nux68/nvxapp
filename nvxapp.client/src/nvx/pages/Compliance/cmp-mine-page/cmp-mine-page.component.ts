@@ -11,14 +11,14 @@ import { NvxListColumn } from '../../../shared/components/infrastructure/nvx-lis
 import { DataChangedNotifierService } from '../../../Utility/infrastructure/data-changed-notifier.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 type CmpMiaSezione = 'formazione' | 'visite' | 'consegne' | 'nomine';
 
 /*
  "I miei adempimenti" (CMP-81, ANALISI_COMPLIANCE_APPLICATIVO.md §3): il dipendente vede i propri corsi, le visite (solo tipo,
  data, esito di idoneita' e scadenza: mai limitazioni di dettaglio o dati sanitari), i DPI ricevuti e le nomine, con lo stato
- della presa visione. La conferma si da' nella pagina comune delle prese visione (bottone in basso).
+ della presa visione. La conferma si da' nella pagina comune delle prese visione (menu "Notifiche e servizi").
  Corso registrato o DPI consegnato da un comando esterno (assistente AI via MCP): l'avviso DataChangedNotifier di Compliance
  rilegge i dati lasciando la sezione e la ricerca correnti (ANALISI_INFRASTRUCTURE_MCP.md §12quater, MCP-43).
 */
@@ -38,7 +38,6 @@ export class CmpMinePageComponent {
   public dati: M.CmpMineOutModel | null = null;
   public items: M.CmpRiga[] | null = null;
   public columns: NvxListColumn<M.CmpRiga>[] = [];
-  public readonly buttonbar: ButtonItem[];
   public readonly highlight = (x: M.CmpRiga) => !!x.scaduta;
   public readonly isDisabled = (x: M.CmpRiga) => !!x.rinnovata;
   private dataChangedSub: Subscription | null = null;
@@ -59,11 +58,6 @@ export class CmpMinePageComponent {
               private transloco: TranslocoService,
               private dataChangedNotifierService: DataChangedNotifierService) {
     this.title = this.transloco.translate('cmp.pages.mine.title');
-    // pagina comune delle prese visione, dove si confermano consegne DPI e nomine
-    const btnApri = userInterfaceService.Btn_Apri;
-    btnApri.text = this.transloco.translate('cmp.pages.mine.openAcknowledgements');
-    btnApri.event = () => this.navCtrl.navigateForward('/acknowledgements');
-    this.buttonbar = [btnApri];
   }
 
   ionViewWillEnter() {

@@ -26,7 +26,6 @@ export class AstMinePageComponent {
   public multe: F.AstMultaModel[] | null = null;
   public beni: B.AstBeneAssegnazioneModel[] | null = null;
   public readonly colBene: NvxListColumn<B.AstBeneAssegnazioneModel>[];
-  public readonly actBene: NvxListAction<B.AstBeneAssegnazioneModel>[];
   public readonly beneRestituito = (x: B.AstBeneAssegnazioneModel) => !!x.dataRestituzione;
   public readonly verbaleDaConfermare = (x: B.AstBeneAssegnazioneModel) => (x.verbaleConsegna.richiesto && !x.verbaleConsegna.dataConferma)
                                                                           || (x.verbaleRestituzione.richiesto && !x.verbaleRestituzione.dataConferma);
@@ -55,10 +54,7 @@ export class AstMinePageComponent {
       { key: 'verbale', title: t('ast.fields.verbale'), mobile: 'note',
         value: x => this.verbaleDaConfermare(x) ? t('ast.pages.mine.reportToConfirm') : x.verbaleConsegna.dataConferma ? t('ast.pages.mine.reportConfirmed') : '' },
     ];
-    // i verbali si confermano nella pagina delle prese visione (o si firmano dal documentale)
-    const bApri = userInterfaceService.Btn_Apri;
-    bApri.event = () => this.navCtrl.navigateForward('/acknowledgements');
-    this.actBene = [{ button: bApri, visible: x => this.verbaleDaConfermare(x) }];
+    // i verbali si confermano nella pagina delle prese visione (menu "Notifiche e servizi") o si firmano dal documentale
     this.colMulta = [
       { key: 'dataInfrazione', title: t('ast.fields.data'), mobile: 'note', value: x => this.fmt.dataOra(x.dataInfrazione), sortValue: x => x.dataInfrazione },
       { key: 'targa', title: t('ast.fields.targa'), mobile: 'title' },
