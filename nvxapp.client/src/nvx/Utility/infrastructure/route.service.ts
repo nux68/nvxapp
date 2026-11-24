@@ -16,6 +16,9 @@ import { ShowcaseInfrastructureService } from './showcase-infrastructure.service
 import { ShowcaseAttendanceTrackingService } from './showcase-attendance-tracking.service';
 import { ShowcaseCrmService } from './showcase-crm.service';
 import { ShowcaseDocumentManagementService } from './showcase-document-management.service';
+import { ShowcaseHumanResourcesService } from './showcase-human-resources.service';
+import { ShowcaseComplianceService } from './showcase-compliance.service';
+import { ShowcaseAssetsService } from './showcase-assets.service';
 import { ShowcaseAllFunctionService } from './showcase-all-function.service';
 
 
@@ -52,7 +55,8 @@ export class RouteService {
     ];
     // showcase (pagine pubbliche prima del login): non dipende dagli applicativi attivi
     const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService(),
-      new ShowcaseCrmService(), new ShowcaseDocumentManagementService(), new ShowcaseAllFunctionService()).getRoutes();
+      new ShowcaseCrmService(), new ShowcaseDocumentManagementService(), new ShowcaseHumanResourcesService(),
+      new ShowcaseComplianceService(), new ShowcaseAssetsService(), new ShowcaseAllFunctionService()).getRoutes();
 
     return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2, routesDocumentManagement, routesCrm, routesNuoviModuli));
   }
