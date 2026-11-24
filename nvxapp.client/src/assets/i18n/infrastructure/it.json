@@ -62,7 +62,9 @@
       "renew": "Rinnova",
       "unsubscribe": "Disdici",
       "subscribe": "Sottoscrivi",
-      "changePlan": "Cambia piano"
+      "changePlan": "Cambia piano",
+      "download": "Scarica",
+      "restore": "Ripristina"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
