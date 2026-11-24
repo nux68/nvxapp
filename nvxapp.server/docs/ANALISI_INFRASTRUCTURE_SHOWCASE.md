@@ -172,7 +172,7 @@ HR, Compliance e Assets **non hanno limiti** mostrati (non esistono `maxXxx` per
 - [x] Infrastructure_Dev: `limiti()` per HR/Compliance/Assets — non necessario (nessun limite, vedi sopra)
 - [x] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `humanresources.showcase.*` (it/en)
 - [x] Compliance_Dev: `ShowcaseComplianceService` pieno + chiavi `cmp.showcase.*` in `i18n/compliance` (it/en), 10 funzionalità con dettaglio
-- [ ] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `assets.showcase.*` (it/en)
+- [x] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `ast.showcase.*` (it/en)
 - [x] CRM_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
 - [x] DocumentManagement_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
 - [ ] Catena di merge Infrastructure → rami → AllFunction_Dev → AllFunction e verifica visiva delle tre pagine su ogni branch

@@ -349,6 +349,239 @@
         "none": "No pending returns",
         "open": "Go to goods"
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Your company's vehicles, equipment and spaces, in the cloud."
+      },
+      "home": {
+        "etichetta": "Company assets in the cloud",
+        "titolo": "Vehicles, equipment and rooms: always know who has them and when",
+        "sottotitolo": "Fleet, inventory of assigned equipment and bookings in a single app: deadlines under control, confirmed reports and no double bookings.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "flotta": {
+            "title": "Fleet under control",
+            "text": "Vehicles, assignments, fringe benefits, fines and costs in one place."
+          },
+          "scadenze": {
+            "title": "No forgotten deadlines",
+            "text": "Road tax, insurance, inspection, contracts and warranties in the schedule, with advance notice."
+          },
+          "beni": {
+            "title": "Equipment and reports",
+            "text": "PCs, phones and tools handed over with a report confirmed by the employee."
+          },
+          "prenotazioni": {
+            "title": "Bookings without overlaps",
+            "text": "Desks, rooms and pool cars booked on your own, also from the calendar."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register your company",
+            "text": "Company assets are active right away, with employees and departments ready."
+          },
+          "censisci": {
+            "title": "Add your resources",
+            "text": "Enter vehicles, equipment and bookable resources and assign them to employees."
+          },
+          "lavora": {
+            "title": "Let the app do the work",
+            "text": "Deadlines in the schedule, reports to confirm and self-service bookings."
+          }
+        },
+        "chiusuraTitolo": "No more spreadsheets for cars and equipment",
+        "chiusuraTesto": "Register your company and try company asset management with your employees."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything you need to manage the company's vehicles, equipment and spaces: who has them, when they expire, who books them.",
+        "sezioni": {
+          "vocale": {
+            "title": "Voice commands and chat",
+            "text": "Ask the assistant what you have been given, which resources are free, or book a room, by voice or in writing.",
+            "dettaglio": {
+              "intro": "The assistant carries out the most common company asset tasks without going through the menu: speak into the microphone or type in the chat, in your own words.",
+              "punti": [
+                "Book a desk, a meeting room or a pool car by giving the day and time",
+                "Cancel one of your bookings",
+                "Ask for your bookings and the resources free in a time slot",
+                "Ask which equipment and vehicle you have been given",
+                "For managers: fleet deadlines overdue or coming up",
+                "Opens a vehicle or equipment record, or the page you need",
+                "Shows a summary and asks for confirmation before saving"
+              ]
+            }
+          },
+          "flotta": {
+            "title": "Fleet",
+            "text": "Vehicles, assignment to employees and fringe benefits, linked to the mileage refunds in Attendance.",
+            "dettaglio": {
+              "intro": "For whoever manages company vehicles: records, assignments and fringe benefits, linked to expense claims in Attendance.",
+              "punti": [
+                "Vehicles with plate, make, model, fuel and ownership: owned, rented or leased",
+                "Assigned to an employee or in a bookable pool",
+                "Each assignment updates the employee's car used for mileage refunds",
+                "Fringe benefit worked out from the ACI cost per km and emissions",
+                "Employees see their assigned vehicle and the year's fringe benefit",
+                "Disposed vehicles hidden from the list but kept"
+              ]
+            }
+          },
+          "scadenzeVeicoli": {
+            "title": "Vehicle deadlines",
+            "text": "Road tax, insurance, inspection, servicing and rental or leasing contracts in the deadline schedule.",
+            "dettaglio": {
+              "intro": "Each vehicle's deadlines go into the shared schedule, with the notice period chosen in the settings.",
+              "punti": [
+                "Road tax, insurance, inspection, servicing and other deadlines",
+                "A deadline closes when the date it was done is entered",
+                "Rental or leasing contract with supplier, monthly fee and included km",
+                "Contract expiry in the deadline schedule",
+                "Widget with fleet deadlines overdue or coming up"
+              ]
+            }
+          },
+          "multe": {
+            "title": "Fines and costs",
+            "text": "The driver is found from the assignment period and is notified of the fine.",
+            "dettaglio": {
+              "intro": "To record each vehicle's fines and costs and know who was driving on the day of the offence.",
+              "punti": [
+                "Fine with date and time, ticket number, place and amount",
+                "Driver suggested from whoever had the vehicle on the day",
+                "Fine sent to the driver from the list",
+                "Status: to notify, notified, paid or disputed",
+                "Costs by type, from fuel to tolls, with the yearly total",
+                "Employees see their fines in \"My resources\""
+              ]
+            }
+          },
+          "beni": {
+            "title": "Assigned equipment",
+            "text": "PCs, phones, badges and tools with categories and warranty expiry.",
+            "dettaglio": {
+              "intro": "The inventory of equipment given to employees, so you always know what you have, who holds it and when the warranty ends.",
+              "punti": [
+                "Equipment categories set by the company",
+                "Inventory code, make and model, serial number, purchase and value",
+                "Status: available, handed over, under repair or disposed",
+                "Warranty end in the shared deadline schedule",
+                "Handover history for each item"
+              ]
+            }
+          },
+          "consegne": {
+            "title": "Handover and return",
+            "text": "A signed report on handover and return; on termination, the list of what must be given back.",
+            "dettaglio": {
+              "intro": "Every handover and return has its report confirmed by the employee; on termination you know what must come back.",
+              "punti": [
+                "Handover and return reports to confirm in the acknowledgements",
+                "With Document Management active, the report is signed",
+                "Condition of the item noted on return",
+                "List of equipment and vehicles still held by leaving employees",
+                "Nightly check with a notice to administrators and the return in the schedule",
+                "Employees see what they hold and the reports to confirm"
+              ]
+            }
+          },
+          "prenotazioni": {
+            "title": "Bookings",
+            "text": "Desks, meeting rooms and pool cars without overlaps, also in your personal calendar.",
+            "dettaglio": {
+              "intro": "To book desks, meeting rooms and pool cars on your own, with no double bookings on the same resource.",
+              "punti": [
+                "Bookable resources by type, with the number of seats",
+                "Weekly view, filtered by resource or by your own bookings",
+                "A resource already booked for that time cannot be booked again",
+                "Maximum length and advance booking set in the settings",
+                "Optional administrator approval for each resource",
+                "Bookings also shown in your personal calendar and widget"
+              ]
+            }
+          },
+          "mieRisorse": {
+            "title": "My resources",
+            "text": "Each employee sees their vehicle, equipment held, fines, bookings and reports to confirm on one page.",
+            "dettaglio": {
+              "intro": "A personal page to know what the company has given you, without asking the office.",
+              "punti": [
+                "Assigned vehicle and the year's fringe benefit",
+                "Equipment held with inventory code and handover date",
+                "Fines in your name with status and amount",
+                "Upcoming bookings of desks, rooms and cars",
+                "Handover and return reports to confirm"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "Start for free: choose a plan when you are ready, all features are included.",
+        "inclusi": {
+          "flotta": "Fleet, fines and costs",
+          "beni": "Equipment inventory and reports",
+          "prenotazioni": "Bookings of desks, rooms and cars",
+          "tutteLeFunzioni": "All features"
+        },
+        "nota": "Prices exclude VAT. No commitment: cancel whenever you want.",
+        "domande": {
+          "installare": {
+            "domanda": "Do employees need to install anything?",
+            "risposta": "No: they book, see their resources and confirm reports from the browser on their phone or computer."
+          },
+          "scadenze": {
+            "domanda": "How am I notified of deadlines?",
+            "risposta": "Road tax, insurance, inspection, contracts and warranties go into the shared schedule, with the notice period chosen in the settings and notifications to administrators."
+          },
+          "presenze": {
+            "domanda": "Does it connect to attendance tracking?",
+            "risposta": "Yes: if you also use Attendance, the assigned vehicle becomes the car used for mileage refunds in expense claims."
+          },
+          "consulente": {
+            "domanda": "I am a consultant: can I manage several companies?",
+            "risposta": "Yes: with the plans for firms you manage your client companies and act on their behalf when needed."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "We have been working for years alongside HR offices, administrations and companies.",
+        "paragrafo1": "We know first-hand the work of those who manage company cars and equipment: spreadsheets to update, deadlines remembered at the last minute, items nobody knows who holds.",
+        "paragrafo2": "{{siteName}} was created to take this work away: every resource has an owner, deadlines arrive on their own and employees see what they hold.",
+        "valori": {
+          "semplice": {
+            "title": "Simple for employees",
+            "text": "Booking a room or confirming a report takes a few seconds."
+          },
+          "ordinato": {
+            "title": "Orderly for administration",
+            "text": "Assignments, handovers and costs always tracked."
+          },
+          "vicino": {
+            "title": "Close to those who manage",
+            "text": "Features designed with people who look after fleets and inventories every day."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company account: company assets are active right away.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "attiva": "Company assets already active",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We have sent you an email with a link to activate your account: open it and company assets will be ready right away.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready with company assets active. These are the users created: sign in with the password you chose."
+      }
     }
   }
 }
