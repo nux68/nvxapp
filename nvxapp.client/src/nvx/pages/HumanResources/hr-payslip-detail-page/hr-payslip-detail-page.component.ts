@@ -40,8 +40,7 @@ export class HrPayslipDetailPageComponent {
   private studio = false;
   private jobs?: Subscription;
   private readonly btnPubblica: ButtonItem;
-  private readonly btnCancella: ButtonItem;
-  private readonly btnElenco: ButtonItem;
+  private readonly btnAnnulla: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private router: Router,
@@ -79,10 +78,9 @@ export class HrPayslipDetailPageComponent {
     this.btnPubblica.text = t('hr.pages.payslipDetail.publish');
     this.btnPubblica.image = 'paper-plane-outline';
     this.btnPubblica.event = () => this.pubblica();
-    this.btnCancella = userInterfaceService.Btn_Cancella;
-    this.btnCancella.event = () => this.elimina();
-    this.btnElenco = userInterfaceService.Btn_Elenco;
-    this.btnElenco.event = () => this.navCtrl.back();
+    // la cancellazione del caricamento si fa dall'elenco (menu "altre azioni")
+    this.btnAnnulla = userInterfaceService.Btn_Annulla;
+    this.btnAnnulla.event = () => this.navCtrl.back();
   }
 
   get titolo(): string {
@@ -115,8 +113,7 @@ export class HrPayslipDetailPageComponent {
     const stato = d?.caricamento.stato;
     const bar: ButtonItem[] = [];
     if (stato === M.HrStatoCaricamento.DaPubblicare || stato === M.HrStatoCaricamento.DaVerificare) bar.push(this.btnPubblica);
-    if (stato === M.HrStatoCaricamento.DaPubblicare || stato === M.HrStatoCaricamento.DaVerificare || stato === M.HrStatoCaricamento.Errore) bar.push(this.btnCancella);
-    bar.push(this.btnElenco);
+    bar.push(this.btnAnnulla);
     this.buttonbar = bar;
     if (d && this.sezione === 'scarti' && d.scarti.length === 0) this.sezione = 'documenti';
   }
@@ -150,13 +147,5 @@ export class HrPayslipDetailPageComponent {
     const request = new GenericRequest<M.HrCedIdInModel>(M.HrCedIdInModel);
     request.data = { idCompany: this.idCompany, id: this.id };
     this.service.CaricamentoPubblica(request).subscribe();
-  }
-
-  async elimina() {
-    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('hr.pages.payslipDetail.confirmDelete')))
-      return;
-    const request = new GenericRequest<M.HrCedIdInModel>(M.HrCedIdInModel);
-    request.data = { idCompany: this.idCompany, id: this.id };
-    this.service.CaricamentoDelete(request).subscribe(res => { if (res.success) this.navCtrl.back(); });
   }
 }
