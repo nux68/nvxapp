@@ -30,17 +30,13 @@ export class CmpEditPageComponent extends BasePageConfirmCancelComponent<any> {
   public campi: CmpCampo[] = [];
   public lookup: M.CmpLookupOutModel | null = null;
   private idCompany: number | null = null;
-  private readonly btnDelete: ButtonItem;
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private service: CmpService,
-              private collectionDialogService: CollectionDialogService,
               private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
-    this.btnDelete = userInterfaceService.Btn_Cancella;
-    this.btnDelete.event = () => this.cancella();
   }
 
   get Title(): string {
@@ -72,7 +68,8 @@ export class CmpEditPageComponent extends BasePageConfirmCancelComponent<any> {
       if (c.tipo === 'date' && item[c.key]) item[c.key] = String(item[c.key]).substring(0, 10);
       if (c.tipo === 'datetime' && item[c.key]) item[c.key] = String(item[c.key]).substring(0, 16);
     }
-    this.buttonbar = item.id ? [this.btnConfirm, this.btnDelete, this.btnCancel] : [this.btnConfirm, this.btnCancel];
+    // la cancellazione si fa dall'elenco (menu "altre azioni")
+    this.buttonbar = [this.btnConfirm, this.btnCancel];
 
     if (!this.campi.some(c => c.lookup) && this.sezione.key !== 'visite')
       return of(item);
@@ -119,12 +116,4 @@ export class CmpEditPageComponent extends BasePageConfirmCancelComponent<any> {
     if (saved) this.navCtrl.back();
   }
 
-  private async cancella() {
-    if (!this._editModel?.id || !await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('cmp.pages.list.confirmDelete')))
-      return;
-    const request = new GenericRequest<M.CmpDeleteInModel>(M.CmpDeleteInModel);
-    request.data.id = this._editModel.id;
-    request.data.idCompany = this.idCompany;
-    this.service.Delete(this.sezione.api, this.sezione.server, request).subscribe(res => { if (res.success) this.navCtrl.back(); });
-  }
 }
