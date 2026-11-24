@@ -170,9 +170,10 @@ HR, Compliance e Assets **non hanno limiti** mostrati (non esistono `maxXxx` per
 - [x] Infrastructure_Dev: icona brand neutra nella vetrina generica (`apps-outline`)
 - [x] Infrastructure_Dev: testo “comprende” del Cumulativo non legato ai 6 applicativi fissi (funzioni di `pricing.ambiti`, altrimenti `showcase.pricingPage.allFunctions`)
 - [x] Infrastructure_Dev: `limiti()` per HR/Compliance/Assets — non necessario (nessun limite, vedi sopra)
-- [ ] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `humanresources.showcase.*` (it/en)
-- [ ] Compliance_Dev: `ShowcaseComplianceService` pieno + chiavi `compliance.showcase.*` (it/en)
-- [ ] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `assets.showcase.*` (it/en)
-- [ ] CRM_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
-- [ ] DocumentManagement_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
-- [ ] Catena di merge Infrastructure → rami → AllFunction_Dev → AllFunction e verifica visiva delle tre pagine su ogni branch
+- [x] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `hr.showcase.*` in `i18n/humanresources` (it/en), 7 funzionalità con dettaglio
+- [x] Compliance_Dev: `ShowcaseComplianceService` pieno + chiavi `cmp.showcase.*` in `i18n/compliance` (it/en), 10 funzionalità con dettaglio
+- [x] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `ast.showcase.*` in `i18n/assets` (it/en), 8 funzionalità con dettaglio
+- [x] CRM_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
+- [x] DocumentManagement_Dev: card delle funzionalità con `voceShowcase` e testi `dettaglio`
+- [x] Catena di merge Infrastructure → rami → AllFunction_Dev → AllFunction (2026-11-24; controllo TypeScript e chiavi i18n su AllFunction_Dev ok)
+- [ ] Verifica visiva delle tre pagine su ogni branch (app avviata con DB e listini del SuperUser)
