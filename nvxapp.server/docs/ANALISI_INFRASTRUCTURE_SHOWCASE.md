@@ -165,11 +165,11 @@ HR, Compliance e Assets **non hanno limiti** mostrati (non esistono `maxXxx` per
 ## Checklist
 
 - [x] Analisi della composizione di Home, Funzionalità, Prezzi e del meccanismo stub/ramo (questo documento)
-- [ ] Decidere se HR, Compliance, Assets hanno limiti di piano da mostrare in `/pricing` (§5.4)
-- [ ] Infrastructure_Dev: stub showcase HR / Compliance / Assets + registrazione in `ShowcaseService.rami` (prima di AllFunction)
-- [ ] Infrastructure_Dev: icona brand neutra nella vetrina generica
-- [ ] Infrastructure_Dev: testo “comprende” del Cumulativo non legato ai 6 applicativi fissi
-- [ ] Infrastructure_Dev: `limiti()` per HR/Compliance/Assets (se deciso al punto 2)
+- [x] Decidere se HR, Compliance, Assets hanno limiti di piano da mostrare in `/pricing` (§5.4) — deciso 2026-11-24: **nessun limite** (niente nuovi campi licenza/migrazioni); la scheda mostra “comprende X” e la riga AI
+- [x] Infrastructure_Dev: stub showcase HR / Compliance / Assets + registrazione in `ShowcaseService.rami` (prima di AllFunction) e in `RouteService`
+- [x] Infrastructure_Dev: icona brand neutra nella vetrina generica (`apps-outline`)
+- [x] Infrastructure_Dev: testo “comprende” del Cumulativo non legato ai 6 applicativi fissi (funzioni di `pricing.ambiti`, altrimenti `showcase.pricingPage.allFunctions`)
+- [x] Infrastructure_Dev: `limiti()` per HR/Compliance/Assets — non necessario (nessun limite, vedi sopra)
 - [ ] HumanResources_Dev: `ShowcaseHumanResourcesService` pieno + chiavi `humanresources.showcase.*` (it/en)
 - [ ] Compliance_Dev: `ShowcaseComplianceService` pieno + chiavi `compliance.showcase.*` (it/en)
 - [ ] Assets_Dev: `ShowcaseAssetsService` pieno + chiavi `assets.showcase.*` (it/en)
