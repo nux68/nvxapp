@@ -534,6 +534,32 @@ export class UserInterfaceService {
     return button;
   }
 
+  // scaricamento di un file (es. documento)
+  get Btn_Scarica(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.download'),
+      'download-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Scarica cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
+  // ripristino di un elemento eliminato (es. dal cestino)
+  get Btn_Ripristina(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.restore'),
+      'refresh-outline',
+      'warning',
+      false,
+      () => { console.log('Btn_Ripristina cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
   get Btn_Calendario(): ButtonItem {
     const button = new ButtonItem(
       this.transloco.translate('common.buttons.calendar'),

@@ -59,7 +59,7 @@ export class CrmCustomerListPageComponent {
     ];
     const btnEdit = userInterfaceService.Btn_Modifica;
     btnEdit.event = (x: M.CrmClienteListModel) => this.navCtrl.navigateForward('/crmcustomeredit', { state: { id: x.id } });
-    this.actions = [{ button: btnEdit }];
+    this.actions = [{ button: btnEdit, iconOnly: true }];
   }
 
   async ionViewWillEnter() {

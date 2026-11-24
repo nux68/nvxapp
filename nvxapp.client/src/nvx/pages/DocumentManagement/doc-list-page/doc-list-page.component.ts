@@ -63,11 +63,9 @@ export class DocListPageComponent {
     ];
     this.btnApri = userInterfaceService.Btn_Apri;
     this.btnApri.event = (d: DocDocumentoListModel) => this.navCtrl.navigateForward('/docedit', { state: { id: d.id } });
-    this.btnScarica = userInterfaceService.Btn_Export;
-    this.btnScarica.text = this.transloco.translate('documents.buttons.download');
+    this.btnScarica = userInterfaceService.Btn_Scarica;
     this.btnScarica.event = (d: DocDocumentoListModel) => this.service.Download(d.id);
-    this.btnRipristina = userInterfaceService.Btn_Riapri;
-    this.btnRipristina.text = this.transloco.translate('documents.buttons.restore');
+    this.btnRipristina = userInterfaceService.Btn_Ripristina;
     this.btnRipristina.event = (d: DocDocumentoListModel) => this.azione(d, 'ripristina');
     this.btnElimina = userInterfaceService.Btn_Cancella;
     this.btnElimina.event = (d: DocDocumentoListModel) => this.azione(d, 'elimina');
@@ -112,7 +110,10 @@ export class DocListPageComponent {
   }
 
   load() {
-    this.actions = this.filtro.cestino ? [{ button: this.btnElimina }, { button: this.btnRipristina }] : [{ button: this.btnScarica }, { button: this.btnApri }];
+    // desktop: bottoni solo icona (testo nel popup); nel cestino Elimina sta nel menu "altre azioni"
+    this.actions = this.filtro.cestino
+      ? [{ button: this.btnElimina, inMenu: true }, { button: this.btnRipristina, iconOnly: true }]
+      : [{ button: this.btnScarica, iconOnly: true }, { button: this.btnApri, iconOnly: true }];
     const request = new GenericRequest<DocDocumentoListInModel>(DocDocumentoListInModel);
     request.data = { ...this.filtro, testo: this.filtro.testo?.trim() || null, anno: this.filtro.anno ? Number(this.filtro.anno) : null };
     this.service.List(request).subscribe(res => {
