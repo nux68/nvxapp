@@ -62,7 +62,7 @@ export class HrPayslipListPageComponent {
     ];
     const bOpen = userInterfaceService.Btn_Apri;
     bOpen.event = (x: M.HrCaricamentoModel) => this.navCtrl.navigateForward(this.studio ? '/hrstudiopayslipdetail' : '/hrpayslipdetail', { state: { id: x.id, idCompany: this.idCompany } });
-    this.actions = [{ button: bOpen }];
+    this.actions = [{ button: bOpen, iconOnly: true }];
   }
 
   ionViewWillEnter() {
