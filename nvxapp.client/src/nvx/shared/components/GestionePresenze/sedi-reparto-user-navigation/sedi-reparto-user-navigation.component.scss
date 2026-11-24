@@ -7,7 +7,8 @@ ion-select {
   width: 100%;
   min-height: 0;
   --padding-top: 0;
-  --padding-bottom: 7px;     // valore staccato dal bordo inferiore del campo
+  --padding-bottom: 8px;     // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
+  margin-bottom: 4px;
   font-size: 0.9em;
 }
 
