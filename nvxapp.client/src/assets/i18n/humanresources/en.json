@@ -315,6 +315,223 @@
         "confirmRequestAgain": "Acknowledgement was already requested: request it again?",
         "note": "Items with a document are completed when the employee acknowledges it; those with an account action when the action is done."
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Payslips, training, onboarding and offboarding for your company, in the cloud."
+      },
+      "home": {
+        "etichetta": "HR in the cloud",
+        "titolo": "Your employee files, tidy and always at hand",
+        "sottotitolo": "Payslips and tax forms split and published automatically, training with renewal dates, joining and leaving checklists: the HR office does less and employees find everything in the app.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "cedolini": {
+            "title": "Payslips without sorting",
+            "text": "Upload a single PDF: the system splits it by employee and publishes it in their area."
+          },
+          "presaVisione": {
+            "title": "Tracked acknowledgement",
+            "text": "Each employee is notified and confirms; you see who has confirmed and who has not."
+          },
+          "formazione": {
+            "title": "Training under control",
+            "text": "Courses, certificates and skills, with upcoming renewals in the deadline schedule."
+          },
+          "checklist": {
+            "title": "Guided joiners and leavers",
+            "text": "Checklists generated from the employment dates, with documents to hand over and app accounts."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register your company",
+            "text": "Human resources is active straight away, with checklist templates ready to adapt."
+          },
+          "carica": {
+            "title": "Add your employees",
+            "text": "Records with tax code and employee number: they are used to recognise payslips."
+          },
+          "pubblica": {
+            "title": "Publish and check",
+            "text": "Upload the month's payslips, review the doubtful pages and follow the acknowledgements."
+          }
+        },
+        "chiusuraTitolo": "No more payslips by email",
+        "chiusuraTesto": "Register your company: documents reach the right employee and acknowledgement is always tracked."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything the HR office and the payroll firm need, beyond attendance.",
+        "sezioni": {
+          "cedolini": {
+            "title": "Payslips and tax forms in one go",
+            "text": "The firm or the company uploads a single PDF: the system splits it by tax code or employee number and flags the pages to assign.",
+            "dettaglio": {
+              "intro": "For the HR office and the payroll firm: upload a single PDF with the payslips or tax forms and the system prepares each employee's document.",
+              "punti": [
+                "Single PDF uploaded by the company, or by the firm for its client companies",
+                "Split in the background by tax code, then employee number, with progress in the jobs bar",
+                "Unrecognised pages flagged for review, with an employee suggested from the name found",
+                "Each page under review is assigned to the right employee or ignored",
+                "Publish even with pages still to check: those assigned later go out straight away",
+                "Payslips by month, thirteenth-month pay included, and the yearly tax form"
+              ]
+            }
+          },
+          "portale": {
+            "title": "Employee area",
+            "text": "\"My payslips\": a notification for every new document, acknowledgement and a report of who has confirmed.",
+            "dettaglio": {
+              "intro": "The employee's own space: with their account they find published payslips and tax forms and confirm they have seen them, while the company knows who did.",
+              "punti": [
+                "\"My payslips\" page with documents published by the HR office or the firm",
+                "A notification for every new document, through the channel each user chooses",
+                "PDF download and acknowledgement of receipt",
+                "Widget with the latest payslip and the documents to confirm",
+                "Report for each upload: confirmed, waiting and employees without an account"
+              ]
+            }
+          },
+          "formazione": {
+            "title": "Training and skills",
+            "text": "Course catalogue, certificates and acquired skills, with renewal dates in the deadline schedule.",
+            "dettaglio": {
+              "intro": "For whoever organises company training: course catalogue, sessions with participants and certificates, with renewal dates kept under control.",
+              "punti": [
+                "Course catalogue with duration, provider, mandatory courses and validity in months",
+                "Sessions with dates, place, trainer, participants and result",
+                "Certificates uploaded for each participant",
+                "Skill acquired by the employee on passing the course",
+                "Certificate expiry worked out from the validity and added to the deadline schedule",
+                "Yearly training plans with progress for each employee"
+              ]
+            }
+          },
+          "onboarding": {
+            "title": "Onboarding and offboarding",
+            "text": "Joining and leaving checklists generated from the employment dates, with the steps falling due.",
+            "dettaglio": {
+              "intro": "For the HR office: joiners and leavers follow a checklist that starts on its own from the employment dates, so no step is left behind.",
+              "punti": [
+                "Joining and leaving checklist templates with their items",
+                "The default template generates the checklist from the hiring or termination date",
+                "Each item has an owner and a date, even before the first day",
+                "Item due dates go into the shared deadline schedule",
+                "Checklists can also be created by hand from a template",
+                "Widget with open checklists and items overdue or coming up"
+              ]
+            }
+          },
+          "consegne": {
+            "title": "Documents to hand over or sign",
+            "text": "Checklist items with a file are closed when the employee confirms or signs.",
+            "dettaglio": {
+              "intro": "Documents to give employees when they join or leave are part of the checklist: attach the file and the item closes once they confirm.",
+              "punti": [
+                "Checklist items with a document to hand over",
+                "File upload and acknowledgement request sent to the employee",
+                "The item is completed when the employee confirms",
+                "With Document Management active, the employee signs the document",
+                "The request can be sent again if a new confirmation is needed"
+              ]
+            }
+          },
+          "account": {
+            "title": "App account",
+            "text": "Access created on hiring and disabled on termination, straight from the checklist.",
+            "dettaglio": {
+              "intro": "The employee's access to the app is handled from the same joining or leaving checklist, without going to other pages.",
+              "punti": [
+                "Checklist item with the \"Create account\" or \"Disable account\" action",
+                "Username, email and password asked for when the account is created",
+                "Account with the User role, linked to the existing employee record",
+                "The account counts toward the licence user limit",
+                "On termination the account is disabled and the employee can no longer log in",
+                "The item is completed once the action is done"
+              ]
+            }
+          },
+          "studio": {
+            "title": "Payroll firm work",
+            "text": "The consultant uploads the payslips of client companies from their own area and publishes them on their behalf.",
+            "dettaglio": {
+              "intro": "For payroll consultants who manage several companies: payslips are uploaded from the firm, without logging into each company.",
+              "punti": [
+                "\"Company payslips\" page in the firm's area",
+                "Choice of the client company and upload of the month's single PDF",
+                "Same automatic split and same page review as the company",
+                "Published documents reach the client company's employees",
+                "The company sees the firm's uploads and the acknowledgements"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "Choose the plan that fits your company: start for free, with every feature always included.",
+        "inclusi": {
+          "divisioneCedolini": "Automatic split of payslips and tax forms",
+          "presaVisione": "Notifications and acknowledgement",
+          "modelliChecklist": "Ready-made checklist templates",
+          "tutteLeFunzioni": "All features"
+        },
+        "nota": "Prices exclude VAT. No lock-in: cancel whenever you like.",
+        "domande": {
+          "installare": {
+            "domanda": "Do employees need to install anything?",
+            "risposta": "No: they find their payslips and confirm receipt from the browser on their phone or computer."
+          },
+          "riconoscimento": {
+            "domanda": "How are payslips recognised?",
+            "risposta": "By tax code and, failing that, by employee number. Unrecognised pages are flagged for review and assigned with one click."
+          },
+          "senzaAccount": {
+            "domanda": "What about employees without an account?",
+            "risposta": "The upload report lists them: the account can also be created from the joining checklist."
+          },
+          "consulente": {
+            "domanda": "I am a payroll consultant: can I manage several companies?",
+            "risposta": "Yes: with the plans for firms you upload your client companies' payslips from your own area."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "For years we have worked alongside payroll consultants, HR offices and companies.",
+        "paragrafo1": "We know the HR office's work first-hand: payslips to sort one by one, emails with attachments, expiring certificates discovered at the last minute.",
+        "paragrafo2": "{{siteName}} was created to take that work away: documents reach the right employee on their own and every step is tracked.",
+        "valori": {
+          "semplice": {
+            "title": "Simple for employees",
+            "text": "Payslips and documents always in the app, with one confirmation."
+          },
+          "ordinato": {
+            "title": "Tidy for the HR office",
+            "text": "Deadlines, checklists and acknowledgements in one place."
+          },
+          "vicino": {
+            "title": "Close to consultants",
+            "text": "Uploads from the firm designed with those who run payroll."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company account: Human resources is active straight away, with checklist templates ready.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "attiva": "Human resources already active",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We have sent you an email with the link to activate your account: open it and Human resources will be ready.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready with Human resources active. These are the users created: log in with the password you chose."
+      }
     }
   }
 }
