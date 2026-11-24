@@ -424,55 +424,180 @@
         "sezioni": {
           "clienti": {
             "title": "Clienti e contatti",
-            "text": "Anagrafica unica dell'azienda con stato commerciale, responsabile, fonte, etichette e persone di riferimento."
+            "text": "Anagrafica unica dell'azienda con stato commerciale, responsabile, fonte, etichette e persone di riferimento.",
+            "dettaglio": {
+              "intro": "Una sola anagrafica per clienti e potenziali clienti, con tutto quello che serve ai commerciali: dati, persone da contattare e storia del rapporto.",
+              "punti": [
+                "Scheda cliente con contatti, opportunità, attività, offerte, note e allegati",
+                "Stato commerciale: potenziale, cliente, ex cliente o non interessato",
+                "Responsabile commerciale, fonte ed etichette per ogni cliente",
+                "Settore, fatturato stimato, numero di dipendenti e sito",
+                "Persone di riferimento con ruolo, telefono, email e contatto principale"
+              ]
+            }
           },
           "lead": {
             "title": "Lead",
-            "text": "I contatti non ancora qualificati, convertiti in cliente con un clic insieme all'opportunità."
+            "text": "I contatti non ancora qualificati, convertiti in cliente con un clic insieme all'opportunità.",
+            "dettaglio": {
+              "intro": "I contatti appena arrivati (sito, fiera, passaparola) restano separati dai clienti finché non sono qualificati.",
+              "punti": [
+                "Lead con nome, azienda, email, telefono, fonte e note",
+                "Attività registrate anche sul lead, prima della conversione",
+                "Conversione in cliente nuovo o in un cliente già esistente",
+                "Alla conversione la persona diventa un contatto del cliente e si può creare subito l'opportunità",
+                "Attività e note del lead passano al cliente dopo la conversione"
+              ]
+            }
           },
           "pipeline": {
             "title": "Opportunità e pipeline",
-            "text": "Valore, probabilità e chiusura prevista; lo storico di ogni cambio di fase."
+            "text": "Valore, probabilità e chiusura prevista; lo storico di ogni cambio di fase.",
+            "dettaglio": {
+              "intro": "Le trattative in corso, divise per fase: i commerciali le fanno avanzare, i responsabili vedono a colpo d'occhio quanto vale ogni fase.",
+              "punti": [
+                "Vista a colonne con le schede trascinabili da una fase all'altra",
+                "Vista a elenco in alternativa alle colonne",
+                "Valore, probabilità e chiusura prevista per ogni opportunità",
+                "Motivo della perdita richiesto quando l'opportunità si chiude persa",
+                "Storico di ogni cambio di fase nella scheda dell'opportunità",
+                "Fasi configurabili dall'azienda, con fasi di tipo aperta, vinta e persa"
+              ]
+            }
           },
           "agenda": {
             "title": "Agenda delle attività",
-            "text": "Oggi, scadute e prossime: chiamate, email, appuntamenti, con l'esito registrato."
+            "text": "Oggi, scadute e prossime: chiamate, email, appuntamenti, con l'esito registrato.",
+            "dettaglio": {
+              "intro": "Le attività di ogni commerciale in un'unica agenda: chiamate, email e appuntamenti legati a clienti, lead e opportunità.",
+              "punti": [
+                "Attività di oggi, scadute, prossime e già fatte o annullate",
+                "Filtro sulle sole attività assegnate a te",
+                "Esito registrato quando l'attività viene segnata come fatta",
+                "Attività assegnate visibili nel calendario personale tramite feed .ics",
+                "Tipi di attività configurabili nelle tabelle del CRM"
+              ]
+            }
           },
           "promemoria": {
             "title": "Promemoria",
-            "text": "Un avviso a comparsa prima di ogni attività, con il pulsante per aprirla."
+            "text": "Un avviso a comparsa prima di ogni attività, con il pulsante per aprirla.",
+            "dettaglio": {
+              "intro": "Nessun appuntamento dimenticato: chi è collegato all'applicazione riceve un avviso poco prima di ogni attività.",
+              "punti": [
+                "Avviso a comparsa prima dell'inizio di ogni attività assegnata",
+                "Preavviso scelto dall'azienda nelle impostazioni del CRM (predefinito 30 minuti)",
+                "Pulsante nell'avviso per aprire subito l'attività",
+                "Arriva solo all'utente a cui l'attività è assegnata"
+              ]
+            }
           },
           "offerte": {
             "title": "Offerte",
-            "text": "Numerazione per anno, prodotti a listino, PDF con le tue condizioni e invio per email."
+            "text": "Numerazione per anno, prodotti a listino, PDF con le tue condizioni e invio per email.",
+            "dettaglio": {
+              "intro": "Offerte preparate in pochi passi dai prodotti a listino, con totali calcolati e PDF pronto da inviare al cliente.",
+              "punti": [
+                "Righe con articoli e servizi a listino, quantità, prezzo e sconto",
+                "Imponibile, IVA e totale calcolati in automatico",
+                "Numerazione per anno con prefisso e validità predefinita",
+                "PDF con le condizioni dell'azienda, inviato per email in allegato",
+                "Offerta inviata nello scadenzario fino alla validità, poi scaduta se senza esito",
+                "Offerta accettata: l'opportunità collegata passa alla fase vinta con il suo valore"
+              ]
+            }
           },
           "note": {
             "title": "Note e allegati",
-            "text": "Note fissate in alto e file su clienti, opportunità e offerte."
+            "text": "Note fissate in alto e file su clienti, opportunità e offerte.",
+            "dettaglio": {
+              "intro": "Quello che si sa di un cliente o di una trattativa resta scritto nella sua scheda, a disposizione di tutto il team commerciale.",
+              "punti": [
+                "Note libere su clienti e opportunità, con autore e data",
+                "Note importanti fissate in alto",
+                "Allegati su clienti, opportunità e offerte, fino a 20 MB per file",
+                "Gli allegati del CRM non occupano lo spazio del documentale"
+              ]
+            }
           },
           "visibilita": {
             "title": "Visibilità dei commerciali",
-            "text": "Ogni commerciale vede i propri clienti, oppure tutti vedono tutto: lo decide l'azienda."
+            "text": "Ogni commerciale vede i propri clienti, oppure tutti vedono tutto: lo decide l'azienda.",
+            "dettaglio": {
+              "intro": "L'azienda decide cosa vede ogni commerciale, con una sola impostazione.",
+              "punti": [
+                "Commerciali che vedono solo i propri clienti, oppure tutti i clienti",
+                "Con solo i propri: anche i clienti senza responsabile e quelli in cui sono coinvolti",
+                "Gli amministratori vedono sempre tutto",
+                "La stessa regola vale per opportunità, lead e attività"
+              ]
+            }
           },
           "report": {
             "title": "Report",
-            "text": "Pipeline per fase e responsabile, vinte e perse per motivo, conversione dei lead, attività per utente."
+            "text": "Pipeline per fase e responsabile, vinte e perse per motivo, conversione dei lead, attività per utente.",
+            "dettaglio": {
+              "intro": "I numeri delle vendite in un periodo scelto, per capire come va la pipeline e il lavoro dei commerciali.",
+              "punti": [
+                "Opportunità vinte e perse nel periodo e tasso di successo",
+                "Pipeline aperta per fase e per responsabile, anche con il valore pesato",
+                "Vinte per responsabile e perse per motivo",
+                "Lead creati e convertiti nel periodo",
+                "Attività fatte per utente"
+              ]
+            }
           },
           "riassegna": {
             "title": "Riassegnazione",
-            "text": "Quando un commerciale lascia, i suoi clienti e le sue trattative passano a un collega in un colpo solo."
+            "text": "Quando un commerciale lascia, i suoi clienti e le sue trattative passano a un collega in un colpo solo.",
+            "dettaglio": {
+              "intro": "Quando un commerciale cambia ruolo o lascia l'azienda, il suo lavoro passa a un collega senza modificare le schede una per una.",
+              "punti": [
+                "Riassegnazione in un colpo solo di clienti, opportunità, lead e attività da fare",
+                "Dati passati a un altro utente o lasciati senza responsabile",
+                "Se l'utente viene rimosso i suoi clienti non si perdono: restano senza responsabile",
+                "Le sue attività ancora da fare vengono annullate alla rimozione"
+              ]
+            }
           },
           "export": {
             "title": "Export Excel",
-            "text": "L'elenco dei clienti con i filtri scelti, pronto in Excel."
+            "text": "L'elenco dei clienti con i filtri scelti, pronto in Excel.",
+            "dettaglio": {
+              "intro": "L'elenco dei clienti esce in Excel così come lo vedi a video, pronto per analisi o invii.",
+              "punti": [
+                "Esportazione in Excel dell'elenco dei clienti",
+                "Applica gli stessi filtri impostati nella pagina",
+                "Con stato, responsabile, contatti, etichette e opportunità aperte",
+                "Nessuna copia manuale dei dati"
+              ]
+            }
           },
           "gdpr": {
             "title": "Consenso privacy",
-            "text": "Consenso alle comunicazioni commerciali con la data, su clienti e lead."
+            "text": "Consenso alle comunicazioni commerciali con la data, su clienti e lead.",
+            "dettaglio": {
+              "intro": "Il consenso alle comunicazioni commerciali è registrato insieme ai dati del contatto, con la data in cui è stato dato.",
+              "punti": [
+                "Consenso marketing con data sulla scheda del cliente",
+                "Consenso marketing con data anche sui lead",
+                "Visibile a colpo d'occhio prima di contattare qualcuno",
+                "Accesso ai dati limitato dalla visibilità dei commerciali"
+              ]
+            }
           },
           "integrato": {
             "title": "Integrato",
-            "text": "Gli stessi clienti della gestione presenze e del documentale, senza doppie anagrafiche."
+            "text": "Gli stessi clienti della gestione presenze e del documentale, senza doppie anagrafiche.",
+            "dettaglio": {
+              "intro": "Il CRM lavora sulla stessa anagrafica clienti degli altri applicativi: niente doppie registrazioni.",
+              "punti": [
+                "Gli stessi clienti della gestione presenze e del documentale",
+                "I dati commerciali si aggiungono alla scheda cliente comune",
+                "Un cliente usato da opportunità, offerte, attività o allegati non si può cancellare per errore",
+                "Si attiva per azienda insieme agli altri applicativi, con un unico accesso"
+              ]
+            }
           }
         }
       },
