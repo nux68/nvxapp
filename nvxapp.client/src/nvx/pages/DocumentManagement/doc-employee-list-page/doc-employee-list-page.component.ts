@@ -50,7 +50,7 @@ export class DocEmployeeListPageComponent {
     ];
     const btnEdit = userInterfaceService.Btn_Modifica;
     btnEdit.event = (x: DocDipendenteModel) => this.navCtrl.navigateForward('/docemployeeedit', { state: { item: { ...x }, setup: this.setup } });
-    this.actions = [{ button: btnEdit }];
+    this.actions = [{ button: btnEdit, iconOnly: true }];
   }
 
   private setup: any = null;
