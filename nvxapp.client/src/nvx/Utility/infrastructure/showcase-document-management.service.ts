@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
-import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { ShowcaseContenutiRidefiniti, voceShowcase } from './showcase.model';
 import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 import { SITE_NAME } from './site-name';
 
@@ -30,6 +30,8 @@ export class ShowcaseDocumentManagementService {
     const t = (key: string, params?: Record<string, unknown>) =>
       this.transloco?.translate('documents.showcase.' + key, params) ?? 'documents.showcase.' + key;
     const site = { siteName: SITE_NAME };
+    // voce della pagina funzionalita' con l'eventuale dettaglio (<chiave>.dettaglio), aperto in un dialog
+    const v = (icon: string, key: string) => voceShowcase(this.transloco, icon, 'documents.showcase.' + key);
     return {
       brand: {
         nome: SITE_NAME,
@@ -61,18 +63,18 @@ export class ShowcaseDocumentManagementService {
         titolo: t('features.titolo'),
         sottotitolo: t('features.sottotitolo'),
         sezioni: [
-          { icon: 'folder-outline', title: t('features.sezioni.cartelle.title'), text: t('features.sezioni.cartelle.text') },
-          { icon: 'pricetags-outline', title: t('features.sezioni.tipologie.title'), text: t('features.sezioni.tipologie.text') },
-          { icon: 'id-card-outline', title: t('features.sezioni.personale.title'), text: t('features.sezioni.personale.text') },
-          { icon: 'send-outline', title: t('features.sezioni.invioMultiplo.title'), text: t('features.sezioni.invioMultiplo.text') },
-          { icon: 'checkmark-done-outline', title: t('features.sezioni.presaVisione.title'), text: t('features.sezioni.presaVisione.text') },
-          { icon: 'git-branch-outline', title: t('features.sezioni.versioni.title'), text: t('features.sezioni.versioni.text') },
-          { icon: 'search-outline', title: t('features.sezioni.ricerca.title'), text: t('features.sezioni.ricerca.text') },
-          { icon: 'alarm-outline', title: t('features.sezioni.scadenze.title'), text: t('features.sezioni.scadenze.text') },
-          { icon: 'key-outline', title: t('features.sezioni.abilitazioni.title'), text: t('features.sezioni.abilitazioni.text') },
-          { icon: 'list-outline', title: t('features.sezioni.registro.title'), text: t('features.sezioni.registro.text') },
-          { icon: 'trash-outline', title: t('features.sezioni.cestino.title'), text: t('features.sezioni.cestino.text') },
-          { icon: 'pie-chart-outline', title: t('features.sezioni.spazio.title'), text: t('features.sezioni.spazio.text') }
+          v('folder-outline', 'features.sezioni.cartelle'),
+          v('pricetags-outline', 'features.sezioni.tipologie'),
+          v('id-card-outline', 'features.sezioni.personale'),
+          v('send-outline', 'features.sezioni.invioMultiplo'),
+          v('checkmark-done-outline', 'features.sezioni.presaVisione'),
+          v('git-branch-outline', 'features.sezioni.versioni'),
+          v('search-outline', 'features.sezioni.ricerca'),
+          v('alarm-outline', 'features.sezioni.scadenze'),
+          v('key-outline', 'features.sezioni.abilitazioni'),
+          v('list-outline', 'features.sezioni.registro'),
+          v('trash-outline', 'features.sezioni.cestino'),
+          v('pie-chart-outline', 'features.sezioni.spazio')
         ]
       },
       pricing: {
