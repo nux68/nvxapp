@@ -257,51 +257,172 @@
         "sezioni": {
           "cartelle": {
             "title": "Cartelle",
-            "text": "Un albero di cartelle per ordinare l’archivio; quelle visibili ai dipendenti per le comunicazioni a tutti."
+            "text": "Un albero di cartelle per ordinare l’archivio; quelle visibili ai dipendenti per le comunicazioni a tutti.",
+            "dettaglio": {
+              "intro": "Un albero di cartelle per ordinare l'archivio dell'azienda, con cartelle predefinite già pronte all'attivazione.",
+              "punti": [
+                "Cartelle e sottocartelle, con l'ordine scelto dall'azienda",
+                "Cartelle predefinite create all'attivazione del documentale",
+                "Cartelle visibili ai dipendenti in sola lettura, per le comunicazioni a tutti",
+                "Filtro per cartella nell'elenco dei documenti",
+                "Spostamento dei documenti da una cartella all'altra"
+              ]
+            }
           },
           "tipologie": {
             "title": "Tipologie",
-            "text": "Cedolino, CU, contratto, DURC...: ogni tipologia sa se ha competenza, scadenza, presa visione e conservazione."
+            "text": "Cedolino, CU, contratto, DURC...: ogni tipologia sa se ha competenza, scadenza, presa visione e conservazione.",
+            "dettaglio": {
+              "intro": "Ogni documento ha una tipologia che decide come va trattato: competenza, scadenza, presa visione, firma e conservazione.",
+              "punti": [
+                "Tipologie predefinite multilingua: cedolino, CU, contratto, F24, DURC, visura e altre",
+                "Categoria della tipologia: personale, azienda o cliente",
+                "Competenza (mese e anno) e scadenza, se previste",
+                "Presa visione e firma proposte per i nuovi documenti",
+                "Anni di conservazione della tipologia",
+                "Tipologie aggiuntive create dall'azienda"
+              ]
+            }
           },
           "personale": {
             "title": "Documenti del personale",
-            "text": "Riservati: li vede il dipendente interessato e chi ha l’abilitazione ai documenti del personale."
+            "text": "Riservati: li vede il dipendente interessato e chi ha l’abilitazione ai documenti del personale.",
+            "dettaglio": {
+              "intro": "Cedolini, CU, contratti e gli altri documenti del singolo dipendente, consegnati in modo riservato.",
+              "punti": [
+                "Visibili solo al dipendente interessato e a chi è abilitato",
+                "Pagina I miei documenti con quelli nuovi, da confermare e da firmare",
+                "Avviso email al dipendente quando riceve un nuovo documento",
+                "Fascicolo del dipendente tramite il filtro per dipendente",
+                "Anagrafica dei dipendenti anche senza accesso all'app"
+              ]
+            }
           },
           "invioMultiplo": {
             "title": "Invio a più dipendenti",
-            "text": "Lo stesso documento a più dipendenti scelti dall’elenco, ognuno con la sua copia e la sua presa visione."
+            "text": "Lo stesso documento a più dipendenti scelti dall’elenco, ognuno con la sua copia e la sua presa visione.",
+            "dettaglio": {
+              "intro": "Lo stesso file si consegna a più dipendenti in un solo passaggio, senza caricarlo una volta per ciascuno.",
+              "punti": [
+                "Destinatari scelti dall'elenco dei dipendenti",
+                "Un documento per ogni dipendente, visibile solo a lui",
+                "Presa visione e firma separate per ciascun destinatario",
+                "Avviso email a ogni destinatario",
+                "Spazio occupato da ogni copia conteggiato nel piano"
+              ]
+            }
           },
           "presaVisione": {
             "title": "Presa visione",
-            "text": "Conferma di lettura del dipendente, con data e ora; l’amministrazione vede chi non ha ancora letto."
+            "text": "Conferma di lettura del dipendente, con data e ora; l’amministrazione vede chi non ha ancora letto.",
+            "dettaglio": {
+              "intro": "Quando un documento va letto o accettato, il dipendente lo conferma con un clic e l'azienda sa chi lo ha fatto e quando.",
+              "punti": [
+                "Presa visione proposta dalla tipologia, modificabile per ogni documento",
+                "Firma elettronica semplice con un clic dopo aver scaricato il documento",
+                "Registrati data e ora, indirizzo IP e impronta del file",
+                "Per ogni destinatario si vede se ha aperto, scaricato, letto o firmato",
+                "Una nuova versione va confermata o firmata di nuovo"
+              ]
+            }
           },
           "versioni": {
             "title": "Versioni",
-            "text": "Nuove versioni dello stesso documento senza perdere le precedenti."
+            "text": "Nuove versioni dello stesso documento senza perdere le precedenti.",
+            "dettaglio": {
+              "intro": "Un documento aggiornato non sostituisce il precedente: si aggiunge una nuova versione e lo storico resta consultabile.",
+              "punti": [
+                "Nuova versione dello stesso documento con un nuovo file",
+                "Storico delle versioni con data e autore",
+                "Download delle versioni precedenti",
+                "Numero di versioni da conservare scelto dall'azienda",
+                "Ogni versione conta nello spazio occupato"
+              ]
+            }
           },
           "ricerca": {
             "title": "Ricerca",
-            "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file."
+            "text": "Per titolo, tipologia, dipendente, cliente, anno e testo contenuto nei file.",
+            "dettaglio": {
+              "intro": "Per ritrovare un documento bastano pochi filtri, anche quando si ricorda solo una parola contenuta nel file.",
+              "punti": [
+                "Filtri per cartella, tipologia, dipendente e anno",
+                "Ricerca nel titolo, nella descrizione e nel testo estratto dal file",
+                "Riferimento in elenco: dipendente, cliente o cartella del documento",
+                "Avviso se si carica un file già presente",
+                "Il testo dei file non viene inviato all'AI"
+              ]
+            }
           },
           "scadenze": {
             "title": "Scadenze e conservazione",
-            "text": "Documenti in scadenza e oltre il periodo di conservazione segnalati negli elenchi."
+            "text": "Documenti in scadenza e oltre il periodo di conservazione segnalati negli elenchi.",
+            "dettaglio": {
+              "intro": "Scadenze dei documenti e periodi di conservazione sempre in vista, senza eliminazioni automatiche a sorpresa.",
+              "punti": [
+                "Data di scadenza per le tipologie che la prevedono (DURC, certificati, visure...)",
+                "Documenti in scadenza segnalati negli elenchi",
+                "Anni di conservazione presi dalla tipologia",
+                "Oltre la conservazione il documento è solo segnalato, mai eliminato in automatico",
+                "Eliminazione sempre manuale, registrata nel registro accessi"
+              ]
+            }
           },
           "abilitazioni": {
             "title": "Abilitazioni",
-            "text": "Il CompanyPowerAdmin decide quali amministratori vedono e caricano i documenti del personale."
+            "text": "Il CompanyPowerAdmin decide quali amministratori vedono e caricano i documenti del personale.",
+            "dettaglio": {
+              "intro": "I documenti del personale sono riservati: l'azienda sceglie chi li può vedere e caricare.",
+              "punti": [
+                "Il CompanyPowerAdmin vede e carica sempre i documenti del personale",
+                "Gli altri amministratori solo se abilitati a vedere o a caricare",
+                "Il dipendente vede solo i propri documenti e le cartelle a lui visibili",
+                "Permessi verificati dal server a ogni apertura e download",
+                "Lo studio vede solo i documenti delle aziende che gestisce"
+              ]
+            }
           },
           "registro": {
             "title": "Registro accessi",
-            "text": "Chi ha caricato, aperto, scaricato o eliminato ogni documento."
+            "text": "Chi ha caricato, aperto, scaricato o eliminato ogni documento.",
+            "dettaglio": {
+              "intro": "Ogni operazione sui documenti resta registrata, come richiesto per i dati del personale.",
+              "punti": [
+                "Caricamenti, nuove versioni e modifiche",
+                "Aperture e download",
+                "Prese visione e firme",
+                "Spostamenti nel cestino, ripristini ed eliminazioni",
+                "Per ogni operazione utente, data e dettaglio"
+              ]
+            }
           },
           "cestino": {
             "title": "Cestino",
-            "text": "I documenti eliminati restano nel cestino per i giorni scelti e si possono ripristinare."
+            "text": "I documenti eliminati restano nel cestino per i giorni scelti e si possono ripristinare.",
+            "dettaglio": {
+              "intro": "Un documento eliminato per errore si recupera: resta nel cestino per i giorni scelti dall'azienda.",
+              "punti": [
+                "Elenco del cestino separato dall'archivio",
+                "Ripristino del documento con tutte le sue versioni",
+                "Svuotamento automatico dopo i giorni scelti",
+                "Svuotamento manuale quando serve liberare spazio",
+                "I documenti nel cestino contano nello spazio finché non vengono eliminati"
+              ]
+            }
           },
           "spazio": {
             "title": "Spazio",
-            "text": "Spazio secondo la licenza e avviso prima che finisca."
+            "text": "Spazio secondo la licenza e avviso prima che finisca.",
+            "dettaglio": {
+              "intro": "Lo spazio occupato è sempre sotto controllo, con un avviso prima che finisca.",
+              "punti": [
+                "Spazio secondo il piano della licenza, con la percentuale usata",
+                "Conteggio di tutte le versioni e del cestino",
+                "Avviso alla soglia di spazio e al 100%",
+                "Widget con lo spazio occupato e il grafico per tipologia",
+                "Spazio liberabile svuotando il cestino o riducendo le versioni conservate"
+              ]
+            }
           }
         }
       },

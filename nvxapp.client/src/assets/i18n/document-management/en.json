@@ -257,51 +257,172 @@
         "sezioni": {
           "cartelle": {
             "title": "Folders",
-            "text": "A folder tree to organise the archive; folders visible to employees for company-wide notices."
+            "text": "A folder tree to organise the archive; folders visible to employees for company-wide notices.",
+            "dettaglio": {
+              "intro": "A folder tree to organise the company archive, with default folders ready on activation.",
+              "punti": [
+                "Folders and subfolders, in the order chosen by the company",
+                "Default folders created when document management is activated",
+                "Folders visible read-only to employees, for company-wide notices",
+                "Folder filter in the document list",
+                "Documents moved from one folder to another"
+              ]
+            }
           },
           "tipologie": {
             "title": "Types",
-            "text": "Payslip, tax statement, contract...: each type knows whether it has a period, an expiry, a read confirmation and a retention."
+            "text": "Payslip, tax statement, contract...: each type knows whether it has a period, an expiry, a read confirmation and a retention.",
+            "dettaglio": {
+              "intro": "Every document has a type that decides how it is handled: period, expiry, acknowledgement, signature and retention.",
+              "punti": [
+                "Multilingual default types: payslip, tax statement, contract and more",
+                "Type category: personnel, company or customer",
+                "Period (month and year) and expiry date, when required",
+                "Acknowledgement and signature suggested for new documents",
+                "Retention years for the type",
+                "Additional types created by the company"
+              ]
+            }
           },
           "personale": {
             "title": "Personnel documents",
-            "text": "Reserved: seen by the employee concerned and by those authorised for personnel documents."
+            "text": "Reserved: seen by the employee concerned and by those authorised for personnel documents.",
+            "dettaglio": {
+              "intro": "Payslips, tax statements, contracts and other documents of each employee, delivered confidentially.",
+              "punti": [
+                "Visible only to the employee concerned and to authorised users",
+                "My documents page with new ones, those to confirm and those to sign",
+                "Email notice to the employee when a new document arrives",
+                "Employee file through the employee filter",
+                "Employee records even without access to the app"
+              ]
+            }
           },
           "invioMultiplo": {
             "title": "Send to several employees",
-            "text": "The same document to several employees chosen from the list, each with their own copy and read confirmation."
+            "text": "The same document to several employees chosen from the list, each with their own copy and read confirmation.",
+            "dettaglio": {
+              "intro": "The same file is delivered to several employees in one step, without uploading it once for each.",
+              "punti": [
+                "Recipients chosen from the employee list",
+                "One document per employee, visible only to them",
+                "Separate acknowledgement and signature for each recipient",
+                "Email notice to every recipient",
+                "Space used by each copy counted in the plan"
+              ]
+            }
           },
           "presaVisione": {
             "title": "Read confirmation",
-            "text": "Employee read confirmation with date and time; the office sees who has not read yet."
+            "text": "Employee read confirmation with date and time; the office sees who has not read yet.",
+            "dettaglio": {
+              "intro": "When a document must be read or accepted, the employee confirms it with one click and the company knows who did it and when.",
+              "punti": [
+                "Acknowledgement suggested by the type, adjustable per document",
+                "Simple electronic signature with one click after downloading the document",
+                "Date and time, IP address and file fingerprint recorded",
+                "For each recipient you see whether they opened, downloaded, read or signed",
+                "A new version must be confirmed or signed again"
+              ]
+            }
           },
           "versioni": {
             "title": "Versions",
-            "text": "New versions of the same document without losing the previous ones."
+            "text": "New versions of the same document without losing the previous ones.",
+            "dettaglio": {
+              "intro": "An updated document does not replace the previous one: a new version is added and the history stays available.",
+              "punti": [
+                "New version of the same document with a new file",
+                "Version history with date and author",
+                "Download of previous versions",
+                "Number of versions to keep chosen by the company",
+                "Every version counts towards the used space"
+              ]
+            }
           },
           "ricerca": {
             "title": "Search",
-            "text": "By title, type, employee, customer, year and text contained in the files."
+            "text": "By title, type, employee, customer, year and text contained in the files.",
+            "dettaglio": {
+              "intro": "A few filters are enough to find a document, even when you only remember a word inside the file.",
+              "punti": [
+                "Filters by folder, type, employee and year",
+                "Search in the title, the description and the text extracted from the file",
+                "Reference in the list: the document's employee, customer or folder",
+                "Warning when uploading a file that is already there",
+                "File text is not sent to the AI"
+              ]
+            }
           },
           "scadenze": {
             "title": "Expiry and retention",
-            "text": "Expiring documents and documents beyond the retention period are flagged in the lists."
+            "text": "Expiring documents and documents beyond the retention period are flagged in the lists.",
+            "dettaglio": {
+              "intro": "Document expiry dates and retention periods always in sight, with no surprise automatic deletions.",
+              "punti": [
+                "Expiry date for the types that require it (certificates, registry extracts...)",
+                "Expiring documents flagged in the lists",
+                "Retention years taken from the type",
+                "Past retention a document is only flagged, never deleted automatically",
+                "Deletion is always manual and recorded in the access log"
+              ]
+            }
           },
           "abilitazioni": {
             "title": "Permissions",
-            "text": "The CompanyPowerAdmin decides which administrators see and upload personnel documents."
+            "text": "The CompanyPowerAdmin decides which administrators see and upload personnel documents.",
+            "dettaglio": {
+              "intro": "Personnel documents are confidential: the company chooses who can see and upload them.",
+              "punti": [
+                "The CompanyPowerAdmin always sees and uploads personnel documents",
+                "Other administrators only if allowed to view or to upload",
+                "Employees see only their own documents and the folders visible to them",
+                "Permissions checked by the server on every opening and download",
+                "The advisory firm sees only the documents of the companies it manages"
+              ]
+            }
           },
           "registro": {
             "title": "Access log",
-            "text": "Who uploaded, opened, downloaded or deleted each document."
+            "text": "Who uploaded, opened, downloaded or deleted each document.",
+            "dettaglio": {
+              "intro": "Every action on documents is logged, as required for personnel data.",
+              "punti": [
+                "Uploads, new versions and edits",
+                "Openings and downloads",
+                "Acknowledgements and signatures",
+                "Moves to the trash, restores and deletions",
+                "User, date and detail for every action"
+              ]
+            }
           },
           "cestino": {
             "title": "Trash",
-            "text": "Deleted documents stay in the trash for the chosen days and can be restored."
+            "text": "Deleted documents stay in the trash for the chosen days and can be restored.",
+            "dettaglio": {
+              "intro": "A document deleted by mistake can be recovered: it stays in the trash for the days chosen by the company.",
+              "punti": [
+                "Trash list kept apart from the archive",
+                "Restore of the document with all its versions",
+                "Automatic emptying after the chosen days",
+                "Manual emptying when space needs to be freed",
+                "Documents in the trash count towards the space until deleted"
+              ]
+            }
           },
           "spazio": {
             "title": "Storage",
-            "text": "Space based on the licence and a warning before it runs out."
+            "text": "Space based on the licence and a warning before it runs out.",
+            "dettaglio": {
+              "intro": "Used space always under control, with a warning before it runs out.",
+              "punti": [
+                "Space according to the licence plan, with the percentage used",
+                "All versions and the trash are counted",
+                "Notice at the space threshold and at 100%",
+                "Widget with used space and a chart by type",
+                "Space freed by emptying the trash or keeping fewer versions"
+              ]
+            }
           }
         }
       },

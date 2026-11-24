@@ -309,6 +309,262 @@
         "responsabile": "Responsabile esterno",
         "violazione": "Violazione"
       }
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Sicurezza sul lavoro e privacy della tua azienda, in cloud."
+      },
+      "home": {
+        "etichetta": "Compliance in cloud",
+        "titolo": "Sicurezza sul lavoro e GDPR, con ogni scadenza sotto controllo",
+        "sottotitolo": "Corsi obbligatori, visite mediche, DPI, nomine e registro dei trattamenti in un’unica app: le scadenze arrivano nello scadenzario prima che sia tardi.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "formazione": {
+            "title": "Formazione obbligatoria",
+            "text": "Dalle mansioni i corsi richiesti: vedi subito chi è in regola, chi è in scadenza e chi deve ancora farli."
+          },
+          "visite": {
+            "title": "Visite e DPI",
+            "text": "Idoneità con la prossima visita e DPI consegnati con la conferma del dipendente."
+          },
+          "gdpr": {
+            "title": "Registro GDPR",
+            "text": "Trattamenti, responsabili esterni e violazioni dei dati, con export Excel del registro."
+          },
+          "scadenze": {
+            "title": "Scadenze in un posto solo",
+            "text": "Corsi, visite, nomine, DVR, contratti e le 72 ore delle violazioni nello scadenzario."
+          }
+        },
+        "passi": {
+          "registra": {
+            "title": "Registra l’azienda",
+            "text": "Compliance è attivo da subito, con i dipendenti già presenti nelle anagrafiche comuni."
+          },
+          "configura": {
+            "title": "Imposta mansioni e corsi",
+            "text": "Mansioni con il livello di rischio, corsi obbligatori e catalogo dei DPI."
+          },
+          "controlla": {
+            "title": "Tieni tutto in regola",
+            "text": "Registra corsi, visite e consegne: le scadenze si aggiornano da sole."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "chiusuraTitolo": "Basta fogli di calcolo per le scadenze",
+        "chiusuraTesto": "Registra la tua azienda e prova Compliance con i tuoi dipendenti."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve per la sicurezza sul lavoro (D.Lgs 81/08) e per il registro GDPR, con le scadenze sempre in vista.",
+        "sezioni": {
+          "corsi": {
+            "title": "Formazione obbligatoria (81/08)",
+            "text": "Corsi per mansione, corsi svolti e rinnovi: la situazione della formazione di ogni dipendente.",
+            "dettaglio": {
+              "intro": "Per chi segue la sicurezza sul lavoro: dalle mansioni dei dipendenti si ricavano i corsi richiesti e si vede subito chi è in regola.",
+              "punti": [
+                "Mansioni con livello di rischio e corsi obbligatori con validità in mesi",
+                "Mansioni assegnate ai dipendenti, con le date",
+                "Corsi svolti con tipo, data, ente, ore e attestato",
+                "Il corso più recente rinnova i precedenti e porta la scadenza nello scadenzario",
+                "Situazione per dipendente: corsi mancanti, validi, in scadenza o scaduti"
+              ]
+            }
+          },
+          "visite": {
+            "title": "Visite mediche e idoneità",
+            "text": "Esiti e scadenze per gli amministratori, dati sanitari cifrati e visibili solo agli abilitati.",
+            "dettaglio": {
+              "intro": "Le visite mediche dei dipendenti con esito e prossima scadenza; i dati sanitari restano riservati al medico competente o a chi è abilitato.",
+              "punti": [
+                "Visite preventive, periodiche, al cambio mansione, al rientro e alla cessazione",
+                "Esito di idoneità, con prescrizioni o limitazioni utili a organizzare il lavoro",
+                "Scadenza della prossima visita nello scadenzario",
+                "Dati sanitari cifrati, visibili solo agli utenti abilitati nelle impostazioni",
+                "Dati sanitari mai nella chat AI né negli export"
+              ]
+            }
+          },
+          "dpi": {
+            "title": "Consegna dei DPI",
+            "text": "Dispositivi consegnati con verbale e presa visione del dipendente.",
+            "dettaglio": {
+              "intro": "Per registrare i dispositivi di protezione individuale dati ai dipendenti e avere la loro conferma di ricevimento.",
+              "punti": [
+                "Catalogo dei DPI con la categoria",
+                "Consegna con data, quantità e taglia",
+                "Il dipendente con un utente conferma la consegna nelle prese visione",
+                "Con il Documentale attivo il verbale DPI si firma",
+                "Il dipendente vede i DPI ricevuti e quelli da confermare"
+              ]
+            }
+          },
+          "nomine": {
+            "title": "Nomine e DVR",
+            "text": "RSPP, RLS, preposti e addetti alle emergenze con presa visione del nominato; documenti di valutazione dei rischi e loro scadenze.",
+            "dettaglio": {
+              "intro": "Gli incarichi per la sicurezza e i documenti di valutazione dei rischi in un unico posto, con le date di fine e di revisione sotto controllo.",
+              "punti": [
+                "RSPP, ASPP, RLS, preposti, addetti alle emergenze e al primo soccorso, medico competente",
+                "Nomina di un dipendente con presa visione, o di una persona esterna",
+                "Incarico per sede, con la fine nello scadenzario",
+                "DVR, piani di emergenza, DUVRI e procedure con versione, revisione e scadenza",
+                "Riferimento al documento in archivio o nel documentale"
+              ]
+            }
+          },
+          "gdpr": {
+            "title": "Registro dei trattamenti",
+            "text": "Il registro GDPR con export Excel, nomine e responsabili esterni con la scadenza dei contratti.",
+            "dettaglio": {
+              "intro": "Il registro delle attività di trattamento dell’azienda, con i responsabili esterni e i loro contratti, sempre aggiornato ed esportabile.",
+              "punti": [
+                "Trattamenti con finalità, base giuridica, categorie di interessati e di dati",
+                "Destinatari, trasferimenti extra UE, termini di cancellazione e misure di sicurezza",
+                "Responsabili esterni, sub-responsabili, DPO e contitolari con i trattamenti affidati",
+                "Scadenza del contratto dei responsabili nello scadenzario",
+                "Export Excel del registro, pronto nella barra dei lavori"
+              ]
+            }
+          },
+          "violazioni": {
+            "title": "Registro delle violazioni",
+            "text": "Ogni violazione con il termine di 72 ore nello scadenzario e l’avviso agli amministratori.",
+            "dettaglio": {
+              "intro": "Per registrare le violazioni dei dati personali e non perdere il termine di 72 ore per la notifica al Garante.",
+              "punti": [
+                "Data della violazione e della scoperta, da cui decorrono le 72 ore",
+                "Termine della notifica nello scadenzario finché non è registrata",
+                "Avviso agli amministratori a ogni nuova violazione",
+                "Livello di rischio: con rischio improbabile nessuna notifica dovuta",
+                "Interessati, conseguenze, misure adottate e motivi dell’eventuale ritardo"
+              ]
+            }
+          },
+          "scadenze": {
+            "title": "Scadenze e dashboard",
+            "text": "Tutte le scadenze di sicurezza e privacy nello scadenzario comune e nei widget della dashboard.",
+            "dettaglio": {
+              "intro": "Le date da non dimenticare arrivano da sole: corsi, visite, nomine, documenti, contratti e violazioni finiscono nello scadenzario, con il preavviso che decidi tu.",
+              "punti": [
+                "Scadenzario comune con le scadenze aperte e scadute",
+                "Giorni di preavviso impostabili nella configurazione del modulo",
+                "Widget “Scadenze Compliance”, “Formazione obbligatoria” e “Registro GDPR” per gli amministratori",
+                "Notifiche delle scadenze e delle nuove violazioni, anche per email",
+                "Prese visione di DPI e nomine raccolte in un’unica pagina"
+              ]
+            }
+          },
+          "adempimenti": {
+            "title": "I miei adempimenti",
+            "text": "Ogni dipendente vede i suoi corsi, la prossima visita, i DPI ricevuti e le nomine.",
+            "dettaglio": {
+              "intro": "Una pagina personale per chi lavora in azienda: la propria situazione di sicurezza a colpo d’occhio, senza chiedere all’ufficio.",
+              "punti": [
+                "Corsi svolti con la loro scadenza",
+                "Data della prossima visita medica, mai l’esito",
+                "DPI ricevuti e consegne da confermare",
+                "Nomine e incarichi ricevuti",
+                "Widget “I miei adempimenti” sulla dashboard"
+              ]
+            }
+          },
+          "vocale": {
+            "title": "Comandi vocali e chat",
+            "text": "Chiedi all’assistente le scadenze della sicurezza o registra un corso e una consegna di DPI a parole.",
+            "dettaglio": {
+              "intro": "L’assistente risponde e registra senza passare dal menu: si parla al microfono o si scrive in chat, con parole proprie.",
+              "punti": [
+                "“Quali sono le scadenze della sicurezza?”, “chi non ha fatto i corsi obbligatori?”",
+                "Violazioni da notificare e stato del registro GDPR",
+                "Registra un corso svolto o una consegna di DPI, con riepilogo e conferma",
+                "Apre la sezione giusta: visite, DVR, nomina dell’RSPP, registro GDPR",
+                "Il dipendente chiede quando scade la sua visita o quali DPI ha ricevuto",
+                "Dati sanitari esclusi dalla chat"
+              ]
+            }
+          },
+          "studio": {
+            "title": "Gestito dallo studio",
+            "text": "Il consulente segue registro GDPR e scadenze per conto delle sue aziende.",
+            "dettaglio": {
+              "intro": "Per il consulente o lo studio che segue più aziende: dal proprio accesso lavora sul registro GDPR di ognuna.",
+              "punti": [
+                "Elenco delle aziende dello studio con Compliance attivo",
+                "Scadenze aperte e scadute di ogni azienda a colpo d’occhio",
+                "Registro GDPR completo gestito per conto dell’azienda scelta",
+                "Scadenze di Compliance dell’azienda in sola lettura",
+                "Nessun accesso ai dati della sicurezza sul lavoro dei dipendenti"
+              ]
+            }
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Si parte gratis e tutte le funzioni di sicurezza sul lavoro e GDPR sono sempre incluse.",
+        "inclusi": {
+          "sicurezza": "Sicurezza sul lavoro (81/08)",
+          "gdpr": "Registro GDPR e violazioni",
+          "scadenzario": "Scadenzario e notifiche",
+          "tutteLeFunzioni": "Tutte le funzioni"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "sanitari": {
+            "domanda": "Chi vede i dati sanitari delle visite?",
+            "risposta": "Solo gli utenti abilitati nelle impostazioni, ad esempio il medico competente: i dati sono cifrati e non finiscono mai nella chat AI né negli export."
+          },
+          "dipendenti": {
+            "domanda": "I dipendenti devono fare qualcosa?",
+            "risposta": "Solo confermare la consegna dei DPI e le nomine dalle prese visione; nella pagina “I miei adempimenti” vedono corsi, visite e DPI."
+          },
+          "export": {
+            "domanda": "Posso esportare il registro dei trattamenti?",
+            "risposta": "Sì: il registro GDPR si esporta in Excel e il file è pronto nella barra dei lavori."
+          },
+          "consulente": {
+            "domanda": "Sono un consulente: posso gestire più aziende?",
+            "risposta": "Sì: con i piani per gli studi gestisci il registro GDPR delle aziende clienti e ne vedi le scadenze."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a consulenti, RSPP e uffici del personale.",
+        "paragrafo1": "Sappiamo quanto tempo si perde a rincorrere attestati, visite in scadenza e contratti dei responsabili esterni sparsi tra cartelle e fogli di calcolo.",
+        "paragrafo2": "{{siteName}} raccoglie sicurezza sul lavoro e privacy in un unico posto: registri una volta, le scadenze arrivano da sole e ognuno vede solo quello che gli spetta.",
+        "valori": {
+          "chiaro": {
+            "title": "Chiaro",
+            "text": "Chi è in regola e cosa scade si vede a colpo d’occhio."
+          },
+          "riservato": {
+            "title": "Riservato",
+            "text": "Dati sanitari cifrati e visibili solo a chi è abilitato."
+          },
+          "vicino": {
+            "title": "Vicino ai consulenti",
+            "text": "Lo studio segue il registro GDPR delle sue aziende."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l’account della tua azienda: Compliance è subito attivo per sicurezza sul lavoro e registro GDPR.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "attiva": "Compliance già attivo",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l’informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e Compliance sarà subito pronto.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta con Compliance attivo. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
     }
   }
 }

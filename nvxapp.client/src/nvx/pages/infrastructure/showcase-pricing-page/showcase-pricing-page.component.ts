@@ -127,12 +127,15 @@ export class ShowcasePricingPageComponent implements OnInit {
     return valore.toLocaleString(this.transloco.getActiveLang(), { style: 'currency', currency: this.listino?.valuta || 'EUR', minimumFractionDigits: 2 });
   }
 
-  /** funzioni comprese: quella del listino, oppure tutte con il Cumulativo */
+  /** funzioni comprese: quella del listino; con il Cumulativo le funzioni della pagina (es. applicativo completo),
+   *  oppure, se la pagina non ne elenca altre, "tutte le funzioni" senza nominare applicativi assenti dal ramo */
   public get funzioniIncluse(): string {
-    if (this.ambito === AmbitoLicenza.Cumulativo)
-      return [AmbitoLicenza.AttendanceTracking, AmbitoLicenza.Crm, AmbitoLicenza.DocumentManagement,
-        AmbitoLicenza.HumanResources, AmbitoLicenza.Compliance, AmbitoLicenza.Assets].map(a => this.nomeFunzione(a)).join(', ');
-    return this.nomeFunzione(this.ambito);
+    if (this.ambito !== AmbitoLicenza.Cumulativo)
+      return this.nomeFunzione(this.ambito);
+    const altre = (this.c.ambiti ?? []).filter(a => a !== AmbitoLicenza.Cumulativo);
+    return altre.length
+      ? altre.map(a => this.nomeFunzione(a)).join(', ')
+      : this.transloco.translate('showcase.pricingPage.allFunctions');
   }
 
   /** limiti del piano per la funzione: Presenze utenti, CRM clienti, Documentale spazio, Cumulativo tutti */
