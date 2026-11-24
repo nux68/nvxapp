@@ -40,6 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
         private readonly IDip_AnagraficaCommonRepository _Dip_AnagraficaCommon;
         private readonly IUserCompanyRepository _userCompanyRepository;
         private readonly IAccountService _accountService;
+        private readonly IAspNetRolesRepository _aspNetRoles;
+        private readonly IAspNetUserRolesRepository _aspNetUserRoles;
 
         public Hr_DipendenteService(IMapper mapper,
                                     UserManager<ApplicationUser> userManager,
@@ -52,7 +54,9 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
                                     IHr_Dip_AnagraficaReadRepository dip_Anagrafica,
                                     IDip_AnagraficaCommonRepository dip_AnagraficaCommon,
                                     IUserCompanyRepository userCompanyRepository,
-                                    IAccountService accountService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                    IAccountService accountService,
+                                    IAspNetRolesRepository aspNetRoles,
+                                    IAspNetUserRolesRepository aspNetUserRoles) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _utility = utility;
             _onboarding = onboarding;
@@ -60,6 +64,8 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
             _Dip_AnagraficaCommon = dip_AnagraficaCommon;
             _userCompanyRepository = userCompanyRepository;
             _accountService = accountService;
+            _aspNetRoles = aspNetRoles;
+            _aspNetUserRoles = aspNetUserRoles;
         }
 
         public virtual async Task<GenericResult<Hr_DipendenteListOutModel>> Hr_DipendenteList(GenericRequest<Hr_DipendenteListInModel> model, Boolean isSubProcess)
@@ -69,6 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
                 var ctx = await _utility.AmministratoreAsync();
                 var dip = await _Dip_Anagrafica.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica && (!model.Data.SoloAttivi || x.Attivo))
                                                .Include(x => x.AspNetUsersNavigation).OrderBy(x => x.Cognome).ThenBy(x => x.Nome).ToListAsync();
+                dip = await SenzaSoliAmministratoriAsync(dip);
                 return new Hr_DipendenteListOutModel { Dipendenti = await ModelliAsync(ctx, dip) };
             }, isSubProcess);
         }
@@ -210,6 +217,24 @@ namespace nvxapp.server.service.ClientServer_Service.HumanResources
             var dip = await _Dip_Anagrafica.FindAll(x => x.Id == id && x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).Include(x => x.AspNetUsersNavigation).FirstOrDefaultAsync()
                       ?? throw new UserMessageException(HumanResourcesMessages.Get("EmployeeNotFound"));
             return (await ModelliAsync(ctx, new List<Dip_Anagrafica> { dip })).First();
+        }
+
+        // amministratori dell'azienda (CompanyPowerAdmin, CompanyAdmin) senza anche il ruolo User: non sono dipendenti e non
+        // compaiono nell'elenco; restano le anagrafiche senza account e gli amministratori che sono anche dipendenti (ruolo User)
+        private async Task<List<Dip_Anagrafica>> SenzaSoliAmministratoriAsync(List<Dip_Anagrafica> dip)
+        {
+            var utenti = dip.Where(x => x.IdAspNetUsers != null).Select(x => x.IdAspNetUsers!).Distinct().ToList();
+            if (utenti.Count == 0)
+                return dip;
+            var ruoli = await _aspNetRoles.FindAll(r => r.Name == "User" || r.Name == "CompanyAdmin" || r.Name == "CompanyPowerAdmin")
+                                          .Select(r => new { r.Id, r.Name }).ToListAsync();
+            var idUser = ruoli.Where(r => r.Name == "User").Select(r => r.Id).ToList();
+            var idAdmin = ruoli.Where(r => r.Name != "User").Select(r => r.Id).ToList();
+            var ruoliUtenti = await _aspNetUserRoles.FindAll(x => utenti.Contains(x.UserId) && (idUser.Contains(x.RoleId) || idAdmin.Contains(x.RoleId)))
+                                                    .Select(x => new { x.UserId, x.RoleId }).ToListAsync();
+            var conUser = ruoliUtenti.Where(x => idUser.Contains(x.RoleId)).Select(x => x.UserId).ToHashSet();
+            var soloAdmin = ruoliUtenti.Where(x => idAdmin.Contains(x.RoleId) && !conUser.Contains(x.UserId)).Select(x => x.UserId).ToHashSet();
+            return dip.Where(x => x.IdAspNetUsers == null || !soloAdmin.Contains(x.IdAspNetUsers)).ToList();
         }
 
         private async Task<List<Hr_DipendenteModel>> ModelliAsync(HrContesto ctx, List<Dip_Anagrafica> dip)
