@@ -19,6 +19,7 @@
         "dipendenti": "Employees involved: {{n}} of {{tot}}",
         "soloDaSistemare": "Only to fix",
         "spiega": "Explain",
+        "regole": "Rules",
         "notaRegole": "Fixed rules (until yesterday): in red what blocks the payroll export (odd clockings, days without clockings, errors or days not calculated, pending requests), in orange the warnings to check.",
         "testoAI": "Summary written by AI from the calculated anomalies:",
         "testoSenzaAI": "Summary of the calculated anomalies (AI not available):",
