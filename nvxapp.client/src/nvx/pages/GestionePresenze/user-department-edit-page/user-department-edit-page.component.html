@@ -262,7 +262,7 @@
                       </ion-item>
                       <ion-item>
                         <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.hireDate' | transloco }}</ion-label>
-                        <ion-datetime-button class="datetime-button-with-label" datetime="data-ass-{{item_main.id}}"></ion-datetime-button>
+                        <ion-datetime-button datetime="data-ass-{{item_main.id}}"></ion-datetime-button>
                         <ion-modal [keepContentsMounted]="true">
                           <ng-template>
                             <ion-datetime id="data-ass-{{item_main.id}}"
@@ -280,7 +280,7 @@
                       <ion-item class="nvx-field">
                         <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.dismissalDate' | transloco }}</ion-label>
                         @if (item_main.dataLic) {
-                          <ion-datetime-button class="datetime-button-with-label" datetime="data-lic-{{item_main.id}}"></ion-datetime-button>
+                          <ion-datetime-button datetime="data-lic-{{item_main.id}}"></ion-datetime-button>
                           <ion-modal [keepContentsMounted]="true">
                             <ng-template>
                               <ion-datetime id="data-lic-{{item_main.id}}"
