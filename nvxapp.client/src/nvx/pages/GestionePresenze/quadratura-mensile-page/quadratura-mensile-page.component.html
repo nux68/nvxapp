@@ -29,6 +29,43 @@
           <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.notaApprova' | transloco }}</span>
         </div>
 
+        @if (isMobile) {
+          <!-- mobile: due righe per dipendente (nome e stato, contratto e ore) piu' una con le sole voci diverse da zero -->
+          <div class="qm-mobile">
+            <div class="qm-legenda">{{ 'attendance.pages.quadraturaMensile.colLavorate' | transloco }} / {{ 'attendance.pages.quadraturaMensile.mTeo' | transloco }}</div>
+            @for (r of righe; track r.idAspNetUsers) {
+              <div class="qm-scheda">
+                <ion-checkbox [checked]="!!r.dip_Periodo && selezionati.has(r.dip_Periodo.id)"
+                  [disabled]="!selezionabile(r)" [attr.aria-label]="nome(r)"
+                  (ionChange)="toggle(r)"></ion-checkbox>
+                <div class="qm-corpo">
+                  <div class="qm-linea">
+                    <strong class="qm-nome">{{ nome(r) }}</strong>
+                    <ion-chip [color]="statoColore(r.dip_Periodo)" class="qm-stato">{{ statoTesto(r.dip_Periodo) }}</ion-chip>
+                  </div>
+                  <div class="qm-linea">
+                    <span class="qm-nota qm-nome">{{ r.dip_Periodo ? contratto(r) : ('attendance.pages.quadraturaMensile.ricalcolare' | transloco) }}</span>
+                    @if (r.dip_Periodo; as p) {
+                      <span class="qm-ore"><strong>{{ hhmm(p.min_Lav) }}</strong><span class="qm-nota"> / {{ hhmm(p.min_Teo) }}</span></span>
+                    }
+                  </div>
+                  @if (vociMobile(r.dip_Periodo); as voci) {
+                    @if (voci.length > 0) {
+                      <div class="qm-voci">
+                        @for (v of voci; track v.testo) {
+                          <span><span class="qm-nota">{{ v.testo | transloco }}</span> {{ hhmm(v.minuti) }}</span>
+                        }
+                      </div>
+                    }
+                  }
+                </div>
+                <ion-button class="qm-apri" fill="clear" (click)="apriCalendario(r)" [attr.aria-label]="'attendance.menu.calendarioHR' | transloco">
+                  <ion-icon slot="icon-only" name="calendar-number-outline"></ion-icon>
+                </ion-button>
+              </div>
+            }
+          </div>
+        } @else {
         <ion-grid class="ion-no-padding">
           @if (!isMobile) {
             <ion-row class="qm-testata">
@@ -108,6 +145,7 @@
             </ion-row>
           }
         </ion-grid>
+        }
       }
 
     </ion-card-content>
