@@ -633,6 +633,7 @@
       "vacationPlan": {
         "title": "Piano ferie",
         "employee": "Dipendente",
+        "absentPerDay": "Assenti per giorno",
         "approveRequest": "Approva richiesta",
         "rejectRequest": "Rifiuta richiesta",
         "headerJustification": "Giustificativo : {{type}} {{date}}"
