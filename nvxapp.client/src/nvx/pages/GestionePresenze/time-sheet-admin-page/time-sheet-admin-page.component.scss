@@ -1,5 +1,6 @@
 @use '../richiesta-segmenti';
 @use '../pillole-cartellino';
+@use '../calendario-mobile';
 
 ion-menu-button {
   color: var(--ion-color-primary);
@@ -258,3 +259,6 @@ ion-menu-button {
     color: var(--ion-color-tertiary-contrast);
   }
 }
+
+// mobile: orari per intero e spazi ottimizzati (_calendario-mobile)
+@include calendario-mobile.calendario-mobile;
