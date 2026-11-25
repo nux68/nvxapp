@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.service.Helpers;
 using Serilog;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Payment
@@ -160,7 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Paym
         private static PaymentResult Errore(string operazione, HttpStatusCode status, JsonNode? risposta, string? riferimento = null)
         {
             var dettaglio = Issue(risposta) ?? risposta?["message"]?.GetValue<string>() ?? risposta?["error_description"]?.GetValue<string>();
-            Log.Error("PayPal: {Operazione} non riuscita ({Status}): {Risposta}", operazione, (int)status, risposta?.ToJsonString());
+            Log.Error("PayPal: {Operazione} non riuscita ({Status}): {Risposta}", operazione, (int)status, LogSanitizer.MaskText(risposta?.ToJsonString()));
             return new PaymentResult
             {
                 Stato = StatoPagamento.Fallito,
@@ -204,7 +205,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.License.Paym
             var testo = await response.Content.ReadAsStringAsync();
             if (!response.IsSuccessStatusCode)
             {
-                Log.Error("PayPal: autenticazione non riuscita ({Status}): {Risposta}", (int)response.StatusCode, testo);
+                Log.Error("PayPal: autenticazione non riuscita ({Status}): {Risposta}", (int)response.StatusCode, LogSanitizer.MaskText(testo));
                 throw new Exception($"PayPal: autenticazione non riuscita ({(int)response.StatusCode}). Controllare Payments:PayPal (ClientId, Secret, Mode).");
             }
 
