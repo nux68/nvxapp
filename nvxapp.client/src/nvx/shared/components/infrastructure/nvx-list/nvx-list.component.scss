@@ -117,6 +117,11 @@
     --background: transparent;
   }
 
+  // riga aperta o in movimento: opaca, altrimenti in apertura e chiusura si vedono sotto le scritte dei bottoni
+  ion-item-sliding.item-sliding-active-slide ion-item {
+    --background: var(--nvx-surface);
+  }
+
   ion-label h2 {
     font-weight: 500;
   }
