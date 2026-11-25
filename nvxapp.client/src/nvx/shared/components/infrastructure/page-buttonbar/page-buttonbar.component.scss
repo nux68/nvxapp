@@ -14,7 +14,7 @@ ion-footer.nvx-buttonbar {
     --padding-end: 84px; // spazio per il FAB principale, fisso in basso a destra
     --min-height: 64px;
 
-    // mobile: solo lo spazio che il FAB occupa davvero, cosi' anche due pulsanti restano al centro a 360px
+    // mobile: solo lo spazio che il FAB occupa davvero, cosi' i pulsanti restano al centro a 360px
     @media (max-width: 575px) {
       --padding-start: 8px;
       --padding-end: 70px;
@@ -38,7 +38,7 @@ ion-footer.nvx-buttonbar {
     min-width: 0;
 
     @media (max-width: 575px) {
-      flex-basis: 54px; // 70 - 8 - 8 (gap)
+      flex-basis: 46px; // 70 - 8 - 16 (gap)
     }
   }
 
@@ -46,11 +46,26 @@ ion-footer.nvx-buttonbar {
     --padding-start: 18px;
     --padding-end: 18px;
     min-height: 40px;
+  }
 
-    @media (max-width: 575px) {
-      --padding-start: 12px;
-      --padding-end: 12px;
+  // mobile: tondi, stessa misura del bottone a tre puntini (nvx-actions-menu large)
+  ion-button.rotondo {
+    --padding-start: 0;
+    --padding-end: 0;
+    --border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    min-height: 48px;
+    margin: 0;
+
+    ion-icon {
+      font-size: 24px;
     }
+  }
+
+  @media (max-width: 575px) {
+    align-items: center;
+    gap: 16px;
   }
 }
 
