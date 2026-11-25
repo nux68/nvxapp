@@ -19,11 +19,18 @@ import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-u
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
+import { NvxTextPopupService } from '../../../shared/components/infrastructure/nvx-text-popup/nvx-text-popup.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
 import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
 import { GiustificativiNotifierService } from '../../../Utility/GestionePresenze/giustificativi-notifier.service';
 import { RichiestaNotifierService } from '../../../Utility/GestionePresenze/richiesta-notifier.service';
+
+/** riepilogo dei giustificativi di un dipendente nel mese (vista mobile) */
+interface RiepilogoDipendente {
+  voci: { id: number, fondo: string, testo: string, giorni: number }[];
+  inAttesa: number;
+}
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -61,6 +68,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               private languageService: LanguageService,
               private fabMenuService: FabMenuService,
               private reportFabService: ReportFabService,
+              private nvxTextPopupService: NvxTextPopupService,
               private giustificativiNotifierService: GiustificativiNotifierService,
               private richiestaNotifierService: RichiestaNotifierService
   )
@@ -252,6 +260,105 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   isWeekend(day: number): boolean {
     const dow = new Date(this.year, this.month - 1, day).getDay();
     return dow === 0 || dow === 6;
+  }
+
+  // ── mobile: come la pianificazione turni del mese ─────────────────────
+
+  /** scheda degli assenti per giorno tra quelle dei dipendenti (gli altri valori sono idAspNetUsers) */
+  public readonly ASSENTI = '#assenti';
+  public readonly settimana = [0, 1, 2, 3, 4, 5, 6];
+  /** scheda aperta */
+  public aperto: string | null = null;
+
+  apriChiudi(id: string) {
+    this.aperto = this.aperto === id ? null : id;
+  }
+
+  /** caselle vuote prima del primo giorno del mese */
+  get vuoti(): number[] {
+    return Array((new Date(this.year, this.month - 1, 1).getDay() + 6) % 7).fill(0);
+  }
+
+  eOggi(day: number): boolean {
+    return new Date(this.year, this.month - 1, day).toDateString() === new Date().toDateString();
+  }
+
+  /** colori del tipo di giustificativo */
+  colore(g: Dip_GG_GiustificativiModel): { fondo: string, testo: string } {
+    return this.coloreTipo(g.idPar_Giustificativi);
+  }
+
+  private coloreTipo(idPar_Giustificativi: number): { fondo: string, testo: string } {
+    const par = this.sharedParams.Par_Giustificativi?.find(x => x.id === idPar_Giustificativi);
+    // senza sfondo il colore del testo potrebbe non leggersi sul grigio: nero
+    return par?.backgroundColor
+      ? { fondo: par.backgroundColor, testo: par.textColor || '#000' }
+      : { fondo: '#d0d0d0', testo: '#000' };
+  }
+
+  private riepiloghiDi: VacationPlan_DaySlot[] | null = null;
+  private riepiloghi = new Map<string, RiepilogoDipendente>();
+  private assentiGiorno = new Map<number, number>();
+
+  // ricalcolo solo quando cambiano i dati
+  private preparaRiepiloghi(): void {
+    if (this.riepiloghiDi === this.daySlots)
+      return;
+    this.riepiloghiDi = this.daySlots;
+    this.riepiloghi.clear();
+    this.assentiGiorno.clear();
+
+    for (const slot of this.daySlots ?? []) {
+      const giorniTipo = new Map<number, Set<number>>();
+      const giorni = new Set<number>();
+      const richieste = new Set<number>();
+      for (const g of slot.dip_GG_Giustificativi ?? []) {
+        const d = new Date(g.data);
+        if (d.getFullYear() !== this.year || d.getMonth() + 1 !== this.month)
+          continue;
+        giorni.add(d.getDate());
+        if (!giorniTipo.has(g.idPar_Giustificativi))
+          giorniTipo.set(g.idPar_Giustificativi, new Set());
+        giorniTipo.get(g.idPar_Giustificativi)!.add(d.getDate());
+        if (g.idDip_GG_Richiesta != null && this.timeSheetService.inAttesaApprovazione(g))
+          richieste.add(g.idDip_GG_Richiesta);
+      }
+      giorni.forEach(x => this.assentiGiorno.set(x, (this.assentiGiorno.get(x) ?? 0) + 1));
+      this.riepiloghi.set(slot.idAspNetUsers, {
+        voci: [...giorniTipo].map(([id, gg]) => ({ id, ...this.coloreTipo(id), giorni: gg.size })),
+        inAttesa: richieste.size
+      });
+    }
+  }
+
+  /** giorni per tipo e richieste in attesa del dipendente */
+  riepilogo(slot: VacationPlan_DaySlot): RiepilogoDipendente {
+    this.preparaRiepiloghi();
+    return this.riepiloghi.get(slot.idAspNetUsers) ?? { voci: [], inAttesa: 0 };
+  }
+
+  /** dipendenti con un giustificativo nel giorno */
+  assenti(day: number): number {
+    this.preparaRiepiloghi();
+    return this.assentiGiorno.get(day) ?? 0;
+  }
+
+  /** tocco su un giustificativo: il menu se si puo' decidere la richiesta, altrimenti il popup con il dettaglio */
+  toccaGiustificativo(slot: VacationPlan_DaySlot, g: Dip_GG_GiustificativiModel) {
+    if (this.CanOpenMenuActionGiustificativi(slot, g)) {
+      this.actionSheetOpen(g);
+      return;
+    }
+    const tipo = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService).transform(g.idPar_Giustificativi);
+    const stato = this.timeSheetService.get_StatoRichiesta_Approval_text(this.get_Dip_GG_Richiesta(slot, g.idDip_GG_Richiesta));
+    const btnChiudi = this.userInterfaceService.Btn_Chiudi;
+    btnChiudi.event = () => { };
+    this.nvxTextPopupService.show({
+      title: String(tipo),
+      subtitle: [this.dateTimeUtilService.DateTo_ggmmyyyy(g.data), g.hours?.substring(0, 5)].filter(x => !!x).join('  '),
+      text: [this.timeSheetService.periodoRichiestaTesto(slot.dip_GG_Richieste?.find(r => r.id === g.idDip_GG_Richiesta)), stato].filter(x => !!x).join('\n') || null,
+      buttons: [btnChiudi]
+    });
   }
 
   get_StatoDay_icon(vacationPlan: VacationPlan_DaySlot): string {

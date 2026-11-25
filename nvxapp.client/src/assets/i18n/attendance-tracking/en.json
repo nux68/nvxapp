@@ -633,6 +633,7 @@
       "vacationPlan": {
         "title": "Holiday plan",
         "employee": "Employee",
+        "absentPerDay": "Absent per day",
         "approveRequest": "Approve request",
         "rejectRequest": "Reject request",
         "headerJustification": "Absence justification: {{type}} {{date}}"
