@@ -7,6 +7,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { NotificationDeleteInModel, NotificationListInModel, NotificationModel, NotificationReadInModel } from '../../../ClientServer-Service/Infrastructure/Notification/Models/notification-model';
 import { NotificationService } from '../../../ClientServer-Service/Infrastructure/Notification/notification.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { NvxTextPopupService } from '../../../shared/components/infrastructure/nvx-text-popup/nvx-text-popup.service';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { NotificationNotifierService } from '../../../Utility/infrastructure/notification-notifier.service';
@@ -18,6 +19,7 @@ type NotificationFilter = 'all' | 'unread';
 /*
  Notifiche dell'utente collegato (ANALISI_INFRASTRUCTURE_NUOVI_MODULI.md, INF-SVC.4), dalla piu' recente, a pagine di 50.
  "Apri" segna la notifica come letta e, se ha un indirizzo, apre la pagina dell'oggetto (url + stato).
+ Su mobile la riga mostra il testo accorciato: toccandola si apre un popup con il testo intero (e la notifica diventa letta).
  In fondo: segna tutte come lette, cancella le lette, preferenze (nell'app / per email, per categoria).
  Si ricarica all'arrivo di una nuova notifica (evento SignalR "NotificationNew").
 */
@@ -45,6 +47,9 @@ export class NotificationListPageComponent {
   public readonly sortByData = (a: NotificationModel, b: NotificationModel) => (b.data ?? '').localeCompare(a.data ?? '') || b.id - a.id;
 
   public buttonbar: ButtonItem[] = [];
+  // mobile: in fondo solo le preferenze, le azioni sull'elenco stanno sopra la lista
+  public buttonbarMobile: ButtonItem[] = [];
+  public azioniElenco: ButtonItem[] = [];
   public readonly btnCaricaAltri: ButtonItem;
 
   private changedSub: Subscription | null = null;
@@ -54,6 +59,7 @@ export class NotificationListPageComponent {
               private notificationService: NotificationService,
               private notificationNotifierService: NotificationNotifierService,
               private collectionDialogService: CollectionDialogService,
+              private nvxTextPopupService: NvxTextPopupService,
               private languageService: LanguageService,
               private transloco: TranslocoService) {
 
@@ -81,6 +87,8 @@ export class NotificationListPageComponent {
     const btnPreferenze = userInterfaceService.Btn_Preferenze;
     btnPreferenze.event = () => this.navCtrl.navigateForward('/notificationpreference');
     this.buttonbar = [btnSegnaTutte, btnCancellaLette, btnPreferenze];
+    this.buttonbarMobile = [btnPreferenze];
+    this.azioniElenco = [btnSegnaTutte, btnCancellaLette];
 
     this.btnCaricaAltri = userInterfaceService.Btn_CaricaAltri;
     this.btnCaricaAltri.event = () => this.caricaAltre();
@@ -126,8 +134,48 @@ export class NotificationListPageComponent {
     this.load();
   }
 
+  public get mobile(): boolean {
+    return this.userInterfaceService.isMobile;
+  }
+
+  /** data della riga mobile: l'ora se e' di oggi, altrimenti giorno e mese (con l'anno se non e' quello corrente) */
+  public dataBreve(item: NotificationModel): string {
+    if (!item.data)
+      return '';
+    const data = new Date(item.data);
+    const oggi = new Date();
+    const formato = data.toDateString() === oggi.toDateString() ? 'shortTime'
+                  : data.getFullYear() === oggi.getFullYear() ? 'd MMM' : 'shortDate';
+    return formatDate(data, formato, this.languageService.locale);
+  }
+
+  /** mobile, tocco sulla riga: popup con il testo intero; la notifica diventa letta */
+  public readonly dettaglio = (item: NotificationModel) => {
+    const btnChiudi = this.userInterfaceService.Btn_Chiudi;
+    btnChiudi.event = () => { };
+    const buttons = [btnChiudi];
+    if (item.url) {
+      const btnApri = this.userInterfaceService.Btn_Apri;
+      btnApri.event = () => this.apri(item);
+      buttons.unshift(btnApri);
+    }
+
+    this.nvxTextPopupService.show({
+      title: item.titolo,
+      subtitle: item.data ? formatDate(item.data, 'short', this.languageService.locale) : null,
+      text: item.messaggio,
+      buttons
+    });
+    this.segnaLetta(item);
+  };
+
   // segna come letta e apre la pagina dell'oggetto, se c'e'
   private apri(item: NotificationModel) {
+    this.segnaLetta(item);
+    this.notificationNotifierService.openUrl(item.url, item.urlState);
+  }
+
+  private segnaLetta(item: NotificationModel) {
     if (!item.letta) {
       const request = new GenericRequest<NotificationReadInModel>(NotificationReadInModel);
       request.data.id = [item.id];
@@ -143,7 +191,6 @@ export class NotificationListPageComponent {
         }
       });
     }
-    this.notificationNotifierService.openUrl(item.url, item.urlState);
   }
 
   private segnaTutteLette() {
