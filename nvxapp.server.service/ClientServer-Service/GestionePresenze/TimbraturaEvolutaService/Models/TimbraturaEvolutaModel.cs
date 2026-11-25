@@ -1,3 +1,4 @@
+using nvxapp.server.service.Helpers;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
@@ -53,6 +54,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
     }
     public class TimbraturaEvoluta_QrCodeOutModel : ModelResult
     {
+        [LogSensitive] // codice o autorizzazione di timbratura: mai nel log
         public string Codice { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         // immagine PNG del QR in base64
@@ -67,8 +69,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         public int IdAz_SubCommessaAttivita { get; set; }
         public int? IdAz_SediReparto { get; set; }
         // codice del QR letto (facoltativo)
+        [LogSensitive] // codice o autorizzazione di timbratura: mai nel log
         public string? Codice { get; set; }
         // ticket restituito da Opzioni dopo la verifica del codice: sostituisce il codice (la scelta non fa scadere il QR)
+        [LogSensitive] // codice o autorizzazione di timbratura: mai nel log
         public string? Ticket { get; set; }
         public int? IdAz_Sedi { get; set; }
         public double? Latitudine { get; set; }
@@ -115,12 +119,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
     // opzioni per la timbratura dell'utente collegato: dal codice del QR (verificato: torna il ticket) o dalla sede scelta
     public class TimbraturaEvoluta_OpzioniInModel
     {
+        [LogSensitive] // codice o autorizzazione di timbratura: mai nel log
         public string? Codice { get; set; }
         public int? IdAz_Sedi { get; set; }
     }
     public class TimbraturaEvoluta_OpzioniOutModel : ModelResult
     {
         public int? IdAz_Sedi { get; set; }
+        [LogSensitive] // codice o autorizzazione di timbratura: mai nel log
         public string? Ticket { get; set; }
         public List<TimbraturaOpzioneModel> Opzioni { get; set; } = new();
         public int IndiceDefault { get; set; }
