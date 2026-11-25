@@ -243,5 +243,23 @@
       font-size: 15px;
       font-variant-numeric: tabular-nums;
     }
+
+    // timbrature: quattro per riga, incolonnate, anche sugli schermi stretti (a capo solo un testo che non ci sta)
+    &.timbrature {
+      gap: 4px;
+
+      ion-chip {
+        flex: 0 0 calc((100% - 12px) / 4);
+        min-width: max-content;
+        padding-left: 9px !important;   // barra dello stato (3px) piu' uno spazio
+        padding-inline-end: 0;
+        font-size: clamp(12px, 3.9vw, 15px);
+        white-space: nowrap;
+
+        &.nvx-pill-in-attesa {
+          padding-left: 11px !important; // barra spessa (7px)
+        }
+      }
+    }
   }
 }
