@@ -13,6 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nvxapp.server.data", "nvxap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Esperti", "Esperti", "{7C1B5E0A-3D4F-4A86-9B21-5E6F0C8D2A17}"
 	ProjectSection(SolutionItems) = preProject
+		.claude\agents\nvx-coordinatore.md = .claude\agents\nvx-coordinatore.md
 		.claude\agents\nvx-base.md = .claude\agents\nvx-base.md
 		.claude\agents\nvx-presenze.md = .claude\agents\nvx-presenze.md
 		.claude\agents\nvx-crm.md = .claude\agents\nvx-crm.md

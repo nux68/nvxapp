@@ -850,7 +850,7 @@ Nel periodo scelto il tuo orario non prevede ore (riposi o festivi). Controlla l
 Timbrature e richieste sono ammesse solo nel periodo del rapporto di lavoro. Se le date del rapporto sono sbagliate vanno corrette nella scheda del dipendente.
 
 ### Il cartellino del mese è approvato
-In un mese approvato non si inseriscono né si modificano movimenti. Chi gestisce il personale può usare **Riapri** nel riepilogo del mese del **Calendario HR**, correggere, ricalcolare e approvare di nuovo.
+In un mese approvato non si inseriscono, non si modificano e non si cancellano movimenti. Chi gestisce il personale può usare **Riapri** nel riepilogo del mese del **Calendario HR**, correggere, ricalcolare e approvare di nuovo.
 
 ### L'attività selezionata non è tra quelle consentite
 Puoi timbrare solo sulle attività delle sub commesse a cui sei collegato. Chiedi all'amministrazione di collegarti alla sub commessa giusta.
