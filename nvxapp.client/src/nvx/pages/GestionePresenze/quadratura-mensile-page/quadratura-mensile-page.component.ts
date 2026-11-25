@@ -155,6 +155,24 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
     return p ? p.min_Strao + p.min_StraoNott + p.min_StraoFest + p.min_StraoFestNott : 0;
   }
 
+  /** scheda mobile: solo le voci diverse da zero (nell'ordine delle colonne della tabella) */
+  vociMobile(p: Dip_PeriodoModel | null): { testo: string, minuti: number }[] {
+    if (!p) return [];
+    const k = 'attendance.pages.quadraturaMensile.';
+    return [
+      { testo: k + 'colInPiu', minuti: p.min_Ecc },
+      { testo: k + 'provv', minuti: p.min_Provvisorie },
+      { testo: k + 'colSuppl', minuti: this.supplementare(p) },
+      { testo: k + 'colStrao', minuti: this.straordinario(p) },
+      { testo: k + 'mEcced', minuti: p.min_EccOrd },
+      { testo: k + 'colNonRic', minuti: p.min_NonRiconosciute },
+      { testo: k + 'nonAutoriz', minuti: p.min_NonAutorizzate },
+      { testo: k + 'daAutorizzare', minuti: p.min_DaAutorizzare },
+      { testo: k + 'bancaOre', minuti: p.min_BancaOre },
+      { testo: k + 'pausaDetratta', minuti: p.min_PausaDetratta },
+    ].filter(v => !!v.minuti);
+  }
+
   // ── selezione e approvazione ──────────────────────────────────────────
 
   selezionabile(r: Dip_Periodo_Riga): boolean {
