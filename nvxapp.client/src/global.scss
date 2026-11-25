@@ -226,6 +226,11 @@ ion-item-sliding.nvx-row-even ion-item {
   --background: var(--nvx-surface, #ffffff);
 }
 
+// apertura e chiusura delle righe a scorrimento piu' rapide (Ionic: 500 ms)
+ion-item-sliding.item-sliding-active-slide .item {
+  transition-duration: 200ms;
+}
+
 
 /*@media (max-width: 576px) {*/ /* Soglia per sm */
 /*.nvx-modal {
