@@ -171,7 +171,7 @@
                     }
                   </ion-col>
                   <!-- COL 2 -->
-                  <ion-col size="10" size-sm="3">
+                  <ion-col size="10" size-sm="3" [class.timbrature-coppie]="day.dip_GG_Timbratura?.length > 0">
                     @if (day.dip_GG_Timbratura?.length > 0) {
                       @for (record of day.dip_GG_Timbratura; track record) {
                         <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(record)"
