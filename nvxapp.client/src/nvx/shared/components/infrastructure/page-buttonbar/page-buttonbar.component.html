@@ -7,7 +7,8 @@
         <!-- mobile: rotondi con la sola icona, al massimo due; gli altri nel menu a tre puntini -->
         @for (item of mobileVisibili; track item) {
           <ion-button [class.rotondo]="item.image" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
-            [fill]="mobileFill(item)" [attr.aria-label]="item.text">
+            [fill]="mobileFill(item)" [attr.aria-label]="item.text"
+            [appHoverPopup]="{ content: item.text ?? '' }" [appHoverPopupEnabled]="!!item.text" appHoverPopupTouch="press">
             @if (item.image) {
               <ion-icon slot="icon-only" name="{{item.image}}"></ion-icon>
             } @else {
