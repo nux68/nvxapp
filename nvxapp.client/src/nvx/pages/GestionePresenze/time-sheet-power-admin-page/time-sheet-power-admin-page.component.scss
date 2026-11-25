@@ -263,3 +263,51 @@
     }
   }
 }
+
+// ---------- telefono in orizzontale: la tabella, con le timbrature a coppie (entrata - uscita) ----------
+@media (min-width: 576px) and (max-height: 500px) and (orientation: landscape) {
+  app-time-sheet-power-admin-page {
+
+    // meno spazio ai lati, ma fuori dalla tacca dello schermo
+    ion-content.nvx-wide > ion-card {
+      margin: 4px max(4px, env(safe-area-inset-right)) 4px max(4px, env(safe-area-inset-left));
+    }
+
+    ion-content.nvx-wide > ion-card > ion-card-content {
+      padding: 8px;
+    }
+
+    .day-list-container {
+      margin-left: 0;
+      padding-bottom: 72px; // l'ultimo giorno non resta sotto il bottone rotondo
+    }
+
+    .day-row ion-col.timbrature-coppie {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2px 4px;
+    }
+
+    .day-row ion-chip.nvx-pill {
+      height: 30px;
+      min-height: 30px;
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: 9px !important;   // barra dello stato (3px) piu' uno spazio
+      padding-inline-end: 2px;
+      font-size: clamp(12px, 1.9vw, 15px) !important; // nel template e' 1.05em
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+
+      &.nvx-pill-in-attesa {
+        padding-left: 11px !important; // barra spessa (7px)
+      }
+
+      ion-icon {
+        flex: none;
+        margin-inline-start: 2px;
+        font-size: 12px;
+      }
+    }
+  }
+}
