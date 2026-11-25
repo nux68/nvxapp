@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
@@ -68,9 +67,10 @@ namespace nvxapp.server.Base
                 await Initialize();
 
                 // la serializzazione si fa solo se il livello di log e' attivo: con le chiamate annidate
-                // e i risultati grandi (es. cartellino) costerebbe parecchio anche senza scrivere nulla
+                // e i risultati grandi (es. cartellino) costerebbe parecchio anche senza scrivere nulla.
+                // LogSanitizer maschera password, PIN, token e altri valori riservati (mai la richiesta intera nel log)
                 if (Log.IsEnabled(LogEventLevel.Information))
-                    Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, JsonConvert.SerializeObject(p1));
+                    Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, LogSanitizer.Serialize(p1));
 
 
                 // execute method
@@ -79,7 +79,7 @@ namespace nvxapp.server.Base
 
                 if (Log.IsEnabled(LogEventLevel.Verbose))
                     Log.Verbose("END Call: {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID,
-                    JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
+                    LogSanitizer.Serialize(data));
 
 
                 if (isSubProcess == false)
@@ -110,9 +110,9 @@ namespace nvxapp.server.Base
                 // errore tecnico: al client un messaggio generico con il codice della chiamata, il dettaglio solo nel log
                 bool isUserMessage = e.IsUserMessage();
                 if (isUserMessage)
-                    Log.Warning("END Call(ExecuteAction USER MESSAGE): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
+                    Log.Warning("END Call(ExecuteAction USER MESSAGE): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, LogSanitizer.MaskText(_err));
                 else
-                    Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
+                    Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, LogSanitizer.MaskText(_err));
 
                 /* 
                    se è un sotto processo
@@ -185,8 +185,10 @@ namespace nvxapp.server.Base
         protected GenericResult<T> ErrorResponse<T>(string error)
         {
 
-            Console.WriteLine(error);
-            Log.Error(error);
+            // il messaggio va al client com'e': nel log e sulla console solo mascherato
+            var logError = LogSanitizer.MaskText(error);
+            Console.WriteLine(logError);
+            Log.Error("{Error}", logError);
 
             return new GenericResult<T>(default(T), error, MessageType.Exception, null);
         }
