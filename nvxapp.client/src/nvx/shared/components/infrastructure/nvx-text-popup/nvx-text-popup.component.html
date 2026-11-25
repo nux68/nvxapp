@@ -1,0 +1,17 @@
+<div class="popup">
+  <h2>{{ title }}</h2>
+  @if (subtitle) {
+    <div class="secondaria">{{ subtitle }}</div>
+  }
+  @if (text) {
+    <div class="testo">{{ text }}</div>
+  }
+  <div class="pulsanti">
+    @for (b of buttons; track b) {
+      <ion-button shape="round" [color]="b.color" [fill]="b.fill ?? (b.color === 'primary' ? 'solid' : 'clear')" [disabled]="b.disabled" (click)="premuto(b)">
+        <ion-icon slot="start" [name]="b.image"></ion-icon>
+        {{ b.text }}
+      </ion-button>
+    }
+  </div>
+</div>

@@ -78,6 +78,7 @@ Gli elenchi hanno la casella **Cerca** in alto e, dove serve, le **Opzioni**: **
 - Accanto alla voce **Ticket** il contatore indica i ticket in carico a te; a ogni passaggio di un ticket che ti riguarda compare un avviso con il pulsante per aprirlo.
 - I lavori lunghi (export, report, manuali) avvisano nella barra dei lavori quando il file è pronto.
 - Quando lo spazio del documentale di un'azienda supera la soglia di avviso e quando arriva al 100%, ricevono un avviso il CompanyPowerAdmin dell'azienda e il DealerPowerAdmin del centro.
+- Sul telefono la pagina **Notifiche** mostra il testo accorciato: tocca una notifica per leggerlo per intero.
 
 @@ /dashboard
 ### Come fare
