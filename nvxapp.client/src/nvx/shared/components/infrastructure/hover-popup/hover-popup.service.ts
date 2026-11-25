@@ -12,8 +12,12 @@ export class HoverPopupService {
     private injector: EnvironmentInjector
   ) { }
 
-  show(data: HoverPopupData, x: number, y: number): void {
+  // elemento sopra cui si centra il popup (pulsanti); null = accanto al cursore
+  private sopra: DOMRect | null = null;
+
+  show(data: HoverPopupData, x: number, y: number, sopra: DOMRect | null = null): void {
     this.hide();
+    this.sopra = sopra;
 
     this.componentRef = createComponent(HoverPopupComponent, {
       environmentInjector: this.injector
@@ -21,7 +25,7 @@ export class HoverPopupService {
 
     this.componentRef.instance.data = data;
     // primo disegno nascosto, per misurare le dimensioni reali del popup
-    this.componentRef.instance.style = { top: '0px', left: '0px', visibility: 'hidden' };
+    this.componentRef.instance.style = { top: '0px', left: '0px', visibility: 'hidden', ...(sopra ? { 'min-width': '0' } : {}) };
 
     this.appRef.attachView(this.componentRef.hostView);
     document.body.appendChild(this.componentRef.location.nativeElement);
@@ -50,6 +54,16 @@ export class HoverPopupService {
     const popupHeight = rect?.height || 160;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+
+    // pulsanti: centrato sopra, senza uscire dai bordi
+    if (this.sopra) {
+      const centro = this.sopra.left + this.sopra.width / 2 - popupWidth / 2;
+      return {
+        top: `${Math.max(margin, this.sopra.top - popupHeight - 8)}px`,
+        left: `${Math.max(margin, Math.min(centro, vw - popupWidth - margin))}px`,
+        'min-width': '0'
+      };
+    }
 
     let left = (x + offset + popupWidth > vw) ? x - popupWidth - offset : x + offset;
     let top  = (y + offset + popupHeight > vh) ? y - popupHeight - offset : y + offset;
