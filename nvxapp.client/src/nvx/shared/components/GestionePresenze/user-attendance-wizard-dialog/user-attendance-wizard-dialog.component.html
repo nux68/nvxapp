@@ -152,7 +152,7 @@
           </ion-item>
           <ion-item>
             <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.dataAssunzione' | transloco }}</ion-label>
-            <ion-datetime-button class="datetime-button-with-label" datetime="wizard-data-ass"></ion-datetime-button>
+            <ion-datetime-button datetime="wizard-data-ass"></ion-datetime-button>
           </ion-item>
           @if (formRapporto.get('dataAss')?.hasError('required') && formRapporto.get('dataAss')?.touched) {
             <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.dataAssunzioneObbligatoria' | transloco }}</ion-note>
