@@ -1,11 +1,11 @@
-<ion-button class="nvx-actions-menu-trigger" size="small" fill="outline" shape="round" color="secondary"
+<ion-button class="nvx-actions-menu-trigger" [class.large]="large()" [size]="large() ? 'default' : 'small'" fill="outline" shape="round" [color]="large() ? 'medium' : 'secondary'"
   [attr.aria-label]="label()" [appHoverPopup]="{ content: label() }" [appHoverPopupEnabled]="!isOpen()"
   aria-haspopup="menu" [attr.aria-expanded]="isOpen()"
   [disabled]="allDisabled()" (click)="open($event)">
   <ion-icon slot="icon-only" name="ellipsis-vertical"></ion-icon>
 </ion-button>
 
-<ion-popover #popover [isOpen]="isOpen()" [event]="openEvent" side="bottom" alignment="end"
+<ion-popover #popover [isOpen]="isOpen()" [event]="openEvent" [side]="side()" alignment="end"
   [showBackdrop]="false" (didDismiss)="isOpen.set(false)">
   <ng-template>
     <ion-list class="nvx-actions-menu-list" lines="none" role="menu">
