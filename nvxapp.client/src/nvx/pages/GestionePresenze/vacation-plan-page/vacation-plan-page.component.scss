@@ -158,76 +158,176 @@
   align-items: stretch;
 }
 
-/* ── Vista Mobile ─────────────────────────────────────── */
-
-.vg-mobile-dip-block {
-  margin-bottom: 16px;
-  border: 1px solid var(--ion-color-light-shade, #ddd);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.vg-mobile-dip-header {
-  padding: 6px 10px;
-  font-weight: 600;
-  border-bottom: 2px solid var(--ion-color-primary, #3880ff);
-  background: var(--ion-color-light, #f4f5f8);
-}
-
-.vg-mobile-day-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--ion-color-light-shade, #eee);
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.vg-mobile-weekend {
-  background: var(--ion-color-light, #f4f5f8);
-  color: var(--ion-color-medium, #92949c);
-}
-
-.vg-mobile-day-col {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 46px;
-  width: 46px;
-  padding: 4px 2px;
-  border-right: 1px solid var(--ion-color-light-shade, #ddd);
-  flex-shrink: 0;
-}
-
-.vg-mobile-day-num {
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.vg-mobile-day-label {
-  font-size: 0.78em;
-  color: var(--ion-color-medium, #888);
-  text-transform: capitalize;
-}
-
-.vg-mobile-just-col {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 3px 6px;
-  gap: 2px;
-}
-
-.vg-mobile-empty {
-  color: var(--ion-color-medium, #ccc);
-  font-size: 0.85em;
-}
-
 // pillole con la barra a sinistra (_pillole-cartellino): nelle celle da 40px il rientro del testo
 // si riduce, la barra da 7px delle pillole in attesa resta comunque libera
 .vg-chips-stack ion-chip.nvx-pill {
   padding-left: 10px !important;
+}
+
+/* ── Vista mobile (come la pianificazione turni del mese) ── */
+
+@media (max-width: 575.98px) {
+  // riquadro quasi a tutta larghezza
+  ion-content.nvx-wide > ion-card {
+    margin: 4px;
+  }
+
+  ion-content.nvx-wide > ion-card > ion-card-content {
+    padding: 8px 6px 72px; // in fondo: spazio per il bottone rotondo
+  }
+}
+
+.pf-mobile {
+  margin-top: 8px;
+
+  button {
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+  }
+}
+
+.pf-tronca {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pf-scheda {
+  margin-bottom: 6px;
+  padding: 4px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-sm);
+  background: var(--nvx-surface);
+  color: var(--ion-text-color);
+}
+
+.pf-mobile .pf-titolo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 38px;
+  padding: 2px 2px 4px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+
+  ion-icon {
+    flex: none;
+    color: var(--nvx-text-muted);
+  }
+
+  .pf-tronca {
+    flex: 1;
+  }
+}
+
+// richieste in attesa
+.pf-conta {
+  flex: none;
+  min-width: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(var(--ion-color-warning-rgb), 0.18);
+  color: var(--ion-color-warning-shade);
+  text-align: center;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+.pf-riepilogo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  padding: 0 2px 4px 26px;
+  font-size: 13px;
+}
+
+.pf-chip {
+  display: inline-block;
+  min-width: 28px;
+  padding: 1px 4px;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pf-sette {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.pf-testa {
+  margin-bottom: 2px;
+
+  > div {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--nvx-text-muted);
+  }
+}
+
+.pf-giorno {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 2px;
+  border: 1px solid var(--nvx-border);
+  border-radius: 6px;
+  text-align: center;
+  overflow: hidden;
+
+  &.pf-fest {
+    background: var(--nvx-surface-soft);
+  }
+
+  &.pf-oggi {
+    border-color: var(--ion-color-primary);
+  }
+}
+
+.pf-num {
+  font-size: 11px;
+  line-height: 1;
+  color: var(--nvx-text-muted);
+  text-align: left;
+}
+
+.pf-mobile .pf-voce {
+  display: block;
+  min-width: 0;
+  padding: 1px 0;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+
+  small {
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  // in attesa di approvazione
+  &.pf-attesa {
+    border: 1px dashed #888;
+    opacity: 0.65;
+  }
+}
+
+.pf-assenti {
+  font-size: 15px;
+  line-height: 1.3;
 }
