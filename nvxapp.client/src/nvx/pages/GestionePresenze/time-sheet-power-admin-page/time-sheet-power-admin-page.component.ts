@@ -915,6 +915,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   }
 
+  /** scheda mobile: niente ore teoriche e nessuna voce (riposi, festivi non lavorati) o giorno fuori dal rapporto senza voci */
+  giornoVuoto(day: DayData): boolean {
+    const voci = (day.dip_GG_Timbratura?.length ?? 0) + (day.dip_GG_Giustificativi?.length ?? 0) + (day.dip_GG_Causali?.length ?? 0);
+    if (voci > 0)
+      return false;
+    const teoriche = (day.dip_GG_Result?.hH_Teo ?? '').toString().slice(0, 5);
+    return teoriche === '' || teoriche === '00:00' || !!this.timeSheetService.fuoriRapporto(this.currentMonth, day.date);
+  }
+
   get_label_day_color(day: any): string | null {
 
     if (this.isWeekend(day))

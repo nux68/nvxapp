@@ -123,3 +123,125 @@
     margin-inline-start: 3px; // icona di stato piu' vicina al testo (Ionic: 8px)
   }
 }
+
+// ---------- mobile: una scheda per giorno ----------
+@media (max-width: 575.98px) {
+  // riquadro quasi a tutta larghezza (stili non incapsulati: solo per questa pagina)
+  app-time-sheet-power-admin-page ion-content.nvx-wide > ion-card {
+    margin: 4px;
+  }
+
+  app-time-sheet-power-admin-page ion-content.nvx-wide > ion-card > ion-card-content {
+    padding: 8px;
+  }
+}
+
+.giorni-mobile {
+  padding-bottom: 72px; // l'ultimo giorno non resta sotto il bottone rotondo
+
+  .legenda {
+    padding: 2px 4px 4px;
+    font-size: 11px;
+    text-align: right;
+    color: var(--nvx-text-muted);
+  }
+
+  .giorno {
+    margin-bottom: 6px;
+    padding: 6px 8px;
+    border: 1px solid var(--nvx-border);
+    border-radius: var(--nvx-radius-sm);
+    background: var(--nvx-surface);
+    color: var(--ion-text-color);
+
+    &.weekend {
+      background: var(--nvx-surface-soft);
+    }
+
+    // riposi e giorni senza nulla: una riga sola, attenuata
+    &.vuoto {
+      padding-top: 0;
+      padding-bottom: 0;
+      opacity: 0.65;
+    }
+
+    &.nvx-fuori-rapporto {
+      background: repeating-linear-gradient(-45deg,
+                  transparent 0 8px,
+                  rgba(var(--ion-color-medium-rgb), 0.08) 8px 16px);
+    }
+  }
+
+  .testata {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .data {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+    white-space: nowrap;
+
+    ion-icon {
+      flex: none;
+      font-size: 18px;
+    }
+  }
+
+  .nvx-fuori-rapporto-nota {
+    align-self: center;
+    font-size: 12px;
+  }
+
+  .ore {
+    margin-left: auto;
+    padding-top: 5px;
+    text-align: right;
+    font-size: 15px;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+
+    .lavorate {
+      font-weight: 600;
+    }
+
+    .teoriche {
+      color: var(--nvx-text-muted);
+    }
+
+    .nvx-ecc {
+      font-size: 13px;
+    }
+
+    .nvx-ecc-nota {
+      font-size: 12px;
+    }
+  }
+
+  .voci {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+    padding-top: 2px;
+
+    ion-chip {
+      height: 32px;
+      min-height: 32px;
+      margin: 0;
+      padding-inline-end: 6px;
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+}
