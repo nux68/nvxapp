@@ -2,23 +2,6 @@ ion-segment {
   margin-bottom: 8px;
 }
 
-// azioni sull'elenco (solo mobile)
-.nvx-notification-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-bottom: 4px;
-
-  // su una riga sola anche a 360px
-  ion-button {
-    --padding-start: 6px;
-    --padding-end: 6px;
-    margin: 0;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-}
-
 // riga mobile
 .nvx-notification-icon {
   font-size: 22px;
