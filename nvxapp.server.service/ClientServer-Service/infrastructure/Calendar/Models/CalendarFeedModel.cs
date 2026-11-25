@@ -1,3 +1,4 @@
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Calendar.Models
@@ -6,8 +7,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Calendar.Mod
     public class CalendarFeedModel
     {
         /// <summary>indirizzo https del feed (Google Calendar, Outlook)</summary>
+        [LogSensitive] // contiene il token del feed
         public string Url { get; set; } = string.Empty;
         /// <summary>stesso indirizzo con lo schema webcal:// (apre direttamente Apple Calendar / Outlook)</summary>
+        [LogSensitive] // contiene il token del feed
         public string WebcalUrl { get; set; } = string.Empty;
         public DateTime DataCreazione { get; set; }
         public DateTime? DataUltimoAccesso { get; set; }

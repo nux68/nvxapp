@@ -505,7 +505,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             var systemPrompt = _intentCatalog.BuildTurnSystemPrompt(session, detailedIntents);
             var raw = await PostToLlmAsync(BuildChatMessages(systemPrompt, session.History));
-            Log.Debug("[ChatAI] Risposta LLM. Session={SessionId} Raw={Raw}", session.SessionId, raw);
+            Log.Debug("[ChatAI] Risposta LLM. Session={SessionId} Raw={Raw}", session.SessionId, LogSanitizer.MaskText(raw));
 
             // Risposta vuota: capita (es. DeepSeek in modalità JSON) dopo vari scambi con risposte testuali
             // dell'assistente nella cronologia. Si ripete una volta con la sola ultima frase dell'utente:
@@ -515,7 +515,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var lastUser = session.History.LastOrDefault(t => t.Role == "user");
                 var shortHistory = lastUser != null ? new List<ConversationTurn> { lastUser } : new List<ConversationTurn>();
                 raw = await PostToLlmAsync(BuildChatMessages(systemPrompt, shortHistory));
-                Log.Debug("[ChatAI] Risposta LLM (nuovo tentativo, senza cronologia). Session={SessionId} Raw={Raw}", session.SessionId, raw);
+                Log.Debug("[ChatAI] Risposta LLM (nuovo tentativo, senza cronologia). Session={SessionId} Raw={Raw}", session.SessionId, LogSanitizer.MaskText(raw));
             }
 
             return ParsePlan(raw);
@@ -821,7 +821,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             catch (Exception ex)
             {
                 Log.Warning(ex, "[ChatAI] ParsePlan: JSON non deserializzabile. Raw={Raw}",
-                    raw?.Length > 500 ? raw[..500] + "…" : raw);
+                    LogSanitizer.MaskText(raw?.Length > 500 ? raw[..500] + "…" : raw));
                 return null;
             }
         }
@@ -908,7 +908,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (!string.IsNullOrEmpty(named))
             {
                 Log.Information("[ChatAI] Slot persona: \"{Self}\" sostituito dalla persona nominata. Slot={Slot} Valore={Value} Testo={Text}",
-                    ChatSelf.Token, slotName, named, userText);
+                    ChatSelf.Token, slotName, LogSanitizer.MaskText(named), LogSanitizer.MaskText(userText));
                 entry.Slots[slotName] = named;
                 return;
             }
@@ -924,7 +924,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (!justified)
             {
                 Log.Warning("[ChatAI] Slot scartato (anti-hallucination). Slot={Slot} Valore={Value} Testo={Text}",
-                    slotName, value, userText);
+                    slotName, LogSanitizer.MaskText(value), LogSanitizer.MaskText(userText));
                 return;
             }
 
@@ -1087,7 +1087,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             catch (Exception ex)
             {
                 Log.Error(ex, "[ChatAI] ExecuteCommandAsync fallita. Intent={Intent} Slots={Slots}",
-                    action.Intent, System.Text.Json.JsonSerializer.Serialize(action.Slots));
+                    action.Intent, LogSanitizer.Serialize(action.Slots));
                 return CommandResult.Fail(ChatAIMessages.Get("CommandExecutionError"));
             }
         }
@@ -1336,7 +1336,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             var pending = session.ActionQueue.FirstOrDefault()?.Intent ?? string.Empty;
             Log.Information("[ChatAI] ChatAI frase non capita. Frase={Frase} Pagina={Pagina} Ruoli={Ruoli} PianoInCorso={PianoInCorso} Lingua={Lingua}",
-                userMessage, session.CurrentRoute, string.Join(",", _chatUserContext.Roles), pending, ChatAIMessages.CurrentLanguage);
+                LogSanitizer.MaskText(userMessage), session.CurrentRoute, string.Join(",", _chatUserContext.Roles), pending, ChatAIMessages.CurrentLanguage);
         }
 
         // ---------------------------------------------------------------------------
