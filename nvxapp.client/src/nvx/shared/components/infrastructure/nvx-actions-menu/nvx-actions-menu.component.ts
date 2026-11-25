@@ -25,6 +25,10 @@ export class NvxActionsMenuComponent {
   readonly buttons = input<ButtonItem[]>([]);
   /** valore passato all'evento dell'opzione (es. la riga della lista) */
   readonly param = input<any>(null);
+  /** bottone grande, come i pulsanti rotondi della barra in fondo su mobile */
+  readonly large = input(false);
+  /** lato su cui si apre il menu */
+  readonly side = input<'top' | 'bottom'>('bottom');
   /** testo accessibile e tooltip del bottone */
   readonly label = input<string>(inject(TranslocoService).translate('components.nvxActionsMenu.more'));
 
