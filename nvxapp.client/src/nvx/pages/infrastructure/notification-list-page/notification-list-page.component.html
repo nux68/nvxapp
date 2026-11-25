@@ -17,6 +17,18 @@
         }
       </ion-segment>
 
+      <!-- mobile: le azioni sull'elenco qui sopra (in fondo non ci starebbero tutte) -->
+      @if (mobile) {
+        <div class="nvx-notification-actions">
+          @for (b of azioniElenco; track b) {
+            <ion-button size="small" shape="round" fill="clear" [color]="b.color" (click)="b.event({})">
+              <ion-icon slot="start" [name]="b.image"></ion-icon>
+              {{ b.text }}
+            </ion-button>
+          }
+        </div>
+      }
+
       <nvx-list
         [items]="notificationList"
         [columns]="columns"
@@ -26,7 +38,22 @@
         [highlight]="highlight"
         [searchText]="searchText"
         [sort]="sortByData"
+        [mobileTap]="dettaglio"
         [emptyText]="'pages.notificationList.empty' | transloco">
+
+        <!-- mobile: titolo su una riga, inizio del messaggio e data breve; il testo intero nel popup (tocco) -->
+        <ng-template nvxMobile let-item>
+          <ion-icon slot="start" class="nvx-notification-icon" [class.non-letta]="!item.letta" [name]="iconOf(item)" aria-hidden="true"></ion-icon>
+          <div class="nvx-notification" [class.non-letta]="!item.letta">
+            <div class="testata">
+              <span class="titolo">{{ item.titolo }}</span>
+              <span class="data">{{ dataBreve(item) }}</span>
+            </div>
+            @if (item.messaggio) {
+              <div class="messaggio">{{ item.messaggio }}</div>
+            }
+          </div>
+        </ng-template>
       </nvx-list>
 
       @if (altreDisponibili) {
@@ -43,4 +70,4 @@
 
 </ion-content>
 
-<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
+<app-page-buttonbar [buttonbar]="mobile ? buttonbarMobile : buttonbar"></app-page-buttonbar>
