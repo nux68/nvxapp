@@ -150,7 +150,7 @@
                 <ion-col size="12" size-md="6">
                   <ion-item>
                     <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.sogliaGiornalieraFT' | transloco }}</ion-label>
-                    <ion-datetime-button class="datetime-button-with-label" datetime="straoSogliaHHFullTime"></ion-datetime-button>
+                    <ion-datetime-button datetime="straoSogliaHHFullTime"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="straoSogliaHHFullTime"
@@ -230,7 +230,7 @@
                 <ion-col size="6" size-md="3">
                   <ion-item>
                     <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.notturnoDalle' | transloco }}</ion-label>
-                    <ion-datetime-button class="datetime-button-with-label" datetime="notturnoDalle"></ion-datetime-button>
+                    <ion-datetime-button datetime="notturnoDalle"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="notturnoDalle" formControlName="notturnoDalle" presentation="time"
@@ -243,7 +243,7 @@
                 <ion-col size="6" size-md="3">
                   <ion-item>
                     <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.notturnoAlle' | transloco }}</ion-label>
-                    <ion-datetime-button class="datetime-button-with-label" datetime="notturnoAlle"></ion-datetime-button>
+                    <ion-datetime-button datetime="notturnoAlle"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="notturnoAlle" formControlName="notturnoAlle" presentation="time"

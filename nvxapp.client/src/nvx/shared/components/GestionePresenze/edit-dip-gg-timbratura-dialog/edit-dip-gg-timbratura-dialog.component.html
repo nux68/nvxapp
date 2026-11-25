@@ -20,7 +20,7 @@
           <ion-grid>
             <ion-item>
               <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.giornoCompetenza' | transloco }}</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="giornoCompetenza-modal"></ion-datetime-button>
+              <ion-datetime-button datetime="giornoCompetenza-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
                   <ion-datetime id="giornoCompetenza-modal"
@@ -38,7 +38,7 @@
               <ion-col class="ion-no-padding" size="12" [sizeSm]="mostraOriginale ? 6 : 12">
                 <ion-item>
                   <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbratura' | transloco }}</ion-label>
-                  <ion-datetime-button class="datetime-button-with-label" datetime="timbratura-modal"></ion-datetime-button>
+                  <ion-datetime-button datetime="timbratura-modal"></ion-datetime-button>
                   <ion-modal [keepContentsMounted]="true">
                     <ng-template>
                       <ion-datetime id="timbratura-modal"
@@ -56,7 +56,7 @@
                 <ion-col class="ion-no-padding" size="12" sizeSm="6">
                   <ion-item>
                     <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbraturaOriginale' | transloco }}</ion-label>
-                    <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaOriginale-modal"></ion-datetime-button>
+                    <ion-datetime-button [disabled]="true" datetime="timbraturaOriginale-modal"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="timbraturaOriginale-modal"
@@ -75,7 +75,7 @@
             @if (_editModel.timbraturaTipo === TipoTimbratura.Entrata || _editModel.timbraturaTipo === TipoTimbratura.Uscita) {
               <ion-item>
                 <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbraturaArrotondata' | transloco }}</ion-label>
-                <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaArrotondata-modal"></ion-datetime-button>
+                <ion-datetime-button [disabled]="true" datetime="timbraturaArrotondata-modal"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
                     <ion-datetime id="timbraturaArrotondata-modal"

@@ -38,7 +38,7 @@
               <ion-label position="floating">
                 {{ (_editForm.get('tipoFestivita')?.value === tipoFestivitaEnum.DataRicorrente ? 'attendance.pages.festivitaEdit.dayYearIgnored' : 'attendance.pages.festivitaEdit.date') | transloco }}
               </ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="data-festivita"></ion-datetime-button>
+              <ion-datetime-button datetime="data-festivita"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
                   <ion-datetime id="data-festivita"
