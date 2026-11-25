@@ -172,7 +172,11 @@
     <value>{0:dd/MM/yyyy} is after the termination date ({1:dd/MM/yyyy}): entries cannot be added.</value>
   </data>
   <data name="TimesheetMonthApproved" xml:space="preserve">
-    <value>The timesheet of {0:MM/yyyy} is approved: HR must reopen it to add or change entries.</value>
+    <value>The timesheet of {0:MM/yyyy} is approved: HR must reopen it to add, change or delete entries.</value>
+  </data>
+  <data name="DeleteMovementNotAllowed" xml:space="preserve">
+    <value>You are not allowed to delete this entry: only the company power administrator can do it.</value>
+    <comment>cancellazione di timbrature, giustificativi, causali e richieste del cartellino (ATT-SEC.2)</comment>
   </data>
   <data name="ActivityNotAllowed" xml:space="preserve">
     <value>The selected activity is not among those allowed for the employee: choose one from the sub-projects the employee is linked to.</value>
