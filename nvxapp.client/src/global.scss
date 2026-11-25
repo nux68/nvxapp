@@ -185,6 +185,27 @@ ion-modal {
 }
 
 
+// popup con un testo per intero (nvx-text-popup): centrato e alto quanto il contenuto
+ion-modal.nvx-text-popup-modal {
+  --width: calc(100% - 32px);
+  --max-width: 480px;
+  --height: auto;
+  --max-height: 85vh;
+  --border-radius: var(--nvx-radius-lg);
+  --background: var(--nvx-surface);
+
+  &::part(content) {
+    border: 1px solid var(--nvx-border);
+  }
+
+  .ion-page {
+    position: relative;
+    display: block;
+    contain: content;
+  }
+}
+
+
 // righe delle liste: separatori sottili, niente zebra, hover tenue
 .nvx-ion-row-4table {
   border-bottom: 1px solid var(--nvx-border);
