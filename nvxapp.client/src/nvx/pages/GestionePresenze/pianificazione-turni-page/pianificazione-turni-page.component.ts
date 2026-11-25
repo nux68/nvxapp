@@ -12,11 +12,18 @@ import { Az_SediRepartoModel, Az_SediReparto_GetAll_InModel } from '../../../Cli
 import { DipSelectorItem, DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/infrastructure/dip-selector-modal/dip-selector-modal.component';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { SeletionParTurnoDialogComponent, SeletionParTurnoDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-turno-dialog/seletion-par-turno-dialog.component';
+import { NvxTextPopupService } from '../../../shared/components/infrastructure/nvx-text-popup/nvx-text-popup.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { Dip_Turno_ReportInModel, TurniReportTipo } from '../../../ClientServer-Service/GestionePresenze/Turni/Models/turni-model';
 
 type Vista = 'settimana' | 'mese';
+
+/** riepilogo dei turni di un dipendente nel periodo (vista mese su mobile) */
+interface RiepilogoDipendente {
+  voci: { codice: string, colore: string, numero: number }[];
+  conflitti: number;
+}
 
 /*
  Pianificazione dei turni di un reparto (AT-TURNI.2, ANALISI_ATTENDANCETRACKING_TURNI.md §4):
@@ -26,6 +33,8 @@ type Vista = 'settimana' | 'mese';
  Report (FAB): PDF del periodo visualizzato (settimana o mese) con il job, il file si scarica dalla notifica.
  Duplica settimana (vista settimana): la settimana visualizzata si copia in una delle settimane successive per i dipendenti
  scelti (dialog standard di selezione multipla); nella destinazione i loro turni diventano uguali a quelli di partenza.
+ Mobile: niente griglia. Settimana = una scheda per dipendente con i sette giorni; mese = schede da aprire una alla volta,
+ ognuna un calendario del mese (chiusa mostra quanti turni per tipo). Il tocco sul giorno apre la stessa scelta dei turni.
 */
 @Component({
   selector: 'app-pianificazione-turni-page',
@@ -52,7 +61,8 @@ export class PianificazioneTurniPageComponent {
               private toastCtrl: ToastController,
               private collectionDialogService: CollectionDialogService,
               private fabMenuService: FabMenuService,
-              private userInterfaceService: UserInterfaceService,
+              private nvxTextPopupService: NvxTextPopupService,
+              public userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.pianificazioneTurni.title');
   }
@@ -207,6 +217,60 @@ export class PianificazioneTurniPageComponent {
 
   intestazioneGiorno(d: Date): string {
     return this.transloco.translate('attendance.pages.turni.wd' + ((d.getDay() + 6) % 7)) + ' ' + d.getDate();
+  }
+
+  // ── mobile ─────────────────────────────────────────────────────────
+
+  /** scheda della copertura tra quelle del mese (gli altri valori sono idDip_RapportoLavoro) */
+  public readonly COPERTURA = -1;
+  public readonly settimana = [0, 1, 2, 3, 4, 5, 6];
+  /** scheda aperta nella vista mese */
+  public aperto: number | null = null;
+
+  /** caselle vuote prima del primo giorno del mese */
+  get vuoti(): number[] {
+    return this.giorni.length > 0 ? Array((this.giorni[0].getDay() + 6) % 7).fill(0) : [];
+  }
+
+  eOggi(d: Date): boolean {
+    return d.toDateString() === new Date().toDateString();
+  }
+
+  apriChiudi(id: number) {
+    this.aperto = this.aperto === id ? null : id;
+  }
+
+  apriLegenda() {
+    const btnChiudi = this.userInterfaceService.Btn_Chiudi;
+    btnChiudi.event = () => { };
+    this.nvxTextPopupService.show({
+      title: this.transloco.translate('attendance.pages.pianificazioneTurni.legendTitle'),
+      text: this.transloco.translate('attendance.pages.pianificazioneTurni.legendMobile'),
+      buttons: [btnChiudi]
+    });
+  }
+
+  private riepiloghiDi: Dip_Turno_PianificazioneOutModel | null = null;
+  private riepiloghi = new Map<number, RiepilogoDipendente>();
+
+  /** ricalcolato solo quando cambiano i dati */
+  riepilogo(dip: TurnoDipendenteModel): RiepilogoDipendente {
+    if (this.riepiloghiDi !== this.dati) {
+      this.riepiloghiDi = this.dati;
+      this.riepiloghi.clear();
+    }
+    let r = this.riepiloghi.get(dip.idDip_RapportoLavoro);
+    if (!r) {
+      const mie = (this.dati?.assegnazioni ?? []).filter(x => x.idDip_RapportoLavoro === dip.idDip_RapportoLavoro);
+      r = {
+        voci: (this.dati?.turni ?? [])
+          .map(t => ({ codice: t.codice, colore: t.colore || '#d0d0d0', numero: mie.filter(x => x.idPar_Turno === t.id).length }))
+          .filter(v => v.numero > 0),
+        conflitti: (this.dati?.conflitti ?? []).filter(x => x.grave && x.idDip_RapportoLavoro === dip.idDip_RapportoLavoro).length
+      };
+      this.riepiloghi.set(dip.idDip_RapportoLavoro, r);
+    }
+    return r;
   }
 
   // ── modifica ───────────────────────────────────────────────────────

@@ -235,6 +235,8 @@
         "duplicateConfirm": "Copy the shifts of the week {{ dal }} to the week {{ al }} for {{ n }} employees? Their shifts in that week are replaced (days without a shift stay without a shift).",
         "duplicateDone": "Week duplicated: {{ salvati }} shifts copied, {{ tolti }} removed.",
         "duplicateEmpty": "The week has no shifts to duplicate.",
+        "legendTitle": "Legend",
+        "legendMobile": "Tap a day to choose the shifts (more than one allowed). Below the shift: absences (dashed if awaiting approval) and, on calculated days, the worked hours (red if the day has an anomaly).\n\nRed border = shift on a day of approved absence.\n\nIn the month view tap an employee to open their calendar.",
         "legend": "Click a cell to choose the shifts of the day (more than one allowed). Below the shift: absences (dashed if awaiting approval) and worked/planned hours of calculated days. Red border = shift on a day of approved absence."
       },
       "mieiTurni": {
