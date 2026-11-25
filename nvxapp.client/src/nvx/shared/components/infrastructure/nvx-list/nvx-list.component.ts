@@ -89,6 +89,8 @@ export class NvxListComponent<T = any> {
   /** ordinamento di default, finche' non si clicca un'intestazione */
   readonly sort = input<((a: T, b: T) => number) | null>(null);
   readonly rowDisabled = input<((item: T) => boolean) | null>(null);
+  /** solo mobile: tocco sulla riga (es. popup con il testo per intero); senza, la riga non e' toccabile */
+  readonly mobileTap = input<((item: T) => void) | null>(null);
   /** se valorizzato compare la casella "mostra disabilitati" e le righe disabilitate sono nascoste finche' non si spunta */
   readonly disabledToggleLabel = input<string | null>(null);
   /** la casella "mostra disabilitati" e' fuori dalla lista (es. nella sezione Opzioni, nvx-list-options):
