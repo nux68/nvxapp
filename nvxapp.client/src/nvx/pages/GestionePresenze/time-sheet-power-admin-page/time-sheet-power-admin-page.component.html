@@ -87,7 +87,8 @@
                       }
                     </div>
                   }
-                  @if (day.dip_GG_Giustificativi?.length > 0 || day.dip_GG_Causali?.length > 0) {
+                  <!-- una riga per i giustificativi e una per le causali, solo se ci sono -->
+                  @if (day.dip_GG_Giustificativi?.length > 0) {
                     <div class="voci nvx-seg-verticale">
                       @for (just of day.dip_GG_Giustificativi; track just) {
                         <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(just)"
@@ -97,6 +98,10 @@
                           {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.importo != null ? (just.importo | importoEuro) : just.hours?.substring(0, 5) }}
                         </ion-chip>
                       }
+                    </div>
+                  }
+                  @if (day.dip_GG_Causali?.length > 0) {
+                    <div class="voci">
                       @for (caus of day.dip_GG_Causali; track caus) {
                         <ion-chip class="nvx-pill" [style.--nvx-pill-color]="timeSheetService.get_Dip_GG_Causali_borderColor(caus)"
                           (click)="actionSheetOpen(caus)">
