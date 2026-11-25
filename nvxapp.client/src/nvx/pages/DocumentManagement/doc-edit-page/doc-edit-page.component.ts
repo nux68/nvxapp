@@ -65,7 +65,9 @@ export class DocEditPageComponent extends BasePageConfirmCancelComponent<DocDocu
     if (this.Multiplo && this.dipendentiSelezionati.length > 1)
       return this.transloco.translate('documents.pages.edit.employeesSelected', { n: this.dipendentiSelezionati.length });
     return this.dipendentiSelezionati
-      .map(id => this.dipendenti.find(d => d.id === id)?.nominativo)
+      // documento gia' assegnato a chi non e' piu' nell'elenco (es. amministratore senza ruolo User): nome dal documento
+      .map(id => this.dipendenti.find(d => d.id === id)?.nominativo
+                 ?? (id === this._editModel?.idDip_Anagrafica ? this.dettaglio?.riepilogo?.dipendente : null))
       .filter(n => !!n).join(', ');
   }
 

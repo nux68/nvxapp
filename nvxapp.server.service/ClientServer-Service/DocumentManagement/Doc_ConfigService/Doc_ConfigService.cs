@@ -346,18 +346,28 @@ namespace nvxapp.server.service.ClientServer_Service.DocumentManagement.Doc_Conf
                 dip.ChangeUser = ctx.IdUtente;
                 dip = await _dipendenteRepository.UpsertAsync(dip);
 
-                return new Doc_DipendentePutOutModel { Dipendente = (await DipendentiAsync(ctx)).First(x => x.Id == dip.Id) };
+                return new Doc_DipendentePutOutModel { Dipendente = (await DipendentiAsync(ctx)).FirstOrDefault(x => x.Id == dip.Id) ?? new Doc_DipendenteModel { Id = dip.Id } };
             }, isSubProcess);
         }
 
         // ---------------------------------------------------------------------------
 
+        /*
+         Dipendenti dell'azienda: chi ha un account compare solo se ha (anche) il ruolo User, quindi non gli amministratori
+         che non sono dipendenti. Restano chi non ha account e chi non lo ha piu' (utente eliminato).
+        */
         private async Task<List<Doc_DipendenteModel>> DipendentiAsync(DocContesto ctx)
         {
             var dipendenti = await _dipendenteReadRepository.FindAll(x => x.IdAz_Anagrafica == ctx.IdAz_Anagrafica).ToListAsync();
             var idUtenti = dipendenti.Where(x => x.IdAspNetUsers != null).Select(x => x.IdAspNetUsers!).ToList();
             var nomi = await _usersRepository.FindAll(u => idUtenti.Contains(u.Id)).Select(u => new { u.Id, u.UserName }).ToListAsync();
-            return dipendenti.Select(x => new Doc_DipendenteModel
+
+            var idRuoloUser = await _rolesRepository.FindAll(r => r.Name == nameof(RoleCode.User)).Select(r => r.Id).FirstOrDefaultAsync();
+            var conRuoloUser = await _userRolesRepository.FindAll(r => r.RoleId == idRuoloUser && idUtenti.Contains(r.UserId)).Select(r => r.UserId).ToListAsync();
+            var nonDipendenti = nomi.Select(n => n.Id).Except(conRuoloUser).ToHashSet();
+
+            return dipendenti.Where(x => x.IdAspNetUsers == null || !nonDipendenti.Contains(x.IdAspNetUsers))
+                             .Select(x => new Doc_DipendenteModel
                              {
                                  Id = x.Id, Nominativo = (x.Cognome + " " + x.Nome).Trim(), Cognome = x.Cognome, Nome = x.Nome,
                                  CodiceFiscale = x.CodiceFiscale, Matricola = x.Matricola, Email = x.Email, DataCessazione = x.DataCessazione,
