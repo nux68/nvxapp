@@ -78,6 +78,7 @@ Lists have the **Search** box at the top and, where useful, the **Options**: **S
 - Next to the **Tickets** item the counter shows the tickets assigned to you; at each step of a ticket that concerns you a popup appears with the button to open it.
 - Long jobs (exports, reports, manuals) report in the jobs bar when the file is ready.
 - When a company's document storage goes over the warning threshold and when it reaches 100%, the company's CompanyPowerAdmin and the dealer's DealerPowerAdmin receive a warning.
+- On the phone the **Notifications** page shows a shortened text: tap a notification to read it in full.
 
 @@ /dashboard
 ### How to
