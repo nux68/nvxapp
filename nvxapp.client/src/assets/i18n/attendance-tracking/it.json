@@ -19,6 +19,7 @@
         "dipendenti": "Dipendenti coinvolti: {{n}} su {{tot}}",
         "soloDaSistemare": "Solo da sistemare",
         "spiega": "Spiega",
+        "regole": "Regole",
         "notaRegole": "Regole fisse (fino a ieri): in rosso cio' che blocca l'export paghe (timbrature dispari, giornate senza timbrature, errori o giornate non calcolate, richieste in attesa), in arancione gli avvisi da verificare.",
         "testoAI": "Riassunto scritto dall'AI a partire dalle anomalie calcolate:",
         "testoSenzaAI": "Riassunto delle anomalie calcolate (AI non disponibile):",
