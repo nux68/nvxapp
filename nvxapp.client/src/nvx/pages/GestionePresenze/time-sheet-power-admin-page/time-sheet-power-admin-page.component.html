@@ -40,6 +40,75 @@
             [refresh]="refreshCartellino"
             (changed)="loadMonth()">
           </app-cartellino-quadratura>
+          @if (isMobile) {
+            <!-- mobile: una scheda compatta per giorno, a tutta larghezza; si mostra solo quello che c'e' -->
+            <div class="giorni-mobile">
+              <div class="legenda">{{ 'attendance.pages.timeSheetPowerAdmin.hoursWorked' | transloco }} / {{ 'attendance.pages.timeSheetPowerAdmin.hoursTheoretical' | transloco }}</div>
+              @for (day of currentDays; track day) {
+                <div class="giorno" [class.vuoto]="giornoVuoto(day)" [class.weekend]="isWeekend(day.date)"
+                  [class.nvx-fuori-rapporto]="timeSheetService.fuoriRapporto(currentMonth, day.date)">
+                  <div class="testata">
+                    <button type="button" class="data" (click)="actionSheetOpen(day)" [style.color]="isWeekend(day.date) ? get_label_day_color(day.date) : null"
+                      [appHoverPopup]="timeSheetService.get_DayPopupStato(day.dip_GG_Result)"
+                      [appHoverPopupEnabled]="!timeSheetService.fuoriRapporto(currentMonth, day.date)" appHoverPopupTouch="press">
+                      <ion-icon [name]="timeSheetService.get_StatoDay_icon(day.dip_GG_Result)"
+                        [style.visibility]="timeSheetService.fuoriRapporto(currentMonth, day.date) ? 'hidden' : null"
+                        [style.color]="timeSheetService.get_StatoDay_color(day.dip_GG_Result)"></ion-icon>
+                      {{ day.date | date:'EEE' }} {{ day.date | date:'dd' }}
+                    </button>
+                    @if (timeSheetService.fuoriRapporto(currentMonth, day.date); as fuori) {
+                      <span class="nvx-fuori-rapporto-nota">{{ timeSheetService.fuoriRapportoTesto(fuori) }}</span>
+                    }
+                    @if (!giornoVuoto(day)) {
+                      <div class="ore">
+                        <span class="lavorate">{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}</span><span class="teoriche"> / {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}</span>
+                        @if (timeSheetService.eccedenzaGiorno(day.dip_GG_Result); as ecc) {
+                          <div>
+                            <span class="nvx-ecc" [class.nvx-ecc-provvisoria]="ecc.provvisoria" [class.nvx-ecc-mancanti]="ecc.minuti < 0" [title]="ecc.dettaglio">{{ ecc.testo }}</span>
+                            @if (ecc.provvisoria) {
+                              <span class="nvx-ecc-nota"> {{ 'attendance.pages.timeSheetPowerAdmin.pendingReconciliation' | transloco }}</span>
+                            } @else if (ecc.qualifica) {
+                              <span class="nvx-ecc-nota"> {{ ecc.qualifica }}</span>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  @if (day.dip_GG_Timbratura?.length > 0) {
+                    <div class="voci">
+                      @for (record of day.dip_GG_Timbratura; track record) {
+                        <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(record)"
+                          [style.--nvx-pill-color]="timeSheetService.get_Dip_GG_Timbratura_borderColor(record)"
+                          (click)="CanOpenMenuActionTimbratura(record) ? actionSheetOpen(record) : null">
+                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+                        </ion-chip>
+                      }
+                    </div>
+                  }
+                  @if (day.dip_GG_Giustificativi?.length > 0 || day.dip_GG_Causali?.length > 0) {
+                    <div class="voci nvx-seg-verticale">
+                      @for (just of day.dip_GG_Giustificativi; track just) {
+                        <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(just)"
+                          [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
+                          [style.--nvx-pill-color]="timeSheetService.get_Dip_GG_Giustificativi_borderColor(just)"
+                          (click)="CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
+                          {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.importo != null ? (just.importo | importoEuro) : just.hours?.substring(0, 5) }}
+                        </ion-chip>
+                      }
+                      @for (caus of day.dip_GG_Causali; track caus) {
+                        <ion-chip class="nvx-pill" [style.--nvx-pill-color]="timeSheetService.get_Dip_GG_Causali_borderColor(caus)"
+                          (click)="actionSheetOpen(caus)">
+                          {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.importo != null ? (caus.importo | importoEuro) : (caus.valore | slice:0:5) }}
+                        </ion-chip>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
           <div class="day-list-container">
             <ion-grid class="ion-no-padding">
               @if (!isMobile) {
@@ -219,6 +288,7 @@
                   }
                 </ion-grid>
               </div>
+          }
             }
 
 
