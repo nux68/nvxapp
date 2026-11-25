@@ -8,8 +8,8 @@ const MAX_MOBILE = 2;
  Barra dei pulsanti in fondo a pagine e dialog.
  Desktop: tutti i pulsanti, con icona e testo.
  Mobile: pulsanti rotondi con la sola icona, al massimo due; dal terzo in poi si aggiunge il bottone a tre puntini,
- che apre gli altri con icona e testo. Restano in vista la conferma, poi le azioni principali (colore primary), poi
- l'ordine della pagina; le cancellazioni (cestino) per ultime.
+ che apre gli altri con icona e testo. Restano in vista Conferma e Annulla; dove mancano, le azioni principali (colore
+ primary), poi l'ordine della pagina; le cancellazioni (cestino) per ultime.
 */
 @Component({
   selector: 'app-page-buttonbar',
