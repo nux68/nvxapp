@@ -29,6 +29,12 @@
             {{ 'attendance.pages.pianificazioneTurni.duplicate' | transloco }}
           </ion-button>
         }
+        @if (userInterfaceService.isMobileSignal() && dati) {
+          <!-- mobile: la legenda nel popup -->
+          <ion-button fill="clear" size="small" (click)="apriLegenda()" [attr.aria-label]="'attendance.pages.pianificazioneTurni.legendTitle' | transloco">
+            <ion-icon slot="icon-only" name="information-circle-outline"></ion-icon>
+          </ion-button>
+        }
       </div>
 
       @if (dati) {
@@ -39,6 +45,117 @@
           <ion-note class="nvx-avviso">{{ 'attendance.pages.pianificazioneTurni.noEmployees' | transloco }}</ion-note>
         }
 
+        @if (userInterfaceService.isMobileSignal()) {
+          <!-- mobile: sette colonne a tutta larghezza, niente scorrimento laterale -->
+          <div class="nvx-mobile">
+            @if (vista === 'settimana') {
+              <!-- settimana: una scheda per dipendente, i giorni in testa restano visibili -->
+              <div class="nvx-sette nvx-testa">
+                @for (d of giorni; track d.getTime()) {
+                  <div [class.nvx-fest]="festivo(d)" [class.nvx-oggi]="eOggi(d)">{{ intestazioneGiorno(d) }}</div>
+                }
+              </div>
+              @for (dip of dati.dipendenti; track dip.idDip_RapportoLavoro) {
+                <div class="nvx-scheda">
+                  <div class="nvx-titolo">{{ dip.nominativo }}</div>
+                  <div class="nvx-sette">
+                    @for (d of giorni; track d.getTime()) {
+                      <ng-container *ngTemplateOutlet="cella; context: { dip: dip, d: d, numero: false }"></ng-container>
+                    }
+                  </div>
+                </div>
+              }
+              @if (turniCopertura.length > 0) {
+                <div class="nvx-scheda">
+                  <div class="nvx-titolo nvx-maiuscola">{{ 'attendance.pages.pianificazioneTurni.coverage' | transloco }}</div>
+                  @for (t of turniCopertura; track t.id) {
+                    <div class="nvx-turno"><span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span></div>
+                    <div class="nvx-sette">
+                      @for (d of giorni; track d.getTime()) {
+                        <div class="nvx-cop">
+                          @if (copertura(t, d); as c) { <span [class.nvx-ko]="c.insufficiente">{{ c.assegnati }}/{{ c.minPersone }}</span> }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            } @else {
+              <!-- mese: un dipendente alla volta come calendario; chiuso mostra il riepilogo dei turni -->
+              @for (dip of dati.dipendenti; track dip.idDip_RapportoLavoro) {
+                <div class="nvx-scheda">
+                  <button type="button" class="nvx-titolo" [attr.aria-expanded]="aperto === dip.idDip_RapportoLavoro" (click)="apriChiudi(dip.idDip_RapportoLavoro)">
+                    <ion-icon [name]="aperto === dip.idDip_RapportoLavoro ? 'chevron-down-outline' : 'chevron-forward-outline'" aria-hidden="true"></ion-icon>
+                    <span class="nvx-tronca">{{ dip.nominativo }}</span>
+                    @if (riepilogo(dip); as r) {
+                      @if (r.conflitti > 0) { <span class="nvx-conta">{{ r.conflitti }}</span> }
+                    }
+                  </button>
+                  @if (aperto === dip.idDip_RapportoLavoro) {
+                    <div class="nvx-sette nvx-testa-mese">
+                      @for (w of settimana; track w) { <div>{{ 'attendance.pages.turni.wd' + w | transloco }}</div> }
+                    </div>
+                    <div class="nvx-sette">
+                      @for (v of vuoti; track $index) { <div></div> }
+                      @for (d of giorni; track d.getTime()) {
+                        <ng-container *ngTemplateOutlet="cella; context: { dip: dip, d: d, numero: true }"></ng-container>
+                      }
+                    </div>
+                  } @else if (riepilogo(dip).voci.length > 0) {
+                    <div class="nvx-riepilogo">
+                      @for (v of riepilogo(dip).voci; track v.codice) {
+                        <span><span class="nvx-chip" [style.background]="v.colore">{{ v.codice }}</span> {{ v.numero }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              @if (turniCopertura.length > 0) {
+                <div class="nvx-scheda">
+                  <button type="button" class="nvx-titolo" [attr.aria-expanded]="aperto === COPERTURA" (click)="apriChiudi(COPERTURA)">
+                    <ion-icon [name]="aperto === COPERTURA ? 'chevron-down-outline' : 'chevron-forward-outline'" aria-hidden="true"></ion-icon>
+                    <span class="nvx-tronca nvx-maiuscola">{{ 'attendance.pages.pianificazioneTurni.coverage' | transloco }}</span>
+                    @if (dati.copertureInsufficienti > 0) { <span class="nvx-conta">{{ dati.copertureInsufficienti }}</span> }
+                  </button>
+                  @if (aperto === COPERTURA) {
+                    <div class="nvx-sette nvx-testa-mese">
+                      @for (w of settimana; track w) { <div>{{ 'attendance.pages.turni.wd' + w | transloco }}</div> }
+                    </div>
+                    <div class="nvx-sette">
+                      @for (v of vuoti; track $index) { <div></div> }
+                      @for (d of giorni; track d.getTime()) {
+                        <div class="nvx-giorno nvx-fermo" [class.nvx-fest]="festivo(d)" [class.nvx-oggi]="eOggi(d)">
+                          <span class="nvx-num">{{ d.getDate() }}</span>
+                          @for (t of turniCopertura; track t.id) {
+                            @if (copertura(t, d); as c) { <small class="nvx-cop" [class.nvx-ko]="c.insufficiente"><span class="nvx-punto" [style.background]="t.colore || '#d0d0d0'"></span>{{ c.assegnati }}/{{ c.minPersone }}</small> }
+                          }
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            }
+          </div>
+
+          <!-- giorno di un dipendente: il tocco apre la scelta dei turni -->
+          <ng-template #cella let-dip="dip" let-d="d" let-numero="numero">
+            <button type="button" class="nvx-giorno" [class.nvx-fest]="festivo(d)" [class.nvx-oggi]="numero && eOggi(d)"
+              [class.nvx-conflitto]="conflittoGrave(dip, d)" [attr.aria-label]="dip.nominativo + ' ' + (d | date: 'EEE dd/MM')" (click)="scegliTurno(dip, d)">
+              @if (numero) { <span class="nvx-num">{{ d.getDate() }}</span> }
+              @for (t of turni(dip, d); track t.id) {
+                <span class="nvx-chip" [style.background]="t.colore || '#d0d0d0'">{{ t.codice }}</span>
+              }
+              @for (a of assenze(dip, d); track $index) {
+                <span class="nvx-assenza" [class.nvx-attesa]="!a.approvata"
+                  [style.background]="a.backgroundColor || '#eeeeee'" [style.color]="a.textColor || '#000'">{{ a.codice }}</span>
+              }
+              @if (consuntivo(dip, d); as c) {
+                <small class="nvx-consuntivo" [class.nvx-ko]="c.anomalia">{{ ore(c.min_Lav) }}</small>
+              }
+            </button>
+          </ng-template>
+        } @else {
         <div class="nvx-griglia-wrap">
           <table class="nvx-griglia" [class.nvx-mese]="vista === 'mese'">
             <thead>
@@ -94,6 +211,7 @@
         </div>
 
         <ion-note class="nvx-avviso">{{ 'attendance.pages.pianificazioneTurni.legend' | transloco }}</ion-note>
+        }
 
         @if (dati.conflitti.length > 0) {
           <ion-list>
