@@ -850,7 +850,7 @@ Your schedule plans no hours in the chosen period (rest days or holidays). Check
 Clockings and requests are allowed only within the employment period. If the employment dates are wrong they must be corrected in the employee record.
 
 ### The month's time sheet is approved
-No entries can be added or changed in an approved month. Whoever manages HR can use **Reopen** in the monthly summary of the **HR calendar**, correct, recalculate and approve again.
+No entries can be added, changed or deleted in an approved month. Whoever manages HR can use **Reopen** in the monthly summary of the **HR calendar**, correct, recalculate and approve again.
 
 ### The selected activity is not among those allowed
 You can only clock on the activities of the sub job orders you are linked to. Ask the administration to link you to the right sub job order.

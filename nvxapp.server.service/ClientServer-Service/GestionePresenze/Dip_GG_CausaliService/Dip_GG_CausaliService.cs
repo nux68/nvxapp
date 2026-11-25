@@ -106,6 +106,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                     var IdDip_RapportoLavoro = entity.IdDip_RapportoLavoro;
                     var GiornoCompetenza = entity.Data;
 
+                    // dal client cancella solo chi ne ha il diritto, su un dipendente dell'azienda e fuori dai mesi approvati (il motore, sottoprocesso, no)
+                    if (!isSubProcess)
+                    {
+                        var nonConsentita = await _gestionePresenzeUserUtility.VerificaCancellazione(this.CurrentUserId, IdDip_RapportoLavoro, GiornoCompetenza, GiornoCompetenza);
+                        if (nonConsentita != null)
+                        {
+                            retVal.Messages.Add(new Message(nonConsentita, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     await _Dip_GG_CausaliRepository.DeleteAsync(entity);
 
                     if(!model.Data.ExcludeRicalc)

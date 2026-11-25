@@ -172,7 +172,11 @@
     <value>Il {0:dd/MM/yyyy} è dopo la cessazione ({1:dd/MM/yyyy}): non si possono inserire movimenti.</value>
   </data>
   <data name="TimesheetMonthApproved" xml:space="preserve">
-    <value>Il cartellino di {0:MM/yyyy} è approvato: per inserire o modificare movimenti l'HR deve riaprirlo.</value>
+    <value>Il cartellino di {0:MM/yyyy} è approvato: per inserire, modificare o cancellare movimenti l'HR deve riaprirlo.</value>
+  </data>
+  <data name="DeleteMovementNotAllowed" xml:space="preserve">
+    <value>Non hai i permessi per cancellare questo movimento: solo l'amministratore con pieni poteri dell'azienda può farlo.</value>
+    <comment>cancellazione di timbrature, giustificativi, causali e richieste del cartellino (ATT-SEC.2)</comment>
   </data>
   <data name="ActivityNotAllowed" xml:space="preserve">
     <value>L'attività selezionata non è tra quelle consentite al dipendente: sceglierne una delle sub commesse a cui è collegato.</value>

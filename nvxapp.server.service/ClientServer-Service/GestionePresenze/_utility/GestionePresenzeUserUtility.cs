@@ -700,6 +700,43 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             return null;
         }
 
+        // Cancellazione dal client di un movimento (timbratura, giustificativo, causale, richiesta): ritorna il messaggio
+        // d'errore se non e' consentita, altrimenti null. Replica quello che il client offre oggi (pagina "Calendario HR"):
+        //  - solo il CompanyPowerAdmin (anche con piu' ruoli insieme: basta che abbia quello) cancella;
+        //  - il movimento deve essere di un dipendente dell'azienda corrente;
+        //  - il giorno puo' stare anche fuori dal rapporto di lavoro (il client permette di togliere i movimenti residui),
+        //    ma non in un mese con il cartellino approvato (per una richiesta su piu' giorni si controllano tutti)
+        // IdAspNetUsers = utente collegato (chi "lavora come" un altro e' valutato come quell'utente, come il menu del client)
+        public async Task<string?> VerificaCancellazione(string IdAspNetUsers, int IdDip_RapportoLavoro, DateTime Dal, DateTime Al)
+        {
+            var roleIds = _aspNetUserRolesRepository.FindAll(x => x.UserId == IdAspNetUsers).Select(x => x.RoleId).ToList();
+            bool powerAdmin = _aspNetRolesRepository.FindAll(x => roleIds.Contains(x.Id) && x.Code == RoleCode.CompanyPowerAdmin).Any();
+            if (!powerAdmin)
+                return AttendanceTrackingMessages.Get("DeleteMovementNotAllowed");
+
+            // rapporto di lavoro di un dipendente dell'azienda corrente (altrimenti non si distingue da "non trovato")
+            // (senza azienda corrente, la prima azienda dell'utente: come Get_DipAna_DipRapp)
+            var idCompany = AziendaCorrente()
+                            ?? _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).Select(x => (int?)x.IdCompany).FirstOrDefault();
+            var azienda = idCompany.HasValue ? await _commonCompanyUtility.GetAz_AnagraficaAsync(idCompany.Value, false) : null;
+            var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(r => r.Id == IdDip_RapportoLavoro).Select(r => (int?)r.IdDip_Anagrafica).FirstOrDefault();
+            var idAz_Anagrafica = idDip_Anagrafica.HasValue
+                ? _dip_AnagraficaRepository.FindAll(a => a.Id == idDip_Anagrafica.Value).Select(a => (int?)a.IdAz_Anagrafica).FirstOrDefault()
+                : null;
+            if (azienda == null || idAz_Anagrafica != azienda.Id)
+                return AttendanceTrackingMessages.Get("EmploymentRelationshipNotFound");
+
+            var approvati = _dip_PeriodoRepository.FindAll(p => p.IdDip_RapportoLavoro == IdDip_RapportoLavoro && p.Stato == PeriodoStato.Approvato)
+                                                  .Select(p => new { p.Anno, p.Mese })
+                                                  .ToList();
+            for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
+            {
+                if (approvati.Any(p => p.Anno == giorno.Year && p.Mese == giorno.Month))
+                    return AttendanceTrackingMessages.Get("TimesheetMonthApproved", giorno);
+            }
+            return null;
+        }
+
         // ── Attivita' delle timbrature ───────────────────────────────────────────
         // Ogni timbratura e' sempre su un'attivita' (Az_SubCommessaAttivita).
 
@@ -912,6 +949,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist);
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp);
         string? VerificaGiorniNelRapporto(int IdDip_RapportoLavoro, DateTime Dal, DateTime Al);
+        Task<string?> VerificaCancellazione(string IdAspNetUsers, int IdDip_RapportoLavoro, DateTime Dal, DateTime Al);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
         Par_Competenza? GetCompetenzaDefault(int IdAz_Anagrafica);
