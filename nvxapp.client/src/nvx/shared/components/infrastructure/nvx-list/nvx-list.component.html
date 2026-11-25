@@ -19,7 +19,7 @@
     <ion-list class="nvx-list-mobile" lines="full">
       @for (item of rows(); track trackOf(item)) {
         <ion-item-sliding>
-          <ion-item [class.nvx-row-disabled]="isDisabled(item)">
+          <ion-item [class.nvx-row-disabled]="isDisabled(item)" [button]="!!mobileTap()" [detail]="false" (click)="mobileTap()?.(item)">
             @if (mobileTemplate(); as mt) {
               <ng-container *ngTemplateOutlet="mt.template; context: { $implicit: item }"></ng-container>
             }
