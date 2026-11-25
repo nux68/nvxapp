@@ -47,9 +47,6 @@ export class NotificationListPageComponent {
   public readonly sortByData = (a: NotificationModel, b: NotificationModel) => (b.data ?? '').localeCompare(a.data ?? '') || b.id - a.id;
 
   public buttonbar: ButtonItem[] = [];
-  // mobile: in fondo solo le preferenze, le azioni sull'elenco stanno sopra la lista
-  public buttonbarMobile: ButtonItem[] = [];
-  public azioniElenco: ButtonItem[] = [];
   public readonly btnCaricaAltri: ButtonItem;
 
   private changedSub: Subscription | null = null;
@@ -87,8 +84,6 @@ export class NotificationListPageComponent {
     const btnPreferenze = userInterfaceService.Btn_Preferenze;
     btnPreferenze.event = () => this.navCtrl.navigateForward('/notificationpreference');
     this.buttonbar = [btnSegnaTutte, btnCancellaLette, btnPreferenze];
-    this.buttonbarMobile = [btnPreferenze];
-    this.azioniElenco = [btnSegnaTutte, btnCancellaLette];
 
     this.btnCaricaAltri = userInterfaceService.Btn_CaricaAltri;
     this.btnCaricaAltri.event = () => this.caricaAltre();
@@ -132,10 +127,6 @@ export class NotificationListPageComponent {
     this.filtro = (value ?? 'all') as NotificationFilter;
     this.notificationList = null;
     this.load();
-  }
-
-  public get mobile(): boolean {
-    return this.userInterfaceService.isMobile;
   }
 
   /** data della riga mobile: l'ora se e' di oggi, altrimenti giorno e mese (con l'anno se non e' quello corrente) */
