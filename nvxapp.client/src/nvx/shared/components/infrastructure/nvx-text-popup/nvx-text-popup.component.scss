@@ -1,0 +1,44 @@
+.popup {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  padding: 20px 20px 14px;
+  background: var(--nvx-surface);
+  color: var(--ion-text-color);
+}
+
+h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.secondaria {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--nvx-text-muted);
+}
+
+// solo il testo scorre: titolo e pulsanti restano visibili
+.testo {
+  margin-top: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  margin-right: -12px;
+  padding-right: 12px; // la barra di scorrimento non copre il testo
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.pulsanti {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
