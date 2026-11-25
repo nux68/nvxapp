@@ -17,18 +17,6 @@
         }
       </ion-segment>
 
-      <!-- mobile: le azioni sull'elenco qui sopra (in fondo non ci starebbero tutte) -->
-      @if (mobile) {
-        <div class="nvx-notification-actions">
-          @for (b of azioniElenco; track b) {
-            <ion-button size="small" shape="round" fill="clear" [color]="b.color" (click)="b.event({})">
-              <ion-icon slot="start" [name]="b.image"></ion-icon>
-              {{ b.text }}
-            </ion-button>
-          }
-        </div>
-      }
-
       <nvx-list
         [items]="notificationList"
         [columns]="columns"
@@ -70,4 +58,4 @@
 
 </ion-content>
 
-<app-page-buttonbar [buttonbar]="mobile ? buttonbarMobile : buttonbar"></app-page-buttonbar>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
