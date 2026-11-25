@@ -77,7 +77,7 @@
                   </div>
 
                   @if (day.dip_GG_Timbratura?.length > 0) {
-                    <div class="voci">
+                    <div class="voci timbrature">
                       @for (record of day.dip_GG_Timbratura; track record) {
                         <ion-chip class="nvx-pill" [class.nvx-pill-in-attesa]="timeSheetService.inAttesaApprovazione(record)"
                           [style.--nvx-pill-color]="timeSheetService.get_Dip_GG_Timbratura_borderColor(record)"
