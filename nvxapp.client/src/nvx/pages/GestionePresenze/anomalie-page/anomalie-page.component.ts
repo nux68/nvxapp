@@ -5,13 +5,27 @@ import { TranslocoService } from '@jsverse/transloco';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipAnomalieService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anomalie/dip-anomalie.service';
 import {
-  AnomaliaGiornoModel, AnomaliaGravita, AnomalieRisultato, Dip_Anomalie_GetInModel, Dip_PrevisioneAssenze_GetInModel, PrevisioneRisultato
+  AnomaliaGiornoModel, AnomaliaGravita, AnomalieRisultato, Dip_Anomalie_GetInModel, Dip_PrevisioneAssenze_GetInModel, PrevisioneGiornoModel, PrevisioneRisultato
 } from '../../../ClientServer-Service/GestionePresenze/Dip_Anomalie/Models/dip-anomalie-model';
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
+import { NvxTextPopupService } from '../../../shared/components/infrastructure/nvx-text-popup/nvx-text-popup.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
 import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
+
+/** giornate di un dipendente (vista mobile) */
+interface GruppoDipendente {
+  id: number;
+  nome: string;
+  daSistemare: number;
+  daVerificare: number;
+  giornate: AnomaliaGiornoModel[];
+}
+
+/** fino a questo numero di dipendenti i gruppi della vista mobile nascono aperti */
+const GRUPPI_APERTI = 3;
 
 /*
  Anomalie presenze (ANALISI_ATTENDANCETRACKING_ANOMALIE_AI.md, AT-AI.1-3): giornate da sistemare prima dell'export paghe
@@ -48,6 +62,8 @@ export class AnomaliePageComponent implements OnDestroy {
               private longJobNotifier: LongJobNotifierService,
               private fabMenuService: FabMenuService,
               private reportFabService: ReportFabService,
+              private nvxTextPopupService: NvxTextPopupService,
+              public ui: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.anomalie.title');
   }
@@ -105,6 +121,55 @@ export class AnomaliePageComponent implements OnDestroy {
     request.data.usersId = this.usersId;
     request.data.soloDaSistemare = this.soloDaSistemare;
     return request;
+  }
+
+  // ── vista mobile ──────────────────────────────────────────────────────
+
+  /** dipendenti aperti (idDip_Anagrafica) */
+  public aperti = new Set<number>();
+  private gruppiDi: AnomalieRisultato | null = null;
+  private gruppiCalcolati: GruppoDipendente[] = [];
+
+  /** giornate raggruppate per dipendente, nell'ordine del server; ricalcolate solo quando cambia il risultato */
+  gruppi(): GruppoDipendente[] {
+    if (this.gruppiDi === this.risultato)
+      return this.gruppiCalcolati;
+    this.gruppiDi = this.risultato;
+
+    const gruppi = new Map<number, GruppoDipendente>();
+    for (const g of this.risultato?.giornate ?? []) {
+      let d = gruppi.get(g.idDip_Anagrafica);
+      if (!d)
+        gruppi.set(g.idDip_Anagrafica, d = { id: g.idDip_Anagrafica, nome: g.nomeDipendente, daSistemare: 0, daVerificare: 0, giornate: [] });
+      d.giornate.push(g);
+      if (g.daSistemare) d.daSistemare++; else d.daVerificare++;
+    }
+    this.gruppiCalcolati = [...gruppi.values()];
+    this.gruppiCalcolati.forEach(d => d.giornate.sort((a, b) => a.data.localeCompare(b.data)));
+
+    // pochi dipendenti: aperti; altrimenti restano aperti quelli gia' aperti (es. dopo un ricalcolo)
+    if (this.gruppiCalcolati.length <= GRUPPI_APERTI)
+      this.aperti = new Set(this.gruppiCalcolati.map(d => d.id));
+    return this.gruppiCalcolati;
+  }
+
+  apriChiudi(id: number) {
+    if (!this.aperti.delete(id))
+      this.aperti.add(id);
+  }
+
+  apriRegole() {
+    this.popup(this.transloco.translate('attendance.pages.anomalie.regole'), this.transloco.translate('attendance.pages.anomalie.notaRegole'));
+  }
+
+  apriPianificati(g: PrevisioneGiornoModel) {
+    this.popup(this.transloco.translate('attendance.pages.anomalie.colPianificate') + ' ' + this.formatGiorno(g.data), g.pianificati.join('\n'));
+  }
+
+  private popup(title: string, text: string) {
+    const btnChiudi = this.ui.Btn_Chiudi;
+    btnChiudi.event = () => { };
+    this.nvxTextPopupService.show({ title, text, buttons: [btnChiudi] });
   }
 
   load() {

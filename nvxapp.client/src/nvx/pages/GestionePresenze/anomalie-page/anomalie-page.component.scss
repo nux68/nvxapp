@@ -74,3 +74,156 @@
   margin-top: 8px;
   font-size: 0.9em;
 }
+
+// ---------- mobile: giornate raggruppate per dipendente ----------
+@media (max-width: 575.98px) {
+  // riquadro quasi a tutta larghezza
+  ion-content.nvx-wide > ion-card {
+    margin: 4px;
+  }
+
+  ion-content.nvx-wide > ion-card > ion-card-content {
+    padding: 8px 8px 72px; // in fondo: spazio per il bottone rotondo
+  }
+
+  .an-riepilogo {
+    gap: 4px;
+
+    ion-chip {
+      margin: 0;
+      height: 24px;
+      min-height: 24px;
+      padding-inline: 8px;
+      font-size: 12px;
+    }
+
+    ion-toggle {
+      margin: 0 4px;
+      font-size: 13px;
+    }
+  }
+
+  .an-testata {
+    font-size: 11px;
+  }
+
+  .an-num {
+    padding-right: 4px;
+  }
+
+  .an-chip {
+    min-height: 20px;
+    padding-inline: 6px;
+    margin-left: 4px;
+  }
+
+  .an-nomi {
+    padding-top: 0;
+  }
+}
+
+.an-tronca {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.an-mobile {
+  margin-top: 6px;
+
+  button {
+    display: flex;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+  }
+}
+
+.an-scheda {
+  margin-bottom: 6px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-sm);
+  background: var(--nvx-surface);
+  color: var(--ion-text-color);
+  overflow: hidden;
+}
+
+.an-mobile .an-dipendente {
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+
+  > ion-icon {
+    flex: none;
+    color: var(--nvx-text-muted);
+  }
+
+  > strong {
+    flex: 1;
+  }
+}
+
+.an-conta {
+  flex: none;
+  min-width: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.an-conta-errore {
+  background: rgba(var(--ion-color-danger-rgb), 0.18);
+  color: var(--ion-color-danger);
+}
+
+.an-conta-avviso {
+  background: rgba(var(--ion-color-warning-rgb), 0.18);
+  color: var(--ion-color-warning-shade);
+}
+
+.an-mobile .an-giorno {
+  align-items: stretch;
+  border-top: 1px solid var(--nvx-border);
+}
+
+.an-barra {
+  flex: none;
+  width: 3px;
+  background: var(--ion-color-warning);
+
+  &.an-barra-errore {
+    background: var(--ion-color-danger);
+  }
+}
+
+.an-corpo {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+}
+
+.an-linea {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.an-data {
+  flex: none;
+}
+
+.an-testi {
+  display: block;
+  font-size: 13px;
+  line-height: 1.35;
+}
