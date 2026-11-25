@@ -20,13 +20,15 @@ export class UserInterfaceService {
   }
 
   get Btn_Conferma(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.confirm'),
       'checkmark-circle-outline',
       'primary',
       false,
       () => { console.log('Btn_Conferma cliccato'); }
     );
+    button.main = true;
+    return button;
   }
 
   get Btn_Annulla(): ButtonItem {
@@ -592,6 +594,8 @@ export class ButtonItem {
 
   // stile nella buttonbar; null = di default (pieno se primary, altrimenti senza bordo)
   public fill: 'solid' | 'outline' | 'clear' | null = null;
+  // conferma: nella barra in fondo su mobile resta sempre in vista (mai nel menu a tre puntini)
+  public main = false;
 
   constructor(
     public text: string | null = null,
