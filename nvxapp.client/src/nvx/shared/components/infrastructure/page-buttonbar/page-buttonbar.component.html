@@ -2,13 +2,31 @@
   <ion-toolbar>
     <ion-buttons class="center-buttons">
 
-      <!-- azione principale (colore primary) a pillola piena, le altre "fantasma", salvo uno stile indicato dal pulsante -->
-      @for (item of buttonbar; track item) {
-        <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
-          [fill]="item.fill ?? (item.color === 'primary' ? 'solid' : 'clear')">
-          <ion-icon slot="start" name="{{item.image}}"></ion-icon>
-          {{item.text}}
-        </ion-button>
+      <!-- desktop: azione principale (colore primary) a pillola piena, le altre "fantasma", salvo uno stile indicato dal pulsante -->
+      @if (ui.isMobileSignal()) {
+        <!-- mobile: rotondi con la sola icona, al massimo due; gli altri nel menu a tre puntini -->
+        @for (item of mobileVisibili; track item) {
+          <ion-button [class.rotondo]="item.image" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
+            [fill]="mobileFill(item)" [attr.aria-label]="item.text">
+            @if (item.image) {
+              <ion-icon slot="icon-only" name="{{item.image}}"></ion-icon>
+            } @else {
+              {{item.text}}
+            }
+          </ion-button>
+        }
+        @if (mobileAltri.length > 0) {
+          <nvx-actions-menu [buttons]="mobileAltri" [param]="{}" [large]="true" side="top"></nvx-actions-menu>
+        }
+      }
+      @else {
+        @for (item of buttonbar; track item) {
+          <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
+            [fill]="item.fill ?? (item.color === 'primary' ? 'solid' : 'clear')">
+            <ion-icon slot="start" name="{{item.image}}"></ion-icon>
+            {{item.text}}
+          </ion-button>
+        }
       }
 
     </ion-buttons>
