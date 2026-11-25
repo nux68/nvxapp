@@ -38,8 +38,16 @@
             <ion-button size="small" fill="outline" shape="round" [disabled]="spiegazioneInCorso" (click)="spiega()">
               <ion-icon name="sparkles-outline"></ion-icon>&nbsp;{{ 'attendance.pages.anomalie.spiega' | transloco }}
             </ion-button>
+            @if (ui.isMobileSignal()) {
+              <!-- mobile: la nota sulle regole nel popup -->
+              <ion-button size="small" fill="clear" shape="round" (click)="apriRegole()" [attr.aria-label]="'attendance.pages.anomalie.regole' | transloco">
+                <ion-icon slot="icon-only" name="information-circle-outline"></ion-icon>
+              </ion-button>
+            }
           </div>
-          <div class="an-nota">{{ 'attendance.pages.anomalie.notaRegole' | transloco }}</div>
+          @if (!ui.isMobileSignal()) {
+            <div class="an-nota">{{ 'attendance.pages.anomalie.notaRegole' | transloco }}</div>
+          }
 
           @if (spiegazioneInCorso) {
             <div class="an-vuoto"><ion-spinner name="dots"></ion-spinner></div>
@@ -53,6 +61,38 @@
 
           @if (risultato.giornate.length === 0) {
             <div class="an-vuoto">{{ 'attendance.pages.anomalie.nessuna' | transloco }}</div>
+          } @else if (ui.isMobileSignal()) {
+            <!-- mobile: giornate raggruppate per dipendente (si apre e si chiude); ogni giornata al massimo due righe, il tocco apre il calendario -->
+            <div class="an-mobile">
+              @for (d of gruppi(); track d.id) {
+                <div class="an-scheda">
+                  <button type="button" class="an-dipendente" [attr.aria-expanded]="aperti.has(d.id)" (click)="apriChiudi(d.id)">
+                    <ion-icon [name]="aperti.has(d.id) ? 'chevron-down-outline' : 'chevron-forward-outline'" aria-hidden="true"></ion-icon>
+                    <strong class="an-tronca">{{ d.nome }}</strong>
+                    @if (d.daSistemare > 0) { <span class="an-conta an-conta-errore">{{ d.daSistemare }}</span> }
+                    @if (d.daVerificare > 0) { <span class="an-conta an-conta-avviso">{{ d.daVerificare }}</span> }
+                  </button>
+                  @if (aperti.has(d.id)) {
+                    @for (g of d.giornate; track g.data) {
+                      <button type="button" class="an-giorno" (click)="apriCalendario(g)">
+                        <span class="an-barra" [class.an-barra-errore]="g.daSistemare"></span>
+                        <span class="an-corpo">
+                          <span class="an-linea">
+                            <strong class="an-data">{{ g.data | date: 'EEE dd/MM' }}</strong>
+                            <span class="an-nota an-tronca">{{ g.timbrature.join(' ') }}</span>
+                          </span>
+                          <span class="an-testi">
+                            @for (a of g.anomalie; track $index; let ultimo = $last) {
+                              <span [class.an-errore]="a.gravita === Gravita.Errore" [class.an-avviso]="a.gravita === Gravita.Avviso">{{ a.descrizione }}</span>{{ ultimo ? '' : ' · ' }}
+                            }
+                          </span>
+                        </span>
+                      </button>
+                    }
+                  }
+                </div>
+              }
+            </div>
           } @else {
             <ion-grid class="ion-no-padding">
               @for (g of risultato.giornate; track g.idDip_RapportoLavoro + g.data; let i = $index) {
@@ -113,12 +153,16 @@
                   <ion-col size="4">
                     {{ g.data | date: 'EEE dd/MM' }}
                     @if (g.picco) { <ion-chip color="danger" class="an-chip">{{ 'attendance.pages.anomalie.picco' | transloco }}</ion-chip> }
-                    @if (g.pianificati.length > 0) { <div class="an-nota">{{ g.pianificati.join(', ') }}</div> }
+                    @if (g.pianificati.length > 0 && !ui.isMobileSignal()) { <div class="an-nota">{{ g.pianificati.join(', ') }}</div> }
                   </ion-col>
                   <ion-col size="2" class="an-num">{{ g.inServizio }}</ion-col>
                   <ion-col size="2" class="an-num">{{ g.pianificate }}</ion-col>
                   <ion-col size="2" class="an-num">{{ g.statistiche | number: '1.1-1' }}</ion-col>
                   <ion-col size="2" class="an-num"><strong>{{ g.previste | number: '1.1-1' }}</strong></ion-col>
+                  @if (g.pianificati.length > 0 && ui.isMobileSignal()) {
+                    <!-- mobile: i nomi su una riga sola, per intero nel popup -->
+                    <ion-col size="12" class="an-nota an-tronca an-nomi" (click)="apriPianificati(g)">{{ g.pianificati.join(', ') }}</ion-col>
+                  }
                 </ion-row>
               }
             }
