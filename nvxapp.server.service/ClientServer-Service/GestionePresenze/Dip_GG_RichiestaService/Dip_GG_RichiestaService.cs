@@ -1535,18 +1535,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         {
             return await ExecuteAction(model, async () =>
             {
+                var retVal = new Dip_GG_Richiesta_DeleteOutModel();
+
                 var entity = await _dip_GG_RichiestaRepository.FindByIdAsync(model.Data.Id);
                 if (entity != null)
                 {
                     var IdDip_RapportoLavoro = entity.IdDip_RapportoLavoro;
                     var GiornoCompetenza = entity.Data;
 
+                    // dal client cancella solo chi ne ha il diritto, su un dipendente dell'azienda e fuori dai mesi approvati,
+                    // controllando tutti i giorni della richiesta (il motore, sottoprocesso, no)
+                    if (!isSubProcess)
+                    {
+                        var nonConsentita = await _gestionePresenzeUserUtility.VerificaCancellazione(this.CurrentUserId, IdDip_RapportoLavoro ?? 0, entity.Data, entity.DataA < entity.Data ? entity.Data : entity.DataA);
+                        if (nonConsentita != null)
+                        {
+                            retVal.Messages.Add(new Message(nonConsentita, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     await _dip_GG_RichiestaRepository.DeleteAsync(entity);
 
                     if(!model.Data.ExcludeRicalc)
                         await CalculateGiorno(IdDip_RapportoLavoro ?? 0, GiornoCompetenza);
                 }
-                return new Dip_GG_Richiesta_DeleteOutModel();
+                return retVal;
             }, isSubProcess);
         }
 
