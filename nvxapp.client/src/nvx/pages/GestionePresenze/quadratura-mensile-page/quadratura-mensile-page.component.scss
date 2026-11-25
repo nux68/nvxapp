@@ -39,8 +39,98 @@
   font-size: 0.85em;
 }
 
-@media (max-width: 575px) {
-  .qm-num {
-    text-align: left;
+// ---------- mobile: una scheda compatta per dipendente ----------
+@media (max-width: 575.98px) {
+  // riquadro quasi a tutta larghezza
+  ion-content.nvx-wide > ion-card {
+    margin: 4px;
   }
+
+  ion-content.nvx-wide > ion-card > ion-card-content {
+    padding: 8px;
+  }
+}
+
+.qm-mobile {
+  padding-bottom: 72px; // l'ultimo dipendente non resta sotto il bottone rotondo
+}
+
+.qm-legenda {
+  padding: 2px 48px 4px 0;
+  font-size: 11px;
+  text-align: right;
+  color: var(--nvx-text-muted);
+}
+
+.qm-scheda {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding: 6px 0 6px 8px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-sm);
+  background: var(--nvx-surface);
+  color: var(--ion-text-color);
+
+  ion-checkbox {
+    flex: none;
+    margin-top: 3px;
+  }
+}
+
+.qm-corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.qm-linea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+}
+
+.qm-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qm-mobile .qm-stato {
+  flex: none;
+  height: 22px;
+  min-height: 22px;
+  padding-inline: 8px;
+  font-size: 12px;
+}
+
+.qm-ore {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.qm-voci {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+  padding-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+
+  > span {
+    white-space: nowrap;
+  }
+}
+
+.qm-apri {
+  flex: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 40px;
+  height: 44px;
+  margin: 0;
 }
