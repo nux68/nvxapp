@@ -372,8 +372,8 @@ ion-item:has(> ion-datetime-button) {
   > ion-label[position] {
     transform: none !important;
     transition: none;
-    margin: 8px 0 0 0;
-    font-size: 12px;
+    margin: 8px 0 0 0 !important;
+    font-size: 12px !important; // come le etichette in alto degli altri campi (16px x 0.75)
     line-height: 1.3;
     white-space: normal;
   }
