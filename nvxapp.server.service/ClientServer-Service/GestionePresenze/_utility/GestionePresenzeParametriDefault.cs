@@ -379,10 +379,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 IdAz_Anagrafica = IdAz_Anagrafica,
                 Codice = "0001",
-                Descrizione = "ExportProva"
+                Descrizione = "Export default"
             });
 
-            // tutte le causali nel tracciato di prova, con il loro codice (senza causali l'export non produce file);
+            // tutte le causali nel tracciato di default, con il loro codice (senza causali l'export non produce file);
             // elaborazione e unita' come quando si aggiunge una causale dalla pagina del tracciato
             foreach (var causale in causali.Values)
             {
