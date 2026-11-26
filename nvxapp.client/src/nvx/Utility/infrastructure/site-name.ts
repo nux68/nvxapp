@@ -11,3 +11,7 @@ import { SITE_NAME_ALL_FUNCTION } from './site-name-all-function';
 */
 // L'applicativo completo (ramo AllFunction) ha il suo nome; altrimenti quello del ramo applicativo, poi Infrastructure.
 export const SITE_NAME: string = SITE_NAME_ALL_FUNCTION ?? SITE_NAME_ATTENDANCE_TRACKING ?? SITE_NAME_CRM ?? SITE_NAME_DOCUMENT_MANAGEMENT ?? SITE_NAME_INFRASTRUCTURE;
+
+// Nome del sito per indirizzi email e domini, dove il nome stesso non e' valido: minuscolo, "+" scritto "plus",
+// senza spazi e simboli (es. "HR++" -> "hrplusplus", "MyTemplate" -> "mytemplate")
+export const SITE_SLUG: string = SITE_NAME.toLowerCase().replace(/\+/g, 'plus').replace(/[^a-z0-9]/g, '');
