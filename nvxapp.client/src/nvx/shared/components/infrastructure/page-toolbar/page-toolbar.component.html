@@ -53,8 +53,10 @@
                       @default { <ion-icon name="checkmark-outline"></ion-icon> }
                     }
                   </span>
-                  @if (job.isFinished && job.category === LongJobCategory.FileGeneration) {
-                    <button type="button" class="nvx-job-chiudi" (click)="$event.stopPropagation(); dismissJob(job.jobId)"
+                  <!-- la x per chiudere solo da desktop: sul telefono il primo tocco la faceva comparire e finiva su di lei,
+                       invece di aprire il file (la notifica si chiude da sola dopo la condivisione) -->
+                  @if (job.isFinished && job.category === LongJobCategory.FileGeneration && !telefono) {
+                    <button type="button" class="nvx-job-chiudi" (click)="$event.stopPropagation(); diag('tocco sulla x'); dismissJob(job.jobId)"
                             [attr.aria-label]="'components.pageToolbar.jobDismiss' | transloco">×</button>
                   }
                 </span>
