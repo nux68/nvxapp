@@ -284,8 +284,11 @@ export class PageToolbarComponent {
   }
 
   // condivisione dei file: solo su telefono (sul PC resta il download) e se il browser la offre
+  // PROVA TEMPORANEA: false = sul telefono niente menu Condividi, download diretto con il collegamento temporaneo
+  private static readonly usaCondividi = false;
+
   private get condivisioneDisponibile(): boolean {
-    return this.ui.isMobileSignal() && typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+    return PageToolbarComponent.usaCondividi && this.ui.isMobileSignal() && typeof navigator !== 'undefined' && typeof navigator.share === 'function'
            && typeof navigator.canShare === 'function';
   }
 
