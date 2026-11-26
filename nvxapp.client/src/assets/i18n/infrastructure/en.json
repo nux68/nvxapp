@@ -1514,8 +1514,9 @@
       "dashboard": "Go to dashboard"
     },
     "parameterLoader": {
-      "title": "Loading...",
-      "message": "Please wait for the process to complete..."
+      "title": "Getting your workspace ready",
+      "message": "Loading your company data...",
+      "hint": "It only takes a moment"
     },
     "ticketAttach": {
       "add": "Attach files",
