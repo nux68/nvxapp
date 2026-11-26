@@ -20,13 +20,30 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <!-- barre di sistema dell'app installata: blu come la schermata di avvio, poi ThemeService le porta al colore del tema -->
-  <meta name="theme-color" content="#418DD2" />
+  <!-- barre di sistema dell'app installata: colore del tema (lo script qui sotto, poi ThemeService) -->
+  <meta name="theme-color" content="#212121" />
 
-  <!-- sfondo del caricamento, come quello della schermata di avvio (manifest): vale finche' Ionic non mette la classe md/ios su html -->
+  <!-- sfondo del caricamento con il colore del tema, prima che parta l'app: la scelta salvata da ThemeService
+       ('nvx-theme' nel browser) o, senza scelta, il tema del sistema. Vale finche' Ionic non mette la classe md/ios su html -->
   <style>
-    html:not(.md):not(.ios) body { background: #418DD2; }
+    html:not(.md):not(.ios),
+    html:not(.md):not(.ios) body { background: var(--nvx-avvio, #212121); }
   </style>
+  <script>
+    (function () {
+      var scuro;
+      try {
+        var t = localStorage.getItem('nvx-theme');
+        scuro = t === 'dark' || t === 'light' ? t === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } catch (e) {
+        scuro = true;
+      }
+      var colore = scuro ? '#212121' : '#ffffff';
+      document.documentElement.style.setProperty('--nvx-avvio', colore);
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', colore);
+    })();
+  </script>
 </head>
 
 <body>
