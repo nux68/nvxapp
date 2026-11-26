@@ -4,6 +4,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Site
     // del client; in Infrastructure e' null e vale quello di Infrastructure). Vedi SiteName.
     public static class SiteNameAttendanceTracking
     {
-        public static readonly string? Value = "SiSignore";
+        public static readonly string? Value = "HR++";
     }
 }
