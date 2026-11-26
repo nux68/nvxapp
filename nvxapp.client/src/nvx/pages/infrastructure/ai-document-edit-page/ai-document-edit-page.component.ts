@@ -34,7 +34,13 @@ export const DOCUMENT_FILE_EXTENSIONS = ['.pdf', '.docx', '.odt', '.ods', '.xlsx
 })
 export class AiDocumentEditPageComponent extends BasePageConfirmCancelComponent<DocumentEditModel> {
 
-  public readonly applications = Object.values(ApplicationType).filter((v): v is ApplicationType => typeof v === 'number' && v !== ApplicationType.Common);
+  // applicativi veri (non i dati comuni e non Moke); per azienda e studio solo quelli abilitati (DocumentScopeModel.applications)
+  private static readonly tuttiApplicativi = Object.values(ApplicationType)
+    .filter((v): v is ApplicationType => typeof v === 'number' && v !== ApplicationType.Common && v !== ApplicationType.Moke);
+  public applications: ApplicationType[] = AiDocumentEditPageComponent.tuttiApplicativi;
+  /** tipi tolti perche' di un altro applicativo (avviso sotto il campo) */
+  public tipiTolti: string[] = [];
+  private applicativoOsservato = false;
   public readonly accept = DOCUMENT_FILE_EXTENSIONS.join(',');
   public readonly contentMaxLength = DOCUMENT_CONTENT_MAX_LENGTH;
   public ticketTypes: TicketTypeOptionModel[] = [];
@@ -96,6 +102,10 @@ export class AiDocumentEditPageComponent extends BasePageConfirmCancelComponent<
           return null;
         const scope = (scopes.data?.scope ?? []).find(s => s.level === document.level);
         this.ticketTypes = scope?.ticketType ?? [];
+        const abilitati = scope?.applications ?? null;
+        this.applications = AiDocumentEditPageComponent.tuttiApplicativi.filter(a => abilitati === null || abilitati.includes(a)
+                                                                               || a === document.applicationType);
+        this.osservaApplicativo();
         // tipi gia' collegati ma non piu' proponibili (es. disattivati): restano visibili
         for (const id of document.idTicketType.filter(id => !this.ticketTypes.some(t => t.id === id)))
           this.ticketTypes.push(Object.assign(new TicketTypeOptionModel(), { id, descrizione: '#' + id }));
@@ -111,6 +121,33 @@ export class AiDocumentEditPageComponent extends BasePageConfirmCancelComponent<
       })
     );
   };
+
+  // tipi di richiesta proponibili: con "Generale" tutti, con un applicativo solo i suoi (gli altri il documento non li userebbe)
+  get tipiVisibili(): TicketTypeOptionModel[] {
+    const app = this._editForm?.get('applicationType')?.value ?? null;
+    const scelti: number[] = this._editForm?.get('idTicketType')?.value ?? [];
+    return app === null ? this.ticketTypes
+                        : this.ticketTypes.filter(t => t.applicationType === app || (t.descrizione.startsWith('#') && scelti.includes(t.id)));
+  }
+
+  // cambiando applicativo si tolgono i tipi di richiesta di altri applicativi (con un avviso)
+  private osservaApplicativo(): void {
+    if (this.applicativoOsservato)
+      return;
+    this.applicativoOsservato = true;
+    this._editForm.get('applicationType')!.valueChanges.subscribe((app: ApplicationType | null) => {
+      this.tipiTolti = [];
+      if (app === null)
+        return;
+      const ctrl = this._editForm.get('idTicketType')!;
+      const scelti: number[] = ctrl.value ?? [];
+      const tolti = this.ticketTypes.filter(t => scelti.includes(t.id) && t.applicationType !== app && !t.descrizione.startsWith('#'));
+      if (tolti.length > 0) {
+        this.tipiTolti = tolti.map(t => t.descrizione);
+        ctrl.setValue(scelti.filter(id => !tolti.some(t => t.id === id)));
+      }
+    });
+  }
 
   SaveData = (editModel: DocumentEditModel): Observable<boolean> => {
     const request = new GenericRequest<DocumentPutInModel>(DocumentPutInModel);
