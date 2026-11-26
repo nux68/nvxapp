@@ -4,6 +4,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Site
     // in Infrastructure e' null e vale il successivo). Vedi SiteName.
     public static class SiteNameDocumentManagement
     {
-        public static readonly string? Value = null;
+        public static readonly string? Value = "HR++";
     }
 }
