@@ -4,7 +4,7 @@ import { UserInterfaceService } from '../../../../Utility/infrastructure/user-in
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NavController, Platform, ToastController } from '@ionic/angular';
 import { apriDownload } from '../../../../Utility/infrastructure/scarica-file';
@@ -73,6 +73,8 @@ export class PageToolbarComponent {
   */
   private static readonly fileCondivisibili = new Map<string, File>();
   private static readonly fileInArrivo = new Set<string>();
+  /** byte del file ricevuti e totali (se il server li dice), durante la ricezione in memoria */
+  private static readonly ricezione = new Map<string, { ricevuti: number, totale: number | null }>();
 
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
@@ -166,6 +168,16 @@ export class PageToolbarComponent {
    "in corso" (anello che gira): toccandola prima il menu non si apre e il download diretto, nell'app installata,
    non funziona. Diventa "file pronto" quando il tocco funziona di sicuro (o se il file non si puo' condividere).
   */
+  /** percentuale del file arrivato sul telefono; null se non si sa (totale non dato dal server) */
+  percentualeRicezione(job: LongJobProgressUpdate): number | null {
+    const r = PageToolbarComponent.ricezione.get(PageToolbarComponent.nomeFileJob(job));
+    return r && r.totale ? Math.min(100, Math.round(r.ricevuti * 100 / r.totale)) : null;
+  }
+
+  private static kb(byte: number): string {
+    return byte >= 1024 * 1024 ? (byte / (1024 * 1024)).toFixed(1) + ' MB' : Math.max(1, Math.round(byte / 1024)) + ' KB';
+  }
+
   inPreparazione(job: LongJobProgressUpdate): boolean {
     if (!job.isFinished || job.category !== LongJobCategory.FileGeneration || !job.downloadUrl || !this.condivisioneDisponibile)
       return false;
@@ -174,8 +186,10 @@ export class PageToolbarComponent {
 
   /** stroke-dasharray dell'anello (circonferenza 100): avanzamento; finito: pieno; senza avanzamento: arco che gira */
   trattoJob(job: LongJobProgressUpdate): string {
-    if (this.inPreparazione(job))
-      return '25 100';
+    if (this.inPreparazione(job)) {
+      const p = this.percentualeRicezione(job);
+      return p != null && p > 0 ? `${p} 100` : '25 100';
+    }
     if (job.isFinished)
       return '100 100';
     const p = Math.max(0, Math.min(100, job.progressPercentage ?? 0));
@@ -189,6 +203,14 @@ export class PageToolbarComponent {
     const preparazione = this.inPreparazione(job);
     if (stato === 'corso' && !preparazione)
       extraInfo[t('jobProgress')] = `${Math.round(job.progressPercentage ?? 0)}%`;
+    if (preparazione) {
+      // ricezione del file: percentuale e byte (es. "45% (120 KB di 260 KB)")
+      const r = PageToolbarComponent.ricezione.get(PageToolbarComponent.nomeFileJob(job));
+      const p = this.percentualeRicezione(job);
+      extraInfo[t('jobReceiving')] = !r || r.ricevuti === 0 ? '...'
+        : p != null ? `${p}% (${PageToolbarComponent.kb(r.ricevuti)} / ${PageToolbarComponent.kb(r.totale!)})`
+                    : PageToolbarComponent.kb(r.ricevuti);
+    }
     else if (stato === 'file')
       extraInfo[t('jobAction')] = t('jobClickDownload');
     else
@@ -242,16 +264,29 @@ export class PageToolbarComponent {
     if (!nomeFile || PageToolbarComponent.fileCondivisibili.has(nomeFile) || PageToolbarComponent.fileInArrivo.has(nomeFile))
       return;
     PageToolbarComponent.fileInArrivo.add(nomeFile);
-    this.http.get(environment.remoteData.apiUri + job.downloadUrl, { responseType: 'blob' })
+    // con l'avanzamento della ricezione: l'anello si riempie di nuovo e il popup dice quanto e' arrivato
+    PageToolbarComponent.ricezione.set(nomeFile, { ricevuti: 0, totale: null });
+    this.http.get(environment.remoteData.apiUri + job.downloadUrl, { responseType: 'blob', observe: 'events', reportProgress: true })
       .subscribe({
-        next: blob => {
+        next: evento => {
+          if (evento.type === HttpEventType.DownloadProgress) {
+            PageToolbarComponent.ricezione.set(nomeFile, { ricevuti: evento.loaded, totale: evento.total ?? null });
+            return;
+          }
+          if (evento.type !== HttpEventType.Response || !evento.body)
+            return;
           PageToolbarComponent.fileInArrivo.delete(nomeFile);
+          PageToolbarComponent.ricezione.delete(nomeFile);
+          const blob = evento.body;
           const file = new File([blob], job.fileName || nomeFile, { type: blob.type || 'application/octet-stream' });
           // solo se il browser sa condividere questo tipo di file; altrimenti si usera' il download
           if (navigator.canShare({ files: [file] }))
             PageToolbarComponent.fileCondivisibili.set(nomeFile, file);
         },
-        error: () => PageToolbarComponent.fileInArrivo.delete(nomeFile)
+        error: () => {
+          PageToolbarComponent.fileInArrivo.delete(nomeFile);
+          PageToolbarComponent.ricezione.delete(nomeFile);
+        }
       });
   }
 
