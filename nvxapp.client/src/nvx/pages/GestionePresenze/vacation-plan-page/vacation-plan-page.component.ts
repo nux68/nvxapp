@@ -239,6 +239,11 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     return Array.from({ length: count }, (_, i) => i + 1);
   }
 
+  /** ore della pillola senza zero iniziale ("08:00:00" -> "8:00"): nelle celle strette ci stanno anche i minuti */
+  oreBrevi(ore: string | null | undefined): string {
+    return (ore ?? '').substring(0, 5).replace(/^0(?=\d)/, '');
+  }
+
   /** Restituisce i giustificativi del dipendente per il giorno dato (vuoto se assente) */
   getGiustificativiForDay(slot: VacationPlan_DaySlot, day: number): Dip_GG_GiustificativiModel[] {
     if (!slot.dip_GG_Giustificativi?.length) return [];
