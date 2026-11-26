@@ -16,3 +16,79 @@ ion-segment {
 .nvx-req-dettaglio-in-attesa {
   --nvx-req-w: 7px;
 }
+
+// riga mobile compatta (template nvxMobile)
+.nvx-req-m {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 0;
+}
+
+.nvx-req-m-testata {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.nvx-req-m-titolo {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.nvx-req-m-evidenza .nvx-req-m-titolo {
+  color: var(--ion-color-primary);
+}
+
+.nvx-req-m-periodo {
+  flex: none;
+  font-size: 12px;
+  color: var(--nvx-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.nvx-req-m-tipo {
+  margin-top: 1px;
+  font-size: 13px;
+  color: var(--nvx-text-muted);
+}
+
+// dettaglio e stato sempre sulla stessa riga: il dettaglio troppo lungo si accorcia con i puntini
+.nvx-req-m-riga {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 13px;
+
+  .nvx-req-dettaglio {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 1px 6px 1px 11px;
+  }
+}
+
+.nvx-req-m-stato {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--nvx-text-muted);
+
+  ion-icon {
+    font-size: 15px;
+  }
+
+  &.nvx-req-m-stato-attesa {
+    color: var(--ion-color-warning-shade);
+    font-weight: 600;
+  }
+}
