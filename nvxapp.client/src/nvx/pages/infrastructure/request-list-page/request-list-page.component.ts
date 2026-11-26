@@ -147,11 +147,10 @@ export class RequestListPageComponent {
   private preparaColonne() {
     const t = (k: string) => this.transloco.translate('pages.requestList.' + k);
     // con richieste di piu' applicativi il tipo dice anche da quale arriva
-    const conApplicativo = this.applicativoFisso === null && this.applicativi.length > 1;
     this.columns = [
       ...(this.admin ? [{ key: 'richiedente', title: t('columnRequester'), mobile: 'title' } as NvxListColumn<RequestItemModel>] : []),
       { key: 'tipoTesto', title: t('columnType'), mobile: this.admin ? 'subtitle' : 'title',
-        value: x => conApplicativo ? `${x.tipoTesto} (${this.nomeApplicativo(x.application)})` : x.tipoTesto },
+        value: x => this.tipo(x) },
       { key: 'dal', title: t('columnPeriod'), width: '220px', mobile: 'note',
         value: x => this.periodo(x), sortValue: x => x.dal ? new Date(x.dal) : null },
       { key: 'dettaglio', title: t('columnDetail'), sortable: false },
@@ -267,7 +266,13 @@ export class RequestListPageComponent {
     this.load();
   }
 
-  private periodo(x: RequestItemModel): string {
+  // tipo della richiesta; con richieste di piu' applicativi dice anche da quale arriva
+  public tipo(x: RequestItemModel): string {
+    const conApplicativo = this.applicativoFisso === null && this.applicativi.length > 1;
+    return conApplicativo ? `${x.tipoTesto} (${this.nomeApplicativo(x.application)})` : x.tipoTesto;
+  }
+
+  public periodo(x: RequestItemModel): string {
     const f = (v: string) => formatDate(v, x.soloData ? 'shortDate' : 'short', this.languageService.locale);
     if (!x.dal)
       return '';
