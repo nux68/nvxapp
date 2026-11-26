@@ -5,7 +5,8 @@ import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { NavController, Platform } from '@ionic/angular';
+import { NavController, Platform, ToastController } from '@ionic/angular';
+import { scaricaBlob } from '../../../../Utility/infrastructure/scarica-file';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 import { nomeUtente } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { TranslocoService } from '@jsverse/transloco';
@@ -50,6 +51,8 @@ export class PageToolbarComponent {
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
   public LongJobCategory = LongJobCategory;
+  /** job con il download in corso */
+  private readonly scaricando = new Set<string>();
 
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
@@ -58,6 +61,7 @@ export class PageToolbarComponent {
               private platform: Platform,
               private http: HttpClient,
               private transloco: TranslocoService,
+              private toastCtrl: ToastController,
               public menuLayoutService: MenuLayoutService)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
@@ -163,19 +167,30 @@ export class PageToolbarComponent {
 
   onJobLabelClick(job: LongJobProgressUpdate): void {
     const downloadUrl = job.downloadUrl;
-    if (job.category !== LongJobCategory.FileGeneration || !job.isFinished || !downloadUrl) return;
+    if (job.category !== LongJobCategory.FileGeneration || !job.isFinished) return;
+    // job finito senza file (es. niente da esportare): il messaggio spiega il motivo, il click lo chiude
+    if (!downloadUrl) {
+      this.dismissJob(job.jobId);
+      return;
+    }
 
+    // un download alla volta per job: con tocchi ripetuti sul telefono non parte piu' volte
+    if (this.scaricando.has(job.jobId))
+      return;
+    this.scaricando.add(job.jobId);
     this.http.get(environment.remoteData.apiUri + downloadUrl, { responseType: 'blob' })
-      .subscribe(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = job.fileName || downloadUrl.split('/').pop() || 'export';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        this.dismissJob(job.jobId);
+      .subscribe({
+        next: blob => {
+          this.scaricando.delete(job.jobId);
+          scaricaBlob(blob, job.fileName || downloadUrl.split('/').pop() || 'export');
+          this.dismissJob(job.jobId);
+        },
+        // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
+        error: () => {
+          this.scaricando.delete(job.jobId);
+          this.toastCtrl.create({ message: this.transloco.translate('components.pageToolbar.jobDownloadError'), duration: 4000, color: 'danger', position: 'top' })
+            .then(t => t.present());
+        }
       });
   }
 
