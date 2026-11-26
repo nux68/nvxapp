@@ -397,6 +397,26 @@ namespace nvxapp.server.Controllers.Infrastructure
             return PhysicalFile(filePath, contentType, NVXSystem.InfoFileJob(fileName)?.FileName ?? fileName);
         }
 
+        public class ClientDiagModel
+        {
+            public List<string>? Righe { get; set; }
+        }
+
+        /*
+         DIAGNOSI TEMPORANEA del download dei file dei job sul telefono: il client manda cosa succede (notifica, file in
+         memoria, tocco, menu Condividi) e il server lo scrive nel log con il prefisso [CLIENT-DIAG]. Da togliere.
+        */
+        [Authorize]
+        [HttpPost]
+        [Route("ClientDiag")]
+        public IActionResult ClientDiag([FromBody] ClientDiagModel model)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "?";
+            foreach (var riga in (model?.Righe ?? new List<string>()).Take(30))
+                Serilog.Log.Information("[CLIENT-DIAG] {User} {Riga}", userId, (riga ?? string.Empty).Length > 400 ? riga!.Substring(0, 400) : riga);
+            return Ok();
+        }
+
         private static readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
     }
 
