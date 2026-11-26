@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonCard, IonCardContent, IonCol, IonContent, IonItem, IonLabel, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption } from '@ionic/angular';
+import { IonCard, IonCardContent, IonCol, IonContent, IonIcon, IonItem, IonLabel, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
@@ -13,7 +13,7 @@ import { RequestListPageComponent } from './request-list-page.component';
   imports: [
     CommonModule,
     FormsModule,
-    IonCard, IonCardContent, IonCol, IonContent, IonItem, IonLabel, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption,
+    IonCard, IonCardContent, IonCol, IonContent, IonIcon, IonItem, IonLabel, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption,
     RouterModule.forChild([
       {
         path: '',
