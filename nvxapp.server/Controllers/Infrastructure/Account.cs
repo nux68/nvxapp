@@ -300,30 +300,75 @@ namespace nvxapp.server.Controllers.Infrastructure
         [Route("Download/{fileName}")]
         public IActionResult Download(string fileName)
         {
-            // solo nomi semplici con estensione ammessa: niente cartelle, niente file di registrazione (.meta)
-            if (!NVXSystem.NomeFileJobValido(fileName))
+            if (!FileJobScaricabile(fileName, out var filePath, out var info))
+                return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+
+            if (!_contentTypeProvider.TryGetContentType(fileName, out var contentType))
+                contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, info?.FileName ?? fileName);
+        }
+
+        // codice per il collegamento temporaneo al file (Account/DownloadFile): stessi controlli del download
+        [Authorize]
+        [HttpGet]
+        [Route("DownloadCode/{fileName}")]
+        public IActionResult DownloadCode(string fileName)
+        {
+            if (!FileJobScaricabile(fileName, out _, out _))
+                return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+
+            var jwt = HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<nvxapp.server.service.ServerModels.JwtParameter>>().Value;
+            return Ok(new { code = JobFileLink.Code(jwt.Key, fileName, DateTime.UtcNow.Add(JobFileLink.Durata)) });
+        }
+
+        /*
+         Download del file di un job con il collegamento temporaneo (JobFileLink): niente sessione, vale il codice
+         firmato nell'indirizzo, legato a quel file e valido pochi minuti. Risposta come allegato: il browser (anche
+         l'app installata sul telefono) lo salva invece di aprirlo. Qualunque errore risponde "non trovato".
+        */
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("DownloadFile/{fileName}")]
+        public IActionResult DownloadFile(string fileName, [FromQuery] string? code)
+        {
+            var jwt = HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<nvxapp.server.service.ServerModels.JwtParameter>>().Value;
+            if (!NVXSystem.NomeFileJobValido(fileName) || !JobFileLink.Check(jwt.Key, fileName, code, DateTime.UtcNow))
                 return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
 
             var filePath = Path.Combine(NVXSystem.ExportFolder, fileName);
             if (!System.IO.File.Exists(filePath))
                 return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
 
-            // file registrato (NVXSystem.SalvaFileJob/RegistraFileJob): lo scarica solo chi ha lanciato il job,
-            // cioe' l'utente del login anche se sta impersonando qualcuno (come le notifiche del job)
-            var info = NVXSystem.InfoFileJob(fileName);
+            if (!_contentTypeProvider.TryGetContentType(fileName, out var contentType))
+                contentType = "application/octet-stream";
+            return PhysicalFile(filePath, contentType, NVXSystem.InfoFileJob(fileName)?.FileName ?? fileName);
+        }
+
+        // file del job che l'utente collegato puo' scaricare: nome semplice con estensione ammessa (niente cartelle,
+        // niente .meta), file presente e, se registrato (NVXSystem.SalvaFileJob/RegistraFileJob), lanciato da lui,
+        // cioe' dall'utente del login anche se sta impersonando qualcuno (come le notifiche del job)
+        private bool FileJobScaricabile(string fileName, out string filePath, out JobFileInfo? info)
+        {
+            filePath = string.Empty;
+            info = null;
+            if (!NVXSystem.NomeFileJobValido(fileName))
+                return false;
+
+            filePath = Path.Combine(NVXSystem.ExportFolder, fileName);
+            if (!System.IO.File.Exists(filePath))
+                return false;
+
+            info = NVXSystem.InfoFileJob(fileName);
             if (info != null)
             {
                 var userId = User.FindFirst("useridfirstconnection")?.Value;
                 if (string.IsNullOrEmpty(userId))
                     userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (string.IsNullOrEmpty(userId) || userId != info.Owner)
-                    return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+                    return false;
             }
-
-            if (!_contentTypeProvider.TryGetContentType(fileName, out var contentType))
-                contentType = "application/octet-stream";
-
-            return PhysicalFile(filePath, contentType, info?.FileName ?? fileName);
+            return true;
         }
 
         /*
