@@ -1,6 +1,88 @@
+// Caricamento dei parametri dopo il login: a tutto schermo sul telefono, riquadro centrato da tablet in su
+
 @media (min-width: 577px) {
-  ion-modal {
-    --height: 30vh; /* Altezza del 90% della visuale verticale */
-    //--width: 70%;
+  ion-modal.nvx-loader-modal {
+    --width: 420px;
+    --height: 360px;
   }
+}
+
+// contenuto al centro, in verticale e in orizzontale
+.nvx-loader {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 24px 32px calc(24px + env(safe-area-inset-bottom));
+  text-align: center;
+
+  h1 {
+    margin: 18px 0 0 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+// icona dell'app (come nella pagina di accesso) che "respira"
+.nvx-loader-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+  animation: nvx-loader-pulse 1.8s ease-in-out infinite;
+
+  ion-icon {
+    font-size: 38px;
+    color: var(--ion-color-primary);
+  }
+}
+
+@keyframes nvx-loader-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.25); }
+  50% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(var(--ion-color-primary-rgb), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nvx-loader-icon {
+    animation: none;
+  }
+}
+
+.nvx-loader-message {
+  margin: 0;
+  color: var(--nvx-text-muted);
+  font-size: 15px;
+}
+
+// barra arrotondata, larga al massimo 280px
+.nvx-loader-bar {
+  width: 100%;
+  max-width: 280px;
+  margin-top: 18px;
+
+  ion-progress-bar {
+    height: 8px;
+    border-radius: 999px;
+    --background: rgba(var(--ion-color-primary-rgb), 0.15);
+  }
+}
+
+.nvx-loader-percent {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ion-color-primary);
+}
+
+.nvx-loader-hint {
+  margin: 14px 0 0 0;
+  font-size: 13px;
+  color: var(--nvx-text-muted);
 }
