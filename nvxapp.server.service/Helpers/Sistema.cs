@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 
 namespace nvxapp.server.service.Helpers
 {
@@ -126,6 +128,42 @@ namespace nvxapp.server.service.Helpers
             return pulito;
         }
 
+    }
+
+    /*
+     Collegamento temporaneo al file di un job, per scaricarlo con una normale navigazione (senza sessione):
+     nell'app installata sul telefono il download costruito in memoria (blob) a volte apre il file o non fa nulla,
+     mentre un indirizzo del server con "allegato" scarica sempre. Il codice "<scadenza>.<firma>" (HMAC-SHA256 con la
+     chiave dell'installazione su scadenza e nome del file) lo chiede l'utente che ha lanciato il job, gia' collegato
+     (Account/DownloadCode), e vale pochi minuti solo per quel file.
+    */
+    public static class JobFileLink
+    {
+        public static readonly TimeSpan Durata = TimeSpan.FromMinutes(2);
+
+        public static string Code(string key, string fileName, DateTime expiresUtc)
+        {
+            string scadenza = new DateTimeOffset(expiresUtc, TimeSpan.Zero).ToUnixTimeSeconds().ToString(System.Globalization.CultureInfo.InvariantCulture);
+            return scadenza + "." + Firma(key, scadenza, fileName);
+        }
+
+        public static bool Check(string key, string fileName, string? code, DateTime nowUtc)
+        {
+            var parti = (code ?? string.Empty).Trim().Split('.');
+            if (parti.Length != 2 || !long.TryParse(parti[0], out var secondi))
+                return false;
+            var attesa = Encoding.ASCII.GetBytes(Firma(key, parti[0], fileName));
+            var ricevuta = Encoding.ASCII.GetBytes(parti[1]);
+            return CryptographicOperations.FixedTimeEquals(attesa, ricevuta)
+                   && DateTimeOffset.FromUnixTimeSeconds(secondi).UtcDateTime >= nowUtc;
+        }
+
+        private static string Firma(string key, string scadenza, string fileName)
+        {
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes("job-download:" + key));
+            var firma = hmac.ComputeHash(Encoding.UTF8.GetBytes(scadenza + "|" + fileName));
+            return Convert.ToBase64String(firma, 0, 24).Replace('+', '-').Replace('/', '_');
+        }
     }
 
     /// <summary>File di un job: URL da mettere in LongJobProgressUpdate.DownloadUrl e nome da mostrare (FileName).</summary>
