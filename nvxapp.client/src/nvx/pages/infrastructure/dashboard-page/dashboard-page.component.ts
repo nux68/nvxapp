@@ -62,10 +62,14 @@ export class DashboardPageComponent {
     });
   }
 
-  // utente corrente (ultimo della cronologia di navigazione/impersonificazione)
+  // nome del saluto per l'utente corrente (ultimo della cronologia di navigazione/impersonificazione):
+  // il nome dell'anagrafica se c'e', altrimenti lo username
   public get userName(): string | null {
     const cronology = this.userNavigationService.userCronology;
-    return cronology && cronology.length > 0 ? cronology[cronology.length - 1].userData?.userName ?? null : null;
+    const userData = cronology && cronology.length > 0 ? cronology[cronology.length - 1].userData : null;
+    if (!userData)
+      return null;
+    return userData.nome?.trim() || userData.userName || null;
   }
 
   public get paginaConfigurazione(): string | null {
