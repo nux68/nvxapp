@@ -1504,6 +1504,7 @@
     },
     "pageToolbar": {
       "jobPreparing": "Preparing the file",
+      "jobReceiving": "Receiving",
       "jobRunning": "Processing",
       "jobDone": "Completed",
       "jobFileReady": "File ready",
