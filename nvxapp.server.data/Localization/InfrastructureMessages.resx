@@ -1662,6 +1662,6 @@ In allegato il rendiconto.</value>
     <value>L'applicativo scelto non è abilitato a questo livello.</value>
   </data>
   <data name="DocumentTicketTypeApplicationMismatch" xml:space="preserve">
-    <value>I tipi di richiesta devono essere dell'applicativo del documento (oppure scegli Generale).</value>
+    <value>I tipi di richiesta devono essere dell'applicativo del documento (con Generale solo i tipi generali).</value>
   </data>
 </root>
