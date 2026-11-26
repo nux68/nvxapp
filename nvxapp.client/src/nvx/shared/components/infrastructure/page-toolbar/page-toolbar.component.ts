@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { Observable } from 'rxjs';
@@ -34,6 +35,18 @@ export class PageToolbarComponent {
   /** pulsante del menu laterale (false nei dialog) */
   @Input() showMenuButton: boolean = true;
   public queryText: string;
+
+  private readonly ui = inject(UserInterfaceService);
+
+  // percorso dell'impersonificazione: c'e' solo con piu' utenti nella cronologia, e su mobile non si mostra
+  public get mostraBreadcrumbs(): boolean {
+    return !!this.showBreadcrumbs && this.userNavigationService.userCronology.length > 1 && !this.ui.isMobileSignal();
+  }
+
+  // seconda barra solo se ha qualcosa da mostrare (cerca o percorso): niente barra vuota sotto il titolo
+  public get mostraSecondaBarra(): boolean {
+    return !!this.showFilter || this.mostraBreadcrumbs;
+  }
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
   public LongJobCategory = LongJobCategory;
