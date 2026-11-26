@@ -3,6 +3,18 @@
 } @else if (!configurabile) {
   <ion-note>{{ 'widgets.config.notConfigurable' | transloco }}</ion-note>
 } @else {
+  <!-- due schede: widget e voci di menu -->
+  <ion-segment class="nvx-wc-tabs" [value]="scheda" (ionChange)="scheda = $any($event.detail.value)">
+    <ion-segment-button value="widget">
+      <ion-label>{{ 'widgets.config.tabWidgets' | transloco }}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="menu">
+      <ion-label>{{ 'widgets.config.tabMenu' | transloco }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  @if (scheda === 'widget') {
+  <ion-note class="nvx-wc-note">{{ 'widgets.config.note' | transloco }}</ion-note>
   <div class="nvx-wc">
 
     <!-- widget nella dashboard, nell'ordine -->
@@ -76,4 +88,75 @@
     </section>
 
   </div>
+  } @else {
+  <ion-note class="nvx-wc-note">{{ 'widgets.config.menuNote' | transloco }}</ion-note>
+  <div class="nvx-wc">
+
+    <!-- voci di menu collegate alla dashboard, nell'ordine -->
+    <section>
+      <div class="nvx-wc-head">
+        <h2>{{ 'widgets.config.selected' | transloco }}</h2>
+      </div>
+
+      @if (menuScelti.length === 0) {
+        <p class="nvx-wc-empty">{{ 'widgets.config.menuNoneSelected' | transloco }}</p>
+      }
+
+      <ul class="nvx-wc-list">
+        @for (v of menuScelti; track v.key; let i = $index, last = $last) {
+          <li class="nvx-wc-item selezionato">
+            <span class="nvx-wc-icon"><ion-icon [name]="v.icon || 'link-outline'"></ion-icon></span>
+            <div class="nvx-wc-text">
+              <div class="nvx-wc-title">{{ v.title.trim() | transloco }}</div>
+              <div class="nvx-wc-desc">{{ v.section.trim() | transloco }}</div>
+            </div>
+            <div class="nvx-wc-actions">
+              <ion-button fill="clear" size="small" [disabled]="i === 0" (click)="spostaMenu(i, -1)" [attr.aria-label]="'widgets.config.moveUp' | transloco">
+                <ion-icon slot="icon-only" name="chevron-up"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" [disabled]="last" (click)="spostaMenu(i, 1)" [attr.aria-label]="'widgets.config.moveDown' | transloco">
+                <ion-icon slot="icon-only" name="chevron-down"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" size="small" color="danger" (click)="rimuoviMenu(v)" [attr.aria-label]="'widgets.config.remove' | transloco">
+                <ion-icon slot="icon-only" name="close-circle"></ion-icon>
+              </ion-button>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+
+    <!-- voci di menu disponibili, per sezione del menu -->
+    <section>
+      <div class="nvx-wc-head">
+        <h2>{{ 'widgets.config.menuAvailable' | transloco }}</h2>
+      </div>
+
+      @if (menuGruppi.length === 0) {
+        <p class="nvx-wc-empty">{{ 'widgets.config.menuAllAdded' | transloco }}</p>
+      }
+
+      @for (g of menuGruppi; track g.section) {
+        <h3 class="nvx-wc-group">{{ g.section.trim() | transloco }}</h3>
+        <ul class="nvx-wc-list">
+          @for (v of g.voci; track v.key) {
+            <li class="nvx-wc-item">
+              <span class="nvx-wc-icon"><ion-icon [name]="v.icon || 'link-outline'"></ion-icon></span>
+              <div class="nvx-wc-text">
+                <div class="nvx-wc-title">{{ v.title.trim() | transloco }}</div>
+              </div>
+              <div class="nvx-wc-actions">
+                <ion-button fill="outline" size="small" (click)="aggiungiMenu(v)">
+                  <ion-icon slot="start" name="add"></ion-icon>
+                  {{ 'widgets.config.add' | transloco }}
+                </ion-button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+  </div>
+  }
 }
