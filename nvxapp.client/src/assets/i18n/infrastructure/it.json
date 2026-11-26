@@ -1514,8 +1514,9 @@
       "dashboard": "Vai alla dashboard"
     },
     "parameterLoader": {
-      "title": "Caricamento in corso...",
-      "message": "Attendere il completamento del processo..."
+      "title": "Preparo il tuo spazio di lavoro",
+      "message": "Sto caricando i dati della tua azienda...",
+      "hint": "Ci vuole solo un momento"
     },
     "ticketAttach": {
       "add": "Allega file",
