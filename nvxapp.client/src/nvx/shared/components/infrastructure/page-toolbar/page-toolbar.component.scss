@@ -162,3 +162,12 @@ ion-toolbar.nvx-toolbar-compatta {
   background: var(--ion-color-success);
   color: var(--ion-color-success-contrast, #fff);
 }
+
+// telefono: area di tocco dell'icona piu' grande del disegno (8px intorno), cosi' il tocco va a segno
+@media (max-width: 575.98px) {
+  .nvx-job::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+}

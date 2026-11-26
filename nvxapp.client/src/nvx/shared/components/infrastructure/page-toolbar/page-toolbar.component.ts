@@ -67,6 +67,11 @@ export class PageToolbarComponent {
     }, 400);
   }
 
+  /** telefono: niente x sulla notifica e area di tocco piu' grande */
+  get telefono(): boolean {
+    return this.ui.isMobileSignal();
+  }
+
   /** job con il download in corso */
   private readonly scaricando = new Set<string>();
 
