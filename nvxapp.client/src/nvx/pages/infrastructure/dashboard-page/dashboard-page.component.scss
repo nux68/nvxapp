@@ -63,6 +63,50 @@
   }
 }
 
+// collegamenti alle voci di menu: riquadri con icona e titolo (2 per riga su telefono)
+.nvx-home-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+
+  @media (max-width: 575.98px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+.nvx-home-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--nvx-border-strong);
+  background: var(--nvx-surface);
+  color: inherit;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: start;
+  cursor: pointer;
+
+  ion-icon {
+    flex: 0 0 auto;
+    font-size: 22px;
+    color: var(--ion-color-primary);
+  }
+
+  span {
+    overflow-wrap: anywhere;
+  }
+
+  &:hover {
+    border-color: var(--ion-color-primary);
+  }
+}
+
 .nvx-home-empty {
   text-align: center;
   color: var(--nvx-text-muted);
