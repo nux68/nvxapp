@@ -12,6 +12,9 @@ export class ThemeService {
 
   private static readonly StorageKey = 'nvx-theme';
   private static readonly DarkClass = 'ion-palette-dark';
+  // colore delle barre di sistema dell'app installata (meta theme-color): lo sfondo della pagina
+  // (--ion-background-color in theme/variables.scss), cosi' in alto e in basso non restano bande di un altro colore
+  private static readonly BarColor = { light: '#ffffff', dark: '#212121' };
 
   private readonly systemDark = window.matchMedia('(prefers-color-scheme: dark)');
   private _isDark$: BehaviorSubject<boolean>;
@@ -50,6 +53,18 @@ export class ThemeService {
 
   private apply(dark: boolean): void {
     document.documentElement.classList.toggle(ThemeService.DarkClass, dark);
+    this.applyBarColor(dark);
+  }
+
+  // un solo meta theme-color (quello di index.html, blu come la schermata di avvio): da qui in poi segue il tema
+  private applyBarColor(dark: boolean): void {
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      document.head.appendChild(meta);
+    }
+    meta.content = dark ? ThemeService.BarColor.dark : ThemeService.BarColor.light;
   }
 
   private readSaved(): string | null {
