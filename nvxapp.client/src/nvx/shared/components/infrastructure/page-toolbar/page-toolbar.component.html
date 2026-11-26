@@ -34,7 +34,7 @@
               @for (job of jobs; track job.jobId) {
                 <span class="nvx-job nvx-job--{{ statoJob(job) }}" role="button" tabindex="0"
                       [appHoverPopup]="popupJob(job)" appHoverPopupTouch="press" [attr.aria-label]="job.message?.text"
-                      (click)="onJobClick(job)" (keyup.enter)="onJobClick(job)">
+                      (click)="onJobClick(job)" (keyup.enter)="onJobClick(job)" (pointerdown)="diag('pointerdown sull\'icona ' + job.jobId.substring(0, 8))" (pointerup)="diag('pointerup sull\'icona')">
                   <svg class="nvx-job-ring" viewBox="0 0 36 36" aria-hidden="true"
                        [class.nvx-job-ring--gira]="(!job.isFinished && !(job.progressPercentage > 0)) || (inPreparazione(job) && !percentualeRicezione(job))">
                     <circle class="nvx-job-ring__track" cx="18" cy="18" r="15.9155"></circle>
