@@ -36,7 +36,7 @@
                       [appHoverPopup]="popupJob(job)" appHoverPopupTouch="press" [attr.aria-label]="job.message?.text"
                       (click)="onJobClick(job)" (keyup.enter)="onJobClick(job)">
                   <svg class="nvx-job-ring" viewBox="0 0 36 36" aria-hidden="true"
-                       [class.nvx-job-ring--gira]="(!job.isFinished && !(job.progressPercentage > 0)) || inPreparazione(job)">
+                       [class.nvx-job-ring--gira]="(!job.isFinished && !(job.progressPercentage > 0)) || (inPreparazione(job) && !percentualeRicezione(job))">
                     <circle class="nvx-job-ring__track" cx="18" cy="18" r="15.9155"></circle>
                     <circle class="nvx-job-ring__bar" cx="18" cy="18" r="15.9155"
                             [attr.stroke-dasharray]="trattoJob(job)"></circle>
@@ -44,7 +44,9 @@
                   <span class="nvx-job-centro">
                     @switch (statoJob(job)) {
                       @case ('corso') {
-                        @if (job.progressPercentage > 0 && !inPreparazione(job)) { {{ job.progressPercentage | number: '1.0-0' }} }
+                        @if (inPreparazione(job)) {
+                          @if (percentualeRicezione(job)) { {{ percentualeRicezione(job) }} }
+                        } @else if (job.progressPercentage > 0) { {{ job.progressPercentage | number: '1.0-0' }} }
                       }
                       @case ('file') { <ion-icon name="download-outline"></ion-icon> }
                       @case ('errore') { <ion-icon name="alert-outline"></ion-icon> }
