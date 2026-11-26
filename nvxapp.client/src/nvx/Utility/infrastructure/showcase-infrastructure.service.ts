@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem, MenuType } from './main-menu.service';
 import { ShowcaseContenuti } from './showcase.model';
-import { SITE_NAME } from './site-name';
+import { SITE_NAME, SITE_SLUG } from './site-name';
 import { AmbitoLicenza } from '../../ClientServer-Service/Infrastructure/License/Models/license-model';
 
 /*
@@ -130,7 +130,7 @@ export class ShowcaseInfrastructureService {
       contact: {
         titolo: t('contact.titolo'),
         sottotitolo: t('contact.sottotitolo'),
-        email: `info@${SITE_NAME.toLowerCase()}.it`,
+        email: `info@${SITE_SLUG}.it`,
         telefono: '+39 000 000 0000',
         indirizzo: 'Via Esempio 1, 00100 Roma',
         orari: t('contact.orari'),
