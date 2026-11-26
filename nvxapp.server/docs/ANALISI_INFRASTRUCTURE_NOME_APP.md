@@ -94,16 +94,16 @@ Da controllare a mano (file con segreti, non letti): un eventuale `NVXAPP_Email_
 
 ## 6. Checklist
 
-- [ ] Decidere: HR++ su tutti i rami oggi SiSignore (AttendanceTracking, CRM, Documentale, AllFunction) o solo su AllFunction
-- [ ] `manifest.webmanifest`: `name` e `short_name` = HR++ (Infrastructure_Dev)
-- [ ] `index.html`: `<title>` = HR++ (Infrastructure_Dev)
-- [ ] `appsettings.json`: `Email:FromName` = HR++ (Infrastructure_Dev)
+- [x] Deciso: HR++ ovunque possibile, su tutti i rami oggi SiSignore; per indirizzi email e domini "hrplusplus"
+- [x] `manifest.webmanifest`: `name` e `short_name` = HR++ (Infrastructure_Dev)
+- [x] `index.html`: `<title>` = HR++ (Infrastructure_Dev)
+- [x] `appsettings.json`: `Email:FromName` = HR++ (Infrastructure_Dev)
 - [ ] Controllo a mano di `NVXAPP_Email__FromName` nei file di ambiente (utente)
-- [ ] Email della vetrina separata dal nome (`SITE_EMAIL`) (Infrastructure_Dev)
-- [ ] `SiteNameAllFunction.cs` lato server con la precedenza su AttendanceTracking (Infrastructure_Dev null, AllFunction_Dev HR++)
-- [ ] `site-name-attendance-tracking.ts` e `SiteNameAttendanceTracking.cs` = HR++ (AttendanceTracking_Dev)
-- [ ] `site-name-crm.ts` = HR++ (CRM_Dev)
-- [ ] `site-name-document-management.ts` = HR++ (DocumentManagement_Dev)
-- [ ] `site-name-all-function.ts` = HR++ (AllFunction_Dev)
-- [ ] Catena dei merge, build e pubblicazione
+- [x] Email della vetrina separata dal nome: `SITE_SLUG` in site-name.ts ("HR++" -> "hrplusplus", quindi info@hrplusplus.it) (Infrastructure_Dev)
+- [x] `SiteNameAllFunction.cs`, `SiteNameCrm.cs`, `SiteNameDocumentManagement.cs` lato server con la stessa precedenza del client (Infrastructure_Dev null, HR++ nei rami)
+- [x] `site-name-attendance-tracking.ts` e `SiteNameAttendanceTracking.cs` = HR++ (AttendanceTracking_Dev)
+- [x] `site-name-crm.ts` = HR++ (CRM_Dev)
+- [x] `site-name-document-management.ts` = HR++ (DocumentManagement_Dev)
+- [x] `site-name-all-function.ts` = HR++ (AllFunction_Dev)
+- [x] Catena dei merge, build e pubblicazione
 - [ ] Controllo: titolo, menu, accesso, vetrina, email, manuale PDF, nome dell'app installata (dopo reinstallazione)
