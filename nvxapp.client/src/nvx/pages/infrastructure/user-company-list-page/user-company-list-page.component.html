@@ -33,6 +33,15 @@
         [rowDisabled]="isDisabled"
         [disabledToggleExternal]="true"
         [(showDisabled)]="showDisabled">
+        <!-- tabella: cognome e nome in evidenza, sotto lo user name -->
+        <ng-template nvxCell="cognomeNome" let-item>
+          @if (cognomeNome(item); as cn) {
+            <span class="utente-nome">{{ cn }}</span>
+            <span class="utente-username">{{ item.descrizione }}</span>
+          } @else {
+            <span class="utente-nome">{{ item.descrizione }}</span>
+          }
+        </ng-template>
       </nvx-list>
     </ion-card-content>
   </ion-card>

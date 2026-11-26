@@ -35,4 +35,20 @@ ion-menu-button {
   text-overflow: ellipsis;
 }
 
+// cognome e nome in evidenza, lo user name sotto piu' piccolo
+.utente-nome {
+  font-weight: 600;
+  font-size: 1.05em;
+}
 
+.utente-username {
+  display: block;
+  font-size: 0.85em;
+  color: var(--ion-color-medium);
+}
+
+// mobile: il titolo della riga (cognome e nome) e' disegnato da nvx-list (!important: le sue regole incapsulate sono piu' specifiche)
+:host ::ng-deep .nvx-list-mobile ion-label h2 {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+}
