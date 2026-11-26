@@ -187,8 +187,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                 // un tipo gia' collegato e poi disattivato puo' restare
                 if (idTypes.Any(t => !available.Contains(t) && !existingTypes.Any(e => e.IdTicketType == t)))
                     throw new UserMessageException(InfrastructureMessages.Get("DocumentTicketTypeNotValid"));
-                // documento di un applicativo: solo tipi di richiesta dello stesso applicativo (gli altri non lo userebbero mai)
-                if (edit.ApplicationType != null && idTypes.Count > 0)
+                // tipi di richiesta dello stesso applicativo del documento; per un documento Generale solo i tipi generali
+                if (idTypes.Count > 0)
                 {
                     var app = edit.ApplicationType;
                     if (_ticketTypeRepository.FindAll(t => idTypes.Contains(t.Id)).Any(t => t.ApplicationType != app))
