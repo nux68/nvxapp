@@ -185,7 +185,17 @@ export class PageToolbarComponent {
   }
 
   /** Clic sull'anello: file pronto -> download; job finito -> chiude la notifica; in corso -> niente. */
+  // DIAGNOSI TEMPORANEA del download sul telefono (app installata): cosa succede al tocco, a schermo. Da togliere.
+  private diag(testo: string): void {
+    if (!this.ui.isMobileSignal()) return;
+    this.toastCtrl.create({ message: 'Diagnosi: ' + testo, duration: 6000, position: 'bottom' }).then(t => t.present());
+  }
+
   onJobClick(job: LongJobProgressUpdate): void {
+    const nome = PageToolbarComponent.nomeFileJob(job);
+    this.diag('tocco - finito ' + job.isFinished + ', file in memoria ' + PageToolbarComponent.fileCondivisibili.has(nome)
+      + ', in arrivo ' + PageToolbarComponent.fileInArrivo.has(nome) + ', condivisione ' + this.condivisioneDisponibile
+      + ', codice ' + PageToolbarComponent.codiciDownload.has(nome));
     if (!job.isFinished)
       return;
     if (job.category === LongJobCategory.FileGeneration)
@@ -233,8 +243,10 @@ export class PageToolbarComponent {
           // solo se il browser sa condividere questo tipo di file; altrimenti si usera' il download
           if (navigator.canShare({ files: [file] }))
             PageToolbarComponent.fileCondivisibili.set(nomeFile, file);
+          else
+            this.diag('il browser non sa condividere questo file (' + file.type + ')');
         },
-        error: () => PageToolbarComponent.fileInArrivo.delete(nomeFile)
+        error: (e: any) => { PageToolbarComponent.fileInArrivo.delete(nomeFile); this.diag('file non scaricato in anticipo: ' + (e?.status ?? '')); }
       });
   }
 
@@ -271,7 +283,7 @@ export class PageToolbarComponent {
           PageToolbarComponent.fileCondivisibili.delete(nomeFile);
           this.dismissJob(job.jobId);
         })
-        .catch(() => { /* condivisione annullata: si puo' riprovare dalla notifica */ });
+        .catch((e: any) => this.diag('condivisione rifiutata: ' + (e?.name ?? '') + ' ' + (e?.message ?? '')));
       return;
     }
 
@@ -279,6 +291,7 @@ export class PageToolbarComponent {
     if (pronto && pronto.scade > Date.now()) {
       // codice gia' arrivato: download subito, nel tocco
       this.scaricando.delete(job.jobId);
+      this.diag('download con il codice pronto');
       this.avviaDownload(nomeFile, pronto.code, job);
       return;
     }
@@ -286,6 +299,7 @@ export class PageToolbarComponent {
       .subscribe({
         next: res => {
           this.scaricando.delete(job.jobId);
+          this.diag('download dopo aver chiesto il codice');
           this.avviaDownload(nomeFile, res.code, job);
         },
         // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
