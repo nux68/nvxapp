@@ -63,16 +63,25 @@
   }
 }
 
-// collegamenti alle voci di menu: riquadri con icona e titolo (2 per riga su telefono)
+// collegamenti alle voci di menu: riquadri con icona e titolo, centrati (anche l'ultima riga incompleta);
+// 2 per riga su telefono
 .nvx-home-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
   margin-bottom: 20px;
 
+  .nvx-home-link {
+    flex: 0 1 180px;
+  }
+
   @media (max-width: 575.98px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+
+    .nvx-home-link {
+      flex-basis: calc(50% - 4px);
+    }
   }
 }
 
@@ -89,7 +98,8 @@
   font: inherit;
   font-size: 0.95rem;
   font-weight: 600;
-  text-align: start;
+  justify-content: center;
+  text-align: center;
   cursor: pointer;
 
   ion-icon {
