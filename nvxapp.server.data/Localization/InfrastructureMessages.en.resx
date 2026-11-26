@@ -1583,4 +1583,10 @@ The statement is attached.</value>
     <value>File "{0}" ready. Download link, valid for {1} minutes (give it to the user as it is): {2}</value>
     <comment>accesso AI (MCP): file prodotti dagli strumenti</comment>
   </data>
+  <data name="DocumentApplicationNotValid" xml:space="preserve">
+    <value>The selected application is not enabled at this level.</value>
+  </data>
+  <data name="DocumentTicketTypeApplicationMismatch" xml:space="preserve">
+    <value>The request types must belong to the document's application (or choose General).</value>
+  </data>
 </root>
