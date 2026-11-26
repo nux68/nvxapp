@@ -88,7 +88,7 @@ export class PageToolbarComponent {
     // file pronto: si chiede subito il codice del collegamento, cosi' il tocco scarica senza attese
     this.longJobNotifierService.activeJobs$.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(jobs => {
       for (const job of jobs)
-        if (this.statoJob(job) === 'file') {
+        if (job.isFinished && job.category === LongJobCategory.FileGeneration && job.downloadUrl && this.statoJob(job) !== 'errore') {
           this.preparaCodice(PageToolbarComponent.nomeFileJob(job));
           if (this.condivisioneDisponibile)
             this.preparaFile(job);
@@ -156,11 +156,26 @@ export class PageToolbarComponent {
     const tipo = job.message?.msgType;
     if (tipo === MessageType.Error || tipo === MessageType.Exception)
       return 'errore';
-    return job.category === LongJobCategory.FileGeneration && job.downloadUrl ? 'file' : 'ok';
+    if (job.category === LongJobCategory.FileGeneration && job.downloadUrl)
+      return this.inPreparazione(job) ? 'corso' : 'file';
+    return 'ok';
+  }
+
+  /*
+   Telefono: il file e' pronto sul server ma non ancora arrivato in memoria per il menu Condividi. L'icona resta
+   "in corso" (anello che gira): toccandola prima il menu non si apre e il download diretto, nell'app installata,
+   non funziona. Diventa "file pronto" quando il tocco funziona di sicuro (o se il file non si puo' condividere).
+  */
+  inPreparazione(job: LongJobProgressUpdate): boolean {
+    if (!job.isFinished || job.category !== LongJobCategory.FileGeneration || !job.downloadUrl || !this.condivisioneDisponibile)
+      return false;
+    return PageToolbarComponent.fileInArrivo.has(PageToolbarComponent.nomeFileJob(job));
   }
 
   /** stroke-dasharray dell'anello (circonferenza 100): avanzamento; finito: pieno; senza avanzamento: arco che gira */
   trattoJob(job: LongJobProgressUpdate): string {
+    if (this.inPreparazione(job))
+      return '25 100';
     if (job.isFinished)
       return '100 100';
     const p = Math.max(0, Math.min(100, job.progressPercentage ?? 0));
@@ -171,32 +186,24 @@ export class PageToolbarComponent {
     const stato = this.statoJob(job);
     const t = (k: string) => this.transloco.translate('components.pageToolbar.' + k);
     const extraInfo: Record<string, string> = {};
-    if (stato === 'corso')
+    const preparazione = this.inPreparazione(job);
+    if (stato === 'corso' && !preparazione)
       extraInfo[t('jobProgress')] = `${Math.round(job.progressPercentage ?? 0)}%`;
     else if (stato === 'file')
       extraInfo[t('jobAction')] = t('jobClickDownload');
     else
       extraInfo[t('jobAction')] = t('jobClickDismiss');
     return {
-      title: t(stato === 'corso' ? 'jobRunning' : stato === 'file' ? 'jobFileReady' : stato === 'errore' ? 'jobError' : 'jobDone'),
+      title: t(preparazione ? 'jobPreparing' : stato === 'corso' ? 'jobRunning' : stato === 'file' ? 'jobFileReady' : stato === 'errore' ? 'jobError' : 'jobDone'),
       content: job.message?.text ?? '',
       extraInfo
     };
   }
 
   /** Clic sull'anello: file pronto -> download; job finito -> chiude la notifica; in corso -> niente. */
-  // DIAGNOSI TEMPORANEA del download sul telefono (app installata): cosa succede al tocco, a schermo. Da togliere.
-  private diag(testo: string): void {
-    if (!this.ui.isMobileSignal()) return;
-    this.toastCtrl.create({ message: 'Diagnosi: ' + testo, duration: 6000, position: 'bottom' }).then(t => t.present());
-  }
-
   onJobClick(job: LongJobProgressUpdate): void {
-    const nome = PageToolbarComponent.nomeFileJob(job);
-    this.diag('tocco - finito ' + job.isFinished + ', file in memoria ' + PageToolbarComponent.fileCondivisibili.has(nome)
-      + ', in arrivo ' + PageToolbarComponent.fileInArrivo.has(nome) + ', condivisione ' + this.condivisioneDisponibile
-      + ', codice ' + PageToolbarComponent.codiciDownload.has(nome));
-    if (!job.isFinished)
+    // in preparazione (telefono): il tocco aspetta che il file arrivi
+    if (!job.isFinished || this.inPreparazione(job))
       return;
     if (job.category === LongJobCategory.FileGeneration)
       this.onJobLabelClick(job);
@@ -243,10 +250,8 @@ export class PageToolbarComponent {
           // solo se il browser sa condividere questo tipo di file; altrimenti si usera' il download
           if (navigator.canShare({ files: [file] }))
             PageToolbarComponent.fileCondivisibili.set(nomeFile, file);
-          else
-            this.diag('il browser non sa condividere questo file (' + file.type + ')');
         },
-        error: (e: any) => { PageToolbarComponent.fileInArrivo.delete(nomeFile); this.diag('file non scaricato in anticipo: ' + (e?.status ?? '')); }
+        error: () => PageToolbarComponent.fileInArrivo.delete(nomeFile)
       });
   }
 
@@ -283,7 +288,12 @@ export class PageToolbarComponent {
           PageToolbarComponent.fileCondivisibili.delete(nomeFile);
           this.dismissJob(job.jobId);
         })
-        .catch((e: any) => this.diag('condivisione rifiutata: ' + (e?.name ?? '') + ' ' + (e?.message ?? '')));
+        .catch((e: any) => {
+          // chiuso senza scegliere (AbortError): nessun avviso, la notifica resta per riprovare
+          if (e?.name !== 'AbortError')
+            this.toastCtrl.create({ message: this.transloco.translate('components.pageToolbar.jobDownloadError'), duration: 4000, color: 'danger', position: 'top' })
+              .then(x => x.present());
+        });
       return;
     }
 
@@ -291,7 +301,6 @@ export class PageToolbarComponent {
     if (pronto && pronto.scade > Date.now()) {
       // codice gia' arrivato: download subito, nel tocco
       this.scaricando.delete(job.jobId);
-      this.diag('download con il codice pronto');
       this.avviaDownload(nomeFile, pronto.code, job);
       return;
     }
@@ -299,7 +308,6 @@ export class PageToolbarComponent {
       .subscribe({
         next: res => {
           this.scaricando.delete(job.jobId);
-          this.diag('download dopo aver chiesto il codice');
           this.avviaDownload(nomeFile, res.code, job);
         },
         // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
