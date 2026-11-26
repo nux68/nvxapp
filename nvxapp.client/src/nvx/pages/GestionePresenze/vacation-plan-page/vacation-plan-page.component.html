@@ -138,7 +138,7 @@
                               }"
                               (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
                               [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
-                              {{ g.idPar_Giustificativi | parGiustificativiToShortText }}  {{ g.hours?.substring(0, 5) }}
+                              {{ g.idPar_Giustificativi | parGiustificativiToShortText }} {{ oreBrevi(g.hours) }}
                             </ion-chip>
                           }
                         </div>
