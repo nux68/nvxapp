@@ -17,3 +17,18 @@ export function scaricaBlob(blob: Blob, nomeFile: string): void {
     window.URL.revokeObjectURL(url);
   }, 60_000);
 }
+
+/*
+ Download di un indirizzo del server che risponde con un allegato (es. collegamento temporaneo al file di un job):
+ una normale navigazione, senza file in memoria. E' il modo piu' affidabile nell'app installata sul telefono.
+*/
+export function apriDownload(url: string, nomeFile: string): void {
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeFile;
+  a.rel = 'noopener';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 1000);
+}
