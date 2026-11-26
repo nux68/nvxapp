@@ -726,7 +726,7 @@
       "ticketTypes": "Tipi di richiesta",
       "ticketTypesNote": "Il documento si usa solo per i ticket di questi tipi. Nessun tipo = tutti i tipi.",
       "application": "Applicativo",
-      "applicationNote": "Generale vale per i ticket di ogni applicativo; scegliendo un applicativo il documento si usa solo per i suoi ticket.",
+      "applicationNote": "Con Generale si collegano i tipi di richiesta generali (non di un applicativo); con un applicativo i suoi tipi.",
       "ticketTypesRemoved": "Tolti i tipi di richiesta di un altro applicativo: {{tipi}}.",
       "includeSubLevels": "Vale anche per i livelli sotto",
       "includeSubLevelsNote": "Il documento si usa anche per i ticket che arrivano ai livelli sotto questo (per esempio il manuale caricato una volta per tutte le aziende).",
