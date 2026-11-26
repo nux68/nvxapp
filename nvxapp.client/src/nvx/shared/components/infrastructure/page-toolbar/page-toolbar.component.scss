@@ -137,3 +137,19 @@
     font-weight: 600;
   }
 }
+
+// seconda barra con il solo percorso dell'impersonificazione (senza cerca): bassa
+ion-toolbar.nvx-toolbar-compatta {
+  --min-height: 36px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+}
+
+// il percorso dell'impersonificazione ha una sua barra, annidata in questa: senza altezza e margini propri
+:host ::ng-deep app-breadcrumbs-impersonate ion-toolbar {
+  --min-height: 32px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --background: transparent;
+  --border-width: 0;
+}
