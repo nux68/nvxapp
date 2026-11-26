@@ -24,6 +24,18 @@
       }
     </header>
 
+    <!-- collegamenti alle voci di menu scelte, nell'ordine -->
+    @if (!caricamento && collegamenti().length > 0) {
+      <nav class="nvx-home-links" [attr.aria-label]="'widgets.dashboard.links' | transloco">
+        @for (v of collegamenti(); track v.key) {
+          <button type="button" class="nvx-home-link" (click)="apri(v.url)">
+            <ion-icon [name]="v.icon || 'link-outline'"></ion-icon>
+            <span>{{ v.title.trim() | transloco }}</span>
+          </button>
+        }
+      </nav>
+    }
+
     <!-- widget scelti, nell'ordine -->
     @if (!caricamento) {
       @if (widgets.length === 0) {
