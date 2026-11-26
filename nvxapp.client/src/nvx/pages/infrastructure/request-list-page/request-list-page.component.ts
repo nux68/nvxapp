@@ -181,7 +181,8 @@ export class RequestListPageComponent {
     const btnRitira = new ButtonItem(this.transloco.translate('common.requestAction.withdrawCancellation'), 'arrow-undo-outline', 'warning', false,
                                      (item: RequestItemModel) => this.annulla(item));
 
-    this.actions = [
+    // bottoni rotondi con la sola icona, il testo nel popup (standard delle liste); su mobile restano le opzioni a scorrimento
+    const azioni: NvxListAction<RequestItemModel>[] = [
       ...extra,
       { button: btnApri, visible: item => !!item.url },
       ...(this.admin
@@ -195,6 +196,7 @@ export class RequestListPageComponent {
             { button: btnRitira, visible: (item: RequestItemModel) => item.canCancel && item.cancelKind === RequestCancelKind.RitiraAnnullamento },
           ]),
     ];
+    this.actions = azioni.map(a => ({ ...a, iconOnly: true }));
   }
 
   // "+" del fab (solo nella pagina dell'utente): un solo pulsante "Nuova richiesta" che apre l'elenco delle pagine di invio dei
