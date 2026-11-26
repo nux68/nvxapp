@@ -1643,6 +1643,7 @@
       "7": "Risorse aziendali"
     },
     "dashboard": {
+      "links": "Collegamenti",
       "customize": "Personalizza",
       "empty": "Nessun widget nella dashboard."
     },
@@ -1654,6 +1655,12 @@
       "available": "Widget disponibili",
       "noneSelected": "Nessun widget: la dashboard mostrerà solo il saluto.",
       "allAdded": "Hai già aggiunto tutti i widget disponibili.",
+      "tabWidgets": "Widget",
+      "tabMenu": "Voci di menu",
+      "menuNote": "Scegli le voci del menu da avere come collegamenti nella dashboard e il loro ordine. Vedi solo le voci del tuo menu.",
+      "menuAvailable": "Voci disponibili",
+      "menuNoneSelected": "Nessun collegamento: la dashboard non mostra voci di menu.",
+      "menuAllAdded": "Hai già collegato tutte le voci del menu.",
       "restoreDefaults": "Ripristina predefiniti",
       "add": "Aggiungi",
       "remove": "Togli",
