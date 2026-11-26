@@ -11,6 +11,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
         public TicketLevel Level { get; set; }
         public bool CanEdit { get; set; }
         public List<TicketTypeOptionModel> TicketType { get; set; } = new List<TicketTypeOptionModel>();
+        // applicativi che si possono scegliere per il documento (abilitati per azienda o studio); null = tutti
+        public List<ApplicationType>? Applications { get; set; }
     }
 
     // riga dell'elenco (senza contenuto e senza file)

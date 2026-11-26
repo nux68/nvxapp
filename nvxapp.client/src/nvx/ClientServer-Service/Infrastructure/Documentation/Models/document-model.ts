@@ -12,6 +12,8 @@ export class DocumentScopeModel {
   public level: TicketLevel = TicketLevel.SuperUser;
   public canEdit: boolean = false;
   public ticketType: TicketTypeOptionModel[] = [];
+  /** applicativi che si possono scegliere (abilitati per azienda o studio); null = tutti */
+  public applications: ApplicationType[] | null = null;
 }
 
 export class DocumentListModel {
