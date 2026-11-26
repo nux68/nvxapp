@@ -726,7 +726,7 @@
       "ticketTypes": "Request types",
       "ticketTypesNote": "The document is used only for tickets of these types. No type = all types.",
       "application": "Application",
-      "applicationNote": "General applies to tickets of every application; choosing an application, the document is used only for its tickets.",
+      "applicationNote": "With General you link the general request types (not of an application); with an application, its own types.",
       "ticketTypesRemoved": "Removed the request types of another application: {{tipi}}.",
       "includeSubLevels": "Also for lower levels",
       "includeSubLevelsNote": "The document is also used for tickets reaching the levels below this one (for example the manual uploaded once for all companies).",
