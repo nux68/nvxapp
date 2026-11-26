@@ -269,6 +269,11 @@ ion-menu-button {
     display: none;
   }
 
+  // senza le ore il contenuto parte sotto il numero del giorno (il calendario comune lo avvicina alle ore)
+  .day .day-ore + .day-content {
+    margin-top: 17px;
+  }
+
   // !important: il padding delle pillole e' nel template
   .day .timestamps ion-chip.nvx-pill,
   .day .timestamps ion-chip.nvx-pill.nvx-pill-in-attesa {
