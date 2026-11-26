@@ -1511,6 +1511,7 @@
       "jobAction": "Azione",
       "jobClickDownload": "clic sull'icona per scaricare",
       "jobClickDismiss": "clic sull'icona per chiudere",
+      "jobDownloadError": "Download non riuscito: riprova toccando di nuovo la notifica.",
       "jobDismiss": "Chiudi la notifica",
       "searchPlaceholder": "Cerca",
       "dashboard": "Vai alla dashboard"

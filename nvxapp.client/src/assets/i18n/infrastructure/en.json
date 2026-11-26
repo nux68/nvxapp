@@ -1511,6 +1511,7 @@
       "jobAction": "Action",
       "jobClickDownload": "click the icon to download",
       "jobClickDismiss": "click the icon to close",
+      "jobDownloadError": "Download failed: tap the notification again to retry.",
       "jobDismiss": "Close the notification",
       "searchPlaceholder": "Search",
       "dashboard": "Go to dashboard"
