@@ -35,13 +35,16 @@ export class UserCompanyListPageComponent {
   public title!: string;
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
-  // su mobile cognome e nome vanno nella stessa riga sotto la descrizione
+  // cognome e nome in evidenza e sotto lo user name: in tabella nella stessa cella (template nvxCell), su mobile titolo e sottotitolo.
+  // Senza cognome e nome resta solo lo user name
   public readonly columns: NvxListColumn<UserCompanyListModel>[] = [
-    { key: 'descrizione', title: this.transloco.translate('pages.userCompanyList.columnUser') },
-    { key: 'cognome', title: this.transloco.translate('pages.userCompanyList.columnSurname'), mobile: 'hidden' },
-    { key: 'nome', title: this.transloco.translate('pages.userCompanyList.columnName'), mobile: 'hidden' },
-    { key: 'cognomeNome', title: '', value: x => [x.cognome, x.nome].filter(v => v).join(' '), mobile: 'subtitle', desktop: false, searchable: false },
+    { key: 'cognomeNome', title: this.transloco.translate('pages.userCompanyList.columnSurnameName'), value: x => this.cognomeNome(x) || x.descrizione, mobile: 'hidden' },
+    { key: 'titoloMobile', value: x => this.cognomeNome(x) || x.descrizione, mobile: 'title', desktop: false, searchable: false },
+    { key: 'descrizione', title: this.transloco.translate('pages.userCompanyList.columnUser'), value: x => this.cognomeNome(x) ? x.descrizione : '', mobile: 'subtitle', desktop: false },
   ];
+  public cognomeNome(x: UserCompanyListModel): string {
+    return [x.cognome, x.nome].filter(v => v).join(' ');
+  }
   public readonly actions: NvxListAction<UserCompanyListModel>[];
   public readonly isDisabled = (item: UserCompanyListModel) => item.disabled;
   public readonly isHighlighted = (item: UserCompanyListModel) => this.isAdmin(item);
