@@ -161,6 +161,18 @@
 // pillole con la barra a sinistra (_pillole-cartellino): nelle celle da 40px il rientro del testo
 // si riduce, la barra da 7px delle pillole in attesa resta comunque libera
 .vg-chips-stack ion-chip.nvx-pill {
+  padding-left: 7px !important;
+  padding-right: 2px !important;
+  // nelle celle strette il testo (codice e ore) e' piu' largo della pillola: allineato a sinistra e tagliato
+  // a destra, non centrato (centrato sbordava a sinistra sotto la barra colorata)
+  justify-content: flex-start;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+// in attesa la barra e' da 7px: il testo parte dopo
+.vg-chips-stack ion-chip.nvx-pill.nvx-pill-in-attesa {
   padding-left: 10px !important;
 }
 
