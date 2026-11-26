@@ -1,7 +1,8 @@
 // stesso aspetto compatto di sedi-reparto-user-navigation
 // contenitore: spazio interno ridotto rispetto a ion-padding (16px)
 .nvx-nav-compatta {
-  padding: 2px 8px;
+  // niente rientro laterale: i campi partono dal bordo come gli altri controlli della pagina
+  padding: 2px 0;
 }
 
 ion-select {
@@ -43,6 +44,9 @@ ion-col {
 
 ion-row {
   --ion-grid-column-padding: 1px;
+  // le colonne hanno 4px di spazio ai lati: la riga lo recupera ai bordi, cosi' il primo e l'ultimo campo
+  // sono allineati ai controlli sotto (che partono dal bordo del riquadro)
+  margin: 0 -4px;
 }
 
 ion-label {
