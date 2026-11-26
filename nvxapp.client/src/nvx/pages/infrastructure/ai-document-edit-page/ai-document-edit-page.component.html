@@ -32,16 +32,7 @@
         </ion-item>
         <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.descrizioneNote' | transloco }}</ion-note>
 
-        <ion-item>
-          <ion-select formControlName="idTicketType" [multiple]="true" [label]="'pages.aiDocumentEdit.ticketTypes' | transloco" labelPlacement="floating"
-                      [placeholder]="'pages.aiDocumentList.allTypes' | transloco">
-            @for (t of ticketTypes; track t.id) {
-              <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.ticketTypesNote' | transloco }}</ion-note>
-
+        <!-- prima l'applicativo, poi i tipi di richiesta: con un applicativo si vedono solo i suoi tipi -->
         <ion-item>
           <ion-select formControlName="applicationType" [label]="'pages.aiDocumentEdit.application' | transloco" labelPlacement="floating">
             <ion-select-option [value]="null">{{ 'ticket.application.general' | transloco }}</ion-select-option>
@@ -50,6 +41,21 @@
             }
           </ion-select>
         </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.applicationNote' | transloco }}</ion-note>
+
+        <ion-item>
+          <ion-select formControlName="idTicketType" [multiple]="true" [label]="'pages.aiDocumentEdit.ticketTypes' | transloco" labelPlacement="floating"
+                      [placeholder]="'pages.aiDocumentList.allTypes' | transloco">
+            @for (t of tipiVisibili; track t.id) {
+              <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.ticketTypesNote' | transloco }}</ion-note>
+        @if (tipiTolti.length > 0) {
+          <ion-note color="warning" class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.ticketTypesRemoved' | transloco: { tipi: tipiTolti.join(', ') } }}</ion-note>
+        }
+
 
         <ion-item>
           <ion-toggle formControlName="includeSubLevels" justify="start">{{ 'pages.aiDocumentEdit.includeSubLevels' | transloco }}</ion-toggle>
