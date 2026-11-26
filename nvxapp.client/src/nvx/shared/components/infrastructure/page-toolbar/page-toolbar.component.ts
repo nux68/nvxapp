@@ -4,7 +4,7 @@ import { UserInterfaceService } from '../../../../Utility/infrastructure/user-in
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { Observable } from 'rxjs';
-import { HttpClient, HttpEventType } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NavController, Platform, ToastController } from '@ionic/angular';
 import { apriDownload } from '../../../../Utility/infrastructure/scarica-file';
@@ -52,21 +52,6 @@ export class PageToolbarComponent {
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
   public LongJobCategory = LongJobCategory;
-  // DIAGNOSI TEMPORANEA (registro sul server, [CLIENT-DIAG]): righe raccolte e inviate a gruppi. Da togliere.
-  private static readonly diagRighe: string[] = [];
-  private static diagTimer: ReturnType<typeof setTimeout> | null = null;
-  diag(testo: string): void {
-    if (!this.ui.isMobileSignal()) return;
-    const d = new Date();
-    PageToolbarComponent.diagRighe.push(`${d.toLocaleTimeString('it-IT')}.${String(d.getMilliseconds()).padStart(3, '0')} ${testo}`);
-    if (PageToolbarComponent.diagTimer) return;
-    PageToolbarComponent.diagTimer = setTimeout(() => {
-      PageToolbarComponent.diagTimer = null;
-      const righe = PageToolbarComponent.diagRighe.splice(0);
-      this.http.post(environment.remoteData.apiUri + 'Account/ClientDiag', { righe }).subscribe({ error: () => { } });
-    }, 400);
-  }
-
   /** telefono: niente x sulla notifica e area di tocco piu' grande */
   get telefono(): boolean {
     return this.ui.isMobileSignal();
@@ -85,17 +70,6 @@ export class PageToolbarComponent {
   private static readonly codiciInArrivo = new Set<string>();
   private static readonly validitaCodiceMs = 13 * 60_000;
 
-  /*
-   Telefono: il file pronto si scarica subito in memoria e il tocco apre il menu Condividi di Android/iOS (lettore PDF,
-   Drive, "Salva in File", email...). Nell'app installata i download diretti erano inaffidabili; la condivisione no.
-   Serve un tocco (il menu si apre solo dal gesto), per questo il file deve essere gia' arrivato. I tipi che il
-   browser non sa condividere (es. Excel su Chrome) restano al download con il collegamento temporaneo.
-  */
-  private static readonly fileCondivisibili = new Map<string, File>();
-  private static readonly fileInArrivo = new Set<string>();
-  /** byte del file ricevuti e totali (se il server li dice), durante la ricezione in memoria */
-  private static readonly ricezione = new Map<string, { ricevuti: number, totale: number | null }>();
-
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
               private authService: AuthService,
@@ -109,17 +83,9 @@ export class PageToolbarComponent {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
     // file pronto: si chiede subito il codice del collegamento, cosi' il tocco scarica senza attese
     this.longJobNotifierService.activeJobs$.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(jobs => {
-      for (const j of jobs)
-        if (j.category === LongJobCategory.FileGeneration && j.isFinished)
-          this.diag('notifica job finito ' + j.jobId.substring(0, 8) + ' file=' + (j.downloadUrl ?? '-').split('/').pop()
-            + ' condivisione=' + this.condivisioneDisponibile + ' inMemoria=' + PageToolbarComponent.fileCondivisibili.has(PageToolbarComponent.nomeFileJob(j))
-            + ' inArrivo=' + PageToolbarComponent.fileInArrivo.has(PageToolbarComponent.nomeFileJob(j)));
       for (const job of jobs)
-        if (job.isFinished && job.category === LongJobCategory.FileGeneration && job.downloadUrl && this.statoJob(job) !== 'errore') {
+        if (this.statoJob(job) === 'file')
           this.preparaCodice(PageToolbarComponent.nomeFileJob(job));
-          if (this.condivisioneDisponibile)
-            this.preparaFile(job);
-        }
     });
   }
 
@@ -183,38 +149,11 @@ export class PageToolbarComponent {
     const tipo = job.message?.msgType;
     if (tipo === MessageType.Error || tipo === MessageType.Exception)
       return 'errore';
-    if (job.category === LongJobCategory.FileGeneration && job.downloadUrl)
-      return this.inPreparazione(job) ? 'corso' : 'file';
-    return 'ok';
-  }
-
-  /*
-   Telefono: il file e' pronto sul server ma non ancora arrivato in memoria per il menu Condividi. L'icona resta
-   "in corso" (anello che gira): toccandola prima il menu non si apre e il download diretto, nell'app installata,
-   non funziona. Diventa "file pronto" quando il tocco funziona di sicuro (o se il file non si puo' condividere).
-  */
-  /** percentuale del file arrivato sul telefono; null se non si sa (totale non dato dal server) */
-  percentualeRicezione(job: LongJobProgressUpdate): number | null {
-    const r = PageToolbarComponent.ricezione.get(PageToolbarComponent.nomeFileJob(job));
-    return r && r.totale ? Math.min(100, Math.round(r.ricevuti * 100 / r.totale)) : null;
-  }
-
-  private static kb(byte: number): string {
-    return byte >= 1024 * 1024 ? (byte / (1024 * 1024)).toFixed(1) + ' MB' : Math.max(1, Math.round(byte / 1024)) + ' KB';
-  }
-
-  inPreparazione(job: LongJobProgressUpdate): boolean {
-    if (!job.isFinished || job.category !== LongJobCategory.FileGeneration || !job.downloadUrl || !this.condivisioneDisponibile)
-      return false;
-    return PageToolbarComponent.fileInArrivo.has(PageToolbarComponent.nomeFileJob(job));
+    return job.category === LongJobCategory.FileGeneration && job.downloadUrl ? 'file' : 'ok';
   }
 
   /** stroke-dasharray dell'anello (circonferenza 100): avanzamento; finito: pieno; senza avanzamento: arco che gira */
   trattoJob(job: LongJobProgressUpdate): string {
-    if (this.inPreparazione(job)) {
-      const p = this.percentualeRicezione(job);
-      return p != null && p > 0 ? `${p} 100` : '25 100';
-    }
     if (job.isFinished)
       return '100 100';
     const p = Math.max(0, Math.min(100, job.progressPercentage ?? 0));
@@ -225,23 +164,14 @@ export class PageToolbarComponent {
     const stato = this.statoJob(job);
     const t = (k: string) => this.transloco.translate('components.pageToolbar.' + k);
     const extraInfo: Record<string, string> = {};
-    const preparazione = this.inPreparazione(job);
-    if (stato === 'corso' && !preparazione)
+    if (stato === 'corso')
       extraInfo[t('jobProgress')] = `${Math.round(job.progressPercentage ?? 0)}%`;
-    if (preparazione) {
-      // ricezione del file: percentuale e byte (es. "45% (120 KB di 260 KB)")
-      const r = PageToolbarComponent.ricezione.get(PageToolbarComponent.nomeFileJob(job));
-      const p = this.percentualeRicezione(job);
-      extraInfo[t('jobReceiving')] = !r || r.ricevuti === 0 ? '...'
-        : p != null ? `${p}% (${PageToolbarComponent.kb(r.ricevuti)} / ${PageToolbarComponent.kb(r.totale!)})`
-                    : PageToolbarComponent.kb(r.ricevuti);
-    }
     else if (stato === 'file')
       extraInfo[t('jobAction')] = t('jobClickDownload');
     else
       extraInfo[t('jobAction')] = t('jobClickDismiss');
     return {
-      title: t(preparazione ? 'jobPreparing' : stato === 'corso' ? 'jobRunning' : stato === 'file' ? 'jobFileReady' : stato === 'errore' ? 'jobError' : 'jobDone'),
+      title: t(stato === 'corso' ? 'jobRunning' : stato === 'file' ? 'jobFileReady' : stato === 'errore' ? 'jobError' : 'jobDone'),
       content: job.message?.text ?? '',
       extraInfo
     };
@@ -249,13 +179,7 @@ export class PageToolbarComponent {
 
   /** Clic sull'anello: file pronto -> download; job finito -> chiude la notifica; in corso -> niente. */
   onJobClick(job: LongJobProgressUpdate): void {
-    const n = PageToolbarComponent.nomeFileJob(job);
-    this.diag('CLICK stato=' + this.statoJob(job) + ' finito=' + job.isFinished + ' preparazione=' + this.inPreparazione(job)
-      + ' inMemoria=' + PageToolbarComponent.fileCondivisibili.has(n) + ' inArrivo=' + PageToolbarComponent.fileInArrivo.has(n)
-      + ' codice=' + PageToolbarComponent.codiciDownload.has(n) + ' scaricando=' + this.scaricando.has(job.jobId)
-      + ' attivazione=' + ((navigator as any).userActivation?.isActive ?? '?'));
-    // in preparazione (telefono): il tocco aspetta che il file arrivi
-    if (!job.isFinished || this.inPreparazione(job))
+    if (!job.isFinished)
       return;
     if (job.category === LongJobCategory.FileGeneration)
       this.onJobLabelClick(job);
@@ -283,50 +207,6 @@ export class PageToolbarComponent {
       });
   }
 
-  // condivisione dei file: solo su telefono (sul PC resta il download) e se il browser la offre
-  // PROVA TEMPORANEA: false = sul telefono niente menu Condividi, download diretto con il collegamento temporaneo
-  private static readonly usaCondividi = false;
-
-  private get condivisioneDisponibile(): boolean {
-    return PageToolbarComponent.usaCondividi && this.ui.isMobileSignal() && typeof navigator !== 'undefined' && typeof navigator.share === 'function'
-           && typeof navigator.canShare === 'function';
-  }
-
-  private preparaFile(job: LongJobProgressUpdate): void {
-    const nomeFile = PageToolbarComponent.nomeFileJob(job);
-    if (!nomeFile || PageToolbarComponent.fileCondivisibili.has(nomeFile) || PageToolbarComponent.fileInArrivo.has(nomeFile))
-      return;
-    PageToolbarComponent.fileInArrivo.add(nomeFile);
-    this.diag('inizio ricezione ' + nomeFile);
-    // con l'avanzamento della ricezione: l'anello si riempie di nuovo e il popup dice quanto e' arrivato
-    PageToolbarComponent.ricezione.set(nomeFile, { ricevuti: 0, totale: null });
-    this.http.get(environment.remoteData.apiUri + job.downloadUrl, { responseType: 'blob', observe: 'events', reportProgress: true })
-      .subscribe({
-        next: evento => {
-          if (evento.type === HttpEventType.DownloadProgress) {
-            PageToolbarComponent.ricezione.set(nomeFile, { ricevuti: evento.loaded, totale: evento.total ?? null });
-            return;
-          }
-          if (evento.type !== HttpEventType.Response || !evento.body)
-            return;
-          PageToolbarComponent.fileInArrivo.delete(nomeFile);
-          PageToolbarComponent.ricezione.delete(nomeFile);
-          const blob = evento.body;
-          const file = new File([blob], job.fileName || nomeFile, { type: blob.type || 'application/octet-stream' });
-          // solo se il browser sa condividere questo tipo di file; altrimenti si usera' il download
-          const puo = navigator.canShare({ files: [file] });
-          this.diag('file arrivato ' + nomeFile + ' byte=' + blob.size + ' tipo=' + blob.type + ' canShare=' + puo);
-          if (puo)
-            PageToolbarComponent.fileCondivisibili.set(nomeFile, file);
-        },
-        error: (e: any) => {
-          this.diag('errore ricezione ' + nomeFile + ' stato=' + (e?.status ?? '?'));
-          PageToolbarComponent.fileInArrivo.delete(nomeFile);
-          PageToolbarComponent.ricezione.delete(nomeFile);
-        }
-      });
-  }
-
   private avviaDownload(nomeFile: string, code: string, job: LongJobProgressUpdate): void {
     PageToolbarComponent.codiciDownload.delete(nomeFile);
     apriDownload(environment.remoteData.apiUri + 'Account/DownloadFile/' + encodeURIComponent(nomeFile) + '?code=' + encodeURIComponent(code),
@@ -347,36 +227,13 @@ export class PageToolbarComponent {
     if (this.scaricando.has(job.jobId))
       return;
     this.scaricando.add(job.jobId);
-    // collegamento temporaneo del server (Account/DownloadCode -> Account/DownloadFile) invece del file in memoria:
-    // nell'app installata sul telefono il blob a volte apriva il file o non faceva nulla, l'allegato si scarica sempre
+    // collegamento temporaneo del server (Account/DownloadCode -> Account/DownloadFile), risposta come allegato:
+    // funziona anche nell'app installata sul telefono, dove il file costruito in memoria (blob) era inaffidabile
     const nomeFile = PageToolbarComponent.nomeFileJob(job);
-
-    // telefono con il file gia' arrivato: menu Condividi (chiuso senza scegliere: la notifica resta)
-    const file = PageToolbarComponent.fileCondivisibili.get(nomeFile);
-    if (file && this.condivisioneDisponibile) {
-      this.scaricando.delete(job.jobId);
-      this.diag('chiamo navigator.share');
-      navigator.share({ files: [file], title: file.name })
-        .then(() => {
-          this.diag('share completato');
-          PageToolbarComponent.fileCondivisibili.delete(nomeFile);
-          this.dismissJob(job.jobId);
-        })
-        .catch((e: any) => {
-          this.diag('share rifiutato ' + (e?.name ?? '') + ': ' + (e?.message ?? ''));
-          // chiuso senza scegliere (AbortError): nessun avviso, la notifica resta per riprovare
-          if (e?.name !== 'AbortError')
-            this.toastCtrl.create({ message: this.transloco.translate('components.pageToolbar.jobDownloadError'), duration: 4000, color: 'danger', position: 'top' })
-              .then(x => x.present());
-        });
-      return;
-    }
-
     const pronto = PageToolbarComponent.codiciDownload.get(nomeFile);
     if (pronto && pronto.scade > Date.now()) {
       // codice gia' arrivato: download subito, nel tocco
       this.scaricando.delete(job.jobId);
-      this.diag('download con codice pronto (niente condivisione)');
       this.avviaDownload(nomeFile, pronto.code, job);
       return;
     }
@@ -384,10 +241,9 @@ export class PageToolbarComponent {
       .subscribe({
         next: res => {
           this.scaricando.delete(job.jobId);
-          this.diag('download dopo aver chiesto il codice');
           this.avviaDownload(nomeFile, res.code, job);
         },
-        // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
+        // un avviso, e la notifica resta per riprovare
         error: () => {
           this.scaricando.delete(job.jobId);
           this.toastCtrl.create({ message: this.transloco.translate('components.pageToolbar.jobDownloadError'), duration: 4000, color: 'danger', position: 'top' })

@@ -1503,8 +1503,6 @@
       "hideMenu": "Nascondi il menu"
     },
     "pageToolbar": {
-      "jobPreparing": "Preparazione del file",
-      "jobReceiving": "Ricezione",
       "jobRunning": "Elaborazione in corso",
       "jobDone": "Completato",
       "jobFileReady": "File pronto",
