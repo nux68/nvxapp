@@ -5,6 +5,7 @@ import { UserDashboardService } from '../../ClientServer-Service/Infrastructure/
 import { UserDashboardGetInModel, UserDashboardPutInModel } from '../../ClientServer-Service/Infrastructure/UserDashboard/Models/user-dashboard-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { AuthService } from './auth.service';
+import { MainMenuService, VoceNavigabile } from './main-menu.service';
 import { WidgetDefinition } from './widget.model';
 import { WidgetInfrastructureService } from './widget-infrastructure.service';
 import { WidgetAttendanceTrackingService } from './widget-attendance-tracking.service';
@@ -46,7 +47,52 @@ export class WidgetService {
               private widgetComplianceService: WidgetComplianceService,
               private widgetAssetsService: WidgetAssetsService,
               private userDashboardService: UserDashboardService,
+              private mainMenuService: MainMenuService,
               private authService: AuthService) { }
+
+  // ---------------------------------------------------------------------------
+  // Collegamenti alle voci di menu nella dashboard: si salvano nello stesso elenco dei widget, con la chiave
+  // "menu." + url della voce ("/usermanual/crm" -> "menu.usermanual.crm"), cosi' il server non cambia.
+  // Si vedono solo le voci che l'utente ha nel menu (MainMenuService.VociNavigabili): una voce oggi nascosta
+  // o di un applicativo disattivato resta salvata e torna quando torna nel menu.
+  // ---------------------------------------------------------------------------
+
+  public static readonly PrefissoMenu = 'menu.';
+  private static readonly FormatoChiave = /^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/;
+
+  /** chiave del collegamento a una voce di menu; null se l'url non si puo' salvare come chiave */
+  public static ChiaveMenu(url: string): string | null {
+    const percorso = AuthService.normalizeMenuUrl(url).replace(/^\/+/, '').replace(/\//g, '.');
+    const chiave = WidgetService.PrefissoMenu + percorso;
+    return percorso && WidgetService.FormatoChiave.test(chiave) ? chiave : null;
+  }
+
+  /** voci che non hanno senso come collegamento: la dashboard stessa e l'uscita */
+  private static readonly MenuEsclusi = ['menu.dashboard', 'menu.logout'];
+
+  public static IsChiaveMenu(chiave: string): boolean {
+    return chiave.startsWith(WidgetService.PrefissoMenu);
+  }
+
+  /** voci di menu che l'utente puo' collegare alla dashboard, ognuna con la sua chiave (esclusi dashboard e uscita) */
+  public get VociMenuDisponibili(): (VoceNavigabile & { key: string })[] {
+    const voci: (VoceNavigabile & { key: string })[] = [];
+    for (const v of this.mainMenuService.VociNavigabiliSignal()) {
+      const key = WidgetService.ChiaveMenu(v.url);
+      if (key && !WidgetService.MenuEsclusi.includes(key) && !voci.some(x => x.key === key))
+        voci.push({ ...v, key });
+    }
+    return voci;
+  }
+
+  /** voci di menu collegate alla dashboard, nell'ordine scelto (solo quelle oggi nel menu dell'utente) */
+  public Collegamenti(stato: DashboardStato): (VoceNavigabile & { key: string })[] {
+    const disponibili = this.VociMenuDisponibili;
+    return stato.chiavi
+      .filter(k => WidgetService.IsChiaveMenu(k))
+      .map(k => disponibili.find(v => v.key === k))
+      .filter((v): v is VoceNavigabile & { key: string } => !!v);
+  }
 
   /** tutti i widget del ramo compilato, ognuno con il suo applicativo */
   public get Catalogo(): WidgetDefinition[] {

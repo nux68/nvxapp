@@ -293,7 +293,7 @@ export class AppComponent implements OnInit {
           for (const p of g.menuItem)
             if (p.menuType === MenuType.MenuItem && p.url && s.mostra(p.component) && !this.voceDisattivata(p) &&
                 !voci.some(v => v.url === p.url))
-              voci.push({ title: p.title, url: p.url, section: sezione(g) });
+              voci.push({ title: p.title, url: p.url, section: sezione(g), icon: p.icon });
     };
     aggiungi(this.sezioniAccesso, g => g.menuHeader.title);
     for (const a of this.sezioniApplicativi)
