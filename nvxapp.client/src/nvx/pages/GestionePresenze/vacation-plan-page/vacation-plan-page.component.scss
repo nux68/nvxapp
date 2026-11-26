@@ -27,6 +27,8 @@
 .vg-row {
   display: flex;
   align-items: stretch;
+  // larga almeno quanto il contenuto (scorrimento) e, con spazio libero, quanto il riquadro: i giorni si allargano
+  min-width: max-content;
   border-bottom: 1px solid var(--ion-color-light-shade, #ddd);
 }
 
@@ -73,11 +75,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  width: 40px;
+  // almeno 47px (codice e ore con i minuti); con spazio libero a destra i giorni si allargano (stessa regola delle celle dati)
+  flex: 1 0 47px;
+  min-width: 47px;
   padding: 2px 1px;
   border-right: 1px solid var(--ion-color-light-shade, #ddd);
-  flex-shrink: 0;
 
   .vg-day-num {
     font-weight: 700;
@@ -96,11 +98,10 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  min-width: 40px;
-  width: 40px;
+  flex: 1 0 47px;
+  min-width: 47px;
   min-height: 28px;
   border-right: 1px solid var(--ion-color-light-shade, #ddd);
-  flex-shrink: 0;
   padding: 2px 1px;
 }
 
@@ -161,7 +162,9 @@
 // pillole con la barra a sinistra (_pillole-cartellino): nelle celle da 40px il rientro del testo
 // si riduce, la barra da 7px delle pillole in attesa resta comunque libera
 .vg-chips-stack ion-chip.nvx-pill {
-  padding-left: 7px !important;
+  // barra piu' sottile che nel cartellino: piu' spazio per codice e ore
+  --nvx-pill-w: 2px;
+  padding-left: 5px !important;
   padding-right: 2px !important;
   // nelle celle strette il testo (codice e ore) e' piu' largo della pillola: allineato a sinistra e tagliato
   // a destra, non centrato (centrato sbordava a sinistra sotto la barra colorata)
@@ -171,9 +174,10 @@
   max-width: 100%;
 }
 
-// in attesa la barra e' da 7px: il testo parte dopo
+// in attesa la barra e' piu' spessa (4px): il testo parte dopo
 .vg-chips-stack ion-chip.nvx-pill.nvx-pill-in-attesa {
-  padding-left: 10px !important;
+  --nvx-pill-w: 4px;
+  padding-left: 6px !important;
 }
 
 /* ── Vista mobile (come la pianificazione turni del mese) ── */
