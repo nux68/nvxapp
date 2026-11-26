@@ -1643,6 +1643,7 @@
       "7": "Company assets"
     },
     "dashboard": {
+      "links": "Shortcuts",
       "customize": "Customize",
       "empty": "No widgets on the dashboard."
     },
@@ -1654,6 +1655,12 @@
       "available": "Available widgets",
       "noneSelected": "No widgets: the dashboard will only show the greeting.",
       "allAdded": "You have already added all the available widgets.",
+      "tabWidgets": "Widgets",
+      "tabMenu": "Menu items",
+      "menuNote": "Choose the menu items to show as shortcuts on the dashboard and their order. You only see the items in your menu.",
+      "menuAvailable": "Available items",
+      "menuNoneSelected": "No shortcuts: the dashboard shows no menu items.",
+      "menuAllAdded": "You have already linked all menu items.",
       "restoreDefaults": "Restore defaults",
       "add": "Add",
       "remove": "Remove",
