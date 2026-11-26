@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
@@ -54,6 +55,16 @@ export class PageToolbarComponent {
   /** job con il download in corso */
   private readonly scaricando = new Set<string>();
 
+  /*
+   Codici dei collegamenti temporanei ai file dei job (Account/DownloadCode), per nome del file, comuni a tutte le barre.
+   Si chiedono appena il job finisce: al tocco il download parte subito, dentro il gesto dell'utente. Chiedendo il codice
+   al tocco il download arrivava dopo un'attesa e Chrome sul telefono (app installata) a volte lo bloccava senza avvisi.
+   Validi 15 minuti sul server: qui si considerano scaduti un paio di minuti prima.
+  */
+  private static readonly codiciDownload = new Map<string, { code: string, scade: number }>();
+  private static readonly codiciInArrivo = new Set<string>();
+  private static readonly validitaCodiceMs = 13 * 60_000;
+
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
               private authService: AuthService,
@@ -65,6 +76,12 @@ export class PageToolbarComponent {
               public menuLayoutService: MenuLayoutService)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
+    // file pronto: si chiede subito il codice del collegamento, cosi' il tocco scarica senza attese
+    this.longJobNotifierService.activeJobs$.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(jobs => {
+      for (const job of jobs)
+        if (this.statoJob(job) === 'file')
+          this.preparaCodice(PageToolbarComponent.nomeFileJob(job));
+    });
   }
 
 
@@ -165,6 +182,33 @@ export class PageToolbarComponent {
       this.dismissJob(job.jobId);
   }
 
+  private static nomeFileJob(job: LongJobProgressUpdate): string {
+    return (job.downloadUrl ?? '').split('/').pop() || '';
+  }
+
+  private preparaCodice(nomeFile: string): void {
+    const pronto = PageToolbarComponent.codiciDownload.get(nomeFile);
+    if (!nomeFile || (pronto && pronto.scade > Date.now()) || PageToolbarComponent.codiciInArrivo.has(nomeFile))
+      return;
+    PageToolbarComponent.codiciInArrivo.add(nomeFile);
+    this.http.get<{ code: string }>(environment.remoteData.apiUri + 'Account/DownloadCode/' + encodeURIComponent(nomeFile))
+      .subscribe({
+        next: res => {
+          PageToolbarComponent.codiciInArrivo.delete(nomeFile);
+          PageToolbarComponent.codiciDownload.set(nomeFile, { code: res.code, scade: Date.now() + PageToolbarComponent.validitaCodiceMs });
+        },
+        // senza codice si riprova al tocco
+        error: () => PageToolbarComponent.codiciInArrivo.delete(nomeFile)
+      });
+  }
+
+  private avviaDownload(nomeFile: string, code: string, job: LongJobProgressUpdate): void {
+    PageToolbarComponent.codiciDownload.delete(nomeFile);
+    apriDownload(environment.remoteData.apiUri + 'Account/DownloadFile/' + encodeURIComponent(nomeFile) + '?code=' + encodeURIComponent(code),
+                 job.fileName || nomeFile || 'export');
+    this.dismissJob(job.jobId);
+  }
+
   onJobLabelClick(job: LongJobProgressUpdate): void {
     const downloadUrl = job.downloadUrl;
     if (job.category !== LongJobCategory.FileGeneration || !job.isFinished) return;
@@ -180,15 +224,19 @@ export class PageToolbarComponent {
     this.scaricando.add(job.jobId);
     // collegamento temporaneo del server (Account/DownloadCode -> Account/DownloadFile) invece del file in memoria:
     // nell'app installata sul telefono il blob a volte apriva il file o non faceva nulla, l'allegato si scarica sempre
-    const nomeFile = downloadUrl.split('/').pop() || '';
-    const api = environment.remoteData.apiUri;
-    this.http.get<{ code: string }>(api + 'Account/DownloadCode/' + encodeURIComponent(nomeFile))
+    const nomeFile = PageToolbarComponent.nomeFileJob(job);
+    const pronto = PageToolbarComponent.codiciDownload.get(nomeFile);
+    if (pronto && pronto.scade > Date.now()) {
+      // codice gia' arrivato: download subito, nel tocco
+      this.scaricando.delete(job.jobId);
+      this.avviaDownload(nomeFile, pronto.code, job);
+      return;
+    }
+    this.http.get<{ code: string }>(environment.remoteData.apiUri + 'Account/DownloadCode/' + encodeURIComponent(nomeFile))
       .subscribe({
         next: res => {
           this.scaricando.delete(job.jobId);
-          apriDownload(api + 'Account/DownloadFile/' + encodeURIComponent(nomeFile) + '?code=' + encodeURIComponent(res.code),
-                       job.fileName || nomeFile || 'export');
-          this.dismissJob(job.jobId);
+          this.avviaDownload(nomeFile, res.code, job);
         },
         // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
         error: () => {
