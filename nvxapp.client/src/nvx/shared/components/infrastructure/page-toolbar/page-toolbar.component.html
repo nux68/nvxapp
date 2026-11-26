@@ -77,10 +77,11 @@
     }
   </ion-toolbar>
 
-  @if (showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1)) {
-    <ion-toolbar>
-      @if (showBreadcrumbs) {
-        <app-breadcrumbs-impersonate class="ion-hide-sm-down">
+  <!-- seconda barra: cerca e percorso dell'impersonificazione; bassa se c'e' solo il percorso, assente se vuota -->
+  @if (mostraSecondaBarra) {
+    <ion-toolbar [class.nvx-toolbar-compatta]="!showFilter">
+      @if (mostraBreadcrumbs) {
+        <app-breadcrumbs-impersonate>
         </app-breadcrumbs-impersonate>
       }
       @if (showFilter) {
