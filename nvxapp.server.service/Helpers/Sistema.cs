@@ -135,11 +135,12 @@ namespace nvxapp.server.service.Helpers
      nell'app installata sul telefono il download costruito in memoria (blob) a volte apre il file o non fa nulla,
      mentre un indirizzo del server con "allegato" scarica sempre. Il codice "<scadenza>.<firma>" (HMAC-SHA256 con la
      chiave dell'installazione su scadenza e nome del file) lo chiede l'utente che ha lanciato il job, gia' collegato
-     (Account/DownloadCode), e vale pochi minuti solo per quel file.
+     (Account/DownloadCode), e vale 15 minuti solo per quel file: il client lo chiede appena il job finisce, cosi' al tocco
+     il download parte subito, dentro il gesto dell'utente (Chrome blocca i download che arrivano dopo un'attesa).
     */
     public static class JobFileLink
     {
-        public static readonly TimeSpan Durata = TimeSpan.FromMinutes(2);
+        public static readonly TimeSpan Durata = TimeSpan.FromMinutes(15);
 
         public static string Code(string key, string fileName, DateTime expiresUtc)
         {
