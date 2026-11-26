@@ -33,7 +33,7 @@
             <span class="nvx-jobs">
               @for (job of jobs; track job.jobId) {
                 <span class="nvx-job nvx-job--{{ statoJob(job) }}" role="button" tabindex="0"
-                      [appHoverPopup]="popupJob(job)" [attr.aria-label]="job.message?.text"
+                      [appHoverPopup]="popupJob(job)" appHoverPopupTouch="press" [attr.aria-label]="job.message?.text"
                       (click)="onJobClick(job)" (keyup.enter)="onJobClick(job)">
                   <svg class="nvx-job-ring" viewBox="0 0 36 36" aria-hidden="true"
                        [class.nvx-job-ring--gira]="!job.isFinished && !(job.progressPercentage > 0)">
