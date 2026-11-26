@@ -284,19 +284,15 @@ export class UserCompanyListPageComponent {
  
 
 
-  // ruolo decrescente, poi descrizione
+  // ordinamento: prima gli amministratori (anche con piu' ruoli: isAdmin guarda tutti i ruoli), poi per cognome e nome
+  // in ordine alfabetico; senza cognome e nome vale lo user name
   public readonly sortByRole = (a: UserCompanyListModel, b: UserCompanyListModel) => {
-    const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
-    const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
-    
-
-    // Primo criterio: ordinamento decrescente su roleId
-    if (roleB !== roleA) {
-      return roleB - roleA;
-    }
-
-    // Secondo criterio: ordinamento ascendente su descrizione
-    return a.descrizione.localeCompare(b.descrizione);
+    const adminA = this.isAdmin(a), adminB = this.isAdmin(b);
+    if (adminA !== adminB)
+      return adminA ? -1 : 1;
+    const nomeA = this.cognomeNome(a) || a.descrizione || '';
+    const nomeB = this.cognomeNome(b) || b.descrizione || '';
+    return nomeA.localeCompare(nomeB, undefined, { sensitivity: 'base' }) || (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   };
 
 
