@@ -1587,6 +1587,6 @@ The statement is attached.</value>
     <value>The selected application is not enabled at this level.</value>
   </data>
   <data name="DocumentTicketTypeApplicationMismatch" xml:space="preserve">
-    <value>The request types must belong to the document's application (or choose General).</value>
+    <value>The request types must belong to the document's application (with General, only the general types).</value>
   </data>
 </root>
