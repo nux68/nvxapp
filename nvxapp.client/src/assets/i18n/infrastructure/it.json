@@ -604,6 +604,7 @@
       "fabAddHeader": "Aggiungi utenti",
       "fabAddUser": "Nuovo utente",
       "fabImport": "Importa da file",
+      "columnSurnameName": "Cognome e nome",
       "columnSurname": "Cognome",
       "columnName": "Nome",
       "showDisabled": "Mostra disabilitati"
