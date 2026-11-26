@@ -61,6 +61,7 @@ const MOBILE_OPTION_CLASS: Record<string, string> = {
   danger: 'item-option-text-only_cancella',
   medium: 'item-option-text-only_modifica',
   primary: 'item-option-text-only_primary',
+  secondary: 'item-option-text-only_secondary',
   warning: 'item-option-text-only_warning',
 };
 
