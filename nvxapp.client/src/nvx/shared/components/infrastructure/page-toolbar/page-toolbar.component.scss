@@ -29,7 +29,8 @@
   --nvx-job-colore: var(--ion-color-primary);
 
   &.nvx-job--ok { --nvx-job-colore: var(--ion-color-success); cursor: pointer; }
-  &.nvx-job--file { --nvx-job-colore: var(--ion-color-primary); cursor: pointer; }
+  // file pronto da scaricare: verde pieno, si distingue dall'elaborazione (arancio) e dalla ricezione
+  &.nvx-job--file { --nvx-job-colore: var(--ion-color-success); cursor: pointer; }
   &.nvx-job--errore { --nvx-job-colore: var(--ion-color-danger); cursor: pointer; }
 
   &:focus-visible {
@@ -152,4 +153,12 @@ ion-toolbar.nvx-toolbar-compatta {
   --padding-bottom: 0;
   --background: transparent;
   --border-width: 0;
+}
+
+// file pronto: cerchio verde pieno con la freccia bianca
+.nvx-job--file .nvx-job-centro {
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--ion-color-success);
+  color: var(--ion-color-success-contrast, #fff);
 }
