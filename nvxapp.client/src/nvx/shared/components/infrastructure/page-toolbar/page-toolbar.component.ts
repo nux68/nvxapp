@@ -65,6 +65,15 @@ export class PageToolbarComponent {
   private static readonly codiciInArrivo = new Set<string>();
   private static readonly validitaCodiceMs = 13 * 60_000;
 
+  /*
+   Telefono: il file pronto si scarica subito in memoria e il tocco apre il menu Condividi di Android/iOS (lettore PDF,
+   Drive, "Salva in File", email...). Nell'app installata i download diretti erano inaffidabili; la condivisione no.
+   Serve un tocco (il menu si apre solo dal gesto), per questo il file deve essere gia' arrivato. I tipi che il
+   browser non sa condividere (es. Excel su Chrome) restano al download con il collegamento temporaneo.
+  */
+  private static readonly fileCondivisibili = new Map<string, File>();
+  private static readonly fileInArrivo = new Set<string>();
+
   constructor(public userNavigationService: UserNavigationService,
     public longJobNotifierService: LongJobNotifierService,
               private authService: AuthService,
@@ -79,8 +88,11 @@ export class PageToolbarComponent {
     // file pronto: si chiede subito il codice del collegamento, cosi' il tocco scarica senza attese
     this.longJobNotifierService.activeJobs$.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(jobs => {
       for (const job of jobs)
-        if (this.statoJob(job) === 'file')
+        if (this.statoJob(job) === 'file') {
           this.preparaCodice(PageToolbarComponent.nomeFileJob(job));
+          if (this.condivisioneDisponibile)
+            this.preparaFile(job);
+        }
     });
   }
 
@@ -202,6 +214,30 @@ export class PageToolbarComponent {
       });
   }
 
+  // condivisione dei file: solo su telefono (sul PC resta il download) e se il browser la offre
+  private get condivisioneDisponibile(): boolean {
+    return this.ui.isMobileSignal() && typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+           && typeof navigator.canShare === 'function';
+  }
+
+  private preparaFile(job: LongJobProgressUpdate): void {
+    const nomeFile = PageToolbarComponent.nomeFileJob(job);
+    if (!nomeFile || PageToolbarComponent.fileCondivisibili.has(nomeFile) || PageToolbarComponent.fileInArrivo.has(nomeFile))
+      return;
+    PageToolbarComponent.fileInArrivo.add(nomeFile);
+    this.http.get(environment.remoteData.apiUri + job.downloadUrl, { responseType: 'blob' })
+      .subscribe({
+        next: blob => {
+          PageToolbarComponent.fileInArrivo.delete(nomeFile);
+          const file = new File([blob], job.fileName || nomeFile, { type: blob.type || 'application/octet-stream' });
+          // solo se il browser sa condividere questo tipo di file; altrimenti si usera' il download
+          if (navigator.canShare({ files: [file] }))
+            PageToolbarComponent.fileCondivisibili.set(nomeFile, file);
+        },
+        error: () => PageToolbarComponent.fileInArrivo.delete(nomeFile)
+      });
+  }
+
   private avviaDownload(nomeFile: string, code: string, job: LongJobProgressUpdate): void {
     PageToolbarComponent.codiciDownload.delete(nomeFile);
     apriDownload(environment.remoteData.apiUri + 'Account/DownloadFile/' + encodeURIComponent(nomeFile) + '?code=' + encodeURIComponent(code),
@@ -225,6 +261,20 @@ export class PageToolbarComponent {
     // collegamento temporaneo del server (Account/DownloadCode -> Account/DownloadFile) invece del file in memoria:
     // nell'app installata sul telefono il blob a volte apriva il file o non faceva nulla, l'allegato si scarica sempre
     const nomeFile = PageToolbarComponent.nomeFileJob(job);
+
+    // telefono con il file gia' arrivato: menu Condividi (chiuso senza scegliere: la notifica resta)
+    const file = PageToolbarComponent.fileCondivisibili.get(nomeFile);
+    if (file && this.condivisioneDisponibile) {
+      this.scaricando.delete(job.jobId);
+      navigator.share({ files: [file], title: file.name })
+        .then(() => {
+          PageToolbarComponent.fileCondivisibili.delete(nomeFile);
+          this.dismissJob(job.jobId);
+        })
+        .catch(() => { /* condivisione annullata: si puo' riprovare dalla notifica */ });
+      return;
+    }
+
     const pronto = PageToolbarComponent.codiciDownload.get(nomeFile);
     if (pronto && pronto.scade > Date.now()) {
       // codice gia' arrivato: download subito, nel tocco
