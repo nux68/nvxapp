@@ -262,3 +262,17 @@ ion-menu-button {
 
 // mobile: orari per intero e spazi ottimizzati (_calendario-mobile)
 @include calendario-mobile.calendario-mobile;
+
+// mobile, solo calendario dell'utente: senza le ore del giorno e senza la barra colorata delle timbrature
+@media (max-width: 575.98px) {
+  .day .day-ore {
+    display: none;
+  }
+
+  // !important: il padding delle pillole e' nel template
+  .day .timestamps ion-chip.nvx-pill,
+  .day .timestamps ion-chip.nvx-pill.nvx-pill-in-attesa {
+    box-shadow: none;
+    padding-left: 2px !important;
+  }
+}
