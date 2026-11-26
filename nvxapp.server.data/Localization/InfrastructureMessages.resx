@@ -1658,4 +1658,10 @@ In allegato il rendiconto.</value>
     <value>File «{0}» pronto. Collegamento per scaricarlo, valido {1} minuti (da dare all'utente così com'è): {2}</value>
     <comment>accesso AI (MCP): file prodotti dagli strumenti</comment>
   </data>
+  <data name="DocumentApplicationNotValid" xml:space="preserve">
+    <value>L'applicativo scelto non è abilitato a questo livello.</value>
+  </data>
+  <data name="DocumentTicketTypeApplicationMismatch" xml:space="preserve">
+    <value>I tipi di richiesta devono essere dell'applicativo del documento (oppure scegli Generale).</value>
+  </data>
 </root>
