@@ -1503,6 +1503,7 @@
       "hideMenu": "Hide menu"
     },
     "pageToolbar": {
+      "jobPreparing": "Preparing the file",
       "jobRunning": "Processing",
       "jobDone": "Completed",
       "jobFileReady": "File ready",
