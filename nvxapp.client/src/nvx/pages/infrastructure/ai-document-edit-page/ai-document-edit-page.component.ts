@@ -122,26 +122,23 @@ export class AiDocumentEditPageComponent extends BasePageConfirmCancelComponent<
     );
   };
 
-  // tipi di richiesta proponibili: con "Generale" tutti, con un applicativo solo i suoi (gli altri il documento non li userebbe)
+  // tipi di richiesta proponibili: quelli dell'applicativo scelto; con "Generale" quelli che non appartengono a nessun applicativo
   get tipiVisibili(): TicketTypeOptionModel[] {
     const app = this._editForm?.get('applicationType')?.value ?? null;
     const scelti: number[] = this._editForm?.get('idTicketType')?.value ?? [];
-    return app === null ? this.ticketTypes
-                        : this.ticketTypes.filter(t => t.applicationType === app || (t.descrizione.startsWith('#') && scelti.includes(t.id)));
+    return this.ticketTypes.filter(t => (t.applicationType ?? null) === app || (t.descrizione.startsWith('#') && scelti.includes(t.id)));
   }
 
-  // cambiando applicativo si tolgono i tipi di richiesta di altri applicativi (con un avviso)
+  // cambiando applicativo (anche passando a Generale) si tolgono i tipi di richiesta che non gli appartengono (con un avviso)
   private osservaApplicativo(): void {
     if (this.applicativoOsservato)
       return;
     this.applicativoOsservato = true;
     this._editForm.get('applicationType')!.valueChanges.subscribe((app: ApplicationType | null) => {
       this.tipiTolti = [];
-      if (app === null)
-        return;
       const ctrl = this._editForm.get('idTicketType')!;
       const scelti: number[] = ctrl.value ?? [];
-      const tolti = this.ticketTypes.filter(t => scelti.includes(t.id) && t.applicationType !== app && !t.descrizione.startsWith('#'));
+      const tolti = this.ticketTypes.filter(t => scelti.includes(t.id) && (t.applicationType ?? null) !== (app ?? null) && !t.descrizione.startsWith('#'));
       if (tolti.length > 0) {
         this.tipiTolti = tolti.map(t => t.descrizione);
         ctrl.setValue(scelti.filter(id => !tolti.some(t => t.id === id)));
