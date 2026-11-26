@@ -53,6 +53,29 @@
               [style.--nvx-req-colore]="item.colore">{{ item.dettaglio }}</span>
           }
         </ng-template>
+        <!-- mobile, righe compatte: chi (o il tipo) e periodo sulla prima riga, il tipo sulla seconda (HR),
+             dettaglio e stato sulla stessa riga -->
+        <ng-template nvxMobile let-item>
+          <div class="nvx-req-m" [class.nvx-req-m-evidenza]="highlight(item)">
+            <div class="nvx-req-m-testata">
+              <span class="nvx-req-m-titolo">{{ admin ? item.richiedente : tipo(item) }}</span>
+              <span class="nvx-req-m-periodo">{{ periodo(item) }}</span>
+            </div>
+            @if (admin) {
+              <div class="nvx-req-m-tipo">{{ tipo(item) }}</div>
+            }
+            <div class="nvx-req-m-riga">
+              @if (item.dettaglio) {
+                <span class="nvx-req-dettaglio"
+                  [class.nvx-req-dettaglio-in-attesa]="inAttesa(item)"
+                  [style.--nvx-req-colore]="item.colore" [title]="item.dettaglio">{{ item.dettaglio }}</span>
+              }
+              <span class="nvx-req-m-stato" [class.nvx-req-m-stato-attesa]="inAttesa(item)">
+                <ion-icon [name]="iconOf(item)" aria-hidden="true"></ion-icon>{{ item.statoTesto }}
+              </span>
+            </div>
+          </div>
+        </ng-template>
       </nvx-list>
 
     </ion-card-content>
