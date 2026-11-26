@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Documentation.Models;
@@ -36,6 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
         private readonly ITicketTypeRepository _ticketTypeRepository;
         private readonly ITicketTypeLevelRepository _ticketTypeLevelRepository;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
+        private readonly IFinancialAdvisorApplicationRepository _financialAdvisorApplicationRepository;
 
         public DocumentService(IMapper mapper,
                                UserManager<ApplicationUser> userManager,
@@ -48,13 +50,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                                IDocumentTicketTypeRepository documentTicketTypeRepository,
                                ITicketTypeRepository ticketTypeRepository,
                                ITicketTypeLevelRepository ticketTypeLevelRepository,
-                               ICompanyApplicationRepository companyApplicationRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                               ICompanyApplicationRepository companyApplicationRepository,
+                               IFinancialAdvisorApplicationRepository financialAdvisorApplicationRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _documentRepository = documentRepository;
             _documentTicketTypeRepository = documentTicketTypeRepository;
             _ticketTypeRepository = ticketTypeRepository;
             _ticketTypeLevelRepository = ticketTypeLevelRepository;
             _companyApplicationRepository = companyApplicationRepository;
+            _financialAdvisorApplicationRepository = financialAdvisorApplicationRepository;
         }
 
         public virtual async Task<GenericResult<DocumentScopeOutModel>> DocumentScope(GenericRequest<DocumentScopeInModel> model, Boolean isSubProcess)
@@ -70,6 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                         Level = scope.Level,
                         CanEdit = scope.CanEdit,
                         TicketType = model.Data.Section == DocumentSection.TicketAi ? TicketTypes(scope) : new List<TicketTypeOptionModel>(),
+                        Applications = Applicativi(scope),
                     });
                 }
 
@@ -167,6 +172,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                     throw new UserMessageException(InfrastructureMessages.Get("DocumentContentTooLong", ContenutoMaxLength));
                 if (edit.ApplicationType != null && !Enum.IsDefined(edit.ApplicationType.Value))
                     throw new UserMessageException(InfrastructureMessages.Get("DocumentDataNotValid"));
+                // azienda e studio: solo gli applicativi abilitati (un documento gia' salvato puo' tenere il suo)
+                var applicativi = Applicativi(scope);
+                if (edit.ApplicationType != null && applicativi != null && !applicativi.Contains(edit.ApplicationType.Value)
+                    && (edit.Id == 0 || document.ApplicationType != edit.ApplicationType))
+                    throw new UserMessageException(InfrastructureMessages.Get("DocumentApplicationNotValid"));
 
                 // tipi di richiesta: solo quelli proponibili al livello
                 var idTypes = (edit.IdTicketType ?? new List<int>()).Distinct().ToList();
@@ -177,6 +187,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                 // un tipo gia' collegato e poi disattivato puo' restare
                 if (idTypes.Any(t => !available.Contains(t) && !existingTypes.Any(e => e.IdTicketType == t)))
                     throw new UserMessageException(InfrastructureMessages.Get("DocumentTicketTypeNotValid"));
+                // documento di un applicativo: solo tipi di richiesta dello stesso applicativo (gli altri non lo userebbero mai)
+                if (edit.ApplicationType != null && idTypes.Count > 0)
+                {
+                    var app = edit.ApplicationType;
+                    if (_ticketTypeRepository.FindAll(t => idTypes.Contains(t.Id)).Any(t => t.ApplicationType != app))
+                        throw new UserMessageException(InfrastructureMessages.Get("DocumentTicketTypeApplicationMismatch"));
+                }
 
                 document.Titolo = titolo;
                 document.Descrizione = descrizione;
@@ -324,12 +341,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Documentatio
                 var enabled = _ticketTypeLevelRepository.FindAll(l => l.Level == level).Select(l => l.IdTicketType).ToHashSet();
                 types = types.Where(t => enabled.Contains(t.Id)).ToList();
             }
-            if (scope.IdCompany != null)
-            {
-                var applications = _companyApplicationRepository.ActiveApplications(scope.IdCompany.Value);
+            var applications = Applicativi(scope);
+            if (applications != null)
                 types = types.Where(t => t.ApplicationType == null || applications.Contains(t.ApplicationType.Value)).ToList();
-            }
             return types.Select(t => new TicketTypeOptionModel { Id = t.Id, ApplicationType = t.ApplicationType, Descrizione = t.Descrizione }).ToList();
+        }
+
+        // applicativi abilitati del nodo: azienda e studio; null = tutti (SuperUser e centri servono piu' aziende)
+        private List<ApplicationType>? Applicativi(LevelScope scope)
+        {
+            if (scope.IdCompany != null)
+                return _companyApplicationRepository.ActiveApplications(scope.IdCompany.Value);
+            if (scope.IdFinancialAdvisor != null)
+                return _financialAdvisorApplicationRepository.ActiveApplications(scope.IdFinancialAdvisor.Value);
+            return null;
         }
 
         private DocumentEditModel ToEditModel(Document document, LevelScope scope)
