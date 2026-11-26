@@ -48,6 +48,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+// sfondo della pagina anche dove l'app non disegna (zone sicure di notch e barra dei gesti nell'app installata):
+// niente bande di un altro colore in alto e in basso
+html,
+body {
+  background: var(--ion-background-color);
+}
+
 // barra laterale (stile delle voci in app.component.scss)
 ion-split-pane {
   --side-width: 260px;
