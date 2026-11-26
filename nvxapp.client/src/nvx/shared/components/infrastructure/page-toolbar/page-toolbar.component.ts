@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { NavController, Platform, ToastController } from '@ionic/angular';
-import { scaricaBlob } from '../../../../Utility/infrastructure/scarica-file';
+import { apriDownload } from '../../../../Utility/infrastructure/scarica-file';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 import { nomeUtente } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { TranslocoService } from '@jsverse/transloco';
@@ -178,11 +178,16 @@ export class PageToolbarComponent {
     if (this.scaricando.has(job.jobId))
       return;
     this.scaricando.add(job.jobId);
-    this.http.get(environment.remoteData.apiUri + downloadUrl, { responseType: 'blob' })
+    // collegamento temporaneo del server (Account/DownloadCode -> Account/DownloadFile) invece del file in memoria:
+    // nell'app installata sul telefono il blob a volte apriva il file o non faceva nulla, l'allegato si scarica sempre
+    const nomeFile = downloadUrl.split('/').pop() || '';
+    const api = environment.remoteData.apiUri;
+    this.http.get<{ code: string }>(api + 'Account/DownloadCode/' + encodeURIComponent(nomeFile))
       .subscribe({
-        next: blob => {
+        next: res => {
           this.scaricando.delete(job.jobId);
-          scaricaBlob(blob, job.fileName || downloadUrl.split('/').pop() || 'export');
+          apriDownload(api + 'Account/DownloadFile/' + encodeURIComponent(nomeFile) + '?code=' + encodeURIComponent(res.code),
+                       job.fileName || nomeFile || 'export');
           this.dismissJob(job.jobId);
         },
         // prima non succedeva nulla: ora un avviso, e la notifica resta per riprovare
