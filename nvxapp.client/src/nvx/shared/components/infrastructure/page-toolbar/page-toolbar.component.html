@@ -65,17 +65,59 @@
       </div>
     </ion-title>
     <!-- utente collegato (quello del login); durante l'impersonificazione anche l'utente impersonato -->
-    @if (showUser && loggedUserName) {
+    <!-- a destra: utente collegato (se c'e') e menu con tema e lingua; prima del login solo l'icona delle impostazioni -->
+    @if (showUser) {
       <ion-buttons slot="end">
-        <div class="nvx-logged-user" [title]="userTooltip">
-          <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
-          <span class="ion-hide-sm-down">{{ loggedUserName }}</span>
-          @if (impersonatedUserName) {
-            <ion-icon name="arrow-forward-outline" aria-hidden="true" class="ion-hide-sm-down"></ion-icon>
-            <span class="ion-hide-sm-down nvx-impersonated-user">{{ impersonatedUserName }}</span>
+        <button type="button" class="nvx-logged-user" [title]="loggedUserName ? userTooltip : ('components.pageToolbar.settings' | transloco)"
+                [attr.aria-label]="'components.pageToolbar.settings' | transloco" (click)="apriMenuImpostazioni($event)">
+          @if (loggedUserName) {
+            <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+            <span class="ion-hide-sm-down">{{ loggedUserName }}</span>
+            @if (impersonatedUserName) {
+              <ion-icon name="arrow-forward-outline" aria-hidden="true" class="ion-hide-sm-down"></ion-icon>
+              <span class="ion-hide-sm-down nvx-impersonated-user">{{ impersonatedUserName }}</span>
+            }
+          } @else {
+            <ion-icon name="settings-outline" aria-hidden="true"></ion-icon>
           }
-        </div>
+        </button>
       </ion-buttons>
+      <ion-popover [isOpen]="menuImpostazioniAperto" [event]="eventoMenuImpostazioni" (didDismiss)="menuImpostazioniAperto = false"
+                   alignment="end" class="nvx-menu-impostazioni">
+        <ng-template>
+          <div class="nvx-mi">
+            @if (loggedUserName) {
+              <div class="nvx-mi-utente">
+                <ion-icon name="person-circle-outline" aria-hidden="true"></ion-icon>
+                <div>
+                  <div class="nvx-mi-nome">{{ loggedUserName }}</div>
+                  @if (impersonatedUserName) {
+                    <div class="nvx-mi-imp">→ {{ impersonatedUserName }}</div>
+                  }
+                </div>
+              </div>
+            }
+            <div class="nvx-mi-titolo">{{ 'components.pageToolbar.theme' | transloco }}</div>
+            <div class="nvx-mi-scelte">
+              <button type="button" [class.attivo]="themeService.mode === 'light'" (click)="sceltaTema('light')">
+                <ion-icon name="sunny-outline" aria-hidden="true"></ion-icon>{{ 'components.pageToolbar.themeLight' | transloco }}
+              </button>
+              <button type="button" [class.attivo]="themeService.mode === 'dark'" (click)="sceltaTema('dark')">
+                <ion-icon name="moon-outline" aria-hidden="true"></ion-icon>{{ 'components.pageToolbar.themeDark' | transloco }}
+              </button>
+              <button type="button" [class.attivo]="themeService.mode === 'system'" (click)="sceltaTema('system')">
+                <ion-icon name="contrast-outline" aria-hidden="true"></ion-icon>{{ 'components.pageToolbar.themeSystem' | transloco }}
+              </button>
+            </div>
+            <div class="nvx-mi-titolo">{{ 'components.pageToolbar.language' | transloco }}</div>
+            <div class="nvx-mi-scelte">
+              @for (l of languageService.languages; track l) {
+                <button type="button" [class.attivo]="languageService.current === l" (click)="sceltaLingua(l)">{{ languageService.label(l) }}</button>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </ion-popover>
     }
   </ion-toolbar>
 
