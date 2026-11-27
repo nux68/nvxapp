@@ -123,7 +123,10 @@
         "kioskSection": "Kiosk",
         "kioskActive": "Shared station (kiosk) enabled",
         "kioskRegistered": "A kiosk device is registered: registering another one replaces it.",
-        "kioskNotRegistered": "No device registered: open the Kiosk page on the shared device.",
+        "kioskNotRegistered": "No device registered: on the shared device, logged in as an administrator, open Terminals → Clock-in kiosk and press Register the device.",
+        "kioskReset": "Cancel the device registration",
+        "kioskResetTitle": "Cancel the registration?",
+        "kioskResetMessage": "The site kiosk device will not be able to clock in until it is registered again from its Kiosk page.",
         "offlineSection": "Offline clock-ins",
         "offlineHours": "Deferred clock-ins accepted within (hours, 0 = never)",
         "note": "QR, position and kiosk clock-ins use the server time; those made without network use the phone time, within the limit, and stay flagged as deferred."
