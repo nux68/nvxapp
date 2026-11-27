@@ -164,14 +164,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.SmartWorki
 
                 var accordo = m.Id > 0 ? _dip_AccordoSWRepository.FindAll(a => a.Id == m.Id && a.IdDip_RapportoLavoro == dip.IdDip_RapportoLavoro).FirstOrDefault() : null;
                 bool nuovo = accordo == null;
-                // condizioni cambiate: si chiede di nuovo la presa visione
-                bool cambiato = !nuovo && (accordo!.Dal != dal || accordo.Al != al || accordo.MaxGiorniSettimana != m.MaxGiorniSettimana || accordo.GiorniConsentiti != maschera);
+                // condizioni cambiate (anche le note: possono contenere clausole dell'accordo): si chiede di nuovo la presa visione
+                string? note = string.IsNullOrWhiteSpace(m.Note) ? null : m.Note.Trim();
+                bool cambiato = !nuovo && (accordo!.Dal != dal || accordo.Al != al || accordo.MaxGiorniSettimana != m.MaxGiorniSettimana || accordo.GiorniConsentiti != maschera
+                                           || accordo.Note != note);
                 accordo ??= new Dip_AccordoSW { IdDip_RapportoLavoro = dip.IdDip_RapportoLavoro };
                 accordo.Dal = dal;
                 accordo.Al = al;
                 accordo.MaxGiorniSettimana = m.MaxGiorniSettimana;
                 accordo.GiorniConsentiti = maschera;
-                accordo.Note = string.IsNullOrWhiteSpace(m.Note) ? null : m.Note.Trim();
+                accordo.Note = note;
                 if (nuovo || cambiato)
                 {
                     accordo.DataFirma = null;
