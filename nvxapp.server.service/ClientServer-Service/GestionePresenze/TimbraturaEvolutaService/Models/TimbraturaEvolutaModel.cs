@@ -138,6 +138,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         public string KioskToken { get; set; } = string.Empty;
     }
 
+    // annullamento della registrazione del kiosk della sede (pagina Timbratura della sede): il dispositivo torna a "Registra"
+    public class TimbraturaEvoluta_KioskAnnullaInModel { public int IdAz_Sedi { get; set; } }
+    public class TimbraturaEvoluta_KioskAnnullaOutModel : ModelResult
+    {
+        public bool KioskRegistrato { get; set; }
+    }
+
     // uscita dalla modalita' terminale con la password di un CompanyPowerAdmin dell'azienda
     public class TimbraturaEvoluta_TerminaleSbloccaInModel { public string? Password { get; set; } }
     public class TimbraturaEvoluta_TerminaleSbloccaOutModel : ModelResult

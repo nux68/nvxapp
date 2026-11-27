@@ -7,7 +7,7 @@ import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import {
   TimbraturaEvoluta_ConfigGetInModel, TimbraturaEvoluta_ConfigGetOutModel, TimbraturaEvoluta_ConfigPutInModel, TimbraturaEvoluta_ConfigPutOutModel,
-  TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskRegistraOutModel, TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_KioskStampOutModel,
+  TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskRegistraOutModel, TimbraturaEvoluta_KioskAnnullaInModel, TimbraturaEvoluta_KioskAnnullaOutModel, TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_KioskStampOutModel,
   TimbraturaEvoluta_KioskIdentificaInModel, TimbraturaEvoluta_KioskIdentificaOutModel, TimbraturaEvoluta_OpzioniInModel, TimbraturaEvoluta_OpzioniOutModel,
   TimbraturaEvoluta_PinGetAllInModel, TimbraturaEvoluta_PinGetAllOutModel, TimbraturaEvoluta_PinPutInModel, TimbraturaEvoluta_PinPutOutModel,
   TimbraturaEvoluta_QrCodeInModel, TimbraturaEvoluta_QrCodeOutModel, TimbraturaEvoluta_SediInModel, TimbraturaEvoluta_SediOutModel,
@@ -35,6 +35,7 @@ export class TimbraturaEvolutaService {
   QrCode(m: GenericRequest<TimbraturaEvoluta_QrCodeInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_QrCodeInModel, TimbraturaEvoluta_QrCodeOutModel>('QrCode', m, senzaDialogErrori); }
   Stamp(m: GenericRequest<TimbraturaEvoluta_StampInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_StampInModel, TimbraturaEvoluta_StampOutModel>('Stamp', m, senzaDialogErrori); }
   KioskRegistra(m: GenericRequest<TimbraturaEvoluta_KioskRegistraInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_KioskRegistraInModel, TimbraturaEvoluta_KioskRegistraOutModel>('KioskRegistra', m, senzaDialogErrori); }
+  KioskAnnulla(m: GenericRequest<TimbraturaEvoluta_KioskAnnullaInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_KioskAnnullaInModel, TimbraturaEvoluta_KioskAnnullaOutModel>('KioskAnnulla', m, senzaDialogErrori); }
   Opzioni(m: GenericRequest<TimbraturaEvoluta_OpzioniInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_OpzioniInModel, TimbraturaEvoluta_OpzioniOutModel>('Opzioni', m, senzaDialogErrori); }
   KioskIdentifica(m: GenericRequest<TimbraturaEvoluta_KioskIdentificaInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_KioskIdentificaInModel, TimbraturaEvoluta_KioskIdentificaOutModel>('KioskIdentifica', m, senzaDialogErrori); }
   KioskStamp(m: GenericRequest<TimbraturaEvoluta_KioskStampInModel>, senzaDialogErrori = false) { return this.post<TimbraturaEvoluta_KioskStampInModel, TimbraturaEvoluta_KioskStampOutModel>('KioskStamp', m, senzaDialogErrori); }

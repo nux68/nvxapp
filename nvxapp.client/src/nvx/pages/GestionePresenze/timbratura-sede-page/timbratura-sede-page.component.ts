@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, ElementRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
-import { Observable, of } from 'rxjs';
+import { AlertController, NavController } from '@ionic/angular';
+import { Observable, firstValueFrom, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
@@ -11,7 +11,7 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { TimbraturaEvolutaService } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/timbratura-evoluta.service';
 import {
-  Az_SediTimbraturaModel, RegolaGeofence, TimbraturaEvoluta_ConfigGetInModel, TimbraturaEvoluta_ConfigPutInModel, TimbraturaEvoluta_SediInModel
+  Az_SediTimbraturaModel, RegolaGeofence, TimbraturaEvoluta_ConfigGetInModel, TimbraturaEvoluta_KioskAnnullaInModel, TimbraturaEvoluta_ConfigPutInModel, TimbraturaEvoluta_SediInModel
 } from '../../../ClientServer-Service/GestionePresenze/TimbraturaEvoluta/Models/timbratura-evoluta-model';
 
 /*
@@ -52,7 +52,8 @@ export class TimbraturaSedePageComponent extends BasePageConfirmCancelComponent<
     private timbraturaEvolutaService: TimbraturaEvolutaService,
     public fabMenuService: FabMenuService,
     private transloco: TranslocoService,
-    private languageService: LanguageService
+    private languageService: LanguageService,
+    private alertCtrl: AlertController
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -203,6 +204,33 @@ export class TimbraturaSedePageComponent extends BasePageConfirmCancelComponent<
         this.indirizzo = null;
       }
     });
+  }
+
+  /**
+   Annulla la registrazione del dispositivo kiosk della sede (subito, senza salvare il resto della pagina): il dispositivo
+   alla prossima apertura della pagina Kiosk (o al primo PIN) torna a "Registra il dispositivo".
+  */
+  async annullaKiosk() {
+    const idAz_Sedi = this._editModel?.idAz_Sedi;
+    if (!idAz_Sedi)
+      return;
+    const alert = await this.alertCtrl.create({
+      header: this.transloco.translate('attendance.pages.timbraturaSede.kioskResetTitle'),
+      message: this.transloco.translate('attendance.pages.timbraturaSede.kioskResetMessage'),
+      buttons: [
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' },
+        { text: this.transloco.translate('common.buttons.confirm'), role: 'confirm' }
+      ]
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    if (role !== 'confirm')
+      return;
+    const request = new GenericRequest<TimbraturaEvoluta_KioskAnnullaInModel>(TimbraturaEvoluta_KioskAnnullaInModel);
+    request.data.idAz_Sedi = idAz_Sedi;
+    const res = await firstValueFrom(this.timbraturaEvolutaService.KioskAnnulla(request));
+    if (res.success)
+      this.kioskRegistrato = false;
   }
 
   /** coordinate della sede dalla posizione del dispositivo */
