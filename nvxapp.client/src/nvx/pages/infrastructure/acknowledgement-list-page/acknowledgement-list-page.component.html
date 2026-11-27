@@ -28,7 +28,22 @@
         [highlight]="highlight"
         [searchText]="searchText"
         [sort]="sortByData"
-        [emptyText]="'pages.acknowledgementList.empty' | transloco">
+        [emptyText]="'pages.acknowledgementList.empty' | transloco"
+        [mobileTap]="dettaglio">
+        <!-- mobile: titolo e data su una riga, inizio del testo e stato; il testo intero nel popup (tocco) -->
+        <ng-template nvxMobile let-item>
+          <ion-icon slot="start" class="nvx-pv-icon" [class.da-confermare]="!item.dataConferma" [name]="iconOf(item)" aria-hidden="true"></ion-icon>
+          <div class="nvx-pv" [class.da-confermare]="!item.dataConferma">
+            <div class="testata">
+              <span class="titolo">{{ item.titolo }}</span>
+              <span class="data">{{ dataBreve(item) }}</span>
+            </div>
+            @if (item.testo) {
+              <div class="testo">{{ item.testo }}</div>
+            }
+            <div class="stato">{{ descrizioneStato(item) }}</div>
+          </div>
+        </ng-template>
       </nvx-list>
 
     </ion-card-content>
