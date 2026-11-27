@@ -52,7 +52,7 @@ ion-row {
 ion-label {
   font-size: 0.72em !important;
   margin-top: 5px !important;   // distanza dell'etichetta dal bordo superiore
-  margin-bottom: 0 !important;
+  margin-bottom: 5px !important; // distanza tra l'etichetta e il valore (anno, reparto, dipendente...)
 }
 
 // frecce di navigazione: pulsanti tondi (colore primary dal template)
