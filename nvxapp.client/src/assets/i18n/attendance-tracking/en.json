@@ -85,7 +85,7 @@
         "note": "Notes (included in the agreement text)",
         "signed": "Agreement signed on {{ date }}.",
         "waiting": "Awaiting the employee's signature or acknowledgement.",
-        "info": "On save the employee receives the acknowledgement request (with Document management active, the agreement record to sign). If period or days change the request is repeated. Days can be requested only with a signed agreement."
+        "info": "On save the employee receives the acknowledgement request (with Document management active, the agreement record to sign). If period, days or notes change the request is repeated. Days can be requested only with a signed agreement."
       },
       "lavoroAgile": {
         "title": "Smart working",
