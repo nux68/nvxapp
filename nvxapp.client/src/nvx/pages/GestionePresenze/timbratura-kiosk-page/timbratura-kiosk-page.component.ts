@@ -17,7 +17,8 @@ import { TerminaleService } from '../../../Utility/GestionePresenze/terminale.se
  Riconosciuto il dipendente (KioskIdentifica) si sceglie reparto - attivita' tra quelli della sede compatibili con lui
  (AT-TIMB.7): con una sola opzione non si chiede nulla, senza scelta entro 10 secondi si timbra quella di default.
  Tastiera fisica: le cifre come il tastierino, Invio = OK, Tab e Canc = C, Backspace toglie l'ultima cifra (non quando si
- scrive nel campo del badge, che ha il suo Invio).
+ scrive nel campo del badge, che ha il suo Invio). Nella scelta di reparto - attivita': frecce su e giu' spostano
+ l'evidenziata (il conto alla rovescia riparte), Invio la conferma, Canc annulla.
  La registrazione e "Schermo intero" avviano il terminale (TerminaleService): menu e barra nascosti, uscita solo con la
  password di un CompanyPowerAdmin.
 */
@@ -44,7 +45,8 @@ export class TimbraturaKioskPageComponent {
   private timer: any;
   private timerEsito: any;
   private timerScelta: any;
-  // dipendente riconosciuto in attesa della scelta di reparto - attivita' (PIN/badge ripetuti nel KioskStamp)
+  // dipendente riconosciuto in attesa della scelta di reparto - attivita' (PIN/badge ripetuti nel KioskStamp);
+  // indiceDefault = riga evidenziata (all'inizio quella proposta dal server, poi spostata con le frecce)
   public scelta: { nominativo: string, opzioni: TimbraturaOpzioneModel[], indiceDefault: number, pin: string | null, badge: string | null } | null = null;
   public secondi = 0;
 
@@ -98,8 +100,12 @@ export class TimbraturaKioskPageComponent {
 
   @HostListener('document:keydown', ['$event'])
   tastiera(ev: KeyboardEvent) {
-    if (!this.token || this.scelta || ev.ctrlKey || ev.altKey || ev.metaKey)
+    if (!this.token || ev.ctrlKey || ev.altKey || ev.metaKey)
       return;
+    if (this.scelta) {
+      this.tastieraScelta(ev);
+      return;
+    }
     // nel campo del badge (o in un altro campo, es. la password di uscita) la tastiera e' del campo
     const el = ev.target as HTMLElement | null;
     if (el?.closest('input, textarea, ion-input, ion-alert'))
@@ -112,6 +118,23 @@ export class TimbraturaKioskPageComponent {
       this.tasto('C');
     else if (ev.key === 'Backspace')
       this.pin = this.pin.slice(0, -1);
+    else
+      return;
+    ev.preventDefault();
+  }
+
+  private tastieraScelta(ev: KeyboardEvent) {
+    const scelta = this.scelta!;
+    const n = scelta.opzioni.length;
+    if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      scelta.indiceDefault = (scelta.indiceDefault + (ev.key === 'ArrowDown' ? 1 : n - 1)) % n;
+      this.secondi = TimbraturaKioskPageComponent.SecondiScelta;
+      setTimeout(() => document.querySelectorAll('.nvx-scelta ion-button')[scelta.indiceDefault]?.scrollIntoView({ block: 'nearest' }));
+    }
+    else if (ev.key === 'Enter')
+      this.scegli(scelta.opzioni[scelta.indiceDefault] ?? null);
+    else if (ev.key === 'Delete' || ev.key === 'Escape')
+      this.annullaScelta();
     else
       return;
     ev.preventDefault();
