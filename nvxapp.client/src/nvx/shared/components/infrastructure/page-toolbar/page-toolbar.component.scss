@@ -115,6 +115,13 @@
 
 // utente collegato, in alto a destra nella barra
 .nvx-logged-user {
+  // pulsante: apre il menu con tema e lingua
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  min-height: 36px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -169,5 +176,84 @@ ion-toolbar.nvx-toolbar-compatta {
     content: '';
     position: absolute;
     inset: -8px;
+  }
+}
+
+.nvx-logged-user:hover {
+  background: rgba(var(--ion-text-color-rgb, 127, 127, 127), 0.08);
+}
+
+// menu impostazioni (tema e lingua)
+ion-popover.nvx-menu-impostazioni {
+  --width: 280px;
+}
+
+.nvx-mi {
+  padding: 12px;
+}
+
+.nvx-mi-utente {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--nvx-border);
+
+  ion-icon {
+    font-size: 28px;
+    color: var(--nvx-text-muted);
+  }
+}
+
+.nvx-mi-nome {
+  font-weight: 600;
+}
+
+.nvx-mi-imp {
+  font-size: 0.85em;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-mi-titolo {
+  margin: 10px 0 6px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--nvx-text-muted);
+}
+
+// scelte come pulsanti affiancati: quella attiva evidenziata
+.nvx-mi-scelte {
+  display: flex;
+  gap: 6px;
+
+  button {
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-height: 36px;
+    padding: 4px 6px;
+    border: 1px solid var(--nvx-border-strong);
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 16px;
+    }
+
+    &.attivo {
+      border-color: var(--ion-color-primary);
+      background: rgba(var(--ion-color-primary-rgb), 0.12);
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
   }
 }
