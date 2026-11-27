@@ -91,7 +91,8 @@
 // file pronto: piccola x per chiudere senza scaricare, visibile al passaggio del mouse
 .nvx-job-chiudi {
   position: absolute;
-  top: -6px;
+  // non troppo in alto: la barra taglia quello che esce sopra
+  top: 1px;
   right: -6px;
   width: 14px;
   height: 14px;
