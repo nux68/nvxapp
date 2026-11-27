@@ -10,20 +10,20 @@ ion-select {
   // Ionic dentro un item usa flex: 1 1 0 => la select si schiaccia (17px), il contenuto esce dal campo
   // e, chiusa la lista, il focus fa scorrere il campo: etichetta e valore si spostano. Altezza dal contenuto.
   flex: 0 0 auto;
-  --padding-top: 0;
-  --padding-bottom: 5px;    // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
+  --padding-top: 3px;       // valore staccato dall'etichetta
+  --padding-bottom: 8px;    // valore (anno/mese/sede/reparto) staccato dal bordo inferiore del campo
   margin-bottom: 0;
   font-size: 0.95em;
 }
 
 // campi con combo (anno/mese/sede/reparto): un po' piu' alti del campo dipendente
 ion-item:has(ion-select) {
-  --min-height: 42px;
+  --min-height: 48px;
 }
 
 // i campi prendono lo stile "riquadro" da global.scss; qui versione compatta (altezza e spazio interno)
 ion-item {
-  --min-height: 34px;
+  --min-height: 40px;
   --padding-start: 12px;
   --inner-padding-end: 10px;
   margin: 2px 0 0 0 !important;
@@ -33,8 +33,8 @@ ion-item {
   display: block;            // il padding verticale vale solo su un blocco
   font-size: 0.9em;
   color: var(--ion-text-color);
-  padding-top: 0;
-  padding-bottom: 7px;       // nome del dipendente staccato dal bordo inferiore del campo
+  padding-top: 3px;          // nome del dipendente staccato dall'etichetta
+  padding-bottom: 10px;      // nome del dipendente staccato dal bordo inferiore del campo
 }
 
 ion-col {
@@ -50,7 +50,7 @@ ion-row {
 
 ion-label {
   font-size: 0.72em !important;
-  margin-top: 2px !important;   // distanza dell'etichetta dal bordo superiore
+  margin-top: 5px !important;   // distanza dell'etichetta dal bordo superiore
   margin-bottom: 0 !important;
 }
 
