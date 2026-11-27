@@ -6,3 +6,67 @@ ion-segment {
   display: block;
   margin-bottom: 8px;
 }
+
+// riga mobile compatta (il testo intero nel popup)
+.nvx-pv-icon {
+  font-size: 22px;
+  margin-inline-end: 12px;
+  color: var(--nvx-text-muted);
+
+  &.da-confermare {
+    color: var(--ion-color-primary);
+  }
+}
+
+.nvx-pv {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 0;
+
+  .testata {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .titolo {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+
+  &.da-confermare .titolo {
+    font-weight: 600;
+  }
+
+  .data {
+    flex: none;
+    font-size: 12px;
+    color: var(--nvx-text-muted);
+  }
+
+  // inizio del testo: al massimo due righe
+  .testo {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--nvx-text-muted);
+  }
+
+  .stato {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--nvx-text-muted);
+  }
+
+  &.da-confermare .stato {
+    color: var(--ion-color-primary);
+  }
+}
