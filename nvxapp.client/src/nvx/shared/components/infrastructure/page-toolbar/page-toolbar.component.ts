@@ -14,6 +14,8 @@ import { TranslocoService } from '@jsverse/transloco';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
 import { HoverPopupData } from '../hover-popup/hover-popup.component';
 import { MenuLayoutService } from '../../../../Utility/infrastructure/menu-layout.service';
+import { ThemeService } from '../../../../Utility/infrastructure/theme.service';
+import { Language, LanguageService } from '../../../../Utility/infrastructure/language.service';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -39,6 +41,27 @@ export class PageToolbarComponent {
   public queryText: string;
 
   private readonly ui = inject(UserInterfaceService);
+
+  // menu a destra nella barra (utente e impostazioni): tema e lingua, anche prima del login
+  public readonly themeService = inject(ThemeService);
+  public readonly languageService = inject(LanguageService);
+  public menuImpostazioniAperto = false;
+  public eventoMenuImpostazioni: Event | null = null;
+
+  apriMenuImpostazioni(evento: Event): void {
+    this.eventoMenuImpostazioni = evento;
+    this.menuImpostazioniAperto = true;
+  }
+
+  sceltaTema(mode: 'light' | 'dark' | 'system'): void {
+    this.themeService.setMode(mode);
+  }
+
+  // il cambio di lingua ricarica la pagina
+  sceltaLingua(lingua: Language): void {
+    this.menuImpostazioniAperto = false;
+    this.languageService.setLanguage(lingua);
+  }
 
   // percorso dell'impersonificazione: c'e' solo con piu' utenti nella cronologia, e su mobile non si mostra
   public get mostraBreadcrumbs(): boolean {
