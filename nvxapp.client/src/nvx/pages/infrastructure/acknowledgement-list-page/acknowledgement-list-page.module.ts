@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonCard, IonCardContent, IonContent, IonLabel, IonNote, IonSegment, IonSegmentButton } from '@ionic/angular';
+import { IonCard, IonCardContent, IonContent, IonIcon, IonLabel, IonNote, IonSegment, IonSegmentButton } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
@@ -13,7 +13,7 @@ import { AcknowledgementListPageComponent } from './acknowledgement-list-page.co
   imports: [
     CommonModule,
     FormsModule,
-    IonCard, IonCardContent, IonContent, IonLabel, IonNote, IonSegment, IonSegmentButton,
+    IonCard, IonCardContent, IonContent, IonIcon, IonLabel, IonNote, IonSegment, IonSegmentButton,
     RouterModule.forChild([
       {
         path: '',
