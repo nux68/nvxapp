@@ -19,6 +19,7 @@ type AcknowledgementFilter = 'pending' | 'all';
    - altri canali (es. firma del documento): si conferma aprendo l'oggetto (url + stato) e seguendo il canale
  Si ricarica all'arrivo di una notifica (le richieste di presa visione arrivano come notifica).
 */
+import { NvxTextPopupService } from '../../../shared/components/infrastructure/nvx-text-popup/nvx-text-popup.service';
 @Component({
   selector: 'app-acknowledgement-list-page',
   templateUrl: './acknowledgement-list-page.component.html',
@@ -46,6 +47,7 @@ export class AcknowledgementListPageComponent {
               private acknowledgementService: AcknowledgementService,
               private notificationNotifierService: NotificationNotifierService,
               private languageService: LanguageService,
+              private nvxTextPopupService: NvxTextPopupService,
               private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('pages.acknowledgementList.title');
@@ -119,6 +121,41 @@ export class AcknowledgementListPageComponent {
       return this.transloco.translate('pages.acknowledgementList.confirmedOn', { date: this.formatData(a.dataConferma) });
     return this.transloco.translate(a.confermabileQui ? 'pages.acknowledgementList.pending' : 'pages.acknowledgementList.pendingOther');
   }
+
+  /** data della riga mobile: l'ora se e' di oggi, altrimenti giorno e mese (con l'anno se non e' quello corrente) */
+  public dataBreve(item: AcknowledgementModel): string {
+    if (!item.dataRichiesta)
+      return '';
+    const data = new Date(item.dataRichiesta);
+    const oggi = new Date();
+    const formato = data.toDateString() === oggi.toDateString() ? 'shortTime'
+                  : data.getFullYear() === oggi.getFullYear() ? 'd MMM' : 'shortDate';
+    return formatDate(data, formato, this.languageService.locale);
+  }
+
+  /** mobile, tocco sulla riga: popup con il testo intero e le azioni (conferma lettura, apri) */
+  public readonly dettaglio = (item: AcknowledgementModel) => {
+    const btnChiudi = this.userInterfaceService.Btn_Chiudi;
+    btnChiudi.event = () => { };
+    const buttons = [btnChiudi];
+    if (item.url) {
+      const btnApri = this.userInterfaceService.Btn_Apri;
+      btnApri.event = () => this.notificationNotifierService.openUrl(item.url, item.urlState);
+      buttons.unshift(btnApri);
+    }
+    if (item.confermabileQui && !item.dataConferma) {
+      const btnConferma = this.userInterfaceService.Btn_ConfermaLettura;
+      btnConferma.event = () => this.conferma(item);
+      buttons.unshift(btnConferma);
+    }
+    const sottotitolo = [item.azienda, this.formatData(item.dataRichiesta), this.descrizioneStato(item)].filter(x => !!x).join(' · ');
+    this.nvxTextPopupService.show({
+      title: item.titolo,
+      subtitle: sottotitolo,
+      text: item.testo,
+      buttons
+    });
+  };
 
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
