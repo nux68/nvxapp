@@ -678,6 +678,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<TimbraturaEvoluta_KioskAnnullaOutModel>> KioskAnnulla(GenericRequest<TimbraturaEvoluta_KioskAnnullaInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                await VerificaAdmin(powerAdmin: true);
+                int idAzienda = await _turniUtility.IdAziendaAsync(CurrentCompany);
+                var sede = SedeAzienda(model.Data.IdAz_Sedi, idAzienda);
+                var c = _az_SediTimbraturaRepository.FindAll(x => x.IdAz_Sedi == sede.Id).FirstOrDefault();
+                if (c != null && !string.IsNullOrEmpty(c.KioskToken))
+                {
+                    c.KioskToken = null;
+                    await _az_SediTimbraturaRepository.UpdateAsync(c);
+                }
+                return new TimbraturaEvoluta_KioskAnnullaOutModel { KioskRegistrato = false };
+            }, isSubProcess);
+        }
+
         private string PinHash(int idAzienda, string pin)
         {
             var chiave = _configuration["Timbratura:PinKey"];
@@ -929,6 +946,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Timbratura
         Task<GenericResult<TimbraturaEvoluta_QrCodeOutModel>> QrCode(GenericRequest<TimbraturaEvoluta_QrCodeInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_StampOutModel>> Stamp(GenericRequest<TimbraturaEvoluta_StampInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_KioskRegistraOutModel>> KioskRegistra(GenericRequest<TimbraturaEvoluta_KioskRegistraInModel> model, bool isSubProcess);
+        Task<GenericResult<TimbraturaEvoluta_KioskAnnullaOutModel>> KioskAnnulla(GenericRequest<TimbraturaEvoluta_KioskAnnullaInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_OpzioniOutModel>> Opzioni(GenericRequest<TimbraturaEvoluta_OpzioniInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_KioskIdentificaOutModel>> KioskIdentifica(GenericRequest<TimbraturaEvoluta_KioskIdentificaInModel> model, bool isSubProcess);
         Task<GenericResult<TimbraturaEvoluta_KioskStampOutModel>> KioskStamp(GenericRequest<TimbraturaEvoluta_KioskStampInModel> model, bool isSubProcess);

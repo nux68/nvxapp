@@ -60,10 +60,14 @@ export class TimbraturaKioskPageComponent {
     } catch { }
     this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel), true).subscribe(res => {
       this.sedi = (res.data?.sedi ?? []).filter(s => s.kioskAttivo);
-      if (!this.sedi.some(s => s.idAz_Sedi === this.idAz_Sedi)) {
+      const sede = this.sedi.find(s => s.idAz_Sedi === this.idAz_Sedi);
+      if (!sede) {
         this.idAz_Sedi = this.sedi[0]?.idAz_Sedi ?? null;
-        this.token = null;
+        this.dimenticaRegistrazione();
       }
+      // registrazione annullata dalla pagina Timbratura della sede: si torna a "Registra il dispositivo"
+      else if (this.token && !sede.kioskRegistrato)
+        this.dimenticaRegistrazione();
     });
     this.timer = setInterval(() => { this.ora = new Date(); }, 1000);
   }
@@ -112,6 +116,7 @@ export class TimbraturaKioskPageComponent {
       const res = await firstValueFrom(this.timbraturaEvolutaService.KioskIdentifica(request, true));
       if (!res.success || !res.data) {
         this.mostraEsito({ ok: false, testo: res.messages?.map(m => m.text).join(' ') ?? '' });
+        this.verificaRegistrazione();
         return;
       }
       // una sola opzione (o nessuna): non si chiede nulla
@@ -178,5 +183,25 @@ export class TimbraturaKioskPageComponent {
 
   esci() {
     this.terminale.esci();
+  }
+
+  // dopo un esito negativo: se la registrazione della sede e' stata annullata il dispositivo la dimentica
+  private verificaRegistrazione() {
+    this.timbraturaEvolutaService.Sedi(new GenericRequest<TimbraturaEvoluta_SediInModel>(TimbraturaEvoluta_SediInModel), true).subscribe({
+      next: res => {
+        const sede = (res.data?.sedi ?? []).find(s => s.idAz_Sedi === this.idAz_Sedi);
+        if (res.success && this.token && (!sede?.kioskAttivo || !sede.kioskRegistrato))
+          this.dimenticaRegistrazione();
+      },
+      error: () => { }
+    });
+  }
+
+  /** registrazione dimenticata: la pagina torna a "Registra il dispositivo" (il terminale resta com'e') */
+  private dimenticaRegistrazione() {
+    this.token = null;
+    this.pin = '';
+    this.badge = '';
+    try { localStorage.removeItem(TimbraturaKioskPageComponent.Chiave); } catch { }
   }
 }
