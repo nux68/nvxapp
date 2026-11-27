@@ -85,7 +85,7 @@
         "note": "Note (riportate nel testo dell'accordo)",
         "signed": "Accordo firmato il {{ date }}.",
         "waiting": "In attesa della firma o presa visione del dipendente.",
-        "info": "Al salvataggio il dipendente riceve la richiesta di presa visione (con il Documentale attivo, il verbale di accordo da firmare). Se cambiano periodo o giorni la richiesta si ripete. I giorni si possono richiedere solo con l'accordo firmato."
+        "info": "Al salvataggio il dipendente riceve la richiesta di presa visione (con il Documentale attivo, il verbale di accordo da firmare). Se cambiano periodo, giorni o note la richiesta si ripete. I giorni si possono richiedere solo con l'accordo firmato."
       },
       "lavoroAgile": {
         "title": "Lavoro agile",
