@@ -43,6 +43,21 @@ export class ThemeService {
     this.setDark(!this.isDark, true);
   }
 
+  /** scelta dell'utente: chiaro, scuro o come il sistema operativo (nessuna scelta salvata) */
+  public get mode(): 'light' | 'dark' | 'system' {
+    const saved = this.readSaved();
+    return saved === 'dark' || saved === 'light' ? saved : 'system';
+  }
+
+  public setMode(mode: 'light' | 'dark' | 'system'): void {
+    if (mode === 'system') {
+      try { localStorage.removeItem(ThemeService.StorageKey); } catch { }
+      this.setDark(this.systemDark.matches, false);
+    }
+    else
+      this.setDark(mode === 'dark', true);
+  }
+
   private setDark(dark: boolean, save: boolean): void {
     if (save) {
       try { localStorage.setItem(ThemeService.StorageKey, dark ? 'dark' : 'light'); } catch { }
