@@ -94,6 +94,8 @@ export class TimbraturaEvoluta_OpzioniOutModel extends ModelResult {
 
 export class TimbraturaEvoluta_KioskRegistraInModel { public idAz_Sedi: number = 0; }
 export class TimbraturaEvoluta_KioskRegistraOutModel extends ModelResult { public kioskToken: string = ''; }
+export class TimbraturaEvoluta_KioskAnnullaInModel { public idAz_Sedi: number = 0; }
+export class TimbraturaEvoluta_KioskAnnullaOutModel extends ModelResult { public kioskRegistrato: boolean = false; }
 // uscita dalla modalita' terminale con la password di un CompanyPowerAdmin dell'azienda
 export class TimbraturaEvoluta_TerminaleSbloccaInModel { public password: string | null = null; }
 export class TimbraturaEvoluta_TerminaleSbloccaOutModel extends ModelResult { public sbloccato: boolean = false; }

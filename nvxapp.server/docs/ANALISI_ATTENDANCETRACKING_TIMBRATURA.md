@@ -41,6 +41,7 @@ Solo CompanyAdmin/CompanyPowerAdmin: restituisce il codice corrente della sede, 
 
 ### 4.3 Kiosk (`TimbraturaEvoluta/KioskRegistra`, `KioskStamp`)
 - Il kiosk è un dispositivo con un utente **CompanyAdmin/CompanyPowerAdmin** collegato (permesso di timbrare per altri) e **registrato** sulla sede: `KioskRegistra` genera un `KioskToken` casuale (32 byte) salvato nel dispositivo; registrare di nuovo invalida il precedente.
+- La registrazione resta nel dispositivo (anche spento e riacceso; serve solo rifare il login). Dalla pagina **Timbratura della sede** il CompanyPowerAdmin può annullarla (`KioskAnnulla`, token azzerato): il dispositivo, all'apertura della pagina Kiosk o al primo esito negativo, la dimentica e torna a "Registra il dispositivo".
 - `KioskStamp` (sede, token, PIN o badge): token e `KioskAttivo` verificati, dipendente dell'azienda trovato da PIN (HMAC) o badge, ora del server, `Origine = Kiosk`, operatore = utente del dispositivo. Dopo 5 errori in un minuto per dispositivo il kiosk resta bloccato per un minuto.
 - PIN e badge li imposta **solo l'HR** (`TimbraturaEvoluta/PinPut`): il PIN è unico nell'azienda e, se lo scegliesse il dipendente, il controllo di unicità gli rivelerebbe i PIN dei colleghi.
 

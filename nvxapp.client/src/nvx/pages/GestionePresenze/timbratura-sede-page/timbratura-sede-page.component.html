@@ -80,6 +80,11 @@
           <ion-item><ion-toggle formControlName="kioskAttivo">{{ 'attendance.pages.timbraturaSede.kioskActive' | transloco }}</ion-toggle></ion-item>
           @if (_editForm.get('kioskAttivo')?.value) {
             <ion-note class="nvx-nota">{{ (kioskRegistrato ? 'attendance.pages.timbraturaSede.kioskRegistered' : 'attendance.pages.timbraturaSede.kioskNotRegistered') | transloco }}</ion-note>
+            @if (kioskRegistrato) {
+              <ion-button fill="outline" size="small" color="danger" class="nvx-kiosk-reset" (click)="annullaKiosk()">
+                <ion-icon slot="start" name="refresh-outline"></ion-icon>{{ 'attendance.pages.timbraturaSede.kioskReset' | transloco }}
+              </ion-button>
+            }
           }
 
           <ion-item class="nvx-item-4-title"><ion-label>{{ 'attendance.pages.timbraturaSede.offlineSection' | transloco }}</ion-label></ion-item>
