@@ -28,7 +28,9 @@
     "@ionic/angular": "^9.0.7",
     "@jsverse/transloco": "^8.4.0",
     "@microsoft/signalr": "^8.0.29",
+    "@types/leaflet": "1.9.22",
     "ionicons": "^8.1.0",
+    "leaflet": "1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
