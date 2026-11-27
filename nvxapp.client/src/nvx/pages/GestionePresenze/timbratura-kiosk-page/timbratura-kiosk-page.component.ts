@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { firstValueFrom } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -16,6 +16,8 @@ import { TerminaleService } from '../../../Utility/GestionePresenze/terminale.se
  segnalazione in rosso.
  Riconosciuto il dipendente (KioskIdentifica) si sceglie reparto - attivita' tra quelli della sede compatibili con lui
  (AT-TIMB.7): con una sola opzione non si chiede nulla, senza scelta entro 10 secondi si timbra quella di default.
+ Tastiera fisica: le cifre come il tastierino, Invio = OK, Tab e Canc = C, Backspace toglie l'ultima cifra (non quando si
+ scrive nel campo del badge, che ha il suo Invio).
  La registrazione e "Schermo intero" avviano il terminale (TerminaleService): menu e barra nascosti, uscita solo con la
  password di un CompanyPowerAdmin.
 */
@@ -92,6 +94,27 @@ export class TimbraturaKioskPageComponent {
       try { localStorage.setItem(TimbraturaKioskPageComponent.Chiave, JSON.stringify({ idAz_Sedi: this.idAz_Sedi, token: this.token })); } catch { }
       await this.terminale.attiva();
     }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  tastiera(ev: KeyboardEvent) {
+    if (!this.token || this.scelta || ev.ctrlKey || ev.altKey || ev.metaKey)
+      return;
+    // nel campo del badge (o in un altro campo, es. la password di uscita) la tastiera e' del campo
+    const el = ev.target as HTMLElement | null;
+    if (el?.closest('input, textarea, ion-input, ion-alert'))
+      return;
+    if (/^[0-9]$/.test(ev.key))
+      this.tasto(ev.key);
+    else if (ev.key === 'Enter')
+      this.tasto('OK');
+    else if (ev.key === 'Tab' || ev.key === 'Delete')
+      this.tasto('C');
+    else if (ev.key === 'Backspace')
+      this.pin = this.pin.slice(0, -1);
+    else
+      return;
+    ev.preventDefault();
   }
 
   tasto(t: string) {
