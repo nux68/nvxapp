@@ -46,6 +46,36 @@
             <ion-input type="number" formControlName="raggioMetri" [label]="'attendance.pages.timbraturaSede.radius' | transloco" labelPlacement="stacked"></ion-input>
           </ion-item>
 
+          <!-- cartina: punto della sede (trascinabile), cerchio del raggio e indirizzo; solo con il tasto -->
+          <div class="nvx-mappa-azioni">
+            @if (!mappaAperta) {
+              <ion-button fill="outline" size="small" [disabled]="!coordinate" (click)="mostraMappa()">
+                <ion-icon slot="start" name="map-outline"></ion-icon>{{ 'attendance.pages.timbraturaSede.showMap' | transloco }}
+              </ion-button>
+              @if (!coordinate) {
+                <ion-note>{{ 'attendance.pages.timbraturaSede.mapNeedsCoordinates' | transloco }}</ion-note>
+              }
+            } @else {
+              <ion-button fill="clear" size="small" color="medium" (click)="chiudiMappa()">
+                <ion-icon slot="start" name="close-outline"></ion-icon>{{ 'attendance.pages.timbraturaSede.hideMap' | transloco }}
+              </ion-button>
+            }
+          </div>
+          @if (mappaAperta) {
+            <div class="nvx-mappa-indirizzo">
+              <ion-icon name="location-outline" aria-hidden="true"></ion-icon>
+              @if (indirizzoInCorso) {
+                <span>{{ 'attendance.pages.timbraturaSede.addressLoading' | transloco }}</span>
+              } @else if (indirizzo) {
+                <span>{{ indirizzo }}</span>
+              } @else if (indirizzoErrore) {
+                <span>{{ 'attendance.pages.timbraturaSede.addressNotFound' | transloco }}</span>
+              }
+            </div>
+            <div #mappaEl class="nvx-mappa"></div>
+            <ion-note class="nvx-nota">{{ 'attendance.pages.timbraturaSede.mapNote' | transloco }}</ion-note>
+          }
+
           <ion-item class="nvx-item-4-title"><ion-label>{{ 'attendance.pages.timbraturaSede.kioskSection' | transloco }}</ion-label></ion-item>
           <ion-item><ion-toggle formControlName="kioskAttivo">{{ 'attendance.pages.timbraturaSede.kioskActive' | transloco }}</ion-toggle></ion-item>
           @if (_editForm.get('kioskAttivo')?.value) {
