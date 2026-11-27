@@ -123,7 +123,10 @@
         "kioskSection": "Kiosk",
         "kioskActive": "Postazione condivisa (kiosk) attiva",
         "kioskRegistered": "Un dispositivo kiosk è registrato: registrarne un altro sostituisce il precedente.",
-        "kioskNotRegistered": "Nessun dispositivo registrato: apri la pagina Kiosk sul dispositivo condiviso.",
+        "kioskNotRegistered": "Nessun dispositivo registrato: sul dispositivo condiviso, collegato con un amministratore, apri Terminali → Kiosk timbrature e premi Registra il dispositivo.",
+        "kioskReset": "Annulla la registrazione del dispositivo",
+        "kioskResetTitle": "Annullare la registrazione?",
+        "kioskResetMessage": "Il dispositivo kiosk della sede non potrà più timbrare finché non verrà registrato di nuovo dalla sua pagina Kiosk.",
         "offlineSection": "Timbrature offline",
         "offlineHours": "Timbrature differite accettate entro (ore, 0 = mai)",
         "note": "Le timbrature con QR, posizione o dal kiosk usano l'ora del server; quelle fatte senza rete l'ora del telefono, entro il limite indicato, e restano marcate come differite."
